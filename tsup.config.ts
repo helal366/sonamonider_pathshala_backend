@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: ["src/server.ts"],
-  format: ["esm"],  //
+  format: ["esm"], //
   target: "esnext",
   outDir: "dist",
   clean: true,
@@ -10,7 +10,8 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   platform: "node",
-  external: ['pg', '@prisma/client'], 
+  external: ["pg", "@prisma/client"],
+  noExternal: ["ms"],
   // Add banner to shim require() for CJS dependencies in ESM context
   banner: {
     js: `

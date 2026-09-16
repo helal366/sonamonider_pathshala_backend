@@ -14,7 +14,10 @@ import type {
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
 } from "./email.zod.validation";
-import { createTemporaryPassword, sendVerificationResultEmail } from "./email.helper.function";
+import {
+  createTemporaryPassword,
+  sendVerificationResultEmail,
+} from "./email.helper.function";
 
 // RESEND OTP EMAIL VERIFY
 const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
@@ -67,7 +70,7 @@ const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: normalizedEmail,
-      subject: "Your New Model Academy Verification Code",
+      subject: "Your New SONAMONIDER PATHSHALA Verification Code",
       html,
     });
   } catch (error) {
@@ -111,7 +114,7 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
     await sendVerificationResultEmail({
       to: normalizedEmail,
       templateName: "reject_email_verify.ejs",
-      subject: "Model Academy Email Verification Failed",
+      subject: "SONAMONIDER PATHSHALA Email Verification Failed",
       templateData: {
         name: user.full_name,
       },
@@ -142,7 +145,7 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   await sendVerificationResultEmail({
     to: normalizedEmail,
     templateName: "success_email_verify.ejs",
-    subject: "Model Academy Email Verified Successfully",
+    subject: "SONAMONIDER PATHSHALA Email Verified Successfully",
     templateData: {
       name: user.full_name,
       password: temporaryPassword,
@@ -182,7 +185,7 @@ const sendForgetPasswordOtp = async ({
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: email,
-      subject: "Model Academy Password Reset Verification Code",
+      subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
       html,
     });
   } catch (error) {
@@ -229,7 +232,7 @@ const verifyForgetPassword = async ({
     await sendVerificationResultEmail({
       to: normalizedEmail,
       templateName: "forget_password_reject.ejs",
-      subject: "Model Academy Password Reset Failed",
+      subject: "SONAMONIDER PATHSHALA Password Reset Failed",
       templateData: { name: user.full_name },
     });
     throw new AppError(
@@ -257,7 +260,7 @@ const verifyForgetPassword = async ({
   await sendVerificationResultEmail({
     to: normalizedEmail,
     templateName: "forget_password_success.ejs",
-    subject: "Model Academy Password Reset Successful",
+    subject: "SONAMONIDER PATHSHALA Password Reset Successful",
     templateData: {
       name: user.full_name,
       password: newPassword,

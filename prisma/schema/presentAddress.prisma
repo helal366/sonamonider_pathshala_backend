@@ -20,11 +20,11 @@ model PresentAddress {
   spouse_id String?            @unique
   spouse    SpouseInformation? @relation(fields: [spouse_id], references: [spouse_id], onDelete: Cascade)
 
-  // created_by_id String?
-  // created_by    User?              @relation("present_address_created_by", fields: [created_by_id], references: [id])
+  created_by_id String?
+  created_by    ManagementStaff? @relation("present_address_created_by", fields: [created_by_id], references: [id])
 
-  // updated_by_id String?
-  // updated_by    User?              @relation("present_address_updated_by", fields: [updated_by_id], references: [id])
+  updated_by_id String?
+  updated_by    ManagementStaff? @relation("present_address_updated_by", fields: [updated_by_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

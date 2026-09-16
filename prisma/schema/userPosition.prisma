@@ -1,20 +1,21 @@
 model UserPosition {
-  id                        String            @id @default(uuid())
-  position_name             String            @unique
+  id            String @id @default(uuid())
+  position_name String @unique
 
-  role_id                   String
-  role                      UserRole          @relation("role_position_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  
+  role_id String
+  role    UserRole @relation("role_position_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   current_management_staffs ManagementStaff[] @relation("management_current_position")
   user                      User[]            @relation("user_position_relation")
   management_staffs         ManagementStaff[] @relation("managements_positions")
-  
-  //   created_by_id             String?
-  //   created_by                User?                         @relation("user_position_created_by", fields: [created_by_id], references: [id])
-  //   updated_by_id             String?
-  //   updated_by                User?                         @relation("user_position_updated_by", fields: [updated_by_id], references: [id])
 
-  created_at                DateTime          @default(now())
-  updated_at                DateTime?         @updatedAt
+  created_by_id String?
+  created_by    ManagementStaff? @relation("user_position_created_by", fields: [created_by_id], references: [id])
+  updated_by_id String?
+  updated_by    ManagementStaff? @relation("user_position_updated_by", fields: [updated_by_id], references: [id])
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
   @@map("user_positions")
 }

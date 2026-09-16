@@ -125,7 +125,7 @@ const createUser = async (payload: TUserCreatePayload) => {
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}"  <${envVars.EMAIL_SENDER}>`,
       to: email,
-      subject: `Welcome To Model Academy. Verify Your Email Address`,
+      subject: `Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address`,
       html,
     });
   } catch (error) {
@@ -214,7 +214,7 @@ const changePassword = async ({
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: user.email,
-      subject: "Model Academy Password Changed Successfully",
+      subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
       html,
     });
   } catch (error) {
@@ -276,7 +276,7 @@ const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: normalizedEmail,
-      subject: "Model Academy Password Reset Verification Code",
+      subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
       html,
     });
   } catch (error) {

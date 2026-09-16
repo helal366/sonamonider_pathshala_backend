@@ -1,11 +1,11 @@
 model User {
-  id                       String      @id @default(uuid())
-  full_name                String
+  id        String @id @default(uuid())
+  full_name String
 
-  mobile_number            String
-  is_mobile_verified       Boolean     @default(false)
+  mobile_number      String
+  is_mobile_verified Boolean @default(false)
 
-  email                    String?     @unique
+  email             String? @unique
   is_email_verified Boolean @default(false)
 
   gender                   Gender
@@ -20,7 +20,7 @@ model User {
   photo_url                String?
 
   user_name     String? @unique
-  user_password String? 
+  user_password String?
 
   active_status ActiveStatus @default(ACTIVE)
   is_deleted    Boolean      @default(false)
@@ -41,6 +41,11 @@ model User {
 
   permanent_address PermanentAddress?
   present_address   PresentAddress?
+
+  created_by_id String?
+  created_by    ManagementStaff? @relation("user_created_by", fields: [created_by_id], references: [id])
+  updated_by_id String?
+  updated_by    ManagementStaff? @relation("user_updated_by", fields: [updated_by_id], references: [id])
 
   @@unique([full_name, mobile_number], name: "user_full_name_mobile_unique")
   @@map("users")

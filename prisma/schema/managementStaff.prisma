@@ -1,8 +1,8 @@
 model ManagementStaff {
-  id                 String  @id @default(uuid())
-  full_name          String
-  mobile_number      String
-  email              String  @unique
+  id            String @id @default(uuid())
+  full_name     String
+  mobile_number String
+  email         String @unique
 
   academic_results                  AcademicResult?
   teaching_working_experience_year  Int?
@@ -11,18 +11,47 @@ model ManagementStaff {
 
   user_id           String @unique
   user_primary_data User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+
   current_position_id String?
   current_position    UserPosition? @relation("management_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   current_role_id          String?
   current_role             UserRole? @relation("management_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  is_currenly_active_staff Boolean  @default(true)
-
+  is_currenly_active_staff Boolean   @default(true)
 
   spouse_information SpouseInformation?
-  positions          UserPosition[]     @relation("managements_positions")
-  roles              UserRole[]         @relation("roles_managements")
+
+  audit_logs AuditLog[] @relation("audit_log_changed_by")
+
+  created_academic_results    AcademicResult[]    @relation("academic_result_created_by")
+  updated_academic_results    AcademicResult[]    @relation("academic_result_updated_by")
+
+  created_father_details      FatherDetails[]     @relation("father_details_created_by")
+  updated_father_details      FatherDetails[]     @relation("father_details_updated_by")
+
+  created_mother_details      MotherDetails[]     @relation("mother_details_created_by")
+  updated_mother_details      MotherDetails[]     @relation("mother_details_updated_by")
+
+  created_permanent_addresses PermanentAddress[]  @relation("permanent_address_created_by")
+  updated_permanent_addresses PermanentAddress[]  @relation("permanent_address_updated_by")
+
+  created_present_addresses   PresentAddress[]    @relation("present_address_created_by")
+  updated_present_addresses   PresentAddress[]    @relation("present_address_updated_by")
+
+  created_spouse_information  SpouseInformation[] @relation("spouse_information_created_by")
+  updated_spouse_information  SpouseInformation[] @relation("spouse_information_updated_by")
+
+  created_users               User[]              @relation("user_created_by")
+  updated_users               User[]              @relation("user_updated_by")
+
+  created_positions           UserPosition[]      @relation("user_position_created_by")
+  updated_positions           UserPosition[]      @relation("user_position_updated_by")
+  
+  created_roles               UserRole[]          @relation("role_created_by")
+  updated_roles               UserRole[]          @relation("role_updated_by")
+
+  positions UserPosition[] @relation("managements_positions")
+  roles     UserRole[]     @relation("roles_managements")
 
   @@unique([full_name, mobile_number], name: "management_full_name_mobile_unique")
   @@map("management_staffs")

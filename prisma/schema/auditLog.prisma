@@ -1,0 +1,19 @@
+model AuditLog {
+  audit_id String @id @default(uuid())
+
+  entity_id   String
+  entity_name String
+
+  old_value Json?
+  new_value Json?
+  action    AuditAction
+
+  changed_by_id String
+  changed_by    ManagementStaff @relation("audit_log_changed_by", fields: [changed_by_id], references: [id])
+
+  created_at DateTime @default(now())
+
+  @@index([changed_by_id, created_at])
+  @@index([entity_name, entity_id, created_at])
+  @@map("audit_log")
+}

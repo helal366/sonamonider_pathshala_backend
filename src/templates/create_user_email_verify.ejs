@@ -1,109 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Email - Model Academy</title>
-</head>
+    <title>Verify Your Email - SONAMONIDER PATHSHALA</title>
+  </head>
 
-<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;">
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+      font-family: Arial, Helvetica, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background: #f4f6f9; padding: 40px 0"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              background: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                align="center"
+                style="
+                  background: #1e3a8a;
+                  padding: 35px 30px;
+                  border-bottom: 4px solid #d97706;
+                "
+              >
+                <h1
+                  style="
+                    margin: 0;
+                    color: #ffffff;
+                    font-size: 28px;
+                    letter-spacing: 1px;
+                    font-weight: 700;
+                  "
+                >
+                  SONAMONIDER PATHSHALA
+                </h1>
+              </td>
+            </tr>
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:40px 0;">
-<tr>
-<td align="center">
+            <!-- Body -->
+            <tr>
+              <td style="padding: 40px">
+                <h2 style="margin-top: 0; color: #1e3a8a; font-size: 22px">
+                  Verify Your Email Address
+                </h2>
 
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <p style="color: #334155; font-size: 16px; line-height: 26px">
+                  Hello <strong><%= name %></strong>,
+                </p>
 
-    <!-- Header -->
-    <tr>
-        <td align="center" style="background:#1e3a8a;padding:35px 30px;border-bottom: 4px solid #d97706;">
-            <h1 style="margin:0;color:#ffffff;font-size:28px;letter-spacing:1px;font-weight:700;">
-                Model Academy
-            </h1>
-        </td>
-    </tr>
+                <p style="color: #334155; font-size: 16px; line-height: 26px">
+                  Welcome to <strong>SONAMONIDER PATHSHALA</strong>! Thank you
+                  for registering an account with us. To complete your
+                  registration and activate your account, please verify your
+                  email address using the secure code below.
+                </p>
 
-    <!-- Body -->
-    <tr>
-        <td style="padding:40px;">
-
-            <h2 style="margin-top:0;color:#1e3a8a;font-size:22px;">
-                Verify Your Email Address
-            </h2>
-
-            <p style="color:#334155;font-size:16px;line-height:26px;">
-                Hello <strong><%= name %></strong>,
-            </p>
-
-            <p style="color:#334155;font-size:16px;line-height:26px;">
-                Welcome to <strong>Model Academy</strong>! Thank you for registering an account with us.
-                To complete your registration and activate your account, please verify your email address using the secure code below.
-            </p>
-
-            <!-- OTP Display Box -->
-            <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
+                <!-- OTP Display Box -->
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
                     <td align="center">
-                        <div
-                            style="
-                                display:inline-block;
-                                background:#f1f5f9;
-                                padding:18px 40px;
-                                border-radius:8px;
-                                border: 1px dashed #cbd5e1;
-                                font-size:32px;
-                                font-weight:bold;
-                                letter-spacing:8px;
-                                color:#1e3a8a;
-                                margin:25px 0;
-                                font-family:Consolas, Monaco, monospace;
-                                user-select:all;
-                            ">
-                            <%= OTP %>
-                        </div>
+                      <div
+                        style="
+                          display: inline-block;
+                          background: #f1f5f9;
+                          padding: 18px 40px;
+                          border-radius: 8px;
+                          border: 1px dashed #cbd5e1;
+                          font-size: 32px;
+                          font-weight: bold;
+                          letter-spacing: 8px;
+                          color: #1e3a8a;
+                          margin: 25px 0;
+                          font-family: Consolas, Monaco, monospace;
+                          user-select: all;
+                        "
+                      >
+                        <%= OTP %>
+                      </div>
                     </td>
-                </tr>
-            </table>
+                  </tr>
+                </table>
 
-            <p style="color:#334155;font-size:16px;line-height:26px;">
-                This verification code is valid for 
-                <strong style="color:#b45309;"><%= expirationMinutes %> minutes</strong>.
-            </p>
+                <p style="color: #334155; font-size: 16px; line-height: 26px">
+                  This verification code is valid for
+                  <strong style="color: #b45309"
+                    ><%= expirationMinutes %> minutes</strong
+                  >.
+                </p>
 
-            <p style="color:#334155;font-size:16px;line-height:26px;">
-                Please input this code on the application's verification page. For security reasons, do not share this code with anyone.
-            </p>
+                <p style="color: #334155; font-size: 16px; line-height: 26px">
+                  Please input this code on the application's verification page.
+                  For security reasons, do not share this code with anyone.
+                </p>
 
-            <hr style="border:none;border-top:1px solid #e2e8f0;margin:30px 0;">
+                <hr
+                  style="
+                    border: none;
+                    border-top: 1px solid #e2e8f0;
+                    margin: 30px 0;
+                  "
+                />
 
-            <p style="color:#64748b;font-size:14px;line-height:22px;">
-                If you did not create a Model Academy account, you can safely ignore this email. 
-                The account will remain inactive unless verified.
-            </p>
+                <p style="color: #64748b; font-size: 14px; line-height: 22px">
+                  If you did not create a SONAMONIDER PATHSHALA account, you can
+                  safely ignore this email. The account will remain inactive
+                  unless verified.
+                </p>
+              </td>
+            </tr>
 
+            <!-- Footer -->
+            <tr>
+              <td
+                align="center"
+                style="
+                  background: #f8fafc;
+                  padding: 25px;
+                  border-top: 1px solid #f1f5f9;
+                "
+              >
+                <p style="margin: 0; color: #64748b; font-size: 14px">
+                  © <%= year %> SONAMONIDER PATHSHALA. All rights reserved.
+                </p>
+
+                <p style="margin-top: 8px; color: #94a3b8; font-size: 12px">
+                  This is an automated operational message from SONAMONIDER
+                  PATHSHALA. Please do not reply directly to this email.
+                </p>
+              </td>
+            </tr>
+          </table>
         </td>
-    </tr>
-
-    <!-- Footer -->
-    <tr>
-        <td align="center" style="background:#f8fafc;padding:25px;border-top:1px solid #f1f5f9;">
-
-            <p style="margin:0;color:#64748b;font-size:14px;">
-                © <%= year %> Model Academy. All rights reserved.
-            </p>
-
-            <p style="margin-top:8px;color:#94a3b8;font-size:12px;">
-                This is an automated operational message from Model Academy. Please do not reply directly to this email.
-            </p>
-
-        </td>
-    </tr>
-
-</table>
-
-</td>
-</tr>
-</table>
-
-</body>
+      </tr>
+    </table>
+  </body>
 </html>
