@@ -6,7 +6,7 @@ import {
   TForgetPasswordPayload,
   TUserCreatePayload,
 } from "./user.zod.validation";
-import { findRoleExistance } from "../../helperFunctions/cachedData/cache_roles";
+import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions";
 import { prisma } from "../../lib/prisma";
 import crypto from "crypto";
@@ -27,7 +27,7 @@ const createUser = async (payload: TUserCreatePayload) => {
   const cleanPosition = position_name.trim().toUpperCase();
 
   // check role validity
-  const roleExists = await findRoleExistance(cleanRole);
+  const roleExists = await findRoleExistence(cleanRole);
   if (!roleExists) {
     throw new AppError(
       `Provided Role: ${cleanRole} is not a valid role.`,
@@ -41,8 +41,8 @@ const createUser = async (payload: TUserCreatePayload) => {
     position_name: cleanPosition,
   });
 
-  // check user existance
-  const userExist = await userHelperFunction.userExistance({
+  // check user existence
+  const userExist = await userHelperFunction.userExistence({
     role_name: cleanRole,
     full_name,
     mobile_number,

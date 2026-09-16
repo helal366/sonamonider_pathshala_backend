@@ -40,7 +40,7 @@ export const clearCachePositions = (): void => {
 };
 
 // find the provided position
-export const findPositionExistance = async (position_name: string) => {
+export const findPositionExistence = async (position_name: string) => {
   const validPositions = await getValidPositions();
   const findPosition = validPositions.find(
     (singlePosition) => singlePosition.position_name === position_name,
@@ -53,7 +53,7 @@ export const checkRolePositionPair = async ({
   role_name,
   position_name,
 }: IRolePositionPairPayload) => {
-  const findPosition = await findPositionExistance(position_name);
+  const findPosition = await findPositionExistence(position_name);
   if (!findPosition) {
     throw new AppError(
       `Provided Position: ${position_name} is not a valid position`,

@@ -7,11 +7,11 @@ import { TCreateRoleZodSchema } from "./role.zod.validation";
 const createRole = async (payload: TCreateRoleZodSchema) => {
   const { role_name } = payload;
   const cleanRole = role_name.trim().toUpperCase();
-  const checkExistance = await prisma.userRole.findUnique({
+  const checkExistence = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
     select: { id: true },
   });
-  if (checkExistance) {
+  if (checkExistence) {
     throw new AppError(
       `Your provided role : ${cleanRole} already exixts.`,
       StatusCodes.CONFLICT,

@@ -6,6 +6,7 @@ import { createRoleZodSchema } from "./role.zod.validation.js";
 const router = Router();
 router.post(
   "/create_role",
+  // userAuth("SUPER_ADMIN"),
   validateZodSchema(createRoleZodSchema),
   roleController.createRole,
 );

@@ -3,14 +3,27 @@ import z4 from "zod/v4";
 
 export const userCreateZodSchema = z4.object({
   full_name: z4
-    .string("Invalid name format")
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Full name is required."
+          : "Invalid name format",
+    })
     .trim()
     .min(1, "Full name is required."),
   mobile_number: z4
-    .string()
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Mobile number is required."
+          : "Invalid mobile number format.",
+    })
     .trim()
-    .length(14, "Mobile number must be 14 digit and start with +88")
-    .regex(/^\+880[1]\d{9}$/, "Invalid Bangladeshi mobile number."),
+    .length(
+      11,
+      "Mobile number must be 11 digit Bangladeshi number start with 01",
+    )
+    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
   gender: z4.enum(Gender, "Invalid gender."),
   blood_group: z4.enum(BloodGroup, "Invalid blood group.").optional(),
   date_of_birth: z4
@@ -25,9 +38,26 @@ export const userCreateZodSchema = z4.object({
     .string("Invalid birth certificate number format")
     .optional(),
   nid_number: z4.string("Invalid nid number format").optional(),
-  email: z4.string().check(z4.email("Invalid email format")),
-  position_name: z4.string("Invalid user position format"),
-  role_name: z4.string("Invalid user role format"),
+  email: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Email is required."
+          : "Invalid email format",
+    })
+    .check(z4.email("Invalid email format")),
+  position_name: z4.string({
+    error: (issue) =>
+      issue.input === undefined
+        ? "User position is required."
+        : "Invalid user position format",
+  }),
+  role_name: z4.string({
+    error: (issue) =>
+      issue.input === undefined
+        ? "User role is required."
+        : "Invalid user role format",
+  }),
 });
 
 export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
@@ -35,22 +65,47 @@ export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
 export const changePasswordZodSchema = z4
   .object({
     full_name: z4
-      .string("Full name is required.")
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Full name is required."
+            : "Invalid name format",
+      })
       .trim()
       .min(1, "Full name is required."),
     mobile_number: z4
-      .string("Mobile number is required.")
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Mobile number is required."
+            : "Invalid mobile number format.",
+      })
       .trim()
-      .length(14, "Mobile number must be 14 digit and start with +88")
-      .regex(/^\+880[1]\d{9}$/, "Invalid Bangladeshi mobile number."),
+      .length(11, "Mobile number must be 11 digit and start with 01")
+      .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
     current_password: z4
-      .string("Current password is required.")
-      .min(1, "Current password is required."),
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Current password is required."
+            : "Invalid current password format.",
+      })
+      .min(6, "Current password is required."),
     new_password: z4
-      .string("New password is required.")
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "New password is required."
+            : "Invalid new password format.",
+      })
       .min(6, "New password must be at least 8 characters."),
     confirm_password: z4
-      .string("Confirm password is required.")
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Confirm password is required."
+            : "Invalid confirm password format.",
+      })
       .min(6, "Confirm password must be at least 8 characters."),
   })
   .check(({ value, issues }) => {
