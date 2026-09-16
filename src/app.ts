@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.use("/api/v1/smps/auth", authRouter);
-app.use("/api/v1/smps/send_email", emailRouter);
+app.use("/api/v1/smps/email", emailRouter);
 app.use("/api/v1/smps/user",userRouter)
 app.use("/api/v1/smps/position",positionRouter)
 app.use("/api/v1/smps/role",roleRouter)

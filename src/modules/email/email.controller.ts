@@ -3,7 +3,12 @@ import { catchAsync } from "../../utils/catchAsync";
 import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse";
 import { emailServices } from "./email.service";
-import type { TResendOtpEmailPayload } from "./email.zod.validation";
+import type {
+  TResendOtpForgetPasswordPayload,
+  TResendOtpEmailPayload,
+  TVerifyForgetPasswordPayload,
+  TVerifyEmailPayload,
+} from "./email.zod.validation";
 
 const resendOtpEmailVerify = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -19,6 +24,54 @@ const resendOtpEmailVerify = catchAsync(
   },
 );
 
+const verifyEmail = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TVerifyEmailPayload = req.body;
+
+    await emailServices.verifyEmail(payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        "Email verified successfully. Your login password has been sent to your email address.",
+    });
+  },
+);
+
+const verifyForgetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TVerifyForgetPasswordPayload = req.body;
+
+    await emailServices.verifyForgetPassword(payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        "Password reset successfully. Your new password has been sent to your email address.",
+    });
+  },
+);
+
+const resendOtpForgetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TResendOtpForgetPasswordPayload = req.body;
+
+    await emailServices.resendOtpForgetPassword(payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        "A new password reset verification code has been sent to your email address.",
+    });
+  },
+);
+
 export const emailController = {
   resendOtpEmailVerify,
+  verifyEmail,
+  verifyForgetPassword,
+  resendOtpForgetPassword,
 };
