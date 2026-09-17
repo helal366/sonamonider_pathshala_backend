@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma";
-import { IExistencePayload, IUserCount } from "./user.interface";
+import { prisma } from "../../lib/prisma.js";
+import { IExistencePayload, IUserCount } from "./user.interface.js";
 
 const userExistence = async ({
   role_name: role,

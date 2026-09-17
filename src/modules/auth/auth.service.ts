@@ -1,11 +1,11 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
-import { TLoginZodSchema } from "./auth.zod.schema";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
+import { TLoginZodSchema } from "./auth.zod.schema.js";
 import bcrypt from "bcryptjs";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
-import { jwtTokens } from "../../utils/jwtTokens";
-import { envVars } from "../../config";
+import { jwtTokens } from "../../utils/jwtTokens.js";
+import { envVars } from "../../config/index.js";
 
 const login = async (payload: TLoginZodSchema) => {
   const { user_name, user_password } = payload;

@@ -3,21 +3,21 @@ import crypto from "crypto";
 import ejs from "ejs";
 import path from "path";
 import bcrypt from "bcryptjs";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { envVars } from "../../config";
-import { prisma } from "../../lib/prisma";
-import { redisClient } from "../../lib/redis";
-import { transporter } from "../../lib/nodemailer";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { envVars } from "../../config/index.js";
+import { prisma } from "../../lib/prisma.js";
+import { redisClient } from "../../lib/redis.js";
+import { transporter } from "../../lib/nodemailer.js";
 import type {
   TResendOtpForgetPasswordPayload,
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
-} from "./email.zod.validation";
+} from "./email.zod.validation.js";
 import {
   createTemporaryPassword,
   sendVerificationResultEmail,
-} from "./email.helper.function";
+} from "./email.helper.function.js";
 
 // RESEND OTP EMAIL VERIFY
 const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {

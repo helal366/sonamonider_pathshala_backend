@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { clearCachePositions } from "../../helperFunctions/cachedData/cache_positions";
-import { prisma } from "../../lib/prisma";
-import { TCreatePositionZodSchema } from "./position.zod.validation";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { clearCachePositions } from "../../helperFunctions/cachedData/cache_positions.js";
+import { prisma } from "../../lib/prisma.js";
+import { TCreatePositionZodSchema } from "./position.zod.validation.js";
 
 const createPosition = async (payload: TCreatePositionZodSchema) => {
   const { position_name, role_name } = payload;

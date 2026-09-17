@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
-import { TLoginZodSchema } from "./auth.zod.schema";
-import { authServices } from "./auth.service";
-import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { TLoginZodSchema } from "./auth.zod.schema.js";
+import { authServices } from "./auth.service.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
-import { envVars } from "../../config";
+import { envVars } from "../../config/index.js";
 
 // USER LOGIN
 const login = catchAsync(

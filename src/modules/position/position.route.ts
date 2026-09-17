@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { positionController } from "./position.controller";
+import { positionController } from "./position.controller.js";
 import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
 import { createPositionZodSchema } from "./position.zod.validation.js";
-import { userAuth } from "../../middlewares/userAuth";
+import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();
 router.post(

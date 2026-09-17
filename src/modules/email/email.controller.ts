@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
+import { catchAsync } from "../../utils/catchAsync.js";
 import { StatusCodes } from "http-status-codes";
-import { sendResponse } from "../../utils/sendResponse";
-import { emailServices } from "./email.service";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { emailServices } from "./email.service.js";
 import type {
   TResendOtpForgetPasswordPayload,
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
-} from "./email.zod.validation";
+} from "./email.zod.validation.js";
 
 const resendOtpEmailVerify = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

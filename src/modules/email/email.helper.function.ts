@@ -1,10 +1,10 @@
 import crypto from "crypto";
 import ejs from "ejs";
 import path from "path";
-import { transporter } from "../../lib/nodemailer";
-import { envVars } from "../../config";
+import { transporter } from "../../lib/nodemailer.js";
+import { envVars } from "../../config/index.js";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 
 export const createTemporaryPassword = () => {
   const uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { roleController } from "./role.controller";
+import { roleController } from "./role.controller.js";
 import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
 import { createRoleZodSchema } from "./role.zod.validation.js";
 

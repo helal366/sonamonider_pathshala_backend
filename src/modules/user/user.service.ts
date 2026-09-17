@@ -1,21 +1,21 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { userHelperFunction } from "./user.helper.function";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { userHelperFunction } from "./user.helper.function.js";
 import {
   TChangePasswordPayload,
   TForgetPasswordPayload,
   TUserCreatePayload,
-} from "./user.zod.validation";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
-import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions";
-import { prisma } from "../../lib/prisma";
+} from "./user.zod.validation.js";
+import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
+import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions.js";
+import { prisma } from "../../lib/prisma.js";
 import crypto from "crypto";
-import { redisClient } from "../../lib/redis";
+import { redisClient } from "../../lib/redis.js";
 import path from "path";
 import ejs from "ejs";
 import bcrypt from "bcryptjs";
-import { transporter } from "../../lib/nodemailer";
-import { envVars } from "../../config";
+import { transporter } from "../../lib/nodemailer.js";
+import { envVars } from "../../config/index.js";
 
 // CREATE USER
 const createUser = async (payload: TUserCreatePayload) => {
