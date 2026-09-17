@@ -14,10 +14,10 @@ async function connectDB() {
     console.log("Connected to the database successfully.");
 
     await redisClient.connect();
-		console.log("Redis connected successfully.");
+    console.log("Redis connected successfully.");
 
     await transporter.verify();
-		console.log("Nodemailer connected successfully.")
+    console.log("Nodemailer connected successfully.");
 
     await prisma.$queryRaw`SELECT NOW()`;
     console.log("Database query successful.");
@@ -27,7 +27,7 @@ async function connectDB() {
 }
 connectDB();
 
-if (envVars.NODE_ENV !== "production") {
+if (!process.env.VERCEL && envVars.NODE_ENV !== "production") {
   const PORT = envVars.PORT || 5000;
   const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
