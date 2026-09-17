@@ -222,6 +222,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
+      cloudinary:
+        specifier: ^2.11.0
+        version: 2.11.0
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -2126,6 +2129,10 @@ packages:
 
   classnames@2.5.1:
     resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
+
+  cloudinary@2.11.0:
+    resolution: {integrity: sha512-o2pAkDDqrzPFE/mn9GCfFjBIGQmPs++Ts6rtkFl4vY528DNHiMovKWjH16HBjeGa9iwI7eAad24aWN2emT0aww==}
+    engines: {node: '>=9'}
 
   cluster-key-slot@1.1.2:
     resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
@@ -5306,6 +5313,10 @@ snapshots:
   cjs-module-lexer@1.2.3: {}
 
   classnames@2.5.1: {}
+
+  cloudinary@2.11.0:
+    dependencies:
+      lodash: 4.18.1
 
   cluster-key-slot@1.1.2: {}
 

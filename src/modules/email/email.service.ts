@@ -153,22 +153,43 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   });
 };
 
+// SEND FORGET PASSWORD OTP
 const sendForgetPasswordOtp = async ({
   email,
-  name,
-}: {
-  email: string;
-  name: string;
-}) => {
+}: TResendOtpForgetPasswordPayload) => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+    select: {
+      full_name: true,
+      email: true,
+      is_email_verified: true,
+    },
+  });
+
+  if (!user || !user.email) {
+    throw new AppError(
+      "No user found with this email address.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  if (!user.is_email_verified) {
+    throw new AppError(
+      "Please verify your email address before resetting the password.",
+      StatusCodes.FORBIDDEN,
+    );
+  }
+
   const expirationSeconds = 5 * 60;
   const otpValue = crypto.randomInt(100000, 1000000).toString();
-  const otpKey = `forget_password_otp:${email}`;
+  const otpKey = `forget_password_otp:${normalizedEmail}`;
   const templatePath = path.join(
     process.cwd(),
     "src/templates/forget_password_otp.ejs",
   );
   const html = await ejs.renderFile(templatePath, {
-    name,
+    name: user.full_name,
     OTP: otpValue,
     expirationMinutes: expirationSeconds / 60,
     year: new Date().getFullYear(),
@@ -184,7 +205,7 @@ const sendForgetPasswordOtp = async ({
   try {
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: email,
+      to: normalizedEmail,
       subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
       html,
     });
@@ -297,13 +318,13 @@ const resendOtpForgetPassword = async ({
 
   await sendForgetPasswordOtp({
     email: normalizedEmail,
-    name: user.full_name,
   });
 };
 
 export const emailServices = {
   resendOtpEmailVerify,
   verifyEmail,
+  sendForgetPasswordOtp,
   verifyForgetPassword,
   resendOtpForgetPassword,
 };

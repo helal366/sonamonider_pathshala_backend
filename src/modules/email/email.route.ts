@@ -10,6 +10,11 @@ import {
 
 const router = Router();
 router.post(
+  "/send_otp_forget_password",
+  validateZodSchema(resendOtpForgetPasswordZodSchema),
+  emailController.sendForgetPasswordOtp,
+);
+router.post(
   "/resend_otp_email_verify",
   validateZodSchema(resendOtpEmailZodSchema),
   emailController.resendOtpEmailVerify,

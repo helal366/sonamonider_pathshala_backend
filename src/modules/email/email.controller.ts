@@ -24,6 +24,21 @@ const resendOtpEmailVerify = catchAsync(
   },
 );
 
+const sendForgetPasswordOtp = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TResendOtpForgetPasswordPayload = req.body;
+
+    await emailServices.sendForgetPasswordOtp(payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        "A password reset verification code has been sent to your email address.",
+    });
+  },
+);
+
 const verifyEmail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TVerifyEmailPayload = req.body;
@@ -70,6 +85,7 @@ const resendOtpForgetPassword = catchAsync(
 );
 
 export const emailController = {
+  sendForgetPasswordOtp,
   resendOtpEmailVerify,
   verifyEmail,
   verifyForgetPassword,

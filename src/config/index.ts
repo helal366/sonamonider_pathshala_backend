@@ -12,15 +12,18 @@ interface IEnvVariables {
   JWT_REFRESH_EXPIRES_IN: string;
   BCRYPT_SALT_ROUND: string;
   APP_LOCAL_URL: string;
-  COMMON_PASSWORD:string;
-  SMTP_USERNAME:string;
-  EMAIL_SENDER:string;
-  EMAIL_SENDER_NAME:string;
-  SMTP_PASSWORD:string;
-  REDIS_USER_NAME:string;
-  REDIS_PASSWORD:string;
-  REDIS_HOST:string;
-  REDIS_PORT:string;
+  COMMON_PASSWORD: string;
+  SMTP_USERNAME: string;
+  EMAIL_SENDER: string;
+  EMAIL_SENDER_NAME: string;
+  SMTP_PASSWORD: string;
+  REDIS_USER_NAME: string;
+  REDIS_PASSWORD: string;
+  REDIS_HOST: string;
+  REDIS_PORT: string;
+  CLOUDINARY_CLOUD_NAME: string;
+  CLOUDINARY_API_KEY: string;
+  CLOUDINARY_API_SECRET: string;
 }
 const loadEnvVariables = (): IEnvVariables => {
   const envVars: string[] = [
@@ -42,7 +45,10 @@ const loadEnvVariables = (): IEnvVariables => {
     "REDIS_USER_NAME",
     "REDIS_PASSWORD",
     "REDIS_HOST",
-    "REDIS_PORT"
+    "REDIS_PORT",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET",
   ];
   for (const varName of envVars) {
     if (!process.env[varName]) {
@@ -68,7 +74,10 @@ const loadEnvVariables = (): IEnvVariables => {
     REDIS_USER_NAME: process.env.REDIS_USER_NAME as string,
     REDIS_PASSWORD: process.env.REDIS_PASSWORD as string,
     REDIS_HOST: process.env.REDIS_HOST as string,
-    REDIS_PORT: process.env.REDIS_PORT as string
-  }; 
+    REDIS_PORT: process.env.REDIS_PORT as string,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+  };
 };
 export const envVars = loadEnvVariables();
