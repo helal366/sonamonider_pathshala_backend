@@ -22,11 +22,11 @@ const createUser = async (payload: TUserCreatePayload) => {
   const { full_name, mobile_number, email, position_name, role_name, ...rest } =
     payload;
 
-  // make role and position to upper case
+  // Make role and position to upper case
   const cleanRole = role_name.trim().toUpperCase();
   const cleanPosition = position_name.trim().toUpperCase();
 
-  // check role validity
+  // Check role validity
   const roleExists = await findRoleExistence(cleanRole);
   if (!roleExists) {
     throw new AppError(
@@ -35,13 +35,13 @@ const createUser = async (payload: TUserCreatePayload) => {
     );
   }
 
-  // check that the position belongs to the requested role
+  // Check that the position belongs to the requested role
   const positionExists = await checkRolePositionPair({
     role_name: cleanRole,
     position_name: cleanPosition,
   });
 
-  // check user existence
+  // Check user existence
   const userExist = await userHelperFunction.userExistence({
     role_name: cleanRole,
     full_name,
@@ -54,7 +54,7 @@ const createUser = async (payload: TUserCreatePayload) => {
     );
   }
 
-  // create user name
+  // Create user name
   const userCount = await userHelperFunction.userCount({
     role_name: cleanRole,
     mobile_number,
@@ -82,7 +82,7 @@ const createUser = async (payload: TUserCreatePayload) => {
   };
   const html = await ejs.renderFile(templatePath, templateData);
 
-  // create user and management staff
+  // Create user and management staff
   const newUser = await prisma.user.create({
     data: {
       full_name,
@@ -111,7 +111,8 @@ const createUser = async (payload: TUserCreatePayload) => {
       },
     },
   });
-  // redis client set otp
+  
+  // Redis client set otp
   await redisClient.set(otpKey, otpValue, {
     expiration: {
       type: "EX",
@@ -119,8 +120,8 @@ const createUser = async (payload: TUserCreatePayload) => {
     },
   });
 
-  // congrats to new created user by email and send otp to verify email.
-  // set nodemailler transporter
+  // Congrats to new created user by email and send otp to verify email.
+  // Set nodemailler transporter
   try {
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}"  <${envVars.EMAIL_SENDER}>`,

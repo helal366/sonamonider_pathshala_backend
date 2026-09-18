@@ -11,7 +11,7 @@ const router = Router();
 router.post(
   "/create_user",
   validateZodSchema(userCreateZodSchema),
-  userController.createuser,
+  userController.createUser,
 );
 router.patch(
   "/change_password",

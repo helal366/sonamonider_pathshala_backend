@@ -9,7 +9,7 @@ import { userServices } from "./user.service.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 
-const createuser = catchAsync(
+const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TUserCreatePayload = req.body;
     const result = await userServices.createUser(payload);
@@ -51,7 +51,7 @@ const forgetPassword = catchAsync(
 );
 
 export const userController = {
-  createuser,
+  createUser,
   changePassword,
   forgetPassword,
 };

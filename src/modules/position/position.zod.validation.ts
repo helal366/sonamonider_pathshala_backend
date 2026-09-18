@@ -10,6 +10,7 @@ export const createPositionZodSchema = z4.object({
     })
     .trim()
     .toUpperCase(),
+    
   role_name: z4
     .string({
       error: (issue) =>

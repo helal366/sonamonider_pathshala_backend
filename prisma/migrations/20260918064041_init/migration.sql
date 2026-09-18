@@ -37,10 +37,26 @@ CREATE TABLE "academic_results" (
     "masters_result" TEXT,
     "kamil" TEXT,
     "staff_id" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "academic_results_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "audit_log" (
+    "audit_id" TEXT NOT NULL,
+    "entity_id" TEXT NOT NULL,
+    "entity_name" TEXT NOT NULL,
+    "old_value" JSONB,
+    "new_value" JSONB,
+    "action" "AuditAction" NOT NULL,
+    "changed_by_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "audit_log_pkey" PRIMARY KEY ("audit_id")
 );
 
 -- CreateTable
@@ -55,6 +71,8 @@ CREATE TABLE "father_details" (
     "mobile_no_1" TEXT,
     "mobile_no_2" TEXT,
     "mobile_no_3" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -90,6 +108,8 @@ CREATE TABLE "mother_details" (
     "mobile_no_1" TEXT,
     "mobile_no_2" TEXT,
     "mobile_no_3" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -113,6 +133,8 @@ CREATE TABLE "permanent_addresses" (
     "country" TEXT NOT NULL DEFAULT 'Bangladesh',
     "user_id" TEXT,
     "spouse_id" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -136,6 +158,8 @@ CREATE TABLE "present_addresses" (
     "country" TEXT NOT NULL DEFAULT 'Bangladesh',
     "user_id" TEXT,
     "spouse_id" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -155,6 +179,8 @@ CREATE TABLE "spouse_infromation" (
     "job_title" TEXT,
     "monthly_income" INTEGER,
     "staff_id" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -187,6 +213,8 @@ CREATE TABLE "users" (
     "position_id" TEXT,
     "father_details_id" TEXT,
     "mother_details_id" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -196,6 +224,8 @@ CREATE TABLE "user_positions" (
     "id" TEXT NOT NULL,
     "position_name" TEXT NOT NULL,
     "role_id" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -206,6 +236,8 @@ CREATE TABLE "user_positions" (
 CREATE TABLE "user_roles" (
     "id" TEXT NOT NULL,
     "role_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -230,6 +262,12 @@ CREATE TABLE "_roles_managements" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "academic_results_staff_id_key" ON "academic_results"("staff_id");
+
+-- CreateIndex
+CREATE INDEX "audit_log_changed_by_id_created_at_idx" ON "audit_log"("changed_by_id", "created_at");
+
+-- CreateIndex
+CREATE INDEX "audit_log_entity_name_entity_id_created_at_idx" ON "audit_log"("entity_name", "entity_id", "created_at");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "management_staffs_email_key" ON "management_staffs"("email");
@@ -280,6 +318,21 @@ CREATE INDEX "_roles_managements_B_index" ON "_roles_managements"("B");
 ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "audit_log" ADD CONSTRAINT "audit_log_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "management_staffs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "father_details" ADD CONSTRAINT "father_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "management_staffs" ADD CONSTRAINT "management_staffs_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -289,10 +342,22 @@ ALTER TABLE "management_staffs" ADD CONSTRAINT "management_staffs_current_positi
 ALTER TABLE "management_staffs" ADD CONSTRAINT "management_staffs_current_role_id_fkey" FOREIGN KEY ("current_role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_spouse_id_fkey" FOREIGN KEY ("spouse_id") REFERENCES "spouse_infromation"("spouse_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -301,7 +366,19 @@ ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_user_id_fkey" 
 ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_spouse_id_fkey" FOREIGN KEY ("spouse_id") REFERENCES "spouse_infromation"("spouse_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("role_name") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -316,7 +393,25 @@ ALTER TABLE "users" ADD CONSTRAINT "users_father_details_id_fkey" FOREIGN KEY ("
 ALTER TABLE "users" ADD CONSTRAINT "users_mother_details_id_fkey" FOREIGN KEY ("mother_details_id") REFERENCES "mother_details"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "user_positions" ADD CONSTRAINT "user_positions_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_positions" ADD CONSTRAINT "user_positions_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_positions" ADD CONSTRAINT "user_positions_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "management_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_managements_positions" ADD CONSTRAINT "_managements_positions_A_fkey" FOREIGN KEY ("A") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
