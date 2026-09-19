@@ -1,19 +1,25 @@
 import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 import {
   TChangePasswordPayload,
   TForgetPasswordPayload,
   TUserCreatePayload,
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
-import { sendResponse } from "../../utils/sendResponse.js";
-import { StatusCodes } from "http-status-codes";
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
+    }
+
     const payload: TUserCreatePayload = req.body;
-    const result = await userServices.createUser(payload);
-    console.log({ result });
+    const result = await userServices.createUser(payload, loggedInUser);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.CREATED,

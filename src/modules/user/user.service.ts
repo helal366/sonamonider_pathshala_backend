@@ -1,3 +1,4 @@
+import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { userHelperFunction } from "./user.helper.function.js";
@@ -18,7 +19,10 @@ import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
 
 // CREATE USER
-const createUser = async (payload: TUserCreatePayload) => {
+const createUser = async (
+  payload: TUserCreatePayload,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
   const { full_name, mobile_number, email, position_name, role_name, ...rest } =
     payload;
 
@@ -82,6 +86,18 @@ const createUser = async (payload: TUserCreatePayload) => {
   };
   const html = await ejs.renderFile(templatePath, templateData);
 
+  const actor = await prisma.managementStaff.findUnique({
+    where: { user_id: loggedInUser.user_id },
+    select: { id: true },
+  });
+
+  if (!actor) {
+    throw new AppError(
+      "Only management staff user not found.",
+      StatusCodes.FORBIDDEN,
+    );
+  }
+
   // Create user and management staff
   const newUser = await prisma.user.create({
     data: {
@@ -110,9 +126,32 @@ const createUser = async (payload: TUserCreatePayload) => {
         },
       },
     },
-    omit:{user_password: true}
+    omit: { user_password: true },
   });
-  
+
+  await prisma.managementStaff.update({
+    where: { id: actor.id },
+    data: {
+      audit_logs: {
+        create: [
+          {
+            entity_id: newUser.id,
+            entity_name: "User",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name,
+              mobile_number,
+              email,
+              role_name: cleanRole,
+              position_name: cleanPosition,
+            },
+            action: "CREATE",
+          },
+        ],
+      },
+    },
+  });
+
   // Redis client set otp
   await redisClient.set(otpKey, otpValue, {
     expiration: {
