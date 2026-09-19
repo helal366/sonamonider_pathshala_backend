@@ -12,7 +12,7 @@ const changeManagementStaffRole = catchAsync(
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
-      throw new AppError("Please login", StatusCodes.BAD_REQUEST);
+      throw new AppError("Please login management staff", StatusCodes.BAD_REQUEST);
     }
 
     const result = await managementStaffPatchServices.changeManagementStaffRole(

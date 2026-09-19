@@ -110,7 +110,10 @@ export const userAuth = (...requiredRoles: string[]) => {
     }
 
     const currentRole = user.role?.role_name;
-    if (!currentRole || currentRole !== payload.role_name) {
+    console.log("current role: ", currentRole);
+    console.log("required role: ", requiredRoles);
+
+    if (!currentRole) {
       sendResponse(res, {
         success: false,
         statusCode: StatusCodes.FORBIDDEN,
