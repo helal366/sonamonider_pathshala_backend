@@ -7,6 +7,7 @@ import { JwtPayload, SignOptions } from "jsonwebtoken";
 import { jwtTokens } from "../../utils/jwtTokens.js";
 import { envVars } from "../../config/index.js";
 
+// USER LOGIN
 const login = async (payload: TLoginZodSchema) => {
   const { user_name, user_password } = payload;
   const userExistence = await prisma.user.findUnique({

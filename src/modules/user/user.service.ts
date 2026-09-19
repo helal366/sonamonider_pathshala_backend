@@ -110,6 +110,7 @@ const createUser = async (payload: TUserCreatePayload) => {
         },
       },
     },
+    omit:{user_password: true}
   });
   
   // Redis client set otp

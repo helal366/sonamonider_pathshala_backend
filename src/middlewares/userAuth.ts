@@ -59,7 +59,7 @@ export const userAuth = (...requiredRoles: string[]) => {
       sendResponse(res, {
         success: false,
         statusCode: StatusCodes.UNAUTHORIZED,
-        message: "Authentication token is required.",
+        message: "Please login. Token not authenticated.",
       });
       return;
     }
@@ -97,14 +97,14 @@ export const userAuth = (...requiredRoles: string[]) => {
     });
 
     if (!user || user.is_deleted) {
-      throw new AppError("Please login again.", StatusCodes.UNAUTHORIZED);
+      throw new AppError("User account is Deleted.", StatusCodes.UNAUTHORIZED);
     }
 
     if (user.active_status === "INACTIVE") {
       sendResponse(res, {
         success: false,
         statusCode: StatusCodes.FORBIDDEN,
-        message: "User account is inactive.",
+        message: "User account is Inactive.",
       });
       return;
     }
