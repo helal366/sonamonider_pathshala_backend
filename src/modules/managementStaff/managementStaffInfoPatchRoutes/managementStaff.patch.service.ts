@@ -1,9 +1,16 @@
 import { StatusCodes } from "http-status-codes";
-import { checkRolePositionPair } from "../../../helperFunctions/cachedData/cache_positions.js";
+import {
+  checkRolePositionPair,
+  findPositionExistence,
+} from "../../../helperFunctions/cachedData/cache_positions.js";
 import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../../lib/prisma.js";
-import { TChangeManagementStaffRoleZodSchema } from "./managementStaff.patch.zod.validation.js";
+import {
+  TChangeManagementStaffPositionZodSchema,
+  TChangeManagementStaffRoleZodSchema,
+} from "./managementStaff.patch.zod.validation.js";
 
+// CHANGE ROLE
 const changeManagementStaffRole = async (
   payload: TChangeManagementStaffRoleZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -11,18 +18,6 @@ const changeManagementStaffRole = async (
   const { full_name, mobile_number, position_name, role_name } = payload;
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
-
-  const actor = await prisma.managementStaff.findUnique({
-    where: { user_id: loggedInUser.user_id },
-    select: { id: true },
-  });
-
-  if (!actor) {
-    throw new AppError(
-      "Only management staff user not found.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
 
   const existingRole = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
@@ -46,10 +41,12 @@ const changeManagementStaffRole = async (
     select: {
       id: true,
       current_role: { select: { role_name: true } },
+      current_position: { select: { position_name: true } },
       user_primary_data: {
         select: {
           id: true,
           role: { select: { role_name: true } },
+          position: { select: { position_name: true } },
         },
       },
     },
@@ -77,6 +74,9 @@ const changeManagementStaffRole = async (
         roles: {
           connect: { id: existingRole.id },
         },
+        positions: {
+          connect: { id: positionExists.id },
+        },
         current_position: {
           connect: { id: positionExists.id },
         },
@@ -95,7 +95,7 @@ const changeManagementStaffRole = async (
     });
 
     await transaction.managementStaff.update({
-      where: { id: actor.id },
+      where: { id: loggedInUser.user_id },
       data: {
         audit_logs: {
           create: [
@@ -103,9 +103,14 @@ const changeManagementStaffRole = async (
               entity_id: targetStaff.id,
               entity_name: "ManagementStaff",
               old_value: {
-                role_name: targetStaff.current_role?.role_name ?? null,
+                current_role_name: targetStaff.current_role?.role_name ?? null,
+                current_position_name:
+                  targetStaff.current_position?.position_name ?? null,
               },
-              new_value: { role_name: cleanRole },
+              new_value: {
+                current_role_name: cleanRole,
+                current_position_name: cleanPosition,
+              },
               action: "UPDATE",
             },
             {
@@ -114,8 +119,135 @@ const changeManagementStaffRole = async (
               old_value: {
                 role_name:
                   targetStaff.user_primary_data.role?.role_name ?? null,
+                position_name:
+                  targetStaff.user_primary_data.position?.position_name ?? null,
               },
-              new_value: { role_name: cleanRole },
+              new_value: {
+                role_name: cleanRole,
+                position_name: cleanPosition,
+              },
+              action: "UPDATE",
+            },
+          ],
+        },
+      },
+    });
+
+    return changedStaff;
+  });
+};
+
+// CHANGE POSITION
+const changeManagementStaffPosition = async (
+  payload: TChangeManagementStaffPositionZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { full_name, mobile_number, position_name } = payload;
+  const cleanPosition = position_name.trim().toUpperCase();
+
+  const positionExists = await findPositionExistence(cleanPosition);
+
+  if (!positionExists) {
+    throw new AppError(
+      `Provided Position: ${cleanPosition} is not a valid position`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const targetStaff = await prisma.managementStaff.findUnique({
+    where: {
+      management_full_name_mobile_unique: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: {
+      id: true,
+      current_position: { select: { position_name: true } },
+      current_role: { select: { role_name: true } },
+      positions: { select: { position_name: true } },
+      user_primary_data: {
+        select: {
+          id: true,
+          position: { select: { position_name: true } },
+          role: { select: { role_name: true } },
+        },
+      },
+    },
+  });
+
+  if (!targetStaff || !targetStaff.current_role) {
+    throw new AppError(
+      "The requested management staff does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  if (!targetStaff.user_primary_data) {
+    throw new AppError(
+      "The requested user does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const currentRoleName = targetStaff.current_role.role_name;
+
+  await checkRolePositionPair({
+    role_name: currentRoleName,
+    position_name: cleanPosition,
+  });
+  const previousPositions = targetStaff.positions.map(
+    (position) => position.position_name,
+  );
+
+  return prisma.$transaction(async (transaction) => {
+    const changedStaff = await transaction.managementStaff.update({
+      where: { id: targetStaff.id },
+      data: {
+        positions: {
+          connect: { id: positionExists.id },
+        },
+        current_position: {
+          connect: { id: positionExists.id },
+        },
+        user_primary_data: {
+          update: {
+            position: {
+              connect: { id: positionExists.id },
+            },
+          },
+        },
+      },
+      omit: { user_id: true },
+    });
+
+    await transaction.managementStaff.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: targetStaff.id,
+              entity_name: "ManagementStaff",
+              old_value: {
+                current_position_name:
+                  targetStaff.current_position?.position_name ?? null,
+                positions: previousPositions,
+              },
+              new_value: {
+                current_position_name: cleanPosition,
+                positions: [...previousPositions, cleanPosition],
+              },
+              action: "UPDATE",
+            },
+            {
+              entity_id: targetStaff.user_primary_data.id,
+              entity_name: "User",
+              old_value: {
+                position_name:
+                  targetStaff.user_primary_data.position?.position_name ?? null,
+              },
+              new_value: { position_name: cleanPosition },
               action: "UPDATE",
             },
           ],
@@ -129,4 +261,5 @@ const changeManagementStaffRole = async (
 
 export const managementStaffPatchServices = {
   changeManagementStaffRole,
+  changeManagementStaffPosition,
 };

@@ -7,7 +7,7 @@ import { userAuth } from "../../middlewares/userAuth.js";
 const router = Router();
 router.post(
   "/create_position",
-  // userAuth("SUPER_ADMIN"),
+  userAuth("SUPER_ADMIN"),
   validateZodSchema(createPositionZodSchema),
   positionController.createPosition,
 );
