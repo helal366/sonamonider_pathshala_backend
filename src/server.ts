@@ -7,12 +7,10 @@ import { transporter } from "./lib/nodemailer.js";
 
 async function connectDB() {
   try {
-    // console.log("Database Type:", typeof process.env.DATABASE_URL);
-    // console.log("Database Value:", process.env.DATABASE_URL);
-
+    
     await prisma.$connect();
     console.log("Connected to the database successfully.");
-
+    
     await redisClient.connect();
     console.log("Redis connected successfully.");
 

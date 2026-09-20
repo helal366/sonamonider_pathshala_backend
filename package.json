@@ -16,7 +16,8 @@
     "postinstall": "prisma generate",
     "vercel-build": "pnpm prisma generate && tsup",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "seed": "pnpm exec tsx src/utils/runSeed.ts"
   },
   "keywords": [],
   "author": "",

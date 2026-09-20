@@ -24,6 +24,10 @@ interface IEnvVariables {
   CLOUDINARY_CLOUD_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
+  SUPER_ADMIN_PASSWORD: string;
+  SUPER_ADMIN_MOBILE_NO:string;
+  SUPER_ADMIN_EMAIL:string;
+  SUPER_ADMIN_NAME: string
 }
 const loadEnvVariables = (): IEnvVariables => {
   const envVars: string[] = [
@@ -49,6 +53,10 @@ const loadEnvVariables = (): IEnvVariables => {
     "CLOUDINARY_CLOUD_NAME",
     "CLOUDINARY_API_KEY",
     "CLOUDINARY_API_SECRET",
+    "SUPER_ADMIN_PASSWORD",
+    "SUPER_ADMIN_MOBILE_NO",
+    "SUPER_ADMIN_EMAIL",
+    "SUPER_ADMIN_NAME"
   ];
   for (const varName of envVars) {
     if (!process.env[varName]) {
@@ -78,6 +86,10 @@ const loadEnvVariables = (): IEnvVariables => {
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+    SUPER_ADMIN_MOBILE_NO:process.env.SUPER_ADMIN_MOBILE_NO as string,
+    SUPER_ADMIN_EMAIL:process.env.SUPER_ADMIN_EMAIL as string,
+    SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME as string
   };
 };
 export const envVars = loadEnvVariables();
