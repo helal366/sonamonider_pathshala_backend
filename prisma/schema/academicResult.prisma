@@ -13,10 +13,10 @@ model AcademicResult {
   staff    ManagementStaff? @relation(fields: [staff_id], references: [id], onDelete: Cascade)
 
   created_by_id String?
-  created_by    ManagementStaff? @relation("academic_result_created_by", fields: [created_by_id], references: [id])
+  created_by    User?           @relation("academic_result_created_by", fields: [created_by_id], references: [id])
 
   updated_by_id String?
-  updated_by    ManagementStaff? @relation("academic_result_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?           @relation("academic_result_updated_by", fields: [updated_by_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

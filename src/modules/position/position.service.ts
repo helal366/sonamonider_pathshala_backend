@@ -7,24 +7,12 @@ import { TCreatePositionZodSchema } from "./position.zod.validation.js";
 
 const createPosition = async (
   payload: TCreatePositionZodSchema,
-  loggedInUser: NonNullable<Express.Request["user"]>,
+  loggedInUser: NonNullable<Express.Request["user"]> ,
 ) => {
   const { position_name, role_name } = payload;
 
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
-
-  const actor = await prisma.managementStaff.findUnique({
-    where: { user_id: loggedInUser.user_id },
-    select: { id: true },
-  });
-
-  if (!actor) {
-    throw new AppError(
-      "Only management staff user not found.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
 
   const existingPosition = await prisma.userPosition.findUnique({
     where: { position_name: cleanPosition },
@@ -56,13 +44,13 @@ const createPosition = async (
           connect: { id: existingRole.id },
         },
         created_by: {
-          connect: { id: actor.id },
+          connect: { id: loggedInUser.user_id },
         },
       },
     });
 
-    await transaction.managementStaff.update({
-      where: { id: actor.id },
+    await transaction.user.update({
+      where: { id: loggedInUser.user_id },
       data: {
         audit_logs: {
           create: [

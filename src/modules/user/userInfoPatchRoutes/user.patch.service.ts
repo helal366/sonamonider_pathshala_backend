@@ -19,6 +19,9 @@ const changeUserPosition = async (
       position: {
         connect: { id: positionExists.id },
       },
+      updated_by: {
+        connect: { id: loggedInUser.user_id },
+      },
     },
   });
 };

@@ -8,9 +8,9 @@ model UserRole {
   management_staff_roles    ManagementStaff[] @relation("roles_managements")
 
   created_by_id String?
-  created_by    ManagementStaff? @relation("role_created_by", fields: [created_by_id], references: [id])
+  created_by    User?           @relation("role_created_by", fields: [created_by_id], references: [id])
   updated_by_id String?
-  updated_by    ManagementStaff? @relation("role_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?           @relation("role_updated_by", fields: [updated_by_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

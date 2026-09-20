@@ -68,6 +68,9 @@ const changeManagementStaffRole = async (
     const changedStaff = await transaction.managementStaff.update({
       where: { id: targetStaff.id },
       data: {
+        updated_by: {
+          connect: { id: loggedInUser.user_id },
+        },
         current_role: {
           connect: { id: existingRole.id },
         },
@@ -88,13 +91,16 @@ const changeManagementStaffRole = async (
             position: {
               connect: { id: positionExists.id },
             },
+            updated_by: {
+              connect: { id: loggedInUser.user_id },
+            },
           },
         },
       },
       omit: { user_id: true },
     });
 
-    await transaction.managementStaff.update({
+    await transaction.user.update({
       where: { id: loggedInUser.user_id },
       data: {
         audit_logs: {
@@ -204,6 +210,9 @@ const changeManagementStaffPosition = async (
     const changedStaff = await transaction.managementStaff.update({
       where: { id: targetStaff.id },
       data: {
+        updated_by: {
+          connect: { id: loggedInUser.user_id },
+        },
         positions: {
           connect: { id: positionExists.id },
         },
@@ -215,13 +224,16 @@ const changeManagementStaffPosition = async (
             position: {
               connect: { id: positionExists.id },
             },
+            updated_by: {
+              connect: { id: loggedInUser.user_id },
+            },
           },
         },
       },
       omit: { user_id: true },
     });
 
-    await transaction.managementStaff.update({
+    await transaction.user.update({
       where: { id: loggedInUser.user_id },
       data: {
         audit_logs: {

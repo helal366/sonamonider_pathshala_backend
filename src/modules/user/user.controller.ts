@@ -10,6 +10,7 @@ import {
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
 
+// CREATE USER
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -29,6 +30,7 @@ const createUser = catchAsync(
   },
 );
 
+// CHANGE PASSWORD
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangePasswordPayload = req.body;
@@ -42,6 +44,7 @@ const changePassword = catchAsync(
   },
 );
 
+// FORGET PASSWORD
 const forgetPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TForgetPasswordPayload = req.body;

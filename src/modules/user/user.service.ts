@@ -21,7 +21,7 @@ import { envVars } from "../../config/index.js";
 // CREATE USER
 const createUser = async (
   payload: TUserCreatePayload,
-  loggedInUser: NonNullable<Express.Request["user"]>,
+  loggedInUser: NonNullable<Express.Request["user"]> ,
 ) => {
   const { full_name, mobile_number, email, position_name, role_name, ...rest } =
     payload;
@@ -86,73 +86,84 @@ const createUser = async (
   };
   const html = await ejs.renderFile(templatePath, templateData);
 
-  const actor = await prisma.managementStaff.findUnique({
-    where: { user_id: loggedInUser.user_id },
-    select: { id: true },
-  });
+  // const actor = await prisma.managementStaff.findUnique({
+  //   where: { user_id: loggedInUser.user_id },
+  //   select: { id: true },
+  // });
 
-  if (!actor) {
-    throw new AppError(
-      "Only management staff user not found.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
+  // if (!actor) {
+  //   throw new AppError(
+  //     "Only management staff user not found.",
+  //     StatusCodes.FORBIDDEN,
+  //   );
+  // }
 
   // Create user and management staff
-  const newUser = await prisma.user.create({
-    data: {
-      full_name,
-      mobile_number,
-      email,
-      ...rest,
-      user_name,
-      role: {
-        connect: { role_name: cleanRole },
-      },
-      position: {
-        connect: { id: positionExists.id },
-      },
-      management_staff_profile: {
-        create: {
-          full_name,
-          mobile_number,
-          email,
-          current_position: {
-            connect: { id: positionExists.id }, //connection require unique constraints
-          },
-          current_role: {
-            connect: { id: roleExists.id }, //connection require unique constraints
+  const newUser = prisma.$transaction(async (transaction) => {
+    const newUser = await transaction.user.create({
+      data: {
+        full_name,
+        mobile_number,
+        email,
+        ...rest,
+        user_name,
+        role: {
+          connect: { role_name: cleanRole },
+        },
+        position: {
+          connect: { id: positionExists.id },
+        },
+        created_by: {
+          connect: { id: loggedInUser.user_id },
+        },
+        management_staff_profile: {
+          create: {
+            full_name,
+            mobile_number,
+            email,
+            current_position: {
+              connect: { id: positionExists.id }, //connection require unique constraints
+            },
+            current_role: {
+              connect: { id: roleExists.id }, //connection require unique constraints
+            },
+            created_by: {
+              connect: { id: loggedInUser.user_id },
+            },
           },
         },
       },
-    },
-    omit: { user_password: true },
-  });
+      omit: { user_password: true },
+    });
+    
 
-  await prisma.managementStaff.update({
-    where: { id: actor.id },
-    data: {
-      audit_logs: {
-        create: [
-          {
-            entity_id: newUser.id,
-            entity_name: "User",
-            old_value: Prisma.JsonNull,
-            new_value: {
-              full_name,
-              mobile_number,
-              email,
-              role_name: cleanRole,
-              position_name: cleanPosition,
+    await prisma.user.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: newUser.id,
+              entity_name: "User",
+              old_value: Prisma.JsonNull,
+              new_value: {
+                full_name,
+                mobile_number,
+                email,
+                role_name: cleanRole,
+                position_name: cleanPosition,
+              },
+              action: "CREATE",
             },
-            action: "CREATE",
-          },
-        ],
+          ],
+        },
       },
-    },
+    });
+
+    return newUser
   });
 
-  // Redis client set otp
+  // Redis client set OTP
   await redisClient.set(otpKey, otpValue, {
     expiration: {
       type: "EX",
@@ -160,7 +171,7 @@ const createUser = async (
     },
   });
 
-  // Congrats to new created user by email and send otp to verify email.
+  // Congrats to new created user by Email and send OTP to verify Email.
   // Set nodemailler transporter
   try {
     await transporter.sendMail({
@@ -240,11 +251,30 @@ const changePassword = async ({
       user_password: hashedPassword,
     },
   });
-
+  // data: {
+  //     audit_logs: {
+  //       create: [
+  //         {
+  //           entity_id: newUser.id,
+  //           entity_name: "User",
+  //           old_value: Prisma.JsonNull,
+  //           new_value: {
+  //             full_name,
+  //             mobile_number,
+  //             email,
+  //             role_name: cleanRole,
+  //             position_name: cleanPosition,
+  //           },
+  //           action: "CREATE",
+  //         },
+  //       ],
+  //     },
+  //   },
   const templatePath = path.join(
     process.cwd(),
     "src/templates/change_password_success.ejs",
   );
+
   const html = await ejs.renderFile(templatePath, {
     name: user.full_name,
     password: new_password,
