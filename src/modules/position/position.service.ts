@@ -7,7 +7,7 @@ import { TCreatePositionZodSchema } from "./position.zod.validation.js";
 
 const createPosition = async (
   payload: TCreatePositionZodSchema,
-  loggedInUser: NonNullable<Express.Request["user"]> ,
+  loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   const { position_name, role_name } = payload;
 
@@ -36,7 +36,7 @@ const createPosition = async (
     );
   }
 
-  return prisma.$transaction(async (transaction) => {
+  const createdNewPosition = await prisma.$transaction(async (transaction) => {
     const createdNewPosition = await transaction.userPosition.create({
       data: {
         position_name: cleanPosition,
@@ -69,9 +69,11 @@ const createPosition = async (
       },
     });
 
-    clearCachePositions();
     return createdNewPosition;
   });
+
+  clearCachePositions();
+  return createdNewPosition;
 };
 
 export const positionServices = {

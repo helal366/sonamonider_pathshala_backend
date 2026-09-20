@@ -1,3 +1,4 @@
+import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
 import ejs from "ejs";
@@ -86,6 +87,7 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   const user = await prisma.user.findUnique({
     where: { email: normalizedEmail },
     select: {
+      id: true,
       full_name: true,
       mobile_number: true,
       email: true,
@@ -128,17 +130,45 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   const temporaryPassword = createTemporaryPassword();
   const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
-  await prisma.user.update({
-    where: {
-      user_full_name_mobile_unique: {
-        full_name: user.full_name,
-        mobile_number: user.mobile_number,
+  await prisma.$transaction(async (transaction) => {
+    await transaction.user.update({
+      where: {
+        user_full_name_mobile_unique: {
+          full_name: user.full_name,
+          mobile_number: user.mobile_number,
+        },
       },
-    },
-    data: {
-      is_email_verified: true,
-      user_password: hashedPassword,
-    },
+      data: {
+        is_email_verified: true,
+        user_password: hashedPassword,
+        updated_by: {
+          connect: { id: user.id },
+        },
+      },
+    });
+
+    await transaction.user.update({
+      where: { id: user.id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: user.id,
+              entity_name: "User",
+              old_value: {
+                is_email_verified: false,
+                password_set: false,
+              },
+              new_value: {
+                is_email_verified: true,
+                password_set: true,
+              },
+              action: "UPDATE",
+            },
+          ],
+        },
+      },
+    });
   });
 
   await redisClient.del(otpKey);
@@ -217,7 +247,7 @@ const sendForgetPasswordOtp = async ({
 };
 
 // FORGET PASSWORD VERIFY EMAIL
-const verifyForgetPassword = async ({
+const verifyEmailForgetPassword = async ({
   email,
   otp,
 }: TVerifyForgetPasswordPayload) => {
@@ -225,6 +255,7 @@ const verifyForgetPassword = async ({
   const user = await prisma.user.findUnique({
     where: { email: normalizedEmail },
     select: {
+      id: true,
       full_name: true,
       mobile_number: true,
       email: true,
@@ -265,16 +296,38 @@ const verifyForgetPassword = async ({
   const newPassword = createTemporaryPassword();
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  await prisma.user.update({
-    where: {
-      user_full_name_mobile_unique: {
-        full_name: user.full_name,
-        mobile_number: user.mobile_number,
+  await prisma.$transaction(async (transaction) => {
+    await transaction.user.update({
+      where: {
+        user_full_name_mobile_unique: {
+          full_name: user.full_name,
+          mobile_number: user.mobile_number,
+        },
       },
-    },
-    data: {
-      user_password: hashedPassword,
-    },
+      data: {
+        user_password: hashedPassword,
+        updated_by: {
+          connect: { id: user.id },
+        },
+      },
+    });
+
+    await transaction.user.update({
+      where: { id: user.id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: user.id,
+              entity_name: "User",
+              old_value: Prisma.JsonNull,
+              new_value: { password_reset: true },
+              action: "UPDATE",
+            },
+          ],
+        },
+      },
+    });
   });
 
   await redisClient.del(otpKey);
@@ -325,6 +378,6 @@ export const emailServices = {
   resendOtpEmailVerify,
   verifyEmail,
   sendForgetPasswordOtp,
-  verifyForgetPassword,
+  verifyEmailForgetPassword,
   resendOtpForgetPassword,
 };

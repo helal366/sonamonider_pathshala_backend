@@ -7,7 +7,7 @@ import { TCreateRoleZodSchema } from "./role.zod.validation.js";
 
 const createRole = async (
   payload: TCreateRoleZodSchema,
-  loggedInUser: NonNullable<Express.Request["user"]> ,
+  loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   const { role_name } = payload;
   const cleanRole = role_name.trim().toUpperCase();
@@ -23,7 +23,7 @@ const createRole = async (
     );
   }
 
-  return prisma.$transaction(async (transaction) => {
+  const createdNewRole = await prisma.$transaction(async (transaction) => {
     const createdNewRole = await transaction.userRole.create({
       data: {
         role_name: cleanRole,
@@ -52,9 +52,11 @@ const createRole = async (
       },
     });
 
-    clearCacheRoles();
     return createdNewRole;
   });
+
+  clearCacheRoles();
+  return createdNewRole;
 };
 
 export const roleServices = {

@@ -19,19 +19,27 @@ import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
 
 // CREATE USER
+
 const createUser = async (
   payload: TUserCreatePayload,
-  loggedInUser: NonNullable<Express.Request["user"]> ,
+  loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { full_name, mobile_number, email, position_name, role_name, ...rest } =
-    payload;
+  // 1. Extract + normalize
+  const {
+    full_name,
+    mobile_number,
+    email,
+    position_name,
+    role_name,
+    ...rest
+  } = payload;
 
-  // Make role and position to upper case
   const cleanRole = role_name.trim().toUpperCase();
   const cleanPosition = position_name.trim().toUpperCase();
 
-  // Check role validity
+  // 2. Validate role
   const roleExists = await findRoleExistence(cleanRole);
+
   if (!roleExists) {
     throw new AppError(
       `Provided Role: ${cleanRole} is not a valid role.`,
@@ -39,18 +47,19 @@ const createUser = async (
     );
   }
 
-  // Check that the position belongs to the requested role
+  // 3. Validate role-position relationship
   const positionExists = await checkRolePositionPair({
     role_name: cleanRole,
     position_name: cleanPosition,
   });
 
-  // Check user existence
+  // 4. Check duplicate
   const userExist = await userHelperFunction.userExistence({
     role_name: cleanRole,
     full_name,
     mobile_number,
   });
+
   if (userExist) {
     throw new AppError(
       `User already exists with Name: ${full_name}, Mobile number: ${mobile_number} and Role: ${cleanRole}`,
@@ -58,94 +67,78 @@ const createUser = async (
     );
   }
 
-  // Create user name
+  // 5. Generate username
   const userCount = await userHelperFunction.userCount({
     role_name: cleanRole,
     mobile_number,
   });
-  let user_name = mobile_number;
-  if (userCount !== 0) {
-    user_name = `${mobile_number}-${userCount + 1}`;
-  }
 
-  // Generate OTP and structure configurations
-  const expirationSeconds = 5 * 60;
-  const otpKey = `new_user_welcome_otp:${email}`;
-  const otpValue = crypto.randomInt(100000, 1000000).toString();
+  const user_name =
+    userCount === 0
+      ? mobile_number
+      : `${mobile_number}-${userCount + 1}`;
 
-  // Compile EJS template outside or inside transaction safely
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/create_user_email_verify.ejs",
-  );
-  const templateData = {
-    name: full_name,
-    OTP: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-    year: new Date().getFullYear(),
-  };
-  const html = await ejs.renderFile(templatePath, templateData);
-
-  // const actor = await prisma.managementStaff.findUnique({
-  //   where: { user_id: loggedInUser.user_id },
-  //   select: { id: true },
-  // });
-
-  // if (!actor) {
-  //   throw new AppError(
-  //     "Only management staff user not found.",
-  //     StatusCodes.FORBIDDEN,
-  //   );
-  // }
-
-  // Create user and management staff
-  const newUser = prisma.$transaction(async (transaction) => {
-    const newUser = await transaction.user.create({
+  // 6. Create DB records atomically
+  const newUser = await prisma.$transaction(async (transaction) => {
+    const createdUser = await transaction.user.create({
       data: {
         full_name,
         mobile_number,
         email,
         ...rest,
         user_name,
+
         role: {
           connect: { role_name: cleanRole },
         },
+
         position: {
           connect: { id: positionExists.id },
         },
+
         created_by: {
           connect: { id: loggedInUser.user_id },
         },
+
         management_staff_profile: {
           create: {
             full_name,
             mobile_number,
             email,
+
             current_position: {
-              connect: { id: positionExists.id }, //connection require unique constraints
+              connect: { id: positionExists.id },
             },
+
             current_role: {
-              connect: { id: roleExists.id }, //connection require unique constraints
+              connect: { id: roleExists.id },
             },
+
             created_by: {
               connect: { id: loggedInUser.user_id },
             },
           },
         },
       },
-      omit: { user_password: true },
-    });
-    
 
-    await prisma.user.update({
-      where: { id: loggedInUser.user_id },
+      omit: {
+        user_password: true,
+      },
+    });
+
+    await transaction.user.update({
+      where: {
+        id: loggedInUser.user_id,
+      },
+
       data: {
         audit_logs: {
           create: [
             {
-              entity_id: newUser.id,
+              entity_id: createdUser.id,
               entity_name: "User",
               old_value: Prisma.JsonNull,
+
               new_value: {
                 full_name,
                 mobile_number,
@@ -153,6 +146,7 @@ const createUser = async (
                 role_name: cleanRole,
                 position_name: cleanPosition,
               },
+
               action: "CREATE",
             },
           ],
@@ -160,10 +154,17 @@ const createUser = async (
       },
     });
 
-    return newUser
+    return createdUser;
   });
 
-  // Redis client set OTP
+  // 7. Generate OTP after DB success
+  const expirationSeconds = 5 * 60;
+  const otpKey = `new_user_welcome_otp:${email}`;
+  const otpValue = crypto
+    .randomInt(100000, 1000000)
+    .toString();
+
+  // 8. Store OTP
   await redisClient.set(otpKey, otpValue, {
     expiration: {
       type: "EX",
@@ -171,31 +172,49 @@ const createUser = async (
     },
   });
 
-  // Congrats to new created user by Email and send OTP to verify Email.
-  // Set nodemailler transporter
+  // 9. Render email
+  const templatePath = path.join(
+    process.cwd(),
+    "src/templates/create_user_email_verify.ejs",
+  );
+
+  const html = await ejs.renderFile(templatePath, {
+    name: full_name,
+    OTP: otpValue,
+    expirationMinutes: expirationSeconds / 60,
+    year: new Date().getFullYear(),
+  });
+
+  // 10. Send email
   try {
     await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}"  <${envVars.EMAIL_SENDER}>`,
+      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: email,
-      subject: `Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address`,
+      subject:
+        "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
       html,
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to send email.";
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
+      error instanceof Error
+        ? error.message
+        : "Failed to send email.";
+
+    throw new AppError(
+      message,
+      StatusCodes.BAD_REQUEST,
+    );
   }
 
   return newUser;
 };
 
 // CHANGE PASSWORD
-const changePassword = async ({
-  full_name,
-  mobile_number,
-  current_password,
-  new_password,
-}: TChangePasswordPayload) => {
+const changePassword = async (
+  payload: TChangePasswordPayload,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { full_name, mobile_number, current_password, new_password } = payload;
   const user = await prisma.user.findUnique({
     where: {
       user_full_name_mobile_unique: {
@@ -204,6 +223,7 @@ const changePassword = async ({
       },
     },
     select: {
+      id: true,
       user_password: true,
       email: true,
       full_name: true,
@@ -239,37 +259,34 @@ const changePassword = async ({
     new_password,
     Number(envVars.BCRYPT_SALT_ROUND),
   );
-
-  await prisma.user.update({
-    where: {
-      user_full_name_mobile_unique: {
-        full_name,
-        mobile_number,
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: user.id },
+      data: {
+        user_password: hashedPassword,
+        updated_by: {
+          connect: { id: loggedInUser.user_id },
+        },
       },
-    },
-    data: {
-      user_password: hashedPassword,
-    },
+    });
+
+    await tx.user.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: user.id,
+              entity_name: "User",
+              old_value: Prisma.JsonNull,
+              new_value: { password_changed: true },
+              action: "UPDATE",
+            },
+          ],
+        },
+      },
+    });
   });
-  // data: {
-  //     audit_logs: {
-  //       create: [
-  //         {
-  //           entity_id: newUser.id,
-  //           entity_name: "User",
-  //           old_value: Prisma.JsonNull,
-  //           new_value: {
-  //             full_name,
-  //             mobile_number,
-  //             email,
-  //             role_name: cleanRole,
-  //             position_name: cleanPosition,
-  //           },
-  //           action: "CREATE",
-  //         },
-  //       ],
-  //     },
-  //   },
   const templatePath = path.join(
     process.cwd(),
     "src/templates/change_password_success.ejs",

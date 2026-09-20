@@ -27,7 +27,7 @@ router.post(
 router.post(
   "/verify_forget_password",
   validateZodSchema(verifyForgetPasswordZodSchema),
-  emailController.verifyForgetPassword,
+  emailController.verifyEmailForgetPassword,
 );
 router.post(
   "/resend_otp_forget_password",

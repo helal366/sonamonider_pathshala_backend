@@ -20,7 +20,7 @@
 * ADMIN and SUPER_ADMIN can see any class's class routine and any teacher's class routine.
 
 ## Class scheduling/timimg:
-**SPECIAL PERIODS: **
+**QURANIC PERIODS: **
 1. NURANI_MORNING: 07:00 to 08:00
 2. HIFZ_MORNING: 06:00 to 08:00
 3. NURANI_EVENING: 15:00 to 17:00

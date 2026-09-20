@@ -110,8 +110,8 @@ export const userAuth = (...requiredRoles: string[]) => {
     }
 
     const currentRole = user.role?.role_name;
-    console.log("current role: ", currentRole);
-    console.log("required role: ", requiredRoles);
+    // console.log("current role: ", currentRole);
+    // console.log("required role: ", requiredRoles);
 
     if (!currentRole) {
       sendResponse(res, {

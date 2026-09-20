@@ -34,7 +34,13 @@ const createUser = catchAsync(
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangePasswordPayload = req.body;
-    await userServices.changePassword(payload);
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
+    }
+
+    await userServices.changePassword(payload, loggedInUser);
 
     sendResponse(res, {
       success: true,

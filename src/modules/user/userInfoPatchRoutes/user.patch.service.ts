@@ -13,16 +13,41 @@ const changeUserPosition = async (
     position_name: cleanPosition,
   });
 
-  return prisma.user.update({
-    where: { id: loggedInUser.user_id },
-    data: {
-      position: {
-        connect: { id: positionExists.id },
+  return prisma.$transaction(async (transaction) => {
+    const updatedUser = await transaction.user.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        position: {
+          connect: { id: positionExists.id },
+        },
+        updated_by: {
+          connect: { id: loggedInUser.user_id },
+        },
       },
-      updated_by: {
-        connect: { id: loggedInUser.user_id },
+    });
+
+    await transaction.user.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: loggedInUser.user_id,
+              entity_name: "User",
+              old_value: {
+                position_name: loggedInUser.position_name || null,
+              },
+              new_value: {
+                position_name: cleanPosition,
+              },
+              action: "UPDATE",
+            },
+          ],
+        },
       },
-    },
+    });
+
+    return updatedUser;
   });
 };
 

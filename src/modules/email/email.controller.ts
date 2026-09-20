@@ -54,11 +54,11 @@ const verifyEmail = catchAsync(
   },
 );
 
-const verifyForgetPassword = catchAsync(
+const verifyEmailForgetPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TVerifyForgetPasswordPayload = req.body;
 
-    await emailServices.verifyForgetPassword(payload);
+    await emailServices.verifyEmailForgetPassword(payload);
 
     sendResponse(res, {
       success: true,
@@ -88,6 +88,6 @@ export const emailController = {
   sendForgetPasswordOtp,
   resendOtpEmailVerify,
   verifyEmail,
-  verifyForgetPassword,
+  verifyEmailForgetPassword,
   resendOtpForgetPassword,
 };
