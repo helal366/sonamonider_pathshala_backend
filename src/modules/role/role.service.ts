@@ -155,7 +155,8 @@ const updatedRole = await prisma.$transaction(
   clearCacheRoles();
 
   return updatedRole;
-}
+};
+
 export const roleServices = {
   createRole,
   updateRole

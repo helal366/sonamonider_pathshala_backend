@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { catchAsync } from "../../../utils/catchAsync.js";
-import { sendResponse } from "../../../utils/sendResponse.js";
-import { managementStaffPatchServices } from "./managementStaff.patch.service.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { managementStaffPatchServices } from "./managementStaff.service.js";
 import {
   TChangeManagementStaffPositionZodSchema,
   TChangeManagementStaffRoleZodSchema,
-} from "./managementStaff.patch.zod.validation.js";
+} from "./managementStaff.zod.validation.js";
 
 const changeManagementStaffRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -15,10 +15,7 @@ const changeManagementStaffRole = catchAsync(
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
-      throw new AppError(
-        "Please login.",
-        StatusCodes.BAD_REQUEST,
-      );
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
     const result = await managementStaffPatchServices.changeManagementStaffRole(
@@ -35,7 +32,6 @@ const changeManagementStaffRole = catchAsync(
   },
 );
 
-
 // CHANGE POSITION
 const changeManagementStaffPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -43,10 +39,7 @@ const changeManagementStaffPosition = catchAsync(
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
-      throw new AppError(
-        "Please login.",
-        StatusCodes.BAD_REQUEST,
-      );
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
     const result =

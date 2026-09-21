@@ -2,13 +2,13 @@ import { StatusCodes } from "http-status-codes";
 import {
   checkRolePositionPair,
   findPositionExistence,
-} from "../../../helperFunctions/cachedData/cache_positions.js";
-import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { prisma } from "../../../lib/prisma.js";
+} from "../../helperFunctions/cachedData/cache_positions.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
 import {
   TChangeManagementStaffPositionZodSchema,
   TChangeManagementStaffRoleZodSchema,
-} from "./managementStaff.patch.zod.validation.js";
+} from "./managementStaff.zod.validation.js";
 
 // CHANGE ROLE
 const changeManagementStaffRole = async (

@@ -10,7 +10,8 @@ import { positionRouter } from "./modules/position/position.route.js";
 import { authRouter } from "./modules/auth/auth.route.js";
 import { emailRouter } from "./modules/email/email.route.js";
 import { userPatchRouter } from "./modules/user/userInfoPatchRoutes/user.patch.route.js";
-import { managementStaffPatchRouter } from "./modules/managementStaff/managementStaffInfoPatchRoutes/managementStaff.patch.route.js";
+import { managementStaffPatchRouter } from "./modules/managementStaff/managementStaff.route.js";
+import { fatherDetailsRouter } from "./modules/fatherDetails/fatherDetails.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use("/api/v1/smps/user_patch", userPatchRouter);
 app.use("/api/v1/smps/management_staff_patch", managementStaffPatchRouter);
 app.use("/api/v1/smps/position", positionRouter);
 app.use("/api/v1/smps/role", roleRouter);
+app.use("/api/v1/smps/father_details", fatherDetailsRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

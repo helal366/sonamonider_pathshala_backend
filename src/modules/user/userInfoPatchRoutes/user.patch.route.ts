@@ -7,7 +7,7 @@ import { changeUserPositionZodSchema } from "./user.patch.zod.validation.js";
 const router = Router();
 
 router.patch(
-  "/change_position",
+  "/change_user_position",
   userAuth("SUPER_ADMIN"),
   validateZodSchema(changeUserPositionZodSchema),
   userPatchController.changeUserPosition,

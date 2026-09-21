@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { userAuth } from "../../../middlewares/userAuth.js";
-import { validateZodSchema } from "../../../middlewares/validate.zod.schema.js";
-import { managementStaffPatchController } from "./managementStaff.patch.controller.js";
+import { userAuth } from "../../middlewares/userAuth.js";
+import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { managementStaffPatchController } from "./managementStaff.controller.js";
 import {
   changeManagementStaffPositionZodSchema,
   changeManagementStaffRoleZodSchema,
-} from "./managementStaff.patch.zod.validation.js";
+} from "./managementStaff.zod.validation.js";
 
 const router = Router();
 

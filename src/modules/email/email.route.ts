@@ -10,9 +10,9 @@ import {
 
 const router = Router();
 router.post(
-  "/send_otp_forget_password",
-  validateZodSchema(resendOtpForgetPasswordZodSchema),
-  emailController.sendForgetPasswordOtp,
+  "/verify_email",
+  validateZodSchema(verifyEmailZodSchema),
+  emailController.verifyEmail,
 );
 router.post(
   "/resend_otp_email_verify",
@@ -20,18 +20,19 @@ router.post(
   emailController.resendOtpEmailVerify,
 );
 router.post(
-  "/verify_email",
-  validateZodSchema(verifyEmailZodSchema),
-  emailController.verifyEmail,
-);
-router.post(
-  "/verify_forget_password",
-  validateZodSchema(verifyForgetPasswordZodSchema),
-  emailController.verifyEmailForgetPassword,
+  "/send_otp_forget_password",
+  validateZodSchema(resendOtpForgetPasswordZodSchema),
+  emailController.sendForgetPasswordOtp,
 );
 router.post(
   "/resend_otp_forget_password",
   validateZodSchema(resendOtpForgetPasswordZodSchema),
   emailController.resendOtpForgetPassword,
 );
+router.post(
+  "/verify_email_forget_password",
+  validateZodSchema(verifyForgetPasswordZodSchema),
+  emailController.verifyEmailForgetPassword,
+);
+
 export const emailRouter: Router = router;
