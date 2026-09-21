@@ -19,7 +19,6 @@ import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
 
 // CREATE USER
-
 const createUser = async (
   payload: TUserCreatePayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -286,6 +285,8 @@ const changePassword = async (
         },
       },
     });
+  }, {
+    timeout: 15000
   });
   const templatePath = path.join(
     process.cwd(),
