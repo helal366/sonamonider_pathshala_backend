@@ -1,14 +1,22 @@
+import { StatusCodes } from "http-status-codes";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { prisma } from "../../lib/prisma";
+import {
+  TUpdateFatherEducationalQualificationZodSchema,
+  TUpdateFatherJobTitleZodSchema,
+  TUpdateFatherMobileNo1ZodSchema,
+  TUpdateFatherMobileNo2ZodSchema,
+  TUpdateFatherMobileNo3ZodSchema,
+  TUpdateFatherMonthlyIncomeZodSchema,
+  TUpdateFatherNameZodSchema,
+  TUpdateFatherNidZodSchema,
+  TUpdateFatherOccupationZodSchema,
+} from "./fatherDetails.zod.validation";
+import { EducationDegree } from "#db-client";
 
 // ======================================================
 // UPDATE FATHER NAME
 // ======================================================
-
-import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
-import { TUpdateFatherEducationalQualificationZodSchema, TUpdateFatherJobTitleZodSchema, TUpdateFatherMobileNo1ZodSchema, TUpdateFatherMobileNo2ZodSchema, TUpdateFatherMobileNo3ZodSchema, TUpdateFatherMonthlyIncomeZodSchema, TUpdateFatherNameZodSchema, TUpdateFatherNidZodSchema, TUpdateFatherOccupationZodSchema } from "./fatherDetails.zod.validation";
-import { EducationDegree } from "#db-client";
-
 const updateFatherName = async (
   payload: TUpdateFatherNameZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -39,41 +47,36 @@ const updateFatherName = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        father_name: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      father_name: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            father_name,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          father_name,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -144,41 +147,36 @@ const updateFatherNid = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        nid_no: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      nid_no: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            nid_no,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          nid_no,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -249,41 +247,36 @@ const updateFatherOccupation = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        occupation: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      occupation: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            occupation,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          occupation,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -354,41 +347,36 @@ const updateFatherJobTitle = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        job_title: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      job_title: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            job_title,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          job_title,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -459,42 +447,37 @@ const updateFatherEducationalQualification = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        educational_qualification: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      educational_qualification: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            educational_qualification:
-              educational_qualification as EducationDegree | null,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          educational_qualification:
+            educational_qualification as EducationDegree | null,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -566,41 +549,36 @@ const updateFatherMonthlyIncome = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        monthly_income: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      monthly_income: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            monthly_income,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          monthly_income,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -614,8 +592,7 @@ const updateFatherMonthlyIncome = async (
                 entity_name: "FatherDetails",
                 old_value: {
                   user_id,
-                  monthly_income:
-                    existingFatherDetails.monthly_income,
+                  monthly_income: existingFatherDetails.monthly_income,
                 },
                 new_value: {
                   user_id,
@@ -672,41 +649,36 @@ const updateFatherMobileNo1 = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        mobile_no_1: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      mobile_no_1: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            mobile_no_1,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          mobile_no_1,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -720,8 +692,7 @@ const updateFatherMobileNo1 = async (
                 entity_name: "FatherDetails",
                 old_value: {
                   user_id,
-                  mobile_no_1:
-                    existingFatherDetails.mobile_no_1,
+                  mobile_no_1: existingFatherDetails.mobile_no_1,
                 },
                 new_value: {
                   user_id,
@@ -778,41 +749,36 @@ const updateFatherMobileNo2 = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        mobile_no_2: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      mobile_no_2: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            mobile_no_2,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          mobile_no_2,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -826,8 +792,7 @@ const updateFatherMobileNo2 = async (
                 entity_name: "FatherDetails",
                 old_value: {
                   user_id,
-                  mobile_no_2:
-                    existingFatherDetails.mobile_no_2,
+                  mobile_no_2: existingFatherDetails.mobile_no_2,
                 },
                 new_value: {
                   user_id,
@@ -884,41 +849,36 @@ const updateFatherMobileNo3 = async (
     );
   }
 
-  const existingFatherDetails =
-    await prisma.fatherDetails.findUnique({
-      where: {
-        id: targetUser.father_details_id,
-      },
-      select: {
-        id: true,
-        mobile_no_3: true,
-      },
-    });
+  const existingFatherDetails = await prisma.fatherDetails.findUnique({
+    where: {
+      id: targetUser.father_details_id,
+    },
+    select: {
+      id: true,
+      mobile_no_3: true,
+    },
+  });
 
   if (!existingFatherDetails) {
-    throw new AppError(
-      "Father details do not exist.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Father details do not exist.", StatusCodes.NOT_FOUND);
   }
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const updatedFatherDetails =
-        await transaction.fatherDetails.update({
-          where: {
-            id: existingFatherDetails.id,
-          },
-          data: {
-            mobile_no_3,
+      const updatedFatherDetails = await transaction.fatherDetails.update({
+        where: {
+          id: existingFatherDetails.id,
+        },
+        data: {
+          mobile_no_3,
 
-            updated_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          updated_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
       await transaction.user.update({
         where: {
@@ -932,8 +892,7 @@ const updateFatherMobileNo3 = async (
                 entity_name: "FatherDetails",
                 old_value: {
                   user_id,
-                  mobile_no_3:
-                    existingFatherDetails.mobile_no_3,
+                  mobile_no_3: existingFatherDetails.mobile_no_3,
                 },
                 new_value: {
                   user_id,
@@ -961,7 +920,6 @@ const updateFatherMobileNo3 = async (
 // ======================================================
 
 export const fatherDetailsPatchServices = {
-
   updateFatherName,
   updateFatherNid,
   updateFatherOccupation,

@@ -3,15 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
-  TUpdateFatherNameZodSchema,
-  TUpdateFatherNidZodSchema,
-  TUpdateFatherOccupationZodSchema,
-  TUpdateFatherJobTitleZodSchema,
-  TUpdateFatherEducationalQualificationZodSchema,
-  TUpdateFatherMonthlyIncomeZodSchema,
-  TUpdateFatherMobileNo1ZodSchema,
-  TUpdateFatherMobileNo2ZodSchema,
-  TUpdateFatherMobileNo3ZodSchema,
   TDisconnectFatherDetailsZodSchema,
 } from "./fatherDetails.zod.validation";
 

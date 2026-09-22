@@ -1,9 +1,8 @@
 import { Router } from "express";
-
 import { fatherDetailsController } from "./fatherDetails.controller";
-
 import { validateZodSchema } from "../../middlewares/validate.zod.schema";
-
+import { userAuth } from "../../middlewares/userAuth";
+import { fatherDetailsPatchController } from "./fatherDetails.patch.controller";
 import {
   connectFatherDetailsZodSchema,
   createFatherDetailsZodSchema,
@@ -18,12 +17,12 @@ import {
   updateFatherMobileNo3ZodSchema,
   disconnectFatherDetailsZodSchema,
 } from "./fatherDetails.zod.validation";
+import { fatherDetailsDeleteController } from "./fatherDetails.delete.controller";
 
-import { userAuth } from "../../middlewares/userAuth";
-import { fatherDetailsPatchController } from "./fatherDetails.patch.controller";
 
 const router = Router();
 
+// CREATE FATHER DETAILS
 router.post(
   "/create_father_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -31,6 +30,7 @@ router.post(
   fatherDetailsController.createFatherDetails,
 );
 
+// CONNECT FATHER DETAILS
 router.post(
   "/connect_father_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -116,6 +116,102 @@ router.patch(
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
   validateZodSchema(updateFatherMobileNo3ZodSchema),
   fatherDetailsPatchController.updateFatherMobileNo3,
+);
+
+
+// ======================================================
+// DELETE FATHER NID
+// ======================================================
+
+router.delete(
+  "/delete_father_nid",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherNid,
+);
+
+
+// ======================================================
+// DELETE FATHER OCCUPATION
+// ======================================================
+
+router.delete(
+  "/delete_father_occupation",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherOccupation,
+);
+
+
+// ======================================================
+// DELETE FATHER JOB TITLE
+// ======================================================
+
+router.delete(
+  "/delete_father_job_title",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherJobTitle,
+);
+
+
+// ======================================================
+// DELETE FATHER EDUCATIONAL QUALIFICATION
+// ======================================================
+
+router.delete(
+  "/delete_father_educational_qualification",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherEducationalQualification,
+);
+
+
+// ======================================================
+// DELETE FATHER MONTHLY INCOME
+// ======================================================
+
+router.delete(
+  "/delete_father_monthly_income",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherMonthlyIncome,
+);
+
+
+// ======================================================
+// DELETE FATHER MOBILE NO 1
+// ======================================================
+
+router.delete(
+  "/delete_father_mobile_no_1",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherMobileNo1,
+);
+
+
+// ======================================================
+// DELETE FATHER MOBILE NO 2
+// ======================================================
+
+router.delete(
+  "/delete_father_mobile_no_2",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherMobileNo2,
+);
+
+
+// ======================================================
+// DELETE FATHER MOBILE NO 3
+// ======================================================
+
+router.delete(
+  "/delete_father_mobile_no_3",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(disconnectFatherDetailsZodSchema),
+  fatherDetailsDeleteController.deleteFatherMobileNo3,
 );
 
 export const fatherDetailsRouter: Router = router;

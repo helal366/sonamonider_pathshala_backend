@@ -27,9 +27,9 @@
 ### Father details
 * POST /api/v1/smps/father_details/create_father_details
 
-* POST /api/v1/smps/father_details/connect_father_details
+* POST OR CONNECT /api/v1/smps/father_details/connect_father_details
 
-* DELETE /api/v1/smps/father_details/disconnect_father_details
+* DELETE OR DISCONNECT /api/v1/smps/father_details/disconnect_father_details
 JSON: {
   "user_id": "USER_UUID"
 }
@@ -86,4 +86,44 @@ JSON: {
 JSON: {
   "user_id": "USER_ID",
   "mobile_no_3": "01912345678"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_nid
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_occupation
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_job_title
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_educational_qualification
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_monthly_income
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_mobile_no_1
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_mobile_no_2
+JSON: {
+  "user_id": "USER_ID"
+}
+
+* DELETE /api/v1/smps/father_details/delete_father_mobile_no_3
+JSON: {
+  "user_id": "USER_ID"
 }
