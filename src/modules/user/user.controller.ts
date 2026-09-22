@@ -5,6 +5,8 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import {
   TChangePasswordPayload,
+  TChangeUserPositionZodSchema,
+  TChangeUserRoleZodSchema,
   TForgetPasswordPayload,
   TUserCreatePayload,
 } from "./user.zod.validation.js";
@@ -65,8 +67,59 @@ const forgetPassword = catchAsync(
   },
 );
 
+
+// CHANGE USER ROLE
+const changeUserRole = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TChangeUserRoleZodSchema = req.body;
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
+    }
+
+    const result = await userServices.changeUserRole(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Management staff role change successful.",
+      data: result,
+    });
+  },
+);
+
+// CHANGE USER POSITION
+const changeUserPosition = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TChangeUserPositionZodSchema = req.body;
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
+    }
+
+    const result =
+      await userServices.changeUserPosition(
+        payload,
+        loggedInUser,
+      );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Management staff position change successful.",
+      data: result,
+    });
+  },
+);
 export const userController = {
   createUser,
   changePassword,
   forgetPassword,
+  changeUserRole,
+  changeUserPosition
 };

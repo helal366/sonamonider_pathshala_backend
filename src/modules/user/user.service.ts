@@ -2,13 +2,11 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { userHelperFunction } from "./user.helper.function.js";
-import {
-  TChangePasswordPayload,
-  TForgetPasswordPayload,
-  TUserCreatePayload,
-} from "./user.zod.validation.js";
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
-import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions.js";
+import {
+  checkRolePositionPair,
+  findPositionExistence,
+} from "../../helperFunctions/cachedData/cache_positions.js";
 import { prisma } from "../../lib/prisma.js";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis.js";
@@ -17,6 +15,13 @@ import ejs from "ejs";
 import bcrypt from "bcryptjs";
 import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
+import {
+  TChangePasswordPayload,
+  TChangeUserPositionZodSchema,
+  TChangeUserRoleZodSchema,
+  TForgetPasswordPayload,
+  TUserCreatePayload,
+} from "./user.zod.validation.js";
 
 // CREATE USER
 const createUser = async (
@@ -24,14 +29,8 @@ const createUser = async (
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   // 1. Extract + normalize
-  const {
-    full_name,
-    mobile_number,
-    email,
-    position_name,
-    role_name,
-    ...rest
-  } = payload;
+  const { full_name, mobile_number, email, position_name, role_name, ...rest } =
+    payload;
 
   const cleanRole = role_name.trim().toUpperCase();
   const cleanPosition = position_name.trim().toUpperCase();
@@ -73,9 +72,7 @@ const createUser = async (
   });
 
   const user_name =
-    userCount === 0
-      ? mobile_number
-      : `${mobile_number}-${userCount + 1}`;
+    userCount === 0 ? mobile_number : `${mobile_number}-${userCount + 1}`;
 
   // 6. Create DB records atomically
   const newUser = await prisma.$transaction(async (transaction) => {
@@ -88,7 +85,7 @@ const createUser = async (
         user_name,
 
         role: {
-          connect: { role_name: cleanRole },
+          connect: { id: roleExists.id },
         },
 
         position: {
@@ -159,9 +156,7 @@ const createUser = async (
   // 7. Generate OTP after DB success
   const expirationSeconds = 5 * 60;
   const otpKey = `new_user_welcome_otp:${email}`;
-  const otpValue = crypto
-    .randomInt(100000, 1000000)
-    .toString();
+  const otpValue = crypto.randomInt(100000, 1000000).toString();
 
   // 8. Store OTP
   await redisClient.set(otpKey, otpValue, {
@@ -189,20 +184,14 @@ const createUser = async (
     await transporter.sendMail({
       from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
       to: email,
-      subject:
-        "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
+      subject: "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
       html,
     });
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to send email.";
+      error instanceof Error ? error.message : "Failed to send email.";
 
-    throw new AppError(
-      message,
-      StatusCodes.BAD_REQUEST,
-    );
+    throw new AppError(message, StatusCodes.BAD_REQUEST);
   }
 
   return newUser;
@@ -258,36 +247,39 @@ const changePassword = async (
     new_password,
     Number(envVars.BCRYPT_SALT_ROUND),
   );
-  await prisma.$transaction(async (tx) => {
-    await tx.user.update({
-      where: { id: user.id },
-      data: {
-        user_password: hashedPassword,
-        updated_by: {
-          connect: { id: loggedInUser.user_id },
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          user_password: hashedPassword,
+          updated_by: {
+            connect: { id: loggedInUser.user_id },
+          },
         },
-      },
-    });
+      });
 
-    await tx.user.update({
-      where: { id: loggedInUser.user_id },
-      data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: user.id,
-              entity_name: "User",
-              old_value: Prisma.JsonNull,
-              new_value: { password_changed: true },
-              action: "UPDATE",
-            },
-          ],
+      await tx.user.update({
+        where: { id: loggedInUser.user_id },
+        data: {
+          audit_logs: {
+            create: [
+              {
+                entity_id: user.id,
+                entity_name: "User",
+                old_value: Prisma.JsonNull,
+                new_value: { password_changed: true },
+                action: "UPDATE",
+              },
+            ],
+          },
         },
-      },
-    });
-  }, {
-    timeout: 15000
-  });
+      });
+    },
+    {
+      timeout: 15000,
+    },
+  );
   const templatePath = path.join(
     process.cwd(),
     "src/templates/change_password_success.ejs",
@@ -315,6 +307,7 @@ const changePassword = async (
   }
 };
 
+// FORGET PASSWORD
 const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   const normalizedEmail = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
@@ -375,8 +368,290 @@ const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   }
 };
 
+// CHANGE USER ROLE
+const changeUserRole = async (
+  payload: TChangeUserRoleZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { full_name, mobile_number, position_name, role_name } = payload;
+  const cleanPosition = position_name.trim().toUpperCase();
+  const cleanRole = role_name.trim().toUpperCase();
+
+  const existingRole = await prisma.userRole.findUnique({
+    where: { role_name: cleanRole },
+    select: { id: true },
+  });
+
+  if (!existingRole) {
+    throw new AppError(
+      `Your provided role : ${cleanRole} does not exist.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const positionExists = await checkRolePositionPair({
+    role_name: cleanRole,
+    position_name: cleanPosition,
+  });
+
+  const targetStaff = await prisma.user.findUnique({
+    where: {
+      user_full_name_mobile_unique: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: {
+      id: true,
+      role: { select: { role_name: true } },
+      position: { select: { position_name: true } },
+      management_staff_profile: {
+        select: {
+          id: true,
+          current_role: { select: { role_name: true } },
+          current_position: { select: { position_name: true } },
+        },
+      },
+    },
+  });
+
+  if (!targetStaff) {
+    throw new AppError(
+      "The requested user does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  return prisma.$transaction(
+    async (transaction) => {
+      if (!targetStaff.management_staff_profile) {
+        throw new AppError(
+          "The requested user's management staff profile does not exist.",
+          StatusCodes.NOT_FOUND,
+        );
+      }
+      const changedUser = await transaction.user.update({
+        where: { id: targetStaff.id },
+
+        data: {
+          updated_by: {
+            connect: { id: loggedInUser.user_id },
+          },
+          role: {
+            connect: { id: existingRole.id },
+          },
+          position: {
+            connect: { id: positionExists.id },
+          },
+
+          management_staff_profile: {
+            update: {
+              current_role: {
+                connect: { id: existingRole.id },
+              },
+              roles: {
+                connect: { id: existingRole.id },
+              },
+              positions: {
+                connect: { id: positionExists.id },
+              },
+              current_position: {
+                connect: { id: positionExists.id },
+              },
+              updated_by: {
+                connect: { id: loggedInUser.user_id },
+              },
+            },
+          },
+        },
+        omit: { user_password: true },
+      });
+
+      await transaction.user.update({
+        where: { id: loggedInUser.user_id },
+        data: {
+          audit_logs: {
+            create: [
+              {
+                entity_id: targetStaff.id,
+                entity_name: "User",
+                old_value: {
+                  role: targetStaff.role?.role_name ?? null,
+                  position: targetStaff.position?.position_name ?? null,
+                },
+                new_value: {
+                  role: cleanRole,
+                  position: cleanPosition,
+                },
+                action: "UPDATE",
+              },
+              {
+                entity_id: targetStaff.management_staff_profile?.id,
+                entity_name: "ManagementStaff",
+                old_value: {
+                  current_role:
+                    targetStaff.management_staff_profile.current_role ?? null,
+                  current_position:
+                    targetStaff.management_staff_profile.current_position ??
+                    null,
+                },
+                new_value: {
+                  current_role: cleanRole,
+                  current_position: cleanPosition,
+                },
+                action: "UPDATE",
+              },
+            ],
+          },
+        },
+      });
+
+      return changedUser;
+    },
+    {
+      timeout: 8000,
+    },
+  );
+};
+
+// CHANGE USER POSITION
+const changeUserPosition = async (
+  payload: TChangeUserPositionZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { full_name, mobile_number, position_name } = payload;
+  const cleanPosition = position_name.trim().toUpperCase();
+
+  const positionExists = await findPositionExistence(cleanPosition);
+
+  if (!positionExists) {
+    throw new AppError(
+      `Provided Position: ${position_name} is not a valid position`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const targetStaff = await prisma.user.findUnique({
+    where: {
+      user_full_name_mobile_unique: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: {
+      id: true,
+      position: { select: { position_name: true } },
+      role: { select: { role_name: true } },
+      management_staff_profile: {
+        select: {
+          id: true,
+          current_position: { select: { position_name: true } },
+          current_role: { select: { role_name: true } },
+          positions: { select: { position_name: true } },
+          roles: { select: { role_name: true } },
+        },
+      },
+    },
+  });
+
+  if (!targetStaff || !targetStaff.role || !targetStaff.role.role_name) {
+    throw new AppError(
+      "The requested user does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  if (!targetStaff.management_staff_profile) {
+    throw new AppError(
+      "The requested user's management staff profile does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const currentRoleName = targetStaff.role.role_name;
+
+  await checkRolePositionPair({
+    role_name: currentRoleName,
+    position_name: cleanPosition,
+  });
+  const previousPositions = targetStaff.management_staff_profile.positions.map(
+    (position) => position.position_name,
+  );
+
+  return prisma.$transaction(async (transaction) => {
+
+  if (!targetStaff.management_staff_profile) {
+    throw new AppError(
+      "The requested user's management staff profile does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+    const changedStaff = await transaction.user.update({
+      where: { id: targetStaff.id },
+      data: {
+        updated_by: {
+          connect: { id: loggedInUser.user_id },
+        },
+        position: {
+          connect: { id: positionExists.id },
+        },
+        management_staff_profile: {
+          update: {
+            positions: {
+              connect: { id: positionExists.id },
+            },
+            current_position: {
+              connect: { id: positionExists.id },
+            },
+            updated_by: {
+              connect: { id: loggedInUser.user_id },
+            },
+          },
+        },
+      },
+      omit: { user_password: true },
+    });
+
+    await transaction.user.update({
+      where: { id: loggedInUser.user_id },
+      data: {
+        audit_logs: {
+          create: [
+            {
+              entity_id: targetStaff.management_staff_profile.id,
+              entity_name: "ManagementStaff",
+              old_value: {
+                current_position:
+                  targetStaff.management_staff_profile.current_position?.position_name ?? null,
+                positions: previousPositions,
+              },
+              new_value: {
+                current_position: cleanPosition,
+                positions: [...previousPositions, cleanPosition],
+              },
+              action: "UPDATE",
+            },
+            {
+              entity_id: targetStaff.id,
+              entity_name: "User",
+              old_value: {
+                position: targetStaff.position?.position_name ?? null,
+              },
+              new_value: { position: cleanPosition },
+              action: "UPDATE",
+            },
+          ],
+        },
+      },
+    });
+
+    return changedStaff;
+  });
+};
 export const userServices = {
   createUser,
   changePassword,
   forgetPassword,
+  changeUserRole,
+  changeUserPosition,
 };
