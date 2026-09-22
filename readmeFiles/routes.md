@@ -27,57 +27,62 @@
 ### Father details
 * POST /api/v1/smps/father_details/create_father_details
 
-* POST ## /api/v1/smps/father_details/connect_father_details
+* POST /api/v1/smps/father_details/connect_father_details
 
-* PATCH /father-details/father-name
+* DELETE /api/v1/smps/father_details/disconnect_father_details
+JSON: {
+  "user_id": "USER_UUID"
+}
+
+* PATCH /api/v1/smps/father_details/update_father_name
 JSON: {
   "user_id": "USER_ID",
   "father_name": "Mohammad Karim"
 }
 
-* PATCH /api/v1/smps/father-details/nid-no
+* PATCH /api/v1/smps/father_details/update_father_nid
 JSON: {
   "user_id": "USER_ID",
   "nid_no": "1234567890"
 }
 
-* PATCH /api/v1/smps/father-details/occupation
+* PATCH /api/v1/smps/father_details/update_father_occupation
 JSON: {
   "user_id": "USER_ID",
   "occupation": "Businessman"
 }
 
-* PATCH /api/v1/smps/father-details/job-title
+* PATCH /api/v1/smps/father_details/update_father_job_title
 JSON: {
   "user_id": "USER_ID",
   "job_title": "Senior Manager"
 }
 
-* PATCH /api/v1/smps/father-details/educational-qualification
+* PATCH /api/v1/smps/father_details/update_father_educational_qualification
 JSON: {
   "user_id": "USER_ID",
   "educational_qualification": "BACHELOR"
 }
 
-* PATCH /api/v1/smps/father-details/monthly-income
+* PATCH /api/v1/smps/father_details/update_father_monthly_income
 JSON: {
   "user_id": "USER_ID",
   "monthly_income": "50000"
 }
 
-* PATCH /api/v1/smps/father-details/mobile-no-1
+* PATCH /api/v1/smps/update_father_mobile_no_1
 JSON: {
   "user_id": "USER_ID",
   "mobile_no_1": "01712345678"
 }
 
-* PATCH /api/v1/smps/father-details/mobile-no-2
+* PATCH /api/v1/smps/father_details/update_father_mobile_no_2
 JSON: {
   "user_id": "USER_ID",
   "mobile_no_2": "01812345678"
 }
 
-* PATCH /api/v1/smps/father-details/mobile-no-3
+* PATCH /api/v1/smps/father_details/update_father_mobile_no_3
 JSON: {
   "user_id": "USER_ID",
   "mobile_no_3": "01912345678"
