@@ -71,6 +71,8 @@ model User {
   mother_details_id String?
   mother_details    MotherDetails? @relation("user_mother_details", fields: [mother_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
+  spouse_information SpouseInformation?
+
   permanent_address PermanentAddress?
   present_address   PresentAddress?
 

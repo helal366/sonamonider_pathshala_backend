@@ -18,9 +18,7 @@ model ManagementStaff {
 
   current_role_id          String?
   current_role             UserRole? @relation("management_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  is_currenly_active_staff Boolean   @default(true)
-
-  spouse_information SpouseInformation?
+  is_currently_active_staff Boolean   @default(true)
 
   positions UserPosition[] @relation("managements_positions")
   roles     UserRole[]     @relation("roles_managements")

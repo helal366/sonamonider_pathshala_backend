@@ -13,8 +13,8 @@ model SpouseInformation {
   present_address   PresentAddress?
   permanent_address PermanentAddress?
 
-  staff_id String?          @unique
-  staff    ManagementStaff? @relation(fields: [staff_id], references: [id], onDelete: Cascade)
+  user_id String?          @unique
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   created_by_id String?
   created_by    User? @relation("spouse_information_created_by", fields: [created_by_id], references: [id])

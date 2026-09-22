@@ -91,7 +91,7 @@ CREATE TABLE "management_staffs" (
     "user_id" TEXT NOT NULL,
     "current_position_id" TEXT,
     "current_role_id" TEXT,
-    "is_currenly_active_staff" BOOLEAN NOT NULL DEFAULT true,
+    "is_currently_active_staff" BOOLEAN NOT NULL DEFAULT true,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -182,7 +182,7 @@ CREATE TABLE "spouse_infromation" (
     "occupation" TEXT,
     "job_title" TEXT,
     "monthly_income" INTEGER,
-    "staff_id" TEXT,
+    "user_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -297,7 +297,7 @@ CREATE UNIQUE INDEX "present_addresses_user_id_key" ON "present_addresses"("user
 CREATE UNIQUE INDEX "present_addresses_spouse_id_key" ON "present_addresses"("spouse_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "spouse_infromation_staff_id_key" ON "spouse_infromation"("staff_id");
+CREATE UNIQUE INDEX "spouse_infromation_user_id_key" ON "spouse_infromation"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
@@ -384,7 +384,7 @@ ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_created_by_id_
 ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
