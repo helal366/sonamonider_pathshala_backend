@@ -91,8 +91,8 @@ export const userAuth = (...requiredRoles: string[]) => {
     const user = await prisma.user.findUnique({
       where: { id: payload.user_id },
       include: {
-        role: { select: { role_name: true } },
-        position: { select: { position_name: true } },
+        current_role: { select: { role_name: true } },
+        current_position: { select: { position_name: true } },
       },
     });
 
@@ -109,7 +109,7 @@ export const userAuth = (...requiredRoles: string[]) => {
       return;
     }
 
-    const currentRole = user.role?.role_name;
+    const currentRole = user.current_role?.role_name;
     // console.log("current role: ", currentRole);
     // console.log("required role: ", requiredRoles);
 
@@ -139,7 +139,7 @@ export const userAuth = (...requiredRoles: string[]) => {
       email: user.email ?? "",
       role_name: currentRole,
       position_name:
-        user.position?.position_name ?? payload.position_name ?? "",
+        user.current_position?.position_name ?? payload.position_name ?? "",
     };
 
     next();

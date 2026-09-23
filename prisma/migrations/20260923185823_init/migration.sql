@@ -46,7 +46,7 @@ CREATE TABLE "academic_results" (
 );
 
 -- CreateTable
-CREATE TABLE "audit_log" (
+CREATE TABLE "audit_logs" (
     "audit_id" TEXT NOT NULL,
     "entity_id" TEXT NOT NULL,
     "entity_name" TEXT NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE "audit_log" (
     "changed_by_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "audit_log_pkey" PRIMARY KEY ("audit_id")
+    CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("audit_id")
 );
 
 -- CreateTable
@@ -171,6 +171,18 @@ CREATE TABLE "present_addresses" (
 );
 
 -- CreateTable
+CREATE TABLE "promotion_histories" (
+    "id" TEXT NOT NULL,
+    "management_staff_id" TEXT NOT NULL,
+    "position_id" TEXT NOT NULL,
+    "role_id" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "end_date" TIMESTAMP(3),
+
+    CONSTRAINT "promotion_histories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "spouse_infromation" (
     "spouse_id" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
@@ -250,30 +262,14 @@ CREATE TABLE "user_roles" (
     CONSTRAINT "user_roles_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "_managements_positions" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-
-    CONSTRAINT "_managements_positions_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "_roles_managements" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-
-    CONSTRAINT "_roles_managements_AB_pkey" PRIMARY KEY ("A","B")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "academic_results_staff_id_key" ON "academic_results"("staff_id");
 
 -- CreateIndex
-CREATE INDEX "audit_log_changed_by_id_created_at_idx" ON "audit_log"("changed_by_id", "created_at");
+CREATE INDEX "audit_logs_changed_by_id_created_at_idx" ON "audit_logs"("changed_by_id", "created_at");
 
 -- CreateIndex
-CREATE INDEX "audit_log_entity_name_entity_id_created_at_idx" ON "audit_log"("entity_name", "entity_id", "created_at");
+CREATE INDEX "audit_logs_entity_name_entity_id_created_at_idx" ON "audit_logs"("entity_name", "entity_id", "created_at");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "management_staffs_email_key" ON "management_staffs"("email");
@@ -297,6 +293,15 @@ CREATE UNIQUE INDEX "present_addresses_user_id_key" ON "present_addresses"("user
 CREATE UNIQUE INDEX "present_addresses_spouse_id_key" ON "present_addresses"("spouse_id");
 
 -- CreateIndex
+CREATE INDEX "promotion_histories_management_staff_id_idx" ON "promotion_histories"("management_staff_id");
+
+-- CreateIndex
+CREATE INDEX "promotion_histories_position_id_idx" ON "promotion_histories"("position_id");
+
+-- CreateIndex
+CREATE INDEX "promotion_histories_role_id_idx" ON "promotion_histories"("role_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "spouse_infromation_user_id_key" ON "spouse_infromation"("user_id");
 
 -- CreateIndex
@@ -314,12 +319,6 @@ CREATE UNIQUE INDEX "user_positions_position_name_key" ON "user_positions"("posi
 -- CreateIndex
 CREATE UNIQUE INDEX "user_roles_role_name_key" ON "user_roles"("role_name");
 
--- CreateIndex
-CREATE INDEX "_managements_positions_B_index" ON "_managements_positions"("B");
-
--- CreateIndex
-CREATE INDEX "_roles_managements_B_index" ON "_roles_managements"("B");
-
 -- AddForeignKey
 ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -330,7 +329,7 @@ ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_created_by_id_fk
 ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "audit_log" ADD CONSTRAINT "audit_log_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -384,6 +383,15 @@ ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_created_by_id_
 ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_management_staff_id_fkey" FOREIGN KEY ("management_staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -424,15 +432,3 @@ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_created_by_id_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_managements_positions" ADD CONSTRAINT "_managements_positions_A_fkey" FOREIGN KEY ("A") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_managements_positions" ADD CONSTRAINT "_managements_positions_B_fkey" FOREIGN KEY ("B") REFERENCES "user_positions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_roles_managements" ADD CONSTRAINT "_roles_managements_A_fkey" FOREIGN KEY ("A") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_roles_managements" ADD CONSTRAINT "_roles_managements_B_fkey" FOREIGN KEY ("B") REFERENCES "user_roles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
