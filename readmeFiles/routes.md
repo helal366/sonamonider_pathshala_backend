@@ -18,7 +18,8 @@
   "email": "USER EMAIL ADDRESS",
   "gender": "USER GENDER",
   "role_name": "USER ROLE",
-  "position_name": "USER POSITION"
+  "position_name": "USER POSITION",
+  "joining_date": "JOINING ISO DATE STRING"
   }  
   ------> Only the required values are set here. See the zod schema to get the full requirement
 
@@ -68,7 +69,15 @@ JSON: {
 ### Role routes
 
 - POST /api/v1/smps/role/create_role
+JSON: {
+  "role_name": "USER ROLE NAME",
+}
+
 - PATCH /api/v1/smps/role/update_role
+JSON: {
+  "current_role_name": "OLD OR MISSPELLED ROLE NAME",
+  "new_role_name": "CORRECTED OR NEW ROLE NAME"
+}
 
 ### Position routes
 

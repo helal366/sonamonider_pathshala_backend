@@ -3,8 +3,10 @@ import { StatusCodes } from "http-status-codes";
 import { clearCacheRoles } from "../../helperFunctions/cachedData/cache_roles.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import { TCreateRoleZodSchema, TUpdateRoleZodSchema } from "./role.zod.validation.js";
-
+import {
+  TCreateRoleZodSchema,
+  TUpdateRoleZodSchema,
+} from "./role.zod.validation.js";
 
 // CREATE ROLE POST ROUTE
 const createRole = async (
@@ -14,6 +16,7 @@ const createRole = async (
   const { role_name } = payload;
   const cleanRole = role_name.trim().toUpperCase();
 
+  // 1. Check whether the role name already exists to prevent duplication
   const checkExistence = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
     select: { id: true },
@@ -25,8 +28,10 @@ const createRole = async (
     );
   }
 
+   // 2. Execute record creation inside an atomic transaction block
   const createdNewRole = await prisma.$transaction(async (transaction) => {
-    const createdNewRole = await transaction.userRole.create({
+     // A) Insert the new role directly into the master table
+    const newRole = await transaction.userRole.create({
       data: {
         role_name: cleanRole,
         created_by: {
@@ -35,26 +40,21 @@ const createRole = async (
       },
     });
 
-    await transaction.user.update({
-      where: { id: loggedInUser.user_id },
+   // 🚀 B) FIXED: Direct high-performance Audit Log write passing mandatory changed_by_id and Prisma.JsonNull
+    await transaction.auditLog.create({
       data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: createdNewRole.id,
-              entity_name: "UserRole",
-              old_value: Prisma.JsonNull,
-              new_value: {
-                role_name: cleanRole,
-              },
-              action: "CREATE",
-            },
-          ],
+        entity_id: newRole.id,
+        entity_name: "UserRole",
+        old_value: Prisma.JsonNull, // Expresses empty state for a new record safely
+        new_value: {
+          role_name: cleanRole,
         },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id, // Satisfies non-null database schema constraint
       },
     });
 
-    return createdNewRole;
+    return newRole;
   });
 
   clearCacheRoles();
@@ -62,10 +62,10 @@ const createRole = async (
 };
 
 // UPDATE ROLE PATCH ROUTE
-const updateRole=async( 
- payload: TUpdateRoleZodSchema,
- loggedInUser: NonNullable<Express.Request["user"]>
-)=>{
+const updateRole = async (
+  payload: TUpdateRoleZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
   const { current_role_name, new_role_name } = payload;
 
   const cleanCurrentRole = current_role_name.trim().toUpperCase();
@@ -84,12 +84,12 @@ const updateRole=async(
 
   if (!currentRole) {
     throw new AppError(
-      `Role: ${cleanCurrentRole} does not exist.`,
+      `Role: ${current_role_name} does not exist.`,
       StatusCodes.NOT_FOUND,
     );
   }
 
-   // Check whether new role name already exists
+  // Check whether new role name already exists
   const newRoleExists = await prisma.userRole.findUnique({
     where: {
       role_name: cleanNewRole,
@@ -101,57 +101,47 @@ const updateRole=async(
 
   if (newRoleExists) {
     throw new AppError(
-      `Role: ${cleanNewRole} already exists.`,
+      `Role: ${new_role_name} already exists.`,
       StatusCodes.CONFLICT,
     );
   }
-const updatedRole = await prisma.$transaction(
-    async (transaction) => {
-      const updatedRole = await transaction.userRole.update({
-        where: {
-          id: currentRole.id,
+  const updatedRole = await prisma.$transaction(async (transaction) => {
+    // A) Update the role text directly in the master table
+    const updatedRole = await transaction.userRole.update({
+      where: {
+        id: currentRole.id,
+      },
+      data: {
+        role_name: cleanNewRole,
+
+        updated_by: {
+          connect: {
+            id: loggedInUser.user_id,
+          },
         },
-        data: {
+      },
+    });
+
+    // 🚀 B) FIXED: Direct high-performance Audit Log write passing mandatory changed_by_id
+    await transaction.auditLog.create({
+      data: {
+        entity_id: updatedRole.id,
+        entity_name: "UserRole",
+        old_value: {
+          role_name: cleanCurrentRole,
+        },
+        new_value: {
           role_name: cleanNewRole,
-
-          updated_by: {
-            connect: {
-              id: loggedInUser.user_id,
-            },
-          },
         },
-      });
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id, // Satisfies non-null database constraint
+      },
+    });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
-        data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: updatedRole.id,
-                entity_name: "UserRole",
+    return updatedRole;
+  });
 
-                old_value: {
-                  role_name: cleanCurrentRole,
-                },
-
-                new_value: {
-                  role_name: cleanNewRole,
-                },
-
-                action: "UPDATE",
-              },
-            ],
-          },
-        },
-      });
-
-      return updatedRole;
-    },
-  );
-
+  // 4. Invalidate memory cache on successful execution finish
   clearCacheRoles();
 
   return updatedRole;
@@ -159,5 +149,5 @@ const updatedRole = await prisma.$transaction(
 
 export const roleServices = {
   createRole,
-  updateRole
+  updateRole,
 };

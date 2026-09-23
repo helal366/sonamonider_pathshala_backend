@@ -6,7 +6,7 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import { roleServices } from "./role.service.js";
 import { TCreateRoleZodSchema, TUpdateRoleZodSchema } from "./role.zod.validation.js";
 
-// CREATE ROLE POST ROUTE
+// CREATE ROLE NAME
 const createRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -28,7 +28,7 @@ const createRole = catchAsync(
 );
 
 
-// UPDATE ROLE PATCH ROUTE
+// UPDATE ROLE NAME
 const updateRole= catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
   const loggedInUser = req.user;
 
