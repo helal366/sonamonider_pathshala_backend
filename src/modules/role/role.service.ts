@@ -1,10 +1,11 @@
 import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
-import { clearCacheRoles } from "../../helperFunctions/cachedData/cache_roles.js";
+import { clearCacheRoles, getValidRoleNames } from "../../helperFunctions/cachedData/cache_roles.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateRoleZodSchema,
+  TDeleteRoleZodSchema,
   TUpdateRoleZodSchema,
 } from "./role.zod.validation.js";
 
@@ -147,7 +148,113 @@ const updateRole = async (
   return updatedRole;
 };
 
+
+// DELETE ROLE NAME
+const deleteRole = async (
+  payload: TDeleteRoleZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { role_name } = payload;
+  const cleanRole = role_name.trim().toUpperCase();
+
+  // 1. Verify target role exists and check if any active users occupy it
+  const existingRole = await prisma.userRole.findUnique({
+    where: { role_name: cleanRole },
+    include: {
+      _count: {
+        select: {
+          user: { where: { is_deleted: false } }, // Counts only active non-deleted users
+          current_management_staffs: { where: { is_currently_active_staff: true } }
+        }
+      }
+    }
+  });
+
+  if (!existingRole) {
+    throw new AppError(
+      `Role: ${cleanRole} does not exist inside the database system.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  // 2. Block deletion if active personnel are assigned to this role
+  if (existingRole._count.user > 0 || existingRole._count.current_management_staffs > 0) {
+    throw new AppError(
+      `Cannot delete Role: ${cleanRole}. There are active employees currently occupying this role.`,
+      StatusCodes.CONFLICT,
+    );
+  }
+
+  // 3. Atomically execute soft-delete update and write audit trace logs
+  const deletionResult = await prisma.$transaction(async (transaction) => {
+    
+    const hardDeletedRole = await transaction.userRole.delete({
+      where: { id: existingRole.id },
+    });
+
+    // Write deletion action down into structural Audit Logs database model
+    await transaction.auditLog.create({
+      data: {
+        entity_id: existingRole.id,
+        entity_name: "UserRole",
+        old_value: { role_name: cleanRole },
+        new_value: Prisma.JsonNull, // Expresses final status value state removal clearly
+        action: "DELETE",
+        changed_by_id: loggedInUser.user_id, // Satisfies non-null database constraint rule
+      }
+    });
+
+    return hardDeletedRole;
+  });
+
+  // 4. Invalidate structural performance caches immediately
+  clearCacheRoles();
+
+  return deletionResult;
+};
+
+
+// GET ALL ROLE NAMES SERVICE
+const getAllRoleNames = async (): Promise<string[]> => {
+  // Invokes your custom caching promise mechanism cleanly
+  const roleNamesArray = await getValidRoleNames();
+  
+  return roleNamesArray;
+};
+
+
+// GET SINGLE ROLE SERVICE
+const getSingleRole = async (id: string) => {
+  const role = await prisma.userRole.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      role_name: true,
+      created_at: true,
+      updated_at: true,
+      // Aggregates structural counts safely
+      _count: {
+        select: {
+          user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
+          current_management_staffs: { where: { is_currently_active_staff: true } },
+        },
+      },
+    },
+  });
+
+  if (!role) {
+    throw new AppError(
+      `Requested Role with ID: ${id} does not exist inside the database system.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  return role;
+};
 export const roleServices = {
   createRole,
   updateRole,
+  deleteRole,
+  getAllRoleNames,
+  getSingleRole
 };

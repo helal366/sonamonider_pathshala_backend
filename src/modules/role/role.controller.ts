@@ -4,9 +4,9 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { roleServices } from "./role.service.js";
-import { TCreateRoleZodSchema, TUpdateRoleZodSchema } from "./role.zod.validation.js";
+import { TCreateRoleZodSchema, TDeleteRoleZodSchema, TUpdateRoleZodSchema } from "./role.zod.validation.js";
 
-// CREATE ROLE NAME
+// CREATE ROLE CONTROLLER
 const createRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -28,7 +28,7 @@ const createRole = catchAsync(
 );
 
 
-// UPDATE ROLE NAME
+// UPDATE ROLE CONTROLLER
 const updateRole= catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
   const loggedInUser = req.user;
 
@@ -48,8 +48,67 @@ const updateRole= catchAsync(async(req: Request, res: Response, next: NextFuncti
       message: `Role updated successfully.`,
       data: result
     })
-})
+});
+
+
+// DELETE ROLE CONTROLLER
+const deleteRole = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TDeleteRoleZodSchema = req.body;
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please log in.", StatusCodes.UNAUTHORIZED);
+    }
+
+    const result = await roleServices.deleteRole(payload, loggedInUser);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Role deleted successfully.",
+      data: result,
+    });
+  },
+);
+
+
+// GET ALL ROLE NAMES CONTROLLER
+const getAllRoleNames = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await roleServices.getAllRoleNames();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Master role name strings retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
+
+// GET SINGLE ROLE CONTROLLER
+const getSingleRole = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id  = req.params.id as string;
+
+    const result = await roleServices.getSingleRole(id);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Role details retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
+
 export const roleController = {
   createRole,
-  updateRole
+  updateRole,
+  deleteRole,
+  getAllRoleNames,
+  getSingleRole
 };

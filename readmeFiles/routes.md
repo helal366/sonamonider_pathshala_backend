@@ -79,6 +79,18 @@ JSON: {
   "new_role_name": "CORRECTED OR NEW ROLE NAME"
 }
 
+- DELETE /api/v1/smps/role/update_role
+JSON: {
+  "role_name": "TARGET ROLE NAME"
+}
+
+- GET /api/v1/smps/role/get_roles
+JSON: {}
+
+- GET /api/v1/smps/role/role:id
+JSON: {}
+
+
 ### Position routes
 
 - ##Create position: ## /api/v1/smps/position/create_position
