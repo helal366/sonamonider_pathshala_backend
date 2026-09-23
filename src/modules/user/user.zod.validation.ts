@@ -59,13 +59,21 @@ export const userCreateZodSchema = z4.object({
         ? "User role is required."
         : "Invalid user role format",
   }),
+  joining_date: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Promotion effective date is required."
+          : "Invalid date format. Expected an ISO string.",
+    })
+    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 });
 
 export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
 
-
 // CHANGE PASSWORD ZOD SCHEMA
-export const changePasswordZodSchema = z4.object({
+export const changePasswordZodSchema = z4
+  .object({
     full_name: z4
       .string({
         error: (issue) =>
@@ -123,7 +131,6 @@ export const changePasswordZodSchema = z4.object({
 
 export type TChangePasswordPayload = z4.infer<typeof changePasswordZodSchema>;
 
-
 // FORGET PASSWORD  ZOD SCHEMA
 export const forgetPasswordZodSchema = z4.object({
   email: z4
@@ -133,7 +140,6 @@ export const forgetPasswordZodSchema = z4.object({
 });
 
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
-
 
 // PROMOTE USER ROLE AND POSITION ZOD SCHEMA
 export const promoteUserRolePositionZodSchema = z4.object({
@@ -176,11 +182,19 @@ export const promoteUserRolePositionZodSchema = z4.object({
     })
     .trim()
     .toUpperCase(),
+
+  promoted_date: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Promotion effective date is required."
+          : "Invalid date format. Expected an ISO string.",
+    })
+    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 });
 export type TPromoteUserRolePositionZodSchema = z4.infer<
   typeof promoteUserRolePositionZodSchema
 >;
-
 
 // UPDATE USER POSITION ZOD SCHEMA
 export const changeUserPositionZodSchema = z4.object({

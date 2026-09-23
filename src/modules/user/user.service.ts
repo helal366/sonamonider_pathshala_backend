@@ -2,7 +2,10 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { userHelperFunction } from "./user.helper.function.js";
-import { clearCacheRoles, findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
+import {
+  clearCacheRoles,
+  findRoleExistence,
+} from "../../helperFunctions/cachedData/cache_roles.js";
 import {
   checkRolePositionPair,
   clearCachePositions,
@@ -30,11 +33,12 @@ const createUser = async (
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   // 1. Extract + normalize
-  const { full_name, mobile_number, email, position_name, role_name, ...rest } =
+  const { full_name, mobile_number, email, position_name, role_name, joining_date,...rest } =
     payload;
 
   const cleanRole = role_name.trim().toUpperCase();
   const cleanPosition = position_name.trim().toUpperCase();
+  const effectiveJoiningDate = new Date(joining_date);
 
   // 2. Validate role
   const roleExists = await findRoleExistence(cleanRole);
@@ -77,6 +81,7 @@ const createUser = async (
 
   // 6. Create DB records atomically
   const newUser = await prisma.$transaction(async (transaction) => {
+    // A) Create the User and nested ManagementStaff profile
     const createdUser = await transaction.user.create({
       data: {
         full_name,
@@ -117,38 +122,79 @@ const createUser = async (
           },
         },
       },
+      include: {
+        management_staff_profile: true,
+      },
 
       omit: {
         user_password: true,
       },
     });
 
-    await transaction.user.update({
-      where: {
-        id: loggedInUser.user_id,
-      },
+    if (!createdUser.management_staff_profile) {
+      throw new AppError(
+        "Failed to initialize management staff profile during onboarding.",
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
 
+      // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
+    // This gives the user their very first history block with end_date: null
+    await transaction.promotionHistory.create({
       data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: createdUser.id,
-              entity_name: "User",
-              old_value: Prisma.JsonNull,
-
-              new_value: {
-                full_name,
-                mobile_number,
-                email,
-                role_name: cleanRole,
-                position_name: cleanPosition,
-              },
-
-              action: "CREATE",
-            },
-          ],
-        },
+        management_staff_id: createdUser.management_staff_profile.id,
+        position_id: positionExists.id,
+        role_id: roleExists.id,
+        start_date: effectiveJoiningDate, // Tracks initial joining date as the active point
       },
+    });
+
+    // 🆕 C) Refactored Audit Log generation using direct model creation with required changed_by_id
+   await transaction.auditLog.createMany({
+      data: [
+        {
+          entity_id: createdUser.id,
+          entity_name: "User",
+          old_value: Prisma.JsonNull, 
+          new_value: {
+            full_name,
+            mobile_number,
+            email,
+            role_name: cleanRole,
+            position_name: cleanPosition,
+          },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
+        },
+        {
+          entity_id: createdUser.management_staff_profile.id,
+          entity_name: "ManagementStaff",
+          old_value: Prisma.JsonNull, 
+          new_value: {
+            full_name,
+            mobile_number,
+            email,
+            role_id: roleExists.id,
+            position_id: positionExists.id,
+          },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
+        },
+        {
+          entity_id: createdUser.management_staff_profile.id, // Linked to the staff profile it documents
+          entity_name: "PromotionHistory",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            management_staff_id: createdUser.management_staff_profile.id,
+            role_id: roleExists.id,
+            position_id: positionExists.id,
+            start_date: new Date().toISOString(),
+            end_date: null
+          },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id,
+        }
+      ],
     });
 
     return createdUser;
@@ -374,11 +420,11 @@ const promoteUserRolePosition = async (
   payload: TPromoteUserRolePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { full_name, mobile_number, position_name, role_name } = payload;
+  const { full_name, mobile_number, position_name, role_name, promoted_date } = payload;
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
-
-    // 1. Verify that the requested master role exists
+  const effectivePromotedDate = new Date(promoted_date);
+  // 1. Verify that the requested master role exists
   const existingRole = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
     select: { id: true },
@@ -407,13 +453,20 @@ const promoteUserRolePosition = async (
     },
     select: {
       id: true,
-      role: { select: { role_name: true } },
-      position: { select: { position_name: true } },
+      role_id: true,
+      position_id: true,
+      current_role: { select: { role_name: true } },
+      current_position: { select: { position_name: true } },
       management_staff_profile: {
         select: {
           id: true,
-          current_role: { select: { role_name: true } },
-          current_position: { select: { position_name: true } },
+          current_role_id: true,
+          current_position_id: true,
+          promotion_history: { 
+            where: {end_date: null},
+            select:{id: true},
+            take: 1
+          }
         },
       },
     },
@@ -427,11 +480,17 @@ const promoteUserRolePosition = async (
   }
 
   // 4. Compare existing user role position with the provided role position
-  if(targetStaff.role?.role_name === cleanRole && targetStaff.position?.position_name === cleanPosition){
-    throw new AppError("User already occupy the provided role and position", StatusCodes.CONFLICT)
+  if (
+    targetStaff.current_role?.role_name === cleanRole &&
+    targetStaff.current_position?.position_name === cleanPosition
+  ) {
+    throw new AppError(
+      "User already occupy the provided role and position",
+      StatusCodes.CONFLICT,
+    );
   }
   // 5. Execute the database changes within a safe transaction block
-  return prisma.$transaction(
+   const result= await prisma.$transaction(
     async (transaction) => {
       if (!targetStaff.management_staff_profile) {
         throw new AppError(
@@ -439,8 +498,33 @@ const promoteUserRolePosition = async (
           StatusCodes.NOT_FOUND,
         );
       }
+      if(targetStaff.management_staff_profile.promotion_history.length===0){
+        throw new AppError("Active promotion history not found.",StatusCodes.NOT_FOUND)
+      }
 
-       // Direct updates on the user and profile references (No PromotionHistory entries created)
+      const activeHistoryID = targetStaff.management_staff_profile.promotion_history[0]?.id
+      // A) Terminate previous historical entries if a prior valid history tracking line exists
+      if(activeHistoryID){
+        await transaction.promotionHistory.update({
+          where: {
+            id: activeHistoryID
+          },
+          data: {
+            end_date: effectivePromotedDate
+          }
+        })
+      }
+
+       // B) Open the fresh new career path tracking timeline entry
+      await transaction.promotionHistory.create({
+        data: {
+          management_staff_id: targetStaff.management_staff_profile.id,
+          position_id: positionExists.id,
+          role_id: existingRole.id,
+          start_date: effectivePromotedDate
+        }
+      })
+      // Direct updates on the user and profile references (No PromotionHistory entries created)
       const updatedUser = await transaction.user.update({
         where: { id: targetStaff.id },
 
@@ -460,12 +544,6 @@ const promoteUserRolePosition = async (
               current_role: {
                 connect: { id: existingRole.id },
               },
-              roles: {
-                connect: { id: existingRole.id },
-              },
-              positions: {
-                connect: { id: positionExists.id },
-              },
               current_position: {
                 connect: { id: positionExists.id },
               },
@@ -478,55 +556,49 @@ const promoteUserRolePosition = async (
         omit: { user_password: true },
       });
 
-      // Write precise Audit Logs mapping back to the Admin who made the change
-      await transaction.user.update({
-        where: { id: loggedInUser.user_id },
-        data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: targetStaff.id,
-                entity_name: "User",
-                old_value: {
-                  role: targetStaff.role?.role_name ?? null,
-                  position: targetStaff.position?.position_name ?? null,
-                },
-                new_value: {
-                  role: cleanRole,
-                  position: cleanPosition,
-                },
-                action: "UPDATE",
-              },
-              {
-                entity_id: targetStaff.management_staff_profile?.id,
-                entity_name: "ManagementStaff",
-                old_value: {
-                  current_role:
-                    targetStaff.management_staff_profile.current_role ?? null,
-                  current_position:
-                    targetStaff.management_staff_profile.current_position ??
-                    null,
-                },
-                new_value: {
-                  current_role: cleanRole,
-                  current_position: cleanPosition,
-                },
-                action: "UPDATE",
-              },
-            ],
+      // D) Enforce business changes logging inside the general system audit tracker
+      await transaction.auditLog.createMany({
+        data: [
+          {
+            entity_id: targetStaff.id,
+            entity_name: "User",
+            old_value: {
+              role: targetStaff.current_role?.role_name ?? null,
+              position: targetStaff.current_position?.position_name ?? null,
+            },
+            new_value: {
+              role: cleanRole,
+              position: cleanPosition,
+            },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
           },
-        },
+          {
+            entity_id: targetStaff.management_staff_profile.id,
+            entity_name: "ManagementStaff",
+            old_value: {
+              role_id: targetStaff.management_staff_profile.current_role_id ?? null,
+              position_id: targetStaff.management_staff_profile.current_position_id ?? null,
+            },
+            new_value: {
+              role_id: existingRole.id,
+              position_id: positionExists.id,
+          },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          },
+        ],
       });
-
-       // 5. Invalidate the memory caches after a successful transaction complete
-      clearCacheRoles();
-      clearCachePositions();
       return updatedUser;
     },
     {
-      timeout: 8000,
+      timeout: 10000,
     },
-  );
+    // 5. Invalidate the memory caches after a successful transaction complete
+  );    
+  clearCacheRoles();
+  clearCachePositions();
+  return result
 };
 
 // CHANGE USER POSITION
@@ -555,8 +627,8 @@ const changeUserPosition = async (
     },
     select: {
       id: true,
-      position: { select: { position_name: true } },
-      role: { select: { role_name: true } },
+      current_position: { select: { position_name: true } },
+      current_role: { select: { role_name: true } },
       management_staff_profile: {
         select: {
           id: true,
@@ -569,7 +641,7 @@ const changeUserPosition = async (
     },
   });
 
-  if (!targetStaff || !targetStaff.role || !targetStaff.role.role_name) {
+  if (!targetStaff || !targetStaff.current_role || !targetStaff.current_role.role_name) {
     throw new AppError(
       "The requested user does not exist.",
       StatusCodes.NOT_FOUND,
@@ -583,24 +655,21 @@ const changeUserPosition = async (
     );
   }
 
-  const currentRoleName = targetStaff.role.role_name;
+  const currentRoleName = targetStaff.current_role.role_name;
 
   await checkRolePositionPair({
     role_name: currentRoleName,
     position_name: cleanPosition,
   });
-  const previousPositions = targetStaff.management_staff_profile.positions.map(
-    (position) => position.position_name,
-  );
+
 
   return prisma.$transaction(async (transaction) => {
-
-  if (!targetStaff.management_staff_profile) {
-    throw new AppError(
-      "The requested user's management staff profile does not exist.",
-      StatusCodes.NOT_FOUND,
-    );
-  }
+    if (!targetStaff.management_staff_profile) {
+      throw new AppError(
+        "The requested user's management staff profile does not exist.",
+        StatusCodes.NOT_FOUND,
+      );
+    }
     const changedStaff = await transaction.user.update({
       where: { id: targetStaff.id },
       data: {
@@ -637,12 +706,11 @@ const changeUserPosition = async (
               entity_name: "ManagementStaff",
               old_value: {
                 current_position:
-                  targetStaff.management_staff_profile.current_position?.position_name ?? null,
-                positions: previousPositions,
+                  targetStaff.management_staff_profile.current_position
+                    ?.position_name ?? null,
               },
               new_value: {
                 current_position: cleanPosition,
-                positions: [...previousPositions, cleanPosition],
               },
               action: "UPDATE",
             },
@@ -650,7 +718,7 @@ const changeUserPosition = async (
               entity_id: targetStaff.id,
               entity_name: "User",
               old_value: {
-                position: targetStaff.position?.position_name ?? null,
+                position: targetStaff.current_position?.position_name ?? null,
               },
               new_value: { position: cleanPosition },
               action: "UPDATE",

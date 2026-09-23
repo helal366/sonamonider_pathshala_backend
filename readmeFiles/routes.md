@@ -36,13 +36,14 @@
   "email": "USER EMAIL"
   }
 
-- PATCH /api/v1/smps/user/change_role
+- PATCH /api/v1/smps/user/promote_user_role_position
   JSON: {
-  "full_name": "USER NAME",
-  "mobile_number":"USER MOBILE NUMBER",
-  "role_name": "USER ROLE",
-  "position_name": "USER POSITION"
-  }
+  "full_name": "USER FULL NAME",
+  "mobile_number": "USER 11 DIGIT BANGLADESHI MOBILE NUMBER",
+  "position_name": "TARGET POSITION NAME",
+  "role_name": "TARGET ROLE NAME",
+  "promoted_date": "PROMOTION ISO DATE STRING"
+}
 
 ### Email routes
 
