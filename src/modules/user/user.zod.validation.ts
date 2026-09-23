@@ -135,8 +135,8 @@ export const forgetPasswordZodSchema = z4.object({
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
 
 
-// CHANGE USER ROLE ZOD SCHEMA
-export const changeUserRoleZodSchema = z4.object({
+// PROMOTE USER ROLE AND POSITION ZOD SCHEMA
+export const promoteUserRolePositionZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -177,12 +177,12 @@ export const changeUserRoleZodSchema = z4.object({
     .trim()
     .toUpperCase(),
 });
-export type TChangeUserRoleZodSchema = z4.infer<
-  typeof changeUserRoleZodSchema
+export type TPromoteUserRolePositionZodSchema = z4.infer<
+  typeof promoteUserRolePositionZodSchema
 >;
 
 
-// CHANGE USER POSITION ZOD SCHEMA
+// UPDATE USER POSITION ZOD SCHEMA
 export const changeUserPositionZodSchema = z4.object({
   full_name: z4
     .string({

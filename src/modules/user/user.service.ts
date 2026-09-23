@@ -2,9 +2,10 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { userHelperFunction } from "./user.helper.function.js";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
+import { clearCacheRoles, findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
 import {
   checkRolePositionPair,
+  clearCachePositions,
   findPositionExistence,
 } from "../../helperFunctions/cachedData/cache_positions.js";
 import { prisma } from "../../lib/prisma.js";
@@ -18,7 +19,7 @@ import { envVars } from "../../config/index.js";
 import {
   TChangePasswordPayload,
   TChangeUserPositionZodSchema,
-  TChangeUserRoleZodSchema,
+  TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUserCreatePayload,
 } from "./user.zod.validation.js";
@@ -368,15 +369,16 @@ const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   }
 };
 
-// CHANGE USER ROLE
-const changeUserRole = async (
-  payload: TChangeUserRoleZodSchema,
+// PROMOTE USER ROLE POSITION
+const promoteUserRolePosition = async (
+  payload: TPromoteUserRolePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   const { full_name, mobile_number, position_name, role_name } = payload;
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
 
+    // 1. Verify that the requested master role exists
   const existingRole = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
     select: { id: true },
@@ -389,11 +391,13 @@ const changeUserRole = async (
     );
   }
 
+  // 2. Verify that the role-position pair is valid using your helper function
   const positionExists = await checkRolePositionPair({
     role_name: cleanRole,
     position_name: cleanPosition,
   });
 
+  // 3. Fetch the target user and their management profile to check current values
   const targetStaff = await prisma.user.findUnique({
     where: {
       user_full_name_mobile_unique: {
@@ -422,6 +426,11 @@ const changeUserRole = async (
     );
   }
 
+  // 4. Compare existing user role position with the provided role position
+  if(targetStaff.role?.role_name === cleanRole && targetStaff.position?.position_name === cleanPosition){
+    throw new AppError("User already occupy the provided role and position", StatusCodes.CONFLICT)
+  }
+  // 5. Execute the database changes within a safe transaction block
   return prisma.$transaction(
     async (transaction) => {
       if (!targetStaff.management_staff_profile) {
@@ -430,7 +439,9 @@ const changeUserRole = async (
           StatusCodes.NOT_FOUND,
         );
       }
-      const changedUser = await transaction.user.update({
+
+       // Direct updates on the user and profile references (No PromotionHistory entries created)
+      const updatedUser = await transaction.user.update({
         where: { id: targetStaff.id },
 
         data: {
@@ -467,6 +478,7 @@ const changeUserRole = async (
         omit: { user_password: true },
       });
 
+      // Write precise Audit Logs mapping back to the Admin who made the change
       await transaction.user.update({
         where: { id: loggedInUser.user_id },
         data: {
@@ -506,7 +518,10 @@ const changeUserRole = async (
         },
       });
 
-      return changedUser;
+       // 5. Invalidate the memory caches after a successful transaction complete
+      clearCacheRoles();
+      clearCachePositions();
+      return updatedUser;
     },
     {
       timeout: 8000,
@@ -652,6 +667,6 @@ export const userServices = {
   createUser,
   changePassword,
   forgetPassword,
-  changeUserRole,
+  promoteUserRolePosition,
   changeUserPosition,
 };

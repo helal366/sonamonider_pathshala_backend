@@ -14,16 +14,16 @@ model PermanentAddress {
   country       String  @default("Bangladesh")
 
   user_id String? @unique
-  user    User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   spouse_id String?            @unique
-  spouse    SpouseInformation? @relation(fields: [spouse_id], references: [spouse_id], onDelete: Cascade)
+  spouse    SpouseInformation? @relation(fields: [spouse_id], references: [spouse_id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User?           @relation("permanent_address_created_by", fields: [created_by_id], references: [id])
+  created_by    User?           @relation("permanent_address_created_by", fields: [created_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User?           @relation("permanent_address_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?           @relation("permanent_address_updated_by", fields: [updated_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

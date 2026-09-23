@@ -5,8 +5,8 @@ model ManagementStaff {
   email         String @unique
 
   academic_results                  AcademicResult?
-  teaching_working_experience_year  Int?
-  teaching_working_experience_month Int?
+  working_experience_year  Int?
+  working_experience_month Int?
   alternative_contact_no            String[]
 
   user_id           String @unique
@@ -18,13 +18,14 @@ model ManagementStaff {
 
   current_role_id          String?
   current_role             UserRole? @relation("management_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   is_currently_active_staff Boolean   @default(true)
 
-  positions UserPosition[] @relation("managements_positions")
-  roles     UserRole[]     @relation("roles_managements")
+  promotion_history    PromotionHistory[]
 
   created_by_id String?
   created_by    User?   @relation("management_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  
   updated_by_id String?
   updated_by    User?   @relation("management_staff_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 

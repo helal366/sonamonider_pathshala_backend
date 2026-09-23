@@ -6,7 +6,7 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import {
   TChangePasswordPayload,
   TChangeUserPositionZodSchema,
-  TChangeUserRoleZodSchema,
+  TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUserCreatePayload,
 } from "./user.zod.validation.js";
@@ -68,17 +68,17 @@ const forgetPassword = catchAsync(
 );
 
 
-// CHANGE USER ROLE
-const changeUserRole = catchAsync(
+// PROMOTE USER ROLE POSITION
+const promoteUserRolePosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TChangeUserRoleZodSchema = req.body;
+    const payload: TPromoteUserRolePositionZodSchema = req.body;
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    const result = await userServices.changeUserRole(
+    const result = await userServices.promoteUserRolePosition(
       payload,
       loggedInUser,
     );
@@ -120,6 +120,6 @@ export const userController = {
   createUser,
   changePassword,
   forgetPassword,
-  changeUserRole,
+  promoteUserRolePosition,
   changeUserPosition
 };

@@ -5,10 +5,11 @@ model UserRole {
   current_management_staffs ManagementStaff[] @relation("management_current_role")
   positions                 UserPosition[]    @relation("role_position_relation")
   user                      User[]            @relation("user_role_relation")
-  management_staff_roles    ManagementStaff[] @relation("roles_managements")
+
+  promotion_history        PromotionHistory[] 
 
   created_by_id String?
-  created_by    User?           @relation("role_created_by", fields: [created_by_id], references: [id])
+  created_by    User?           @relation("role_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_id String?
   updated_by    User?           @relation("role_updated_by", fields: [updated_by_id], references: [id])
 

@@ -9,11 +9,11 @@ model AuditLog {
   action    AuditAction
 
   changed_by_id String
-  changed_by    User @relation("audit_log_changed_by", fields: [changed_by_id], references: [id])
+  changed_by    User @relation("audit_log_changed_by", fields: [changed_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   created_at DateTime @default(now())
 
   @@index([changed_by_id, created_at])
   @@index([entity_name, entity_id, created_at])
-  @@map("audit_log")
+  @@map("audit_logs")
 }

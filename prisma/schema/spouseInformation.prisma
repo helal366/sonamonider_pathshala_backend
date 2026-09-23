@@ -14,12 +14,12 @@ model SpouseInformation {
   permanent_address PermanentAddress?
 
   user_id String?          @unique
-  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User? @relation("spouse_information_created_by", fields: [created_by_id], references: [id])
+  created_by    User? @relation("spouse_information_created_by", fields: [created_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   updated_by_id String?
-  updated_by    User? @relation("spouse_information_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User? @relation("spouse_information_updated_by", fields: [updated_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_at    DateTime         @default(now())
   updated_at    DateTime?        @updatedAt

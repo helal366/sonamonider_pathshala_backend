@@ -4,7 +4,7 @@ import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
 import {
   changePasswordZodSchema,
   changeUserPositionZodSchema,
-  changeUserRoleZodSchema,
+  promoteUserRolePositionZodSchema,
   forgetPasswordZodSchema,
   userCreateZodSchema,
 } from "./user.zod.validation.js";
@@ -33,10 +33,10 @@ router.post(
 );
 
 router.patch(
-  "/change_role",
+  "/promote_user_role_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(changeUserRoleZodSchema),
-  userController.changeUserRole,
+  validateZodSchema(promoteUserRolePositionZodSchema),
+  userController.promoteUserRolePosition,
 );
 
 router.patch(

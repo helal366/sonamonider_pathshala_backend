@@ -26,10 +26,10 @@ model User {
   is_deleted    Boolean      @default(false)
 
   role_id String?
-  role    UserRole? @relation("user_role_relation", fields: [role_id], references: [role_name], onDelete: Restrict, onUpdate: Cascade)
+  current_role    UserRole? @relation("user_role_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   position_id String?
-  position    UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_position    UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_profile ManagementStaff?
 
