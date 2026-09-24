@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync.js";
-import { TCreatePositionZodSchema } from "./position.zod.validation.js";
+import { TCreatePositionZodSchema, TUpdatePositionZodSchema } from "./position.zod.validation.js";
 import { positionServices } from "./position.service.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 
+// CREATE POSITION CONTROLLER
 const createPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -27,6 +28,28 @@ const createPosition = catchAsync(
   },
 );
 
+// UPDATE POSITION CONTROLLER
+const updatePosition = catchAsync(
+  async(req:Request, res: Response, next: NextFunction)=>{
+    const loggedInUser = req.user;
+    
+        if (!loggedInUser) {
+          throw new AppError(
+            "Please login.",
+            StatusCodes.BAD_REQUEST,
+          );
+        }
+    const payload: TUpdatePositionZodSchema = req.body;
+    const result = await positionServices.updatePosition(payload, loggedInUser);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Position updated successfully.`,
+      data: result,
+    });
+  }
+)
 export const positionController = {
   createPosition,
+  updatePosition
 };
