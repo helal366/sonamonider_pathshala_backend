@@ -93,7 +93,12 @@ JSON: {}
 
 ### Position routes
 
-- ##Create position: ## /api/v1/smps/position/create_position
+- POST /api/v1/smps/position/create_position
+JSON: {
+  "role_name": "USER ROLE NAME",
+  "position_name": "USER POSITION NAME"
+}
+
 
 ### Father details
 
