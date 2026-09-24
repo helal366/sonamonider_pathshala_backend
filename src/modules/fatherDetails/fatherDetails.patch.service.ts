@@ -78,28 +78,21 @@ const updateFatherName = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  father_name: existingFatherDetails.father_name,
-                },
-                new_value: {
-                  user_id,
-                  father_name,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            father_name: existingFatherDetails.father_name,
           },
+          new_value: {
+            user_id,
+            father_name,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
@@ -178,31 +171,23 @@ const updateFatherNid = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  nid_no: existingFatherDetails.nid_no,
-                },
-                new_value: {
-                  user_id,
-                  nid_no,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id, // Preserves your contextual link to the executing child profile
+            nid_no: existingFatherDetails.nid_no,
           },
+          new_value: {
+            user_id,
+            nid_no,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id, // Satisfies non-null database schema constraint rule
         },
       });
-
       return updatedFatherDetails;
     },
     {
@@ -278,28 +263,21 @@ const updateFatherOccupation = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  occupation: existingFatherDetails.occupation,
-                },
-                new_value: {
-                  user_id,
-                  occupation,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id, // Preserves your contextual link to the executing child profile
+            occupation: existingFatherDetails.occupation,
           },
+          new_value: {
+            user_id,
+            occupation,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id, // Satisfies non-null database schema constraint rule
         },
       });
 
@@ -378,28 +356,21 @@ const updateFatherJobTitle = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  job_title: existingFatherDetails.job_title,
-                },
-                new_value: {
-                  user_id,
-                  job_title,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id, // Preserves your contextual link to the executing child profile
+            job_title: existingFatherDetails.job_title,
           },
+          new_value: {
+            user_id,
+            job_title,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id, // Satisfies non-null database schema constraint rule
         },
       });
 
@@ -479,29 +450,22 @@ const updateFatherEducationalQualification = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  educational_qualification:
-                    existingFatherDetails.educational_qualification,
-                },
-                new_value: {
-                  user_id,
-                  educational_qualification,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            educational_qualification:
+              existingFatherDetails.educational_qualification,
           },
+          new_value: {
+            user_id,
+            educational_qualification,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
@@ -580,28 +544,21 @@ const updateFatherMonthlyIncome = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  monthly_income: existingFatherDetails.monthly_income,
-                },
-                new_value: {
-                  user_id,
-                  monthly_income,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            monthly_income: existingFatherDetails.monthly_income,
           },
+          new_value: {
+            user_id,
+            monthly_income,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
@@ -680,28 +637,21 @@ const updateFatherMobileNo1 = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  mobile_no_1: existingFatherDetails.mobile_no_1,
-                },
-                new_value: {
-                  user_id,
-                  mobile_no_1,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            mobile_no_1: existingFatherDetails.mobile_no_1,
           },
+          new_value: {
+            user_id,
+            mobile_no_1,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
@@ -780,28 +730,21 @@ const updateFatherMobileNo2 = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  mobile_no_2: existingFatherDetails.mobile_no_2,
-                },
-                new_value: {
-                  user_id,
-                  mobile_no_2,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            mobile_no_2: existingFatherDetails.mobile_no_2,
           },
+          new_value: {
+            user_id,
+            mobile_no_2,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
@@ -880,28 +823,21 @@ const updateFatherMobileNo3 = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.create({
         data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: existingFatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  mobile_no_3: existingFatherDetails.mobile_no_3,
-                },
-                new_value: {
-                  user_id,
-                  mobile_no_3,
-                },
-                action: "UPDATE",
-              },
-            ],
+          entity_id: existingFatherDetails.id,
+          entity_name: "FatherDetails",
+          old_value: {
+            user_id,
+            mobile_no_3: existingFatherDetails.mobile_no_3,
           },
+          new_value: {
+            user_id,
+            mobile_no_3,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
       });
 
