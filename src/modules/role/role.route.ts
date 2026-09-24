@@ -36,7 +36,7 @@ router.get(
 
 // GET SINGLE ROLE BY ID
 router.get(
-  "/role/:id",
+  "/get_role/:id",
   userAuth("SUPER_ADMIN"), // Enforce Super Admin security block
   validateZodSchema(getSingleRoleZodSchema),
   roleController.getSingleRole,

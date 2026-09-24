@@ -75,13 +75,13 @@ const createPrincipal = async () => {
         user_name: envVars.SUPER_ADMIN_MOBILE_NO,
         user_password: hashedPassword,
 
-        role: {
+        current_role: {
           connect: {
             role_name: "SUPER_ADMIN",
           },
         },
 
-        position: {
+        current_position: {
           connect: {
             position_name: "PRINCIPAL",
           },

@@ -87,7 +87,7 @@ JSON: {
 - GET /api/v1/smps/role/get_roles
 JSON: {}
 
-- GET /api/v1/smps/role/role:id
+- GET /api/v1/smps/role/get_role:id
 JSON: {}
 
 
@@ -98,6 +98,26 @@ JSON: {
   "role_name": "USER ROLE NAME",
   "position_name": "USER POSITION NAME"
 }
+
+
+- PATCH /api/v1/smps/position/update_position
+JSON: {
+  "present_position_name": "PRESENT POSITION NAME",
+  "update_position_name": "UPDATE POSITION NAME"
+}
+
+
+- DELETE /api/v1/smps/position/delete_position
+JSON: {
+  "position_name": "POSITION NAME"
+}
+
+- GET /api/v1/smps/position/get_positions
+JSON: {}
+
+
+- GET /api/v1/smps/position/get_position:id
+JSON: {}
 
 
 ### Father details

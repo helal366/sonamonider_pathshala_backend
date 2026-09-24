@@ -4,10 +4,12 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import {
   clearCachePositions,
   findPositionExistence,
+  getValidPositionNames,
 } from "../../helperFunctions/cachedData/cache_positions.js";
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreatePositionZodSchema,
+  TDeletePositionZodSchema,
   TUpdatePositionZodSchema,
 } from "./position.zod.validation.js";
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
@@ -138,7 +140,113 @@ const updatePosition = async (
   return updatedPositionResult;
 };
 
+
+// DELETE POSITION SERVICE LAYER
+const deletePosition=async(
+  payload: TDeletePositionZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+)=>{
+  const {position_name} = payload;
+  const cleanPositionName = position_name.trim().toUpperCase();
+
+  // 1. Verify if the position exists and count current active structural occupants
+  const existingPosition = await prisma.userPosition.findUnique({
+    where: { position_name: cleanPositionName },
+    include: {
+      _count: {
+        select: {
+          user: { where: { is_deleted: false } }, // Counts active, non-soft-deleted users
+          current_management_staffs: { where: { is_currently_active_staff: true } },
+          management_promoted_history: true // Counts historical tracking dependencies
+        }
+      }
+    }
+  });
+
+  if (!existingPosition) {
+    throw new AppError(
+      `Provided position name: ${cleanPositionName} does not exist.`, // Fixed typo "exists"
+      StatusCodes.NOT_FOUND
+    );
+  }
+
+   // 🚀 2. CRITICAL SAFETY GUARD: Prevent cascading relationship database crashes
+   if (
+    existingPosition._count.user > 0 || 
+    existingPosition._count.current_management_staffs > 0 ||
+    existingPosition._count.management_promoted_history > 0
+  ) {
+    throw new AppError(
+      `Cannot hard delete Position: ${cleanPositionName}. It is currently assigned to active employees or referenced in past promotion histories.`,
+      StatusCodes.CONFLICT
+    );
+  }
+
+   // 3. Perform the secure direct hard delete and write log trace atomically
+  const hardDeletePositionResult = await prisma.$transaction(async(transaction)=>{
+    const hardDeletePosition = await transaction.userPosition.delete({
+      where: {id: existingPosition.id},
+    });
+
+    await transaction.auditLog.create({
+      data: {
+        entity_id: existingPosition.id,
+        entity_name: "UserPosition",
+        old_value: {position_name: cleanPositionName},
+        new_value: Prisma.JsonNull,
+        action: "DELETE",
+        changed_by_id: loggedInUser.user_id
+      }
+    })
+    return hardDeletePosition
+  });
+  // 4. Invalidate structural performance caches immediately
+  clearCachePositions();
+  return hardDeletePositionResult;
+};
+
+
+// GET ALL POSITIONS SERVICE LAYER
+const getAllPositions=async(
+)=>{
+  const allPositionsArray = await getValidPositionNames();
+  return allPositionsArray;
+};
+
+
+// GET SINGLE POSITION SERVICE LAYER
+const getSinglePosition=async(id:string)=>{
+  const position = await prisma.userPosition.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      position_name: true,
+      role_name: true,
+      created_at: true,
+      updated_at: true,
+      // Aggregates structural counts safely
+      _count: {
+        select: {
+          user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
+          current_management_staffs: { where: { is_currently_active_staff: true } },
+        },
+      },
+    },
+  });
+
+  if (!position) {
+    throw new AppError(
+      `Requested Position with ID: ${id} does not exist inside the database system.`,
+      StatusCodes.NOT_FOUND,
+    );
+  };
+
+  return position
+}
 export const positionServices = {
   createPosition,
   updatePosition,
+  deletePosition,
+  getAllPositions,
+  getSinglePosition
 };
