@@ -61,8 +61,7 @@ const createFatherDetails = async (
     ...(occupation !== undefined && { occupation }),
     ...(job_title !== undefined && { job_title }),
     ...(educational_qualification !== undefined && {
-      educational_qualification:
-        educational_qualification as EducationDegree,
+      educational_qualification: educational_qualification as EducationDegree,
     }),
     ...(monthly_income !== undefined && { monthly_income }),
     ...(mobile_no_1 !== undefined && { mobile_no_1 }),
@@ -72,20 +71,21 @@ const createFatherDetails = async (
 
   const result = await prisma.$transaction(
     async (transaction) => {
-      const fatherDetails =
-        await transaction.fatherDetails.create({
-          data: {
-            father_name,
-            ...optionalDataPayload,
+      // 1. Create FatherDetails record
+      const fatherDetails = await transaction.fatherDetails.create({
+        data: {
+          father_name,
+          ...optionalDataPayload,
 
-            created_by: {
-              connect: {
-                id: loggedInUser.user_id,
-              },
+          created_by: {
+            connect: {
+              id: loggedInUser.user_id,
             },
           },
-        });
+        },
+      });
 
+      // 2. Link FatherDetails back to User profile
       await transaction.user.update({
         where: {
           id: user_id,
@@ -99,40 +99,35 @@ const createFatherDetails = async (
         },
       });
 
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
-        data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: fatherDetails.id,
-                entity_name: "FatherDetails",
-                old_value: Prisma.JsonNull,
-                new_value: {
-                  user_id,
-                  father_name,
-                  nid_no,
-                  occupation,
-                  job_title,
-                  educational_qualification,
-                  monthly_income,
-                  mobile_no_1,
-                  mobile_no_2,
-                  mobile_no_3,
-                },
-                action: "CREATE",
-              },
-            ],
+      // 🚀 3. FIXED: Direct, high-performance Audit Log creation passing mandatory changed_by_id
+      await transaction.auditLog.createMany({
+        data: [
+          {
+            entity_id: fatherDetails.id,
+            entity_name: "FatherDetails",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              father_name,
+              ...optionalDataPayload,
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
           },
-        },
+          {
+            entity_id: user_id,
+            entity_name: "User",
+            old_value: { father_details_id: null },
+            new_value: { father_details_id: fatherDetails.id },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          },
+        ],
       });
 
       return fatherDetails;
     },
     {
-      timeout: 15000,
+      timeout: 10000,
     },
   );
 
@@ -156,6 +151,7 @@ const connectFatherDetails = async (
       },
       select: {
         id: true,
+        full_name: true,
         father_details_id: true,
       },
     }),
@@ -193,6 +189,7 @@ const connectFatherDetails = async (
   }
 
   const result = await prisma.$transaction(async (transaction) => {
+    // 1. Connect FatherDetails to the target User profile
     const updatedUser = await transaction.user.update({
       where: {
         id: user_id,
@@ -211,6 +208,7 @@ const connectFatherDetails = async (
       },
     });
 
+    // 2. Track who updated the FatherDetails master entry
     await transaction.fatherDetails.update({
       where: {
         id: father_details_id,
@@ -224,34 +222,37 @@ const connectFatherDetails = async (
       },
     });
 
-    await transaction.user.update({
-      where: {
-        id: loggedInUser.user_id,
-      },
-      data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: father_details_id,
-              entity_name: "FatherDetails",
-              old_value: Prisma.JsonNull,
-              new_value: {
-                user_id,
-                father_details_id,
-              },
-              action: "UPDATE",
-            },
-          ],
+    // 🚀 3. FIXED: Direct high-performance Audit Log write passing mandatory changed_by_id
+    await transaction.auditLog.createMany({
+      data: [
+        {
+          entity_id: user_id,
+          entity_name: "User",
+          old_value: { father_details_id: null },
+          new_value: { father_details_id: father_details_id },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
         },
-      },
+        {
+          entity_id: father_details_id,
+          entity_name: "FatherDetails",
+          old_value: Prisma.JsonNull, // Represents connecting a new child user to this father
+          new_value: {
+            action: "CONNECTED_TO_USER",
+            user_id: user_id,
+            user_full_name: targetUser.full_name,
+            father_name: fatherDetails.father_name,
+          },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
+        },
+      ],
     });
-
     return updatedUser;
   });
 
   return result;
 };
-
 
 // ======================================================
 // DISCONNECT FATHER DETAILS
@@ -339,31 +340,33 @@ const disconnectFatherDetails = async (
       }
 
       // Create audit log
-      await transaction.user.update({
-        where: {
-          id: loggedInUser.user_id,
-        },
-        data: {
-          audit_logs: {
-            create: [
-              {
-                entity_id: fatherDetailsId,
-                entity_name: "FatherDetails",
-                old_value: {
-                  user_id,
-                  father_details_id: fatherDetailsId,
-                  father_name: targetUser.father_details?.father_name,
-                },
-                new_value: {
-                  user_id,
-                  father_details_id: null,
-                  father_details_deleted: connectionCount === 1,
-                },
-                action: "UPDATE",
-              },
-            ],
+      await transaction.auditLog.createMany({
+        data: [
+          {
+            entity_id: fatherDetailsId,
+            entity_name: "FatherDetails",
+            old_value: {
+              user_id,
+              father_details_id: fatherDetailsId,
+              father_name: targetUser.father_details?.father_name,
+            },
+            new_value: {
+              user_id,
+              father_details_id: null,
+              father_details_deleted: connectionCount === 1,
+            },
+            action: connectionCount === 1 ? "DELETE" : "UPDATE",
+            changed_by_id: loggedInUser.user_id,
           },
-        },
+          {
+            entity_id: user_id,
+            entity_name: "User",
+            old_value: { father_details_id: fatherDetailsId },
+            new_value: { father_details_id: null },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          },
+        ],
       });
 
       return {
@@ -379,10 +382,8 @@ const disconnectFatherDetails = async (
   return result;
 };
 
-
-
 export const fatherDetailsServices = {
   createFatherDetails,
   connectFatherDetails,
-  disconnectFatherDetails
+  disconnectFatherDetails,
 };
