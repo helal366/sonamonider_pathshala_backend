@@ -1,17 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-
 import { catchAsync } from "../../utils/catchAsync";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { sendResponse } from "../../utils/sendResponse";
 import { motherDetailsServices } from "./motherDetails.service";
-
 import {
   TConnectMotherDetailsZodSchema,
   TCreateMotherDetailsZodSchema,
   TDisconnectMotherDetailsZodSchema,
 } from "./motherDetails.zod.validation";
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 
 
 // ============================================================
@@ -19,7 +16,7 @@ import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
 // ============================================================
 const createMotherDetails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = motherDetailsHelperFunctions.requiredUser(req);
+    const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TCreateMotherDetailsZodSchema;
 
     const result = await motherDetailsServices.createMotherDetails(
@@ -41,7 +38,7 @@ const createMotherDetails = catchAsync(
 // ============================================================
 const connectMotherDetails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser =  motherDetailsHelperFunctions.requiredUser(req);
+    const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TConnectMotherDetailsZodSchema;
 
     const result = await motherDetailsServices.connectMotherDetails(
@@ -63,7 +60,7 @@ const connectMotherDetails = catchAsync(
 // ============================================================
 const disconnectMotherDetails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser =  motherDetailsHelperFunctions.requiredUser(req);
+    const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TDisconnectMotherDetailsZodSchema;
 
     const result = await motherDetailsServices.disconnectMotherDetails(

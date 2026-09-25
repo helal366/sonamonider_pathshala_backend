@@ -18,7 +18,7 @@ model PresentAddress {
   user    User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   spouse_id String?            @unique
-  spouse    SpouseInformation? @relation(fields: [spouse_id], references: [spouse_id], onDelete: Cascade, onUpdate: Cascade)
+  spouse    SpouseInformation? @relation(fields: [spouse_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
   created_by    User?           @relation("present_address_created_by", fields: [created_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

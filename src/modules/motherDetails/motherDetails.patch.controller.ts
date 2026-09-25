@@ -5,13 +5,14 @@ import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { motherDetailsPatchServices } from "./motherDetails.patch.service";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 
 const createPatchController = (
   service: TMotherDetailsPatchService,
   message: string,
 ) =>
   catchAsync(async (req: Request, res: Response) => {
-    const loggedInUser = motherDetailsHelperFunctions.requiredUser(req);
+    const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as never;
     const result = await service(payload, loggedInUser);
     sendResponse(res, {

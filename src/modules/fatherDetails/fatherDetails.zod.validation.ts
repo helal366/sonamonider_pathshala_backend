@@ -20,7 +20,8 @@ export const createFatherDetailsZodSchema = z4.object({
           ? "Father name is required."
           : "Invalid father name.",
     })
-    .trim(),
+    .trim()
+    .min(2, "Father name is required"),
 
   nid_no: z4.string("Invalid national ID number format.").trim().optional(),
 

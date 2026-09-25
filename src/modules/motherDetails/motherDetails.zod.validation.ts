@@ -18,7 +18,7 @@ export const createMotherDetailsZodSchema = z4.object({
       issue.input === undefined
         ? "Mother name is required."
         : "Invalid mother name.",
-  }).trim(),
+  }).trim().min(2, "Mother name is required"),
 
   nid_no: z4.string("Invalid national ID number format.").trim().optional(),
 

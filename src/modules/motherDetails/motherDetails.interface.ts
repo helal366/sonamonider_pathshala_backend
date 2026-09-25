@@ -1,10 +1,11 @@
 import { EducationDegree } from "#db-client";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 
-export type LoggedInUser = NonNullable<Express.Request["user"]>;
+
 
 export type TMotherDetailsPatchService = (
   payload: never,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => Promise<unknown>;
 
 export interface ITargetUser {

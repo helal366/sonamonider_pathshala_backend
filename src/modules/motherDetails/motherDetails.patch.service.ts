@@ -5,7 +5,6 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 
 import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
-import { LoggedInUser } from "./motherDetails.interface";
 
 import {
   TUpdateMotherEducationalQualificationZodSchema,
@@ -18,6 +17,7 @@ import {
   TUpdateMotherNidZodSchema,
   TUpdateMotherOccupationZodSchema,
 } from "./motherDetails.zod.validation";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 
 type MotherDetailsField =
   | "mother_name"
@@ -40,7 +40,7 @@ const updateMotherField = async (
   user_id: string,
   field: MotherDetailsField,
   value: MotherDetailsValue,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   const targetUser = await motherDetailsHelperFunctions.getTargetUser(user_id);
 
@@ -107,7 +107,7 @@ const updateMotherField = async (
 
 const updateMotherName = (
   payload: TUpdateMotherNameZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -122,7 +122,7 @@ const updateMotherName = (
 
 const updateMotherNid = (
   payload: TUpdateMotherNidZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -137,7 +137,7 @@ const updateMotherNid = (
 
 const updateMotherOccupation = (
   payload: TUpdateMotherOccupationZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -152,7 +152,7 @@ const updateMotherOccupation = (
 
 const updateMotherJobTitle = (
   payload: TUpdateMotherJobTitleZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -167,7 +167,7 @@ const updateMotherJobTitle = (
 
 const updateMotherEducationalQualification = (
   payload: TUpdateMotherEducationalQualificationZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -182,7 +182,7 @@ const updateMotherEducationalQualification = (
 
 const updateMotherMonthlyIncome = (
   payload: TUpdateMotherMonthlyIncomeZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -197,7 +197,7 @@ const updateMotherMonthlyIncome = (
 
 const updateMotherMobileNo1 = (
   payload: TUpdateMotherMobileNo1ZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -212,7 +212,7 @@ const updateMotherMobileNo1 = (
 
 const updateMotherMobileNo2 = (
   payload: TUpdateMotherMobileNo2ZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,
@@ -227,7 +227,7 @@ const updateMotherMobileNo2 = (
 
 const updateMotherMobileNo3 = (
   payload: TUpdateMotherMobileNo3ZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) =>
   updateMotherField(
     payload.user_id,

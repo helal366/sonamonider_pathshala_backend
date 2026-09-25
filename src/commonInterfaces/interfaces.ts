@@ -15,3 +15,5 @@ export interface IRolePositionPairPayload {
   role_name: string;
   position_name: string;
 }
+
+export type TLoggedInUser = NonNullable<Express.Request["user"]>;

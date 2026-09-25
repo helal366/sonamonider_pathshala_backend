@@ -1,9 +1,9 @@
 import { EducationDegree, Prisma } from "#db-client";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 
 import { prisma } from "../../lib/prisma";
 
 import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
-import { LoggedInUser } from "./motherDetails.interface";
 
 type MotherDetailsDeleteField =
   | "nid_no"
@@ -20,7 +20,7 @@ type MotherDetailsDeleteValue = string | EducationDegree | null;
 const deleteMotherField = async (
   user_id: string,
   field: MotherDetailsDeleteField,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   const targetUser =
     await motherDetailsHelperFunctions.getTargetUser(user_id);
@@ -73,7 +73,7 @@ const deleteMotherField = async (
 
 const deleteMotherNid = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -88,7 +88,7 @@ const deleteMotherNid = async (
 
 const deleteMotherOccupation = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -103,7 +103,7 @@ const deleteMotherOccupation = async (
 
 const deleteMotherJobTitle = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -118,7 +118,7 @@ const deleteMotherJobTitle = async (
 
 const deleteMotherEducationalQualification = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -133,7 +133,7 @@ const deleteMotherEducationalQualification = async (
 
 const deleteMotherMonthlyIncome = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -148,7 +148,7 @@ const deleteMotherMonthlyIncome = async (
 
 const deleteMotherMobileNo1 = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -163,7 +163,7 @@ const deleteMotherMobileNo1 = async (
 
 const deleteMotherMobileNo2 = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,
@@ -178,7 +178,7 @@ const deleteMotherMobileNo2 = async (
 
 const deleteMotherMobileNo3 = async (
   payload: { user_id: string },
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   return deleteMotherField(
     payload.user_id,

@@ -3,9 +3,8 @@ import { StatusCodes } from "http-status-codes";
 
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
 import { motherDetailsDeleteServices } from "./motherDetails.delete.service";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 
 type LoggedInUser = NonNullable<Express.Request["user"]>;
 
@@ -19,8 +18,7 @@ const createDeleteController = (
   message: string,
 ) =>
   catchAsync(async (req: Request, res: Response) => {
-    const loggedInUser =
-      motherDetailsHelperFunctions.requiredUser(req);
+    const loggedInUser = helperFunctions.requiredUser(req);
 
     const payload = req.body as never;
 

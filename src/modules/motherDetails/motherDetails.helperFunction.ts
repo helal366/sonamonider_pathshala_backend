@@ -8,13 +8,6 @@ interface ITargetUserMotherDetailsPayload {
   mother_details_id: string;
 }
 
-const requiredUser = (req: Request) => {
-  if (!req.user) {
-    throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
-  }
-  return req.user;
-};
-
 async function getTargetUser(user_id: string) {
   const targetUser = await prisma.user.findUnique({
     where: { id: user_id },
@@ -122,7 +115,6 @@ const getTargetUserMotherDetails = async (
 };
 
 export const motherDetailsHelperFunctions = {
-  requiredUser,
   getTargetUser,
   getTargetUserMotherDetails,
 };

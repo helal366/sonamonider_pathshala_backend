@@ -1,10 +1,10 @@
 import { Prisma } from "#db-client";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { prisma } from "../../lib/prisma";
 import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
 import {
   IMotherDetails,
   ITargetUser,
-  LoggedInUser,
 } from "./motherDetails.interface";
 
 import {
@@ -18,7 +18,7 @@ import {
 // ============================================================
 const createMotherDetails = async (
   payload: TCreateMotherDetailsZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   const {
     user_id,
@@ -103,7 +103,7 @@ const createMotherDetails = async (
 // ============================================================
 const connectMotherDetails = async (
   payload: TConnectMotherDetailsZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   const { user_id, mother_details_id } = payload;
 
@@ -179,7 +179,7 @@ const connectMotherDetails = async (
 // ============================================================
 const disconnectMotherDetails = async (
   payload: TDisconnectMotherDetailsZodSchema,
-  loggedInUser: LoggedInUser,
+  loggedInUser: TLoggedInUser,
 ) => {
   const { user_id } = payload;
 
