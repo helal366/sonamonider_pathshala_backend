@@ -8,7 +8,6 @@ import { Prisma } from "#db-client";
 // ============================================================
 // CREATE SPOUSE INFORMATION SERVICE
 // ============================================================
-
 const createSpouseInformation = async (
   payload: TCreateSpouseInformationZodSchema,
   loggedInUser: TLoggedInUser,
@@ -185,6 +184,149 @@ const createSpouseInformation = async (
     };
   });
 };
+
+// ============================================================
+// DELETE SPOUSE INFORMATION SERVICE
+// ============================================================
+const deleteSpouseInformation = async (
+  payload: { user_id: string },
+  loggedInUser: TLoggedInUser,
+) => {
+  const { user_id } = payload;
+  return prisma.$transaction(async (transaction) => {
+    // CHECK TARGET USER
+    const targetUser = await transaction.user.findUnique({
+      where: { id: user_id },
+      select: {
+        id: true,
+        full_name: true,
+        spouse_information: {
+          include: { present_address: true, permanent_address: true },
+        },
+      },
+    });
+    if (!targetUser) {
+      throw new AppError("The provided user does not exist.", 404);
+    }
+
+    // CHECK SPOUSE INFORMATION
+    const spouseInformation = targetUser.spouse_information;
+    if (!spouseInformation) {
+      throw new AppError(
+        "Spouse information is not connected to this user.",
+        404,
+      );
+    }
+
+    // CREATE SPOUSE INFORMATION AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: spouseInformation.id,
+        entity_name: "SpouseInformation",
+        old_value: {
+          user_id,
+          full_name: spouseInformation.full_name,
+          contact_no: spouseInformation.contact_no,
+          father_name: spouseInformation.father_name,
+          father_contact_no: spouseInformation.father_contact_no,
+          mother_name: spouseInformation.mother_name,
+          mother_contact_no: spouseInformation.mother_contact_no,
+          occupation: spouseInformation.occupation,
+          job_title: spouseInformation.job_title,
+          monthly_income: spouseInformation.monthly_income,
+        },
+        new_value: Prisma.JsonNull,
+        action: "DELETE",
+        changed_by_id: loggedInUser.user_id,
+      },
+    });
+
+    // CREATE PRESENT ADDRESS AUDIT LOG
+    if (spouseInformation.present_address) {
+      const presentAddress = spouseInformation.present_address;
+      await transaction.auditLog.create({
+        data: {
+          entity_id: presentAddress.id,
+          entity_name: "PresentAddress",
+          old_value: {
+            spouse_id: spouseInformation.id,
+            house_no: presentAddress.house_no,
+            house_name: presentAddress.house_name,
+            plot_no: presentAddress.plot_no,
+            road_no: presentAddress.road_no,
+            neighbourhood: presentAddress.neighbourhood,
+            region: presentAddress.region,
+            village: presentAddress.village,
+            post_code: presentAddress.post_code,
+            post_office: presentAddress.post_office,
+            thana: presentAddress.thana,
+            district: presentAddress.district,
+            country: presentAddress.country,
+          },
+          new_value: Prisma.JsonNull,
+          action: "DELETE",
+          changed_by_id: loggedInUser.user_id,
+        },
+      });
+    }
+
+    // CREATE PERMANENT ADDRESS AUDIT LOG
+    if (spouseInformation.permanent_address) {
+      const permanentAddress = spouseInformation.permanent_address;
+      await transaction.auditLog.create({
+        data: {
+          entity_id: permanentAddress.id,
+          entity_name: "PermanentAddress",
+          old_value: {
+            spouse_id: spouseInformation.id,
+            house_no: permanentAddress.house_no,
+            house_name: permanentAddress.house_name,
+            plot_no: permanentAddress.plot_no,
+            road_no: permanentAddress.road_no,
+            neighbourhood: permanentAddress.neighbourhood,
+            region: permanentAddress.region,
+            village: permanentAddress.village,
+            post_code: permanentAddress.post_code,
+            post_office: permanentAddress.post_office,
+            thana: permanentAddress.thana,
+            district: permanentAddress.district,
+            country: permanentAddress.country,
+          },
+          new_value: Prisma.JsonNull,
+          action: "DELETE",
+          changed_by_id: loggedInUser.user_id,
+        },
+      });
+    }
+
+    // DELETE SPOUSE INFORMATION
+    // PresentAddress and PermanentAddress will be deleted
+    // automatically because spouse_id has onDelete: Cascade.
+    const deletedSpouseInformation = await transaction.spouseInformation.delete(
+      { where: { id: spouseInformation.id } },
+    );
+
+    // RETURN DELETED DATA
+    return {
+      ...deletedSpouseInformation,
+      present_address: spouseInformation.present_address,
+      permanent_address: spouseInformation.permanent_address,
+    };
+  });
+};
+
+
+// ============================================================
+// UPDATE SPOUSE FULL NAME SERVICE
+// ============================================================
+const updateSpouseName=async(
+   payload: { user_id: string },
+  loggedInUser: TLoggedInUser,
+)=>{
+
+}
 export const spouseInformationServices = {
   createSpouseInformation,
+  deleteSpouseInformation,
+  updateSpouseName
 };

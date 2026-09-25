@@ -4,7 +4,6 @@ import z4 from "zod/v4";
 // ======================================================
 // CREATE FATHER DETAILS
 // ======================================================
-
 export const createFatherDetailsZodSchema = z4.object({
   user_id: z4
     .string({
@@ -91,10 +90,8 @@ export type TCreateFatherDetailsZodSchema = z4.infer<
 // ======================================================
 // CONNECT FATHER DETAILS
 // ======================================================
-
 export const connectFatherDetailsZodSchema = z4.object({
   user_id: z4.string().trim(),
-
   father_details_id: z4.string().trim(),
 });
 
@@ -125,8 +122,8 @@ export type TDisconnectFatherDetailsZodSchema = z4.infer<
 
 export const updateFatherNameZodSchema = z4.object({
   user_id: z4.string().trim(),
-
-  father_name: z4.string("Invalid father name format.").trim(),
+  father_name: z4.string("Invalid father name format.")
+  .trim().min(2, "Father name is required."),
 });
 
 export type TUpdateFatherNameZodSchema = z4.infer<

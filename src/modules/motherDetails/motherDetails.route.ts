@@ -25,7 +25,6 @@ const router = Router();
 // ============================================================
 // CREATE MOTHER DETAILS
 // ============================================================
-
 router.post(
   "/create_mother_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -36,7 +35,6 @@ router.post(
 // ============================================================
 // CONNECT MOTHER DETAILS
 // ============================================================
-
 router.post(
   "/connect_mother_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -47,7 +45,6 @@ router.post(
 // ============================================================
 // PATCH MOTHER NAME
 // ============================================================
-
 router.patch(
   "/update_mother_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),

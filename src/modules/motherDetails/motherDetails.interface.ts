@@ -1,8 +1,6 @@
 import { EducationDegree } from "#db-client";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 
-
-
 export type TMotherDetailsPatchService = (
   payload: never,
   loggedInUser: TLoggedInUser,

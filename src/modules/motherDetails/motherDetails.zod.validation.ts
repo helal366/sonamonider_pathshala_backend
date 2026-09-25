@@ -4,7 +4,6 @@ import z4 from "zod/v4";
 // ============================================================
 // CREATE MOTHER DETAILS
 // ============================================================
-
 export const createMotherDetailsZodSchema = z4.object({
   user_id: z4.string({
     error: (issue) =>
@@ -58,7 +57,6 @@ export type TCreateMotherDetailsZodSchema = z4.infer<
 // ============================================================
 // CONNECT MOTHER DETAILS
 // ============================================================
-
 export const connectMotherDetailsZodSchema = z4.object({
   user_id: z4.string().trim(),
 
@@ -75,13 +73,12 @@ export type TConnectMotherDetailsZodSchema = z4.infer<
 
 export const updateMotherNameZodSchema = z4.object({
   user_id: z4.string().trim(),
-
   mother_name: z4.string({
     error: (issue) =>
       issue.input === undefined
         ? "Mother name is required."
         : "Invalid mother name.",
-  }).trim(),
+  }).trim().min(2, "Mother name is required."),
 });
 
 export type TUpdateMotherNameZodSchema = z4.infer<
