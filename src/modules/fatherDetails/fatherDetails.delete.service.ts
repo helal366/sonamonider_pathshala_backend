@@ -26,7 +26,7 @@ const deleteFatherNid = async (
         select: {
           id: true,
           nid_no: true,
-          father_name: true
+          father_name: true,
         },
       },
     },
@@ -71,14 +71,14 @@ const deleteFatherNid = async (
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             nid_no: targetUser.father_details?.nid_no,
           },
           new_value: {
             user_id,
             nid_no: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -113,7 +113,7 @@ const deleteFatherOccupation = async (
       father_details: {
         select: {
           id: true,
-          father_name:true,
+          father_name: true,
           occupation: true,
         },
       },
@@ -152,21 +152,21 @@ const deleteFatherOccupation = async (
         },
       });
 
-       // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
       await transaction.auditLog.create({
         data: {
           entity_id: fatherDetailsId,
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             occupation: targetUser.father_details?.occupation,
           },
           new_value: {
             user_id,
-            nid_no: null,
+            occupation: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -246,14 +246,14 @@ const deleteFatherJobTitle = async (
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             job_title: targetUser.father_details?.job_title,
           },
           new_value: {
             user_id,
             job_title: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -334,15 +334,15 @@ const deleteFatherEducationalQualification = async (
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             educational_qualification:
-                    targetUser.father_details?.educational_qualification,
+              targetUser.father_details?.educational_qualification,
           },
           new_value: {
             user_id,
-             educational_qualification: null,
+            educational_qualification: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -423,14 +423,14 @@ const deleteFatherMonthlyIncome = async (
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             monthly_income: targetUser.father_details?.monthly_income,
           },
           new_value: {
             user_id,
-             monthly_income: null,
+            monthly_income: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -503,21 +503,21 @@ const deleteFatherMobileNo1 = async (
         },
       });
 
-       // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
       await transaction.auditLog.create({
         data: {
           entity_id: fatherDetailsId,
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             mobile_no_1: targetUser.father_details?.mobile_no_1,
           },
           new_value: {
             user_id,
-             mobile_no_1: null,
+            mobile_no_1: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -590,22 +590,21 @@ const deleteFatherMobileNo2 = async (
         },
       });
 
-
-       // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
+      // 🚀 FIXED: Direct high-performance Audit Log creation passing mandatory changed_by_id
       await transaction.auditLog.create({
         data: {
           entity_id: fatherDetailsId,
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
+            father_name: targetUser.father_details?.father_name,
             mobile_no_2: targetUser.father_details?.mobile_no_2,
           },
           new_value: {
             user_id,
-             mobile_no_2: null,
+            mobile_no_2: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });
@@ -686,14 +685,14 @@ const deleteFatherMobileNo3 = async (
           entity_name: "FatherDetails",
           old_value: {
             user_id,
-             father_name: targetUser.father_details?.father_name,
-           mobile_no_3: targetUser.father_details?.mobile_no_3,
+            father_name: targetUser.father_details?.father_name,
+            mobile_no_3: targetUser.father_details?.mobile_no_3,
           },
           new_value: {
             user_id,
-             mobile_no_3: null,
+            mobile_no_3: null,
           },
-          action: "DELETE", 
+          action: "DELETE",
           changed_by_id: loggedInUser.user_id,
         },
       });

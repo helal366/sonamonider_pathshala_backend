@@ -13,9 +13,9 @@ model FatherDetails {
   user User[] @relation("user_father_details")
 
   created_by_id String?
-  created_by    User?           @relation("father_details_created_by", fields: [created_by_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  created_by    User?           @relation("father_details_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_id String?
-  updated_by    User?           @relation("father_details_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?           @relation("father_details_updated_by", fields: [updated_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

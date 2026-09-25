@@ -60,9 +60,8 @@ JSON: {
 }
 
 - POST /api/v1/smps/email/send_otp_forget_password
-JSON: {
-  
-}
+JSON: {}
+
 - POST /api/v1/smps/email/resend_otp_forget_password
 - POST /api/v1/smps/email/verify_email_forget_password
 

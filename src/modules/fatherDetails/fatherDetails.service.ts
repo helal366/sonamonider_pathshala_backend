@@ -238,7 +238,6 @@ const connectFatherDetails = async (
           entity_name: "FatherDetails",
           old_value: Prisma.JsonNull, // Represents connecting a new child user to this father
           new_value: {
-            action: "CONNECTED_TO_USER",
             user_id: user_id,
             user_full_name: targetUser.full_name,
             father_name: fatherDetails.father_name,
