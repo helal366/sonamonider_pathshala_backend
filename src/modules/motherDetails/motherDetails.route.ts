@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema";
-import { motherDetailsController } from "./motherDetails.controller";
-import { motherDetailsDeleteController } from "./motherDetails.delete.controller";
+import { userAuth } from "../../middlewares/userAuth.js";
+import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { motherDetailsController } from "./motherDetails.controller.js";
+import { motherDetailsDeleteController } from "./motherDetails.delete.controller.js";
 
 import {
   connectMotherDetailsZodSchema,

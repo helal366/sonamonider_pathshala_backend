@@ -1,18 +1,18 @@
 import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
+import { prisma } from "../../lib/prisma.js";
 import {
   clearCachePositions,
   findPositionExistence,
   getValidPositionNames,
 } from "../../helperFunctions/cachedData/cache_positions.js";
-import { prisma } from "../../lib/prisma.js";
 import {
   TCreatePositionZodSchema,
   TDeletePositionZodSchema,
   TUpdatePositionZodSchema,
 } from "./position.zod.validation.js";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
 
 // CREATE POSITION SERVICE LAYER
 const createPosition = async (

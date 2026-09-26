@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { userAuth } from "../../../middlewares/userAuth";
-import { validateZodSchema } from "../../../middlewares/validate.zod.schema";
+import { userAuth } from "../../../middlewares/userAuth.js";
+import { validateZodSchema } from "../../../middlewares/validate.zod.schema.js";
 import {
   createAddressZodSchema,
   deleteAddressFieldZodSchema,
   deleteAddressZodSchema,
   updateAddressFieldZodSchema,
-} from "../address.zod.validation";
+} from "../address.zod.validation.js";
 
 import {
   createUserPresentAddress,
@@ -26,7 +26,6 @@ import {
   deleteUserPresentAddressHouseNo,
   deleteUserPresentAddressHouseName,
   deleteUserPresentAddressPlotNo,
-  deleteUserPresentAddressRoadNo,
   deleteUserPresentAddressNeighbourhood,
   deleteUserPresentAddressRegion,
   deleteUserPresentAddressVillage,
@@ -55,7 +54,7 @@ import {
   deleteUserPermanentAddressVillage,
   deleteUserPermanentAddressPostCode,
   deleteUserPermanentAddressPostOffice,
-} from "./user.address.controller";
+} from "./user.address.controller.js";
 
 
 

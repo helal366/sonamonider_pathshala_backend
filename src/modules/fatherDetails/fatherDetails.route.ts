@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { fatherDetailsController } from "./fatherDetails.controller";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema";
-import { userAuth } from "../../middlewares/userAuth";
-import { fatherDetailsPatchController } from "./fatherDetails.patch.controller";
+import { fatherDetailsController } from "./fatherDetails.controller.js";
+import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { userAuth } from "../../middlewares/userAuth.js";
+import { fatherDetailsPatchController } from "./fatherDetails.patch.controller.js";
+import { fatherDetailsDeleteController } from "./fatherDetails.delete.controller.js";
 import {
   connectFatherDetailsZodSchema,
   createFatherDetailsZodSchema,
@@ -16,8 +17,7 @@ import {
   updateFatherMobileNo2ZodSchema,
   updateFatherMobileNo3ZodSchema,
   disconnectFatherDetailsZodSchema,
-} from "./fatherDetails.zod.validation";
-import { fatherDetailsDeleteController } from "./fatherDetails.delete.controller";
+} from "./fatherDetails.zod.validation.js";
 
 
 const router = Router();

@@ -1,19 +1,19 @@
 model PromotionHistory {
-  id                  String    @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Foreign Keys
   management_staff_id String
   management_staff    ManagementStaff @relation(fields: [management_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  position_id         String
-  position            UserPosition    @relation(fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  position_id String
+  position    UserPosition @relation(fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  role_id             String   
-  role                UserRole        @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade) 
+  role_id String
+  role    UserRole @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   // Metadata Fields
-  start_date          DateTime  @default(now())
-  end_date            DateTime? 
+  start_date DateTime  @default(now())
+  end_date   DateTime?
 
   @@index([management_staff_id])
   @@index([position_id])

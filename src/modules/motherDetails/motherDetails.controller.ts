@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { motherDetailsServices } from "./motherDetails.service";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { motherDetailsServices } from "./motherDetails.service.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import {
   TConnectMotherDetailsZodSchema,
   TCreateMotherDetailsZodSchema,
   TDisconnectMotherDetailsZodSchema,
-} from "./motherDetails.zod.validation";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
+} from "./motherDetails.zod.validation.js";
 
 
 // ============================================================

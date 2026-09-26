@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma";
-import { TCreateSpouseInformationZodSchema } from "./spouseInformation.zod.validation";
+import { TCreateSpouseInformationZodSchema } from "./spouseInformation.zod.validation.js";
 import { Prisma } from "#db-client";
 
 // ============================================================

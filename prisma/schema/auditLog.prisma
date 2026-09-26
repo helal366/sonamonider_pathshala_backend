@@ -9,7 +9,7 @@ model AuditLog {
   action    AuditAction
 
   changed_by_id String
-  changed_by    User @relation("audit_log_changed_by", fields: [changed_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  changed_by    User   @relation("audit_log_changed_by", fields: [changed_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   created_at DateTime @default(now())
 

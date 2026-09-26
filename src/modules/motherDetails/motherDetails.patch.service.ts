@@ -1,10 +1,11 @@
 import { StatusCodes } from "http-status-codes";
-import { EducationDegree, Prisma } from "#db-client";
+import {  Prisma } from "#db-client";
 
-import { prisma } from "../../lib/prisma";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
+import { prisma } from "../../lib/prisma.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction.js";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { MotherDetailsField, MotherDetailsValue } from "./motherDetails.interface.js";
 
 import {
   TUpdateMotherEducationalQualificationZodSchema,
@@ -16,9 +17,7 @@ import {
   TUpdateMotherNameZodSchema,
   TUpdateMotherNidZodSchema,
   TUpdateMotherOccupationZodSchema,
-} from "./motherDetails.zod.validation";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { MotherDetailsField, MotherDetailsValue } from "./motherDetails.interface";
+} from "./motherDetails.zod.validation.js";
 
 // ============================================================
 // UPDATE MOTHER DETAILS FIELD

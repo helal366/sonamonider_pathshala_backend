@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
-import { TMotherDetailsPatchService } from "./motherDetails.interface";
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
-import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { TMotherDetailsPatchService } from "./motherDetails.interface.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
-import { motherDetailsPatchServices } from "./motherDetails.patch.service";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
+import { motherDetailsPatchServices } from "./motherDetails.patch.service.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 
 const createPatchController = (
   service: TMotherDetailsPatchService,

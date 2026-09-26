@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { spouseInformationDeleteServices } from "./spouseInformation.delete.service";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { spouseInformationDeleteServices } from "./spouseInformation.delete.service.js";
 
 // ============================================================
 // DELETE SPOUSE CONTACT NO

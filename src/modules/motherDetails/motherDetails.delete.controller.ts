@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { motherDetailsDeleteServices } from "./motherDetails.delete.service";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { motherDetailsDeleteServices } from "./motherDetails.delete.service.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 
 type LoggedInUser = NonNullable<Express.Request["user"]>;
 

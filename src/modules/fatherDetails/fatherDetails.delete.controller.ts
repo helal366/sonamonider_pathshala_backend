@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-import { catchAsync } from "../../utils/catchAsync";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { fatherDetailsDeleteServices } from "./fatherDetails.delete.service.js";
 
 import {
   TDisconnectFatherDetailsZodSchema,
-} from "./fatherDetails.zod.validation";
-import { fatherDetailsDeleteServices } from "./fatherDetails.delete.service";
+} from "./fatherDetails.zod.validation.js";
 
 
 /**

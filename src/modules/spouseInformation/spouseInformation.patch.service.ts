@@ -1,11 +1,11 @@
 import { StatusCodes } from "http-status-codes";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma";
 import {
   SpouseInformationField,
   SpouseInformationValue,
-} from "./spouseInformation.interface";
+} from "./spouseInformation.interface.js";
 import {
   TUpdateSpouseNameZodSchema,
   TUpdateSpouseContactNoZodSchema,
@@ -16,7 +16,7 @@ import {
   TUpdateSpouseOccupationZodSchema,
   TUpdateSpouseJobTitleZodSchema,
   TUpdateSpouseMonthlyIncomeZodSchema,
-} from "./spouseInformation.zod.validation";
+} from "./spouseInformation.zod.validation.js";
 import { Prisma } from "#db-client";
 
 // ============================================================

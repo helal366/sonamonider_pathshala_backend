@@ -1,5 +1,5 @@
 model SpouseInformation {
-  id         String  @id @default(uuid())
+  id                String  @id @default(uuid())
   full_name         String
   contact_no        String?
   father_name       String?
@@ -13,17 +13,16 @@ model SpouseInformation {
   present_address   PresentAddress?
   permanent_address PermanentAddress?
 
-  user_id String?          @unique
-  user    User? @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_id String? @unique
+  user    User?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User? @relation("spouse_information_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  created_by    User?   @relation("spouse_information_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_id String?
-  updated_by    User? @relation("spouse_information_updated_by", fields: [updated_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  updated_by    User?   @relation("spouse_information_updated_by", fields: [updated_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  created_at    DateTime         @default(now())
-  updated_at    DateTime?        @updatedAt
-
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
   @@index([full_name])
   @@index([contact_no])

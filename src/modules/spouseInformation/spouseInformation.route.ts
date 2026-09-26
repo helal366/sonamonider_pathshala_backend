@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema";
-import { createSpouseInformationZodSchema, deleteSpouseInformationFieldZodSchema, deleteSpouseInformationZodSchema, updateSpouseContactNoZodSchema, updateSpouseFatherContactNoZodSchema, updateSpouseFatherNameZodSchema, updateSpouseJobTitleZodSchema, updateSpouseMonthlyIncomeZodSchema, updateSpouseMotherContactNoZodSchema, updateSpouseMotherNameZodSchema, updateSpouseNameZodSchema, updateSpouseOccupationZodSchema } from "./spouseInformation.zod.validation";
-import { spouseInformationController } from "./spouseInformation.controller";
-import { spouseInformationPatchController } from "./spouseInformation.patch.controller";
-import { spouseInformationDeleteController } from "./spouseInformation.delete.controller";
+import { userAuth } from "../../middlewares/userAuth.js";
+import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { createSpouseInformationZodSchema, deleteSpouseInformationFieldZodSchema, deleteSpouseInformationZodSchema, updateSpouseContactNoZodSchema, updateSpouseFatherContactNoZodSchema, updateSpouseFatherNameZodSchema, updateSpouseJobTitleZodSchema, updateSpouseMonthlyIncomeZodSchema, updateSpouseMotherContactNoZodSchema, updateSpouseMotherNameZodSchema, updateSpouseNameZodSchema, updateSpouseOccupationZodSchema } from "./spouseInformation.zod.validation.js";
+import { spouseInformationController } from "./spouseInformation.controller.js";
+import { spouseInformationPatchController } from "./spouseInformation.patch.controller.js";
+import { spouseInformationDeleteController } from "./spouseInformation.delete.controller.js";
 
 const router = Router();
 

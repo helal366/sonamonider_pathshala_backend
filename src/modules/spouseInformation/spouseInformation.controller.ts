@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
+import { catchAsync } from "../../utils/catchAsync.js";
 import { StatusCodes } from "http-status-codes";
-import { sendResponse } from "../../utils/sendResponse";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
-import { spouseInformationServices } from "./spouseInformation.service";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { spouseInformationServices } from "./spouseInformation.service.js";
 
 // ============================================================
 // CREATE SPOUSE INFORMATION CONTROLLER

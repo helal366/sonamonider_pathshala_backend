@@ -8,12 +8,12 @@ model UserPosition {
   current_management_staffs ManagementStaff[] @relation("management_current_position")
   user                      User[]            @relation("user_position_relation")
 
-  promotion_history        PromotionHistory[] 
+  promotion_history PromotionHistory[]
 
   created_by_id String?
-  created_by    User?           @relation("user_position_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  created_by    User?   @relation("user_position_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_id String?
-  updated_by    User?           @relation("user_position_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?   @relation("user_position_updated_by", fields: [updated_by_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

@@ -4,17 +4,17 @@ import httpStatus from "http-status-codes";
 import {
   AddressOwnerType,
   AddressType,
-} from "../address.interface";
+} from "../address.interface.js";
 
 import {
   createAddress,
   deleteAddress,
   updateAddressField,
   deleteAddressField,
-} from "../address.service";
+} from "../address.service.js";
 
-import { sendResponse } from "../../../utils/sendResponse";
-import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions";
+import { sendResponse } from "../../../utils/sendResponse.js";
+import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
 
 
 // ============================================================

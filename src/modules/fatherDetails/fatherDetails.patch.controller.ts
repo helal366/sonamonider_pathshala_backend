@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { sendResponse } from "../../utils/sendResponse";
-import { fatherDetailsPatchServices } from "./fatherDetails.patch.service";
-import { catchAsync } from "../../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { sendResponse } from "../../utils/sendResponse.js";
+import { fatherDetailsPatchServices } from "./fatherDetails.patch.service.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import {
     TUpdateFatherNameZodSchema,
     TUpdateFatherNidZodSchema,
@@ -14,7 +14,7 @@ import {
     TUpdateFatherMobileNo1ZodSchema,
     TUpdateFatherMobileNo2ZodSchema,
     TUpdateFatherMobileNo3ZodSchema,
-} from "./fatherDetails.zod.validation";
+} from "./fatherDetails.zod.validation.js";
 
 
 // ======================================================

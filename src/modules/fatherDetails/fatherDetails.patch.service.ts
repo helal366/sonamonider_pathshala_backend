@@ -1,6 +1,7 @@
+import { EducationDegree } from "#db-client";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
 import {
   TUpdateFatherEducationalQualificationZodSchema,
   TUpdateFatherJobTitleZodSchema,
@@ -11,8 +12,7 @@ import {
   TUpdateFatherNameZodSchema,
   TUpdateFatherNidZodSchema,
   TUpdateFatherOccupationZodSchema,
-} from "./fatherDetails.zod.validation";
-import { EducationDegree } from "#db-client";
+} from "./fatherDetails.zod.validation.js";
 
 // ======================================================
 // UPDATE FATHER NAME

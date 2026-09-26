@@ -1,13 +1,7 @@
 model User {
-  id        String @id @default(uuid())
-  full_name String
+  id String @id @default(uuid())
 
-  mobile_number      String
-  is_mobile_verified Boolean @default(false)
-
-  email             String? @unique
-  is_email_verified Boolean @default(false)
-
+  full_name                String
   gender                   Gender
   blood_group              BloodGroup?
   date_of_birth            DateTime?
@@ -19,17 +13,23 @@ model User {
   nid_number               String?
   photo_url                String?
 
+  mobile_number      String
+  is_mobile_verified Boolean @default(false)
+
+  email             String? @unique
+  is_email_verified Boolean @default(false)
+
   user_name     String? @unique
   user_password String?
 
   active_status ActiveStatus @default(ACTIVE)
   is_deleted    Boolean      @default(false)
 
-  role_id String?
-  current_role    UserRole? @relation("user_role_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  role_id      String?
+  current_role UserRole? @relation("user_role_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  position_id String?
-  current_position    UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  position_id      String?
+  current_position UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_profile ManagementStaff?
 
@@ -38,32 +38,32 @@ model User {
 
   audit_logs AuditLog[] @relation("audit_log_changed_by")
 
-  created_academic_results    AcademicResult[]    @relation("academic_result_created_by")
-  updated_academic_results    AcademicResult[]    @relation("academic_result_updated_by")
+  created_academic_results AcademicResult[] @relation("academic_result_created_by")
+  updated_academic_results AcademicResult[] @relation("academic_result_updated_by")
 
-  created_father_details      FatherDetails[]     @relation("father_details_created_by")
-  updated_father_details      FatherDetails[]     @relation("father_details_updated_by")
+  created_father_details FatherDetails[] @relation("father_details_created_by")
+  updated_father_details FatherDetails[] @relation("father_details_updated_by")
 
-  created_mother_details      MotherDetails[]     @relation("mother_details_created_by")
-  updated_mother_details      MotherDetails[]     @relation("mother_details_updated_by")
+  created_mother_details MotherDetails[] @relation("mother_details_created_by")
+  updated_mother_details MotherDetails[] @relation("mother_details_updated_by")
 
-  created_permanent_addresses PermanentAddress[]  @relation("permanent_address_created_by")
-  updated_permanent_addresses PermanentAddress[]  @relation("permanent_address_updated_by")
+  created_permanent_addresses PermanentAddress[] @relation("permanent_address_created_by")
+  updated_permanent_addresses PermanentAddress[] @relation("permanent_address_updated_by")
 
-  created_present_addresses   PresentAddress[]    @relation("present_address_created_by")
-  updated_present_addresses   PresentAddress[]    @relation("present_address_updated_by")
+  created_present_addresses PresentAddress[] @relation("present_address_created_by")
+  updated_present_addresses PresentAddress[] @relation("present_address_updated_by")
 
-  created_spouse_information  SpouseInformation[] @relation("spouse_information_created_by")
-  updated_spouse_information  SpouseInformation[] @relation("spouse_information_updated_by")
+  created_spouse_information SpouseInformation[] @relation("spouse_information_created_by")
+  updated_spouse_information SpouseInformation[] @relation("spouse_information_updated_by")
 
-  created_users               User[]              @relation("user_created_by")
-  updated_users               User[]              @relation("user_updated_by")
+  created_users User[] @relation("user_created_by")
+  updated_users User[] @relation("user_updated_by")
 
-  created_positions           UserPosition[]      @relation("user_position_created_by")
-  updated_positions           UserPosition[]      @relation("user_position_updated_by")
+  created_positions UserPosition[] @relation("user_position_created_by")
+  updated_positions UserPosition[] @relation("user_position_updated_by")
 
-  created_roles               UserRole[]          @relation("role_created_by")
-  updated_roles               UserRole[]          @relation("role_updated_by")
+  created_roles UserRole[] @relation("role_created_by")
+  updated_roles UserRole[] @relation("role_updated_by")
 
   father_details_id String?
   father_details    FatherDetails? @relation("user_father_details", fields: [father_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -77,9 +77,9 @@ model User {
   present_address   PresentAddress?
 
   created_by_id String?
-  created_by    User?           @relation("user_created_by", fields: [created_by_id], references: [id])
+  created_by    User?   @relation("user_created_by", fields: [created_by_id], references: [id])
   updated_by_id String?
-  updated_by    User?           @relation("user_updated_by", fields: [updated_by_id], references: [id])
+  updated_by    User?   @relation("user_updated_by", fields: [updated_by_id], references: [id])
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

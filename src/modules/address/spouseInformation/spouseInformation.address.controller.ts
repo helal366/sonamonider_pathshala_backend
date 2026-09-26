@@ -6,11 +6,11 @@ import {
   deleteAddress,
   updateAddressField,
   deleteAddressField,
-} from "../address.service";
+} from "../address.service.js";
 
-import { sendResponse } from "../../../utils/sendResponse";
-import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions";
-import { AddressOwnerType, AddressType } from "../address.interface";
+import { sendResponse } from "../../../utils/sendResponse.js";
+import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
+import { AddressOwnerType, AddressType } from "../address.interface.js";
 
 // ============================================================
 // SPOUSE INFORMATION PRESENT ADDRESS

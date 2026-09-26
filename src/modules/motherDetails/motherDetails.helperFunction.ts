@@ -1,7 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
-import { Request } from "express";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
 
 interface ITargetUserMotherDetailsPayload {
   user_id: string;

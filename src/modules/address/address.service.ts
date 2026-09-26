@@ -1,8 +1,8 @@
 import { Prisma } from "#db-client";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
 
-import { AddressOwnerType, AddressType } from "./address.interface";
+import { AddressOwnerType, AddressType } from "./address.interface.js";
 
 // ============================================================
 // ADDRESS FIELD TYPES

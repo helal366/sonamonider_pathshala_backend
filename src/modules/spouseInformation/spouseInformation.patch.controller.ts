@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 import { Request, Response } from "express";
-import { spouseInformationPatchServices } from "./spouseInformation.patch.service";
+import { spouseInformationPatchServices } from "./spouseInformation.patch.service.js";
 
 // ============================================================
 // UPDATE SPOUSE FULL NAME CONTROLLER

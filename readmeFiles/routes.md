@@ -46,6 +46,202 @@
   "promoted_date": "PROMOTION ISO DATE STRING"
   }
 
+
+### User Patch Routes
+
+1. Update Full Name
+
+- PATCH `/api/v1/smps/user_patch/update_full_name`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "full_name": "John Doe"
+}
+````
+
+2. Update Gender
+* PATCH `/api/v1/smps/user_patch/update_gender`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "gender": "MALE"
+}
+```
+
+3. Update Blood Group
+* PATCH `/api/v1/smps/user_patch/update_blood_group`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "blood_group": "A_POSITIVE"
+}
+```
+
+4. Update Date of Birth
+* PATCH `/api/v1/smps/user_patch/update_date_of_birth`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "date_of_birth": "2005-05-15"
+}
+```
+
+5. Update Height
+* PATCH `/api/v1/smps/user_patch/update_height_in_cm`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "height_in_cm": 170
+}
+```
+
+6. Update Weight
+* PATCH `/api/v1/smps/user_patch/update_weight_in_kg`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "weight_in_kg": 65
+}
+```
+
+7. Update Religion
+* PATCH `/api/v1/smps/user_patch/update_religion`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "religion": "ISLAM"
+}
+```
+
+8. Update Nationality
+* PATCH `/api/v1/smps/user_patch/update_nationality`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "nationality": "Bangladeshi"
+}
+```
+
+9. Update Birth Certificate Number
+* PATCH `/api/v1/smps/user_patch/update_birth_certificate_number`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "birth_certificate_number": "12345678901234567"
+}
+```
+
+10. Update NID Number
+* PATCH `/api/v1/smps/user_patch/update_nid_number`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "nid_number": "1234567890"
+}
+```
+
+11. Update Photo URL
+* PATCH `/api/v1/smps/user_patch/update_photo_url`
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "photo_url": "https://example.com/profile.jpg"
+}
+```
+
+### User Delete Routes
+
+> Delete routes only clear the selected field by setting its value to `null`.
+> The User record itself is not deleted.
+
+1. Delete Blood Group
+* DELETE `/api/v1/smps/user_delete/delete_blood_group`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+2. Delete Date of Birth
+* DELETE `/api/v1/smps/user_delete/delete_date_of_birth`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+3. Delete Height
+* DELETE `/api/v1/smps/user_delete/delete_height_in_cm`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+4. Delete Weight
+* DELETE `/api/v1/smps/user_delete/delete_weight_in_kg`
+JSON:
+
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+5. Delete Religion
+* DELETE `/api/v1/smps/user_delete/delete_religion`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+6. Delete Birth Certificate Number
+* DELETE `/api/v1/smps/user_delete/delete_birth_certificate_number`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+7. Delete NID Number
+* DELETE `/api/v1/smps/user_delete/delete_nid_number`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+8. Delete Photo URL
+* DELETE `/api/v1/smps/user_delete/delete_photo_url`
+JSON:
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+```
+**Note:** For `blood_group` and `religion`, I used example enum values. Replace `A_POSITIVE` / `ISLAM` with the exact enum members from your Prisma schema if they differ.
+```
+
 ### Email routes
 
 - POST /api/v1/smps/email/verify_email

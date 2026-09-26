@@ -1,15 +1,15 @@
 import { StatusCodes } from "http-status-codes";
+import { EducationDegree, Prisma } from "#db-client";
+import { prisma } from "../../lib/prisma.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 
 import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
   TDisconnectFatherDetailsZodSchema,
-} from "./fatherDetails.zod.validation";
+} from "./fatherDetails.zod.validation.js";
 
-import { prisma } from "../../lib/prisma";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 
-import { EducationDegree, Prisma } from "#db-client";
 
 // ======================================================
 // CREATE FATHER DETAILS

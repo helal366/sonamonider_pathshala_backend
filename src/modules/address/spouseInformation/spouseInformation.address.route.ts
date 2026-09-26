@@ -5,7 +5,7 @@ import {
   deleteAddressFieldZodSchema,
   deleteAddressZodSchema,
   updateAddressFieldZodSchema,
-} from "../address.zod.validation";
+} from "../address.zod.validation.js";
 
 import {
   createSpouseInformationPresentAddress,
@@ -55,10 +55,10 @@ import {
   deleteSpouseInformationPermanentAddressVillage,
   deleteSpouseInformationPermanentAddressPostCode,
   deleteSpouseInformationPermanentAddressPostOffice,
-} from "./spouseInformation.address.controller";
+} from "./spouseInformation.address.controller.js";
 
-import { userAuth } from "../../../middlewares/userAuth";
-import { validateZodSchema } from "../../../middlewares/validate.zod.schema";
+import { userAuth } from "../../../middlewares/userAuth.js";
+import { validateZodSchema } from "../../../middlewares/validate.zod.schema.js";
 
 const router = Router();
 

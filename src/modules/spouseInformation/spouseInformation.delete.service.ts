@@ -3,10 +3,10 @@
 // ============================================================
 import { StatusCodes } from "http-status-codes";
 import { Prisma } from "#db-client";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma";
-import { SpouseInformationDeleteField, SpouseInformationDeleteValue } from "./spouseInformation.interface";
+import { SpouseInformationDeleteField, SpouseInformationDeleteValue } from "./spouseInformation.interface.js";
 import {
   TDeleteSpouseInformationFieldZodSchema,
 } from "./spouseInformation.zod.validation";

@@ -1,9 +1,7 @@
 import { StatusCodes } from "http-status-codes";
-
-import { TDisconnectFatherDetailsZodSchema } from "./fatherDetails.zod.validation";
-
-import { prisma } from "../../lib/prisma";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { TDisconnectFatherDetailsZodSchema } from "./fatherDetails.zod.validation.js";
+import { prisma } from "../../lib/prisma.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 
 // ======================================================
 // DELETE FATHER NID

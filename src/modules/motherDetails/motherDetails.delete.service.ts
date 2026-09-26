@@ -1,9 +1,7 @@
 import { EducationDegree, Prisma } from "#db-client";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-
-import { prisma } from "../../lib/prisma";
-
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { prisma } from "../../lib/prisma.js";
+import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction.js";
 
 type MotherDetailsDeleteField =
   | "nid_no"

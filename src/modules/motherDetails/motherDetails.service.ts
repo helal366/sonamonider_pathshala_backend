@@ -1,7 +1,7 @@
 import { Prisma } from "#db-client";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { prisma } from "../../lib/prisma";
-import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction";
+import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction.js";
 import {
   IMotherDetails,
   ITargetUser,

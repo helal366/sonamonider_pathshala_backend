@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { StatusCodes } from "http-status-codes";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 
 import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
   TDisconnectFatherDetailsZodSchema,
-} from "./fatherDetails.zod.validation";
+} from "./fatherDetails.zod.validation.js";
 
-import { fatherDetailsServices } from "./fatherDetails.service";
-import { sendResponse } from "../../utils/sendResponse";
+import { fatherDetailsServices } from "./fatherDetails.service.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 
 // ======================================================
 // CREATE FATHER DETAILS
