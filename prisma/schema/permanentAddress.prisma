@@ -7,7 +7,7 @@ model PermanentAddress {
   neighbourhood String?
   region        String?
   village       String?
-  post_code     Int?
+  post_code     String?
   post_office   String?
   thana         String
   district      String

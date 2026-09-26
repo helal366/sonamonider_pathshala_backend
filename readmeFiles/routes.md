@@ -341,4 +341,158 @@ JSON: {
 }
 
 
-### Spouse information 
+### Spouse Information
+
+* POST /api/v1/smps/spouse_information/create
+
+JSON: {
+
+  "user_id": "USER_UUID",
+  "full_name": "USER SPOUSE FULL NAME",
+  "contact_no": "USER SPOUSE CONTACT NUMBER",
+  "father_name": "USER SPOUSE FATHER NAME",
+  "father_contact_no": "USER SPOUSE FATHER CONTACT NUMBER",
+  "mother_name": "USER SPOUSE MOTHER NAME",
+  "mother_contact_no": "USER SPOUSE MOTHER CONTACT NUMBER",
+  "occupation": "USER SPOUSE OCCUPATION",
+  "job_title": "USER SPOUSE JOB TITLE",
+  "monthly_income": "USER SPOUSE MONTHLY INCOME",
+  "present_address": {
+    "house_no": "HOUSE NUMBER",
+    "house_name": "HOUSE NAME",
+    "plot_no": "PLOT NUMBER",
+    "road_no": "ROAD NUMBER",
+    "neighbourhood": "NEIGHBOURHOOD",
+    "region": "REGION",
+    "village": "VILLAGE",
+    "post_code": 1234,
+    "post_office": "POST OFFICE",
+    "thana": "THANA",
+    "district": "DISTRICT",
+    "country": "Bangladesh"
+  },
+
+  "permanent_address": {
+    "house_no": "HOUSE NUMBER",
+    "house_name": "HOUSE NAME",
+    "plot_no": "PLOT NUMBER",
+    "road_no": "ROAD NUMBER",
+    "neighbourhood": "NEIGHBOURHOOD",
+    "region": "REGION",
+    "village": "VILLAGE",
+    "post_code": 1234,
+    "post_office": "POST OFFICE",
+    "thana": "THANA",
+    "district": "DISTRICT",
+    "country": "Bangladesh"
+  }
+
+  }
+
+------> Only `user_id` and `full_name` are required here. All other spouse fields are optional. `present_address` and `permanent_address` are also optional. See the Zod schema to get the full requirement.
+
+* DELETE /api/v1/smps/spouse_information/delete
+  JSON: {
+    "user_id": "USER_UUID"
+  }
+------> This deletes the complete spouse information of the specified user, including the connected present and permanent addresses.
+
+* PATCH /api/v1/smps/spouse_information/update_full_name
+  JSON: {
+  "user_id": "USER_UUID",
+  "full_name": "USER SPOUSE FULL NAME"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_contact_no
+  JSON: {
+  "user_id": "USER_UUID",
+  "contact_no": "USER SPOUSE CONTACT NUMBER"
+  }
+
+------> `contact_no` can be set to `null` when clearing the value.
+
+* PATCH /api/v1/smps/spouse_information/update_father_name
+  JSON: {
+  "user_id": "USER_UUID",
+  "father_name": "USER SPOUSE FATHER NAME"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_father_contact_no
+  JSON: {
+  "user_id": "USER_UUID",
+  "father_contact_no": "USER SPOUSE FATHER CONTACT NUMBER"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_mother_name
+  JSON: {
+  "user_id": "USER_UUID",
+  "mother_name": "USER SPOUSE MOTHER NAME"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_mother_contact_no
+  JSON: {
+  "user_id": "USER_UUID",
+  "mother_contact_no": "USER SPOUSE MOTHER CONTACT NUMBER"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_occupation
+  JSON: {
+  "user_id": "USER_UUID",
+  "occupation": "USER SPOUSE OCCUPATION"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_job_title
+  JSON: {
+  "user_id": "USER_UUID",
+  "job_title": "USER SPOUSE JOB TITLE"
+  }
+
+* PATCH /api/v1/smps/spouse_information/update_monthly_income
+  JSON: {
+  "user_id": "USER_UUID",
+  "monthly_income": "USER SPOUSE MONTHLY INCOME"
+  }
+
+------> The PATCH endpoints for nullable fields accept `null` when you want to clear the existing value.
+
+* DELETE /api/v1/smps/spouse_information/delete_contact_no
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_father_name
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_father_contact_no
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_mother_name
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_mother_contact_no
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_occupation
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_job_title
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+* DELETE /api/v1/smps/spouse_information/delete_monthly_income
+  JSON: {
+  "user_id": "USER_UUID"
+  }
+
+------> The field DELETE endpoints set the selected optional field to `null`. There is no `delete_full_name` endpoint because `full_name` is required.
