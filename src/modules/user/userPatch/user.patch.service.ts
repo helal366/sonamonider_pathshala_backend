@@ -1,6 +1,3 @@
-
-
-
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
@@ -62,7 +59,6 @@ export const updateUserFullNameService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE GENDER
 // ============================================================
@@ -119,7 +115,6 @@ export const updateUserGenderService = async (
     return updatedUser;
   });
 };
-
 
 // ============================================================
 // UPDATE BLOOD GROUP
@@ -178,7 +173,6 @@ export const updateUserBloodGroupService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE DATE OF BIRTH
 // ============================================================
@@ -235,7 +229,6 @@ export const updateUserDateOfBirthService = async (
     return updatedUser;
   });
 };
-
 
 // ============================================================
 // UPDATE HEIGHT
@@ -294,7 +287,6 @@ export const updateUserHeightService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE WEIGHT
 // ============================================================
@@ -351,7 +343,6 @@ export const updateUserWeightService = async (
     return updatedUser;
   });
 };
-
 
 // ============================================================
 // UPDATE RELIGION
@@ -410,7 +401,6 @@ export const updateUserReligionService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE NATIONALITY
 // ============================================================
@@ -467,7 +457,6 @@ export const updateUserNationalityService = async (
     return updatedUser;
   });
 };
-
 
 // ============================================================
 // UPDATE BIRTH CERTIFICATE NUMBER
@@ -526,7 +515,6 @@ export const updateUserBirthCertificateNumberService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE NID NUMBER
 // ============================================================
@@ -584,7 +572,6 @@ export const updateUserNidNumberService = async (
   });
 };
 
-
 // ============================================================
 // UPDATE PHOTO URL
 // ============================================================
@@ -638,6 +625,89 @@ export const updateUserPhotoUrlService = async (
       },
     });
 
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE MOBILE NUMBER
+// ============================================================
+export const updateUserMobileNumberService = async (
+  userId: string,
+  mobileNumber: string,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, mobile_number: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        mobile_number: mobileNumber,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { mobile_number: user.mobile_number },
+        new_value: { mobile_number: updatedUser.mobile_number },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE EMAIL NUMBER
+// ============================================================
+
+export const updateUserEmailService = async (
+  userId: string,
+  email: string,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // CHECK EMAIL ALREADY EXISTS
+    const existingUser = await transaction.user.findFirst({
+      where: { email, NOT: { id: userId } },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      throw new AppError("Email is already in use.", 409);
+    }
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: { email, updated_by: { connect: { id: loggedInUser.user_id } } },
+    });
+
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { email: user.email },
+        new_value: { email: updatedUser.email },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
     return updatedUser;
   });
 };

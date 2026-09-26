@@ -13,11 +13,12 @@ import {
   updateUserBirthCertificateNumberService,
   updateUserNidNumberService,
   updateUserPhotoUrlService,
+  updateUserMobileNumberService,
+  updateUserEmailService,
 } from "./user.patch.service.js";
 import { catchAsync } from "../../../utils/catchAsync.js";
 import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
 import { sendResponse } from "../../../utils/sendResponse.js";
-
 
 // ============================================================
 // UPDATE FULL NAME
@@ -42,7 +43,6 @@ export const updateUserFullName = catchAsync(
   },
 );
 
-
 // ============================================================
 // UPDATE GENDER
 // ============================================================
@@ -65,7 +65,6 @@ export const updateUserGender = catchAsync(
     });
   },
 );
-
 
 // ============================================================
 // UPDATE BLOOD GROUP
@@ -90,7 +89,6 @@ export const updateUserBloodGroup = catchAsync(
   },
 );
 
-
 // ============================================================
 // UPDATE DATE OF BIRTH
 // ============================================================
@@ -113,7 +111,6 @@ export const updateUserDateOfBirth = catchAsync(
     });
   },
 );
-
 
 // ============================================================
 // UPDATE HEIGHT
@@ -138,7 +135,6 @@ export const updateUserHeight = catchAsync(
   },
 );
 
-
 // ============================================================
 // UPDATE WEIGHT
 // ============================================================
@@ -161,7 +157,6 @@ export const updateUserWeight = catchAsync(
     });
   },
 );
-
 
 // ============================================================
 // UPDATE RELIGION
@@ -186,7 +181,6 @@ export const updateUserReligion = catchAsync(
   },
 );
 
-
 // ============================================================
 // UPDATE NATIONALITY
 // ============================================================
@@ -209,7 +203,6 @@ export const updateUserNationality = catchAsync(
     });
   },
 );
-
 
 // ============================================================
 // UPDATE BIRTH CERTIFICATE NUMBER
@@ -234,7 +227,6 @@ export const updateUserBirthCertificateNumber = catchAsync(
   },
 );
 
-
 // ============================================================
 // UPDATE NID NUMBER
 // ============================================================
@@ -257,7 +249,6 @@ export const updateUserNidNumber = catchAsync(
     });
   },
 );
-
 
 // ============================================================
 // UPDATE PHOTO URL
@@ -282,3 +273,42 @@ export const updateUserPhotoUrl = catchAsync(
   },
 );
 
+// ============================================================
+// UPDATE MOBILE NUMBER
+// ============================================================
+export const updateUserMobileNumber = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserMobileNumberService(
+      req.body.user_id,
+      req.body.mobile_number,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User mobile number updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE EMAIL NUMBER
+// ============================================================
+export const updateUserEmail = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserEmailService(
+      req.body.user_id,
+      req.body.email,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User email updated successfully.",
+      data: result,
+    });
+  },
+);

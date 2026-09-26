@@ -12,6 +12,8 @@ import {
   updateUserBirthCertificateNumber,
   updateUserNidNumber,
   updateUserPhotoUrl,
+  updateUserMobileNumber,
+  updateUserEmail,
 } from "./user.patch.controller.js";
 
 import {
@@ -26,6 +28,8 @@ import {
   updateUserBirthCertificateNumberZodSchema,
   updateUserNidNumberZodSchema,
   updateUserPhotoUrlZodSchema,
+  updateUserMobileNumberZodSchema,
+  updateUserEmailZodSchema,
 } from "./user.patch.zod.validation.js";
 
 import { userAuth } from "../../../middlewares/userAuth.js";
@@ -44,7 +48,6 @@ router.patch(
   updateUserFullName,
 );
 
-
 // ============================================================
 // UPDATE GENDER
 // ============================================================
@@ -55,7 +58,6 @@ router.patch(
   validateZodSchema(updateUserGenderZodSchema),
   updateUserGender,
 );
-
 
 // ============================================================
 // UPDATE BLOOD GROUP
@@ -68,7 +70,6 @@ router.patch(
   updateUserBloodGroup,
 );
 
-
 // ============================================================
 // UPDATE DATE OF BIRTH
 // ============================================================
@@ -79,7 +80,6 @@ router.patch(
   validateZodSchema(updateUserDateOfBirthZodSchema),
   updateUserDateOfBirth,
 );
-
 
 // ============================================================
 // UPDATE HEIGHT
@@ -92,7 +92,6 @@ router.patch(
   updateUserHeight,
 );
 
-
 // ============================================================
 // UPDATE WEIGHT
 // ============================================================
@@ -103,7 +102,6 @@ router.patch(
   validateZodSchema(updateUserWeightZodSchema),
   updateUserWeight,
 );
-
 
 // ============================================================
 // UPDATE RELIGION
@@ -116,7 +114,6 @@ router.patch(
   updateUserReligion,
 );
 
-
 // ============================================================
 // UPDATE NATIONALITY
 // ============================================================
@@ -127,7 +124,6 @@ router.patch(
   validateZodSchema(updateUserNationalityZodSchema),
   updateUserNationality,
 );
-
 
 // ============================================================
 // UPDATE BIRTH CERTIFICATE NUMBER
@@ -140,7 +136,6 @@ router.patch(
   updateUserBirthCertificateNumber,
 );
 
-
 // ============================================================
 // UPDATE NID NUMBER
 // ============================================================
@@ -151,7 +146,6 @@ router.patch(
   validateZodSchema(updateUserNidNumberZodSchema),
   updateUserNidNumber,
 );
-
 
 // ============================================================
 // UPDATE PHOTO URL
@@ -164,5 +158,23 @@ router.patch(
   updateUserPhotoUrl,
 );
 
-
+// ============================================================
+// UPDATE MOBILE NUMBER
+// ============================================================
+router.patch(
+  "/update_mobile_number",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateUserMobileNumberZodSchema),
+  updateUserMobileNumber,
+);
 export const userPatchRouter: Router = router;
+
+// ============================================================
+// UPDATE EMAIL NUMBER
+// ============================================================
+router.patch(
+  "/update_email",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateUserEmailZodSchema),
+  updateUserEmail,
+);
