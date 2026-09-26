@@ -1,40 +1,19 @@
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { Request, Response } from "express";
-import { spouseInformationPatchServices } from "./spouseInformation.patch.service";
+import { spouseInformationDeleteServices } from "./spouseInformation.delete.service";
 
 // ============================================================
-// UPDATE SPOUSE FULL NAME CONTROLLER
+// DELETE SPOUSE CONTACT NO
 // ============================================================
-const updateSpouseName=  catchAsync(
-  async (req: Request, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await spouseInformationPatchServices.updateSpouseName(
-      req.body,
-      loggedInUser,
-    );
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Spouse information updated successfully.",
-      data: result,
-    });
-  },
-);
-
-
-// ============================================================
-// UPDATE SPOUSE CONTACT NO CONTROLLER
-// ============================================================
-
-const updateSpouseContactNo = catchAsync(
+const deleteSpouseContactNo = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseContactNo(
+      await spouseInformationDeleteServices.deleteSpouseContactNo(
         req.body,
         loggedInUser,
       );
@@ -42,22 +21,21 @@ const updateSpouseContactNo = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse contact no deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE FATHER NAME CONTROLLER
+// DELETE SPOUSE FATHER NAME
 // ============================================================
-
-const updateSpouseFatherName = catchAsync(
+const deleteSpouseFatherName = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseFatherName(
+      await spouseInformationDeleteServices.deleteSpouseFatherName(
         req.body,
         loggedInUser,
       );
@@ -65,22 +43,21 @@ const updateSpouseFatherName = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse father name deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE FATHER CONTACT NO CONTROLLER
+// DELETE SPOUSE FATHER CONTACT NO
 // ============================================================
-
-const updateSpouseFatherContactNo = catchAsync(
+const deleteSpouseFatherContactNo = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseFatherContactNo(
+      await spouseInformationDeleteServices.deleteSpouseFatherContactNo(
         req.body,
         loggedInUser,
       );
@@ -88,22 +65,21 @@ const updateSpouseFatherContactNo = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse father contact no deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE MOTHER NAME CONTROLLER
+// DELETE SPOUSE MOTHER NAME
 // ============================================================
-
-const updateSpouseMotherName = catchAsync(
+const deleteSpouseMotherName = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseMotherName(
+      await spouseInformationDeleteServices.deleteSpouseMotherName(
         req.body,
         loggedInUser,
       );
@@ -111,22 +87,21 @@ const updateSpouseMotherName = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse mother name deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE MOTHER CONTACT NO CONTROLLER
+// DELETE SPOUSE MOTHER CONTACT NO
 // ============================================================
-
-const updateSpouseMotherContactNo = catchAsync(
+const deleteSpouseMotherContactNo = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseMotherContactNo(
+      await spouseInformationDeleteServices.deleteSpouseMotherContactNo(
         req.body,
         loggedInUser,
       );
@@ -134,22 +109,21 @@ const updateSpouseMotherContactNo = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse mother contact no deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE OCCUPATION CONTROLLER
+// DELETE SPOUSE OCCUPATION
 // ============================================================
-
-const updateSpouseOccupation = catchAsync(
+const deleteSpouseOccupation = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseOccupation(
+      await spouseInformationDeleteServices.deleteSpouseOccupation(
         req.body,
         loggedInUser,
       );
@@ -157,22 +131,21 @@ const updateSpouseOccupation = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse occupation deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE JOB TITLE CONTROLLER
+// DELETE SPOUSE JOB TITLE
 // ============================================================
-
-const updateSpouseJobTitle = catchAsync(
+const deleteSpouseJobTitle = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseJobTitle(
+      await spouseInformationDeleteServices.deleteSpouseJobTitle(
         req.body,
         loggedInUser,
       );
@@ -180,22 +153,21 @@ const updateSpouseJobTitle = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse job title deleted successfully.",
       data: result,
     });
   },
 );
 
 // ============================================================
-// UPDATE SPOUSE MONTHLY INCOME CONTROLLER
+// DELETE SPOUSE MONTHLY INCOME
 // ============================================================
-
-const updateSpouseMonthlyIncome = catchAsync(
+const deleteSpouseMonthlyIncome = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const result =
-      await spouseInformationPatchServices.updateSpouseMonthlyIncome(
+      await spouseInformationDeleteServices.deleteSpouseMonthlyIncome(
         req.body,
         loggedInUser,
       );
@@ -203,20 +175,22 @@ const updateSpouseMonthlyIncome = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information updated successfully.",
+      message: "Spouse monthly income deleted successfully.",
       data: result,
     });
   },
 );
 
-export const spouseInformationPatchController = {
-  updateSpouseName,
-  updateSpouseContactNo,
-  updateSpouseFatherName,
-  updateSpouseFatherContactNo,
-  updateSpouseMotherName,
-  updateSpouseMotherContactNo,
-  updateSpouseOccupation,
-  updateSpouseJobTitle,
-  updateSpouseMonthlyIncome,
+// ============================================================
+// EXPORT SPOUSE INFORMATION DELETE CONTROLLERS
+// ============================================================
+export const spouseInformationDeleteController = {
+  deleteSpouseContactNo,
+  deleteSpouseFatherName,
+  deleteSpouseFatherContactNo,
+  deleteSpouseMotherName,
+  deleteSpouseMotherContactNo,
+  deleteSpouseOccupation,
+  deleteSpouseJobTitle,
+  deleteSpouseMonthlyIncome,
 };

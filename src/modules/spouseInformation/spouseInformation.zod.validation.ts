@@ -254,3 +254,19 @@ export type TUpdateSpouseMonthlyIncomeZodSchema = z4.infer<
   typeof updateSpouseMonthlyIncomeZodSchema
 >;
 
+
+// ============================================================
+// DELETE SPOUSE INFORMATION FIELD ZOD SCHEMA 
+// ============================================================
+export const deleteSpouseInformationFieldZodSchema = z4.object({
+  user_id: z4.string({
+    error: (issue) =>
+      issue.input === undefined
+        ? "User ID is required."
+        : "Invalid user ID.",
+  }).trim(),
+});
+
+export type TDeleteSpouseInformationFieldZodSchema = z4.infer<
+  typeof deleteSpouseInformationFieldZodSchema
+>;

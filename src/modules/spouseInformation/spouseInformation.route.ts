@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
 import { validateZodSchema } from "../../middlewares/validate.zod.schema";
-import { createSpouseInformationZodSchema, deleteSpouseInformationZodSchema, updateSpouseNameZodSchema } from "./spouseInformation.zod.validation";
+import { createSpouseInformationZodSchema, deleteSpouseInformationFieldZodSchema, deleteSpouseInformationZodSchema, updateSpouseContactNoZodSchema, updateSpouseFatherContactNoZodSchema, updateSpouseFatherNameZodSchema, updateSpouseJobTitleZodSchema, updateSpouseMonthlyIncomeZodSchema, updateSpouseMotherContactNoZodSchema, updateSpouseMotherNameZodSchema, updateSpouseNameZodSchema, updateSpouseOccupationZodSchema } from "./spouseInformation.zod.validation";
 import { spouseInformationController } from "./spouseInformation.controller";
 import { spouseInformationPatchController } from "./spouseInformation.patch.controller";
+import { spouseInformationDeleteController } from "./spouseInformation.delete.controller";
 
 const router = Router();
 
@@ -38,3 +39,182 @@ router.patch(
     validateZodSchema(updateSpouseNameZodSchema),
     spouseInformationPatchController.updateSpouseName
 )
+
+// ============================================================
+// PATCH SPOUSE CONTACT NO ROUTE
+// ============================================================
+
+router.patch(
+  "/update_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseContactNoZodSchema),
+  spouseInformationPatchController.updateSpouseContactNo,
+);
+
+// ============================================================
+// PATCH SPOUSE FATHER NAME ROUTE
+// ============================================================
+
+router.patch(
+  "/update_father_name",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseFatherNameZodSchema),
+  spouseInformationPatchController.updateSpouseFatherName,
+);
+
+// ============================================================
+// PATCH SPOUSE FATHER CONTACT NO ROUTE
+// ============================================================
+
+router.patch(
+  "/update_father_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseFatherContactNoZodSchema),
+  spouseInformationPatchController.updateSpouseFatherContactNo,
+);
+
+// ============================================================
+// PATCH SPOUSE MOTHER NAME ROUTE
+// ============================================================
+
+router.patch(
+  "/update_mother_name",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseMotherNameZodSchema),
+  spouseInformationPatchController.updateSpouseMotherName,
+);
+
+// ============================================================
+// PATCH SPOUSE MOTHER CONTACT NO ROUTE
+// ============================================================
+
+router.patch(
+  "/update_mother_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseMotherContactNoZodSchema),
+  spouseInformationPatchController.updateSpouseMotherContactNo,
+);
+
+// ============================================================
+// PATCH SPOUSE OCCUPATION ROUTE
+// ============================================================
+
+router.patch(
+  "/update_occupation",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseOccupationZodSchema),
+  spouseInformationPatchController.updateSpouseOccupation,
+);
+
+// ============================================================
+// PATCH SPOUSE JOB TITLE ROUTE
+// ============================================================
+
+router.patch(
+  "/update_job_title",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseJobTitleZodSchema),
+  spouseInformationPatchController.updateSpouseJobTitle,
+);
+
+// ============================================================
+// PATCH SPOUSE MONTHLY INCOME ROUTE
+// ============================================================
+
+router.patch(
+  "/update_monthly_income",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(updateSpouseMonthlyIncomeZodSchema),
+  spouseInformationPatchController.updateSpouseMonthlyIncome,
+);
+
+
+// ============================================================
+// DELETE SPOUSE CONTACT NO ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseContactNo,
+);
+
+// ============================================================
+// DELETE SPOUSE FATHER NAME ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_father_name",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseFatherName,
+);
+
+// ============================================================
+// DELETE SPOUSE FATHER CONTACT NO ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_father_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseFatherContactNo,
+);
+
+// ============================================================
+// DELETE SPOUSE MOTHER NAME ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_mother_name",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseMotherName,
+);
+
+// ============================================================
+// DELETE SPOUSE MOTHER CONTACT NO ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_mother_contact_no",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseMotherContactNo,
+);
+
+// ============================================================
+// DELETE SPOUSE OCCUPATION ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_occupation",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseOccupation,
+);
+
+// ============================================================
+// DELETE SPOUSE JOB TITLE ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_job_title",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseJobTitle,
+);
+
+// ============================================================
+// DELETE SPOUSE MONTHLY INCOME ROUTE
+// ============================================================
+
+router.delete(
+  "/delete_monthly_income",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  spouseInformationDeleteController.deleteSpouseMonthlyIncome,
+);
+
+

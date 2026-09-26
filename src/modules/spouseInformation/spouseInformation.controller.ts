@@ -61,6 +61,8 @@ const updateSpouseName=  catchAsync(
     });
   },
 );
+
+
 export const spouseInformationController = {
   createSpouseInformation,
   deleteSpouseInformation,

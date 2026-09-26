@@ -18,19 +18,7 @@ import {
   TUpdateMotherOccupationZodSchema,
 } from "./motherDetails.zod.validation";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-
-type MotherDetailsField =
-  | "mother_name"
-  | "nid_no"
-  | "occupation"
-  | "job_title"
-  | "educational_qualification"
-  | "monthly_income"
-  | "mobile_no_1"
-  | "mobile_no_2"
-  | "mobile_no_3";
-
-type MotherDetailsValue = string | EducationDegree | null;
+import { MotherDetailsField, MotherDetailsValue } from "./motherDetails.interface";
 
 // ============================================================
 // UPDATE MOTHER DETAILS FIELD
