@@ -12,7 +12,7 @@ const spouseAddressZodSchema = z4.object({
   neighbourhood: z4.string().trim().optional(),
   region: z4.string().trim().optional(),
   village: z4.string().trim().optional(),
-  post_code: z4.number().int().optional(),
+  post_code: z4.string().trim().optional(),
   post_office: z4.string().trim().optional(),
   thana: z4.string().trim().min(2, "Thana is required."),
   district: z4.string().trim().min(2, "District is required."),
