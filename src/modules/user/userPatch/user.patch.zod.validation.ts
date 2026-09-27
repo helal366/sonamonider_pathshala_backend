@@ -442,3 +442,26 @@ export const updateUserNameZodSchema = z4.object({
     .trim(),
 });
 export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
+
+// ============================================================
+// UPDATE USER PASSWORD
+// ============================================================
+export const updateUserPasswordZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  user_password: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "User password is required."
+          : "Invalid user password.",
+    })
+    .min(6, { error: "User password must be at least 6 characters long." }),
+});
+export type TUpdateUserPasswordZodSchema = z4.infer<
+  typeof updateUserPasswordZodSchema
+>;

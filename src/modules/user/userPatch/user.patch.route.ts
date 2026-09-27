@@ -18,6 +18,8 @@ import {
   updateEmialVerified,
   updateUserActiveStatus,
   updateUserDeletedStatus,
+  updateUserName,
+  updateUserPassword,
 } from "./user.patch.controller.js";
 
 import {
@@ -38,6 +40,8 @@ import {
   updateEmialVerifiedZodSchema,
   updateUserActiveStatusZodSchema,
   updateUserDeletedStatusZodSchema,
+  updateUserNameZodSchema,
+  updateUserPasswordZodSchema,
 } from "./user.patch.zod.validation.js";
 
 import { userAuth } from "../../../middlewares/userAuth.js";
@@ -225,4 +229,24 @@ router.patch(
   userAuth("SUPER_ADMIN"),
   validateZodSchema(updateUserDeletedStatusZodSchema),
   updateUserDeletedStatus,
+);
+
+// ============================================================
+// UPDATE USER NAME ROUTE
+// ============================================================
+router.patch(
+  "/update_user_name",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserNameZodSchema),
+  updateUserName,
+);
+
+// ============================================================
+// UPDATE USER NAME ROUTE
+// ============================================================
+router.patch(
+  "/update_user_password",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserPasswordZodSchema),
+  updateUserPassword,
 );

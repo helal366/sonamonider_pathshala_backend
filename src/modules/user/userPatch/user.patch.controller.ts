@@ -19,6 +19,8 @@ import {
   updateEmialVerifiedService,
   updateUserActiveStatusService,
   updateUserDeletedStatusService,
+  updateUserNameService,
+  updateUserPasswordService,
 } from "./user.patch.service.js";
 import { catchAsync } from "../../../utils/catchAsync.js";
 import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
@@ -392,6 +394,46 @@ export const updateUserDeletedStatus = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       message: "User deleted status updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE USER NAME CONTROLLER
+// ============================================================
+export const updateUserName = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserNameService(
+      req.body.user_id,
+      req.body.user_name,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User name updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE USER PASSWORD CONTROLLER
+// ============================================================
+export const updateUserPassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserPasswordService(
+      req.body.user_id,
+      req.body.user_password,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User password updated successfully.",
       data: result,
     });
   },

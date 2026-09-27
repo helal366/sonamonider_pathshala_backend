@@ -219,6 +219,24 @@ JSON:
   "is_deleted": true /* false */
 }
 ```
+18. Update User Name
+PATCH /api/v1/smps/user_patch/update_user_name
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "user_name": "new_user_name"
+}
+```
+19. Update User Password
+PATCH /api/v1/smps/user_patch/update_user_password
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "user_password": "new_password"
+}
+```
 ### User Delete Routes
 
 > Delete routes only clear the selected field by setting its value to `null`.

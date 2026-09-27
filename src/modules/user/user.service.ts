@@ -2,6 +2,14 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { userHelperFunction } from "./user.helper.function.js";
+import { prisma } from "../../lib/prisma.js";
+import crypto from "crypto";
+import { redisClient } from "../../lib/redis.js";
+import path from "path";
+import ejs from "ejs";
+import bcrypt from "bcryptjs";
+import { transporter } from "../../lib/nodemailer.js";
+import { envVars } from "../../config/index.js";
 import {
   clearCacheRoles,
   findRoleExistence,
@@ -11,14 +19,6 @@ import {
   clearCachePositions,
   findPositionExistence,
 } from "../../helperFunctions/cachedData/cache_positions.js";
-import { prisma } from "../../lib/prisma.js";
-import crypto from "crypto";
-import { redisClient } from "../../lib/redis.js";
-import path from "path";
-import ejs from "ejs";
-import bcrypt from "bcryptjs";
-import { transporter } from "../../lib/nodemailer.js";
-import { envVars } from "../../config/index.js";
 import {
   TChangePasswordPayload,
   TChangeUserPositionZodSchema,

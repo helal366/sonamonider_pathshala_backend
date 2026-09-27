@@ -1,11 +1,17 @@
+import { ActiveStatus, Prisma } from "#db-client";
+import path from "path";
+import ejs from "ejs";
+import { envVars } from "../../../config/index.js";
+import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../../lib/prisma.js";
+import bcrypt from "bcryptjs";
+import { transporter } from "../../../lib/nodemailer.js";
+import { StatusCodes } from "http-status-codes";
+import { TLoggedInUser } from "../../../commonInterfaces/interfaces.js";
+
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
-
-import { ActiveStatus, Prisma } from "#db-client";
-import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../../lib/prisma";
-
 export const updateUserFullNameService = async (
   userId: string,
   fullName: string,
@@ -869,5 +875,125 @@ export const updateUserDeletedStatusService = async (
     });
 
     return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE USER NAME SERVICE
+// ============================================================
+export const updateUserNameService = async (
+  userId: string,
+  userName: string,
+  loggedInUser: TLoggedInUser,
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    // FIND USER
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, user_name: true, full_name: true, email: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // UPDATE USER NAME
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        user_name: userName,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { user_name: user.user_name },
+        new_value: { user_name: updatedUser.user_name },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    if (user.email) {
+      const templatePath = path.join(
+        process.cwd(),
+        "src/templates/update_user_name_by_superadmin.ejs",
+      );
+
+      const html = await ejs.renderFile(templatePath, {
+        name: user.full_name,
+        updated_user_name: updatedUser.user_name,
+        updated_by: envVars.SUPER_ADMIN_NAME,
+        updated_by_position: "PRINCIPAL",   //  loggedInUser.position_name
+        year: new Date().getFullYear(),
+      });
+      try {
+        await transporter.sendMail({
+          from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
+          to: user.email,
+          subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+          html,
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to send email.";
+        throw new AppError(message, StatusCodes.BAD_REQUEST);
+      }
+    }
+
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE USER PASSWORD SERVICE
+// ============================================================
+export const updateUserPasswordService = async (
+  userId: string,
+  userPassword: string,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    // FIND USER
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // HASH PASSWORD
+    const hashedPassword = await bcrypt.hash(
+      userPassword,
+      Number(envVars.BCRYPT_SALT_ROUND),
+    );
+
+    // UPDATE USER PASSWORD
+    await transaction.user.update({
+      where: { id: userId },
+      data: {
+        user_password: hashedPassword,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { user_password: "[REDACTED]" },
+        new_value: { user_password: "[REDACTED]" },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // DO NOT RETURN THE PASSWORD OR PASSWORD HASH
+    return { id: user.id, message: "User password updated successfully." };
   });
 };
