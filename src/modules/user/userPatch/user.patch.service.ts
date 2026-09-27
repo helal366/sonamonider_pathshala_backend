@@ -2,7 +2,7 @@
 // UPDATE FULL NAME
 // ============================================================
 
-import { Prisma } from "#db-client";
+import { ActiveStatus, Prisma } from "#db-client";
 import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../../lib/prisma";
 
@@ -708,6 +708,166 @@ export const updateUserEmailService = async (
         changed_by: { connect: { id: loggedInUser.user_id } },
       },
     });
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE MOBILE VERIFIED STATUS
+// ============================================================
+export const updateUserMobileVerifiedService = async (
+  userId: string,
+  isMobileVerified: boolean,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, is_mobile_verified: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        is_mobile_verified: isMobileVerified,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { is_mobile_verified: user.is_mobile_verified },
+        new_value: { is_mobile_verified: updatedUser.is_mobile_verified },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE EMAIL VERIFIED STATUS
+// ============================================================
+export const updateEmialVerifiedService = async (
+  userId: string,
+  isEmailVerified: boolean,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, is_email_verified: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        is_email_verified: isEmailVerified,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { is_email_verified: user.is_email_verified },
+        new_value: { is_email_verified: updatedUser.is_email_verified },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE USER ACTIVE STATUS SERVICE
+// ============================================================
+export const updateUserActiveStatusService = async (
+  userId: string,
+  activeStatus: ActiveStatus,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    // FIND USER
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, active_status: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // UPDATE ACTIVE STATUS
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        active_status: activeStatus,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { active_status: user.active_status },
+        new_value: { active_status: updatedUser.active_status },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    return updatedUser;
+  });
+};
+
+// ============================================================
+// UPDATE USER DELETED STATUS
+// ============================================================
+export const updateUserDeletedStatusService = async (
+  userId: string,
+  isDeleted: boolean,
+  loggedInUser: { user_id: string },
+) => {
+  return await prisma.$transaction(async (transaction) => {
+    // FIND USER
+    const user = await transaction.user.findUnique({
+      where: { id: userId },
+      select: { id: true, is_deleted: true },
+    });
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // UPDATE DELETED STATUS
+    const updatedUser = await transaction.user.update({
+      where: { id: userId },
+      data: {
+        is_deleted: isDeleted,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: userId,
+        entity_name: "User",
+        action: "UPDATE",
+        old_value: { is_deleted: user.is_deleted },
+        new_value: { is_deleted: updatedUser.is_deleted },
+        changed_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
     return updatedUser;
   });
 };

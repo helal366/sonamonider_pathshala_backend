@@ -160,6 +160,65 @@ JSON:
 }
 ```
 
+12. Update Mobile Number
+
+* PATCH `/api/v1/smps/user_patch/update_mobile_number`
+
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "mobile_number": "01712345678"
+}
+```
+
+13. Update Email
+PATCH /api/v1/smps/user_patch/update_email
+
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "email": "user@example.com"
+}
+```
+14. Upate Is Mobile Verified
+PATCH /api/v1/smps/user_patch/update_mobile_verified
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "is_mobile_verified": true /* false */
+}
+```
+
+15. Update Is Email Verified
+PATCH /api/v1/smps/user_patch/update_email_verified
+JSON: 
+```json
+{
+  "user_id": "USER_UUID",
+  "is_email_verified": true /* false */
+}
+```
+16. Update Active Status
+PATCH /api/v1/smps/user_patch/update_active_status
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "active_status": "ACTIVE"
+}
+```
+17. Update Is Deleted
+PATCH /api/v1/smps/user_patch/update_deleted_status
+JSON:
+```json
+{
+  "user_id": "USER_UUID",
+  "is_deleted": true /* false */
+}
+```
 ### User Delete Routes
 
 > Delete routes only clear the selected field by setting its value to `null`.

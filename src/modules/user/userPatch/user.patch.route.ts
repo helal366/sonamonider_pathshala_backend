@@ -14,6 +14,10 @@ import {
   updateUserPhotoUrl,
   updateUserMobileNumber,
   updateUserEmail,
+  updateUserMobileVerified,
+  updateEmialVerified,
+  updateUserActiveStatus,
+  updateUserDeletedStatus,
 } from "./user.patch.controller.js";
 
 import {
@@ -30,6 +34,10 @@ import {
   updateUserPhotoUrlZodSchema,
   updateUserMobileNumberZodSchema,
   updateUserEmailZodSchema,
+  updateUserMobileVerifiedZodSchema,
+  updateEmialVerifiedZodSchema,
+  updateUserActiveStatusZodSchema,
+  updateUserDeletedStatusZodSchema,
 } from "./user.patch.zod.validation.js";
 
 import { userAuth } from "../../../middlewares/userAuth.js";
@@ -177,4 +185,44 @@ router.patch(
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
   validateZodSchema(updateUserEmailZodSchema),
   updateUserEmail,
+);
+
+// ============================================================
+// UPDATE MOBILE VERIFIED STATUS ROUTE
+// ============================================================
+router.patch(
+  "/update_mobile_verified",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserMobileVerifiedZodSchema),
+  updateUserMobileVerified,
+);
+
+// ============================================================
+// UPDATE EMAIL VERIFIED STATUS ROUTE
+// ============================================================
+router.patch(
+  "/update_email_verified",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateEmialVerifiedZodSchema),
+  updateEmialVerified,
+);
+
+// ============================================================
+// UPDATE ACTIVE STATUS ROUTE
+// ============================================================
+router.patch(
+  "/update_active_status",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserActiveStatusZodSchema),
+  updateUserActiveStatus,
+);
+
+// ============================================================
+// UPDATE IS DELETED STATUS ROUTE
+// ============================================================
+router.patch(
+  "/update_deleted_status",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserDeletedStatusZodSchema),
+  updateUserDeletedStatus,
 );

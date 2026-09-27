@@ -15,6 +15,10 @@ import {
   updateUserPhotoUrlService,
   updateUserMobileNumberService,
   updateUserEmailService,
+  updateUserMobileVerifiedService,
+  updateEmialVerifiedService,
+  updateUserActiveStatusService,
+  updateUserDeletedStatusService,
 } from "./user.patch.service.js";
 import { catchAsync } from "../../../utils/catchAsync.js";
 import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
@@ -294,7 +298,7 @@ export const updateUserMobileNumber = catchAsync(
 );
 
 // ============================================================
-// UPDATE EMAIL NUMBER
+// UPDATE EMAIL NUMBER CONTROLLER
 // ============================================================
 export const updateUserEmail = catchAsync(
   async (req: Request, res: Response) => {
@@ -308,6 +312,86 @@ export const updateUserEmail = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       message: "User email updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE MOBILE VERIFIED STATUS CONTROLLER
+// ============================================================
+export const updateUserMobileVerified = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserMobileVerifiedService(
+      req.body.user_id,
+      req.body.is_mobile_verified,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User mobile verified status updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE EMAIL VERIFIED STATUS CONTROLLER
+// ============================================================
+export const updateEmialVerified = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateEmialVerifiedService(
+      req.body.user_id,
+      req.body.is_email_verified,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User email verified status updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE USER ACTIVE STATUS CONTROLLER
+// ============================================================
+export const updateUserActiveStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserActiveStatusService(
+      req.body.user_id,
+      req.body.active_status,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User active status updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ============================================================
+// UPDATE USER DELETED STATUS CONTROLLER
+// ============================================================
+export const updateUserDeletedStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await updateUserDeletedStatusService(
+      req.body.user_id,
+      req.body.is_deleted,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User deleted status updated successfully.",
       data: result,
     });
   },

@@ -1,4 +1,4 @@
-import { BloodGroup, Gender, Religion } from "#db-client";
+import { ActiveStatus, BloodGroup, Gender, Religion } from "#db-client";
 import z4 from "zod/v4";
 
 // ============================================================
@@ -307,7 +307,7 @@ export type TUpdateUserMobileNumberZodSchema = z4.infer<
 // UPDATE MOBILE NUMBER
 // ============================================================
 
-export const updateUserEmailZodSchema =z4.object({
+export const updateUserEmailZodSchema = z4.object({
   user_id: z4
     .string({
       error: (issue) => {
@@ -316,11 +316,129 @@ export const updateUserEmailZodSchema =z4.object({
     })
     .trim(),
 
-    email: z4.email({
-      error: (issue)=>{
+  email: z4
+    .email({
+      error: (issue) => {
         issue.input === undefined ? "Email is required." : "Invalid email";
-      }
-    }).trim()
-})
+      },
+    })
+    .trim(),
+});
 
-export type TUpdateUserEmailZodSchema = z4.infer<typeof updateUserEmailZodSchema>;
+export type TUpdateUserEmailZodSchema = z4.infer<
+  typeof updateUserEmailZodSchema
+>;
+
+// ============================================================
+// UPDATE MOBILE VERIFIED STATUS
+// ============================================================
+export const updateUserMobileVerifiedZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) => {
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.";
+      },
+    })
+    .trim(),
+
+  is_mobile_verified: z4.boolean({
+    error: (issue) => {
+      issue.input === undefined
+        ? "Email verified status is required."
+        : "Email verified status must be a boolean.";
+    },
+  }),
+});
+
+export type TUpdateUserMobileVerifiedZodSchema = z4.infer<
+  typeof updateUserMobileVerifiedZodSchema
+>;
+
+// ============================================================
+// UPDATE EMAIL VERIFIED STATUS
+// ============================================================
+export const updateEmialVerifiedZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) => {
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.";
+      },
+    })
+    .trim(),
+
+  is_email_verified: z4.boolean({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Email verified status is required."
+        : "Email verified status must be a boolean.",
+  }),
+});
+
+export type TUpdateEmialVerifiedZodSchema = z4.infer<
+  typeof updateEmialVerifiedZodSchema
+>;
+
+// ============================================================
+// UPDATE EMAIL VERIFIED STATUS
+// ============================================================
+export const updateUserActiveStatusZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  active_status: z4.enum(ActiveStatus, {
+    error: (issue) =>
+      issue.input === undefined
+        ? "Active status is required."
+        : "Invalid active status.",
+  }),
+});
+
+export type TUpdateUserActiveStatusZodSchema = z4.infer<
+  typeof updateUserActiveStatusZodSchema
+>;
+
+// ============================================================
+// UPDATE USER DELETED STATUS ROUTE
+// ============================================================
+export const updateUserDeletedStatusZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  is_deleted: z4.boolean({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Deleted status is required."
+        : "Deleted status must be a boolean.",
+  }),
+});
+
+export type TUpdateUserDeletedStatusZodSchema = z4.infer<
+  typeof updateUserDeletedStatusZodSchema
+>;
+
+// ============================================================
+// UPDATE USER NAME ROUTE
+// ============================================================
+export const updateUserNameZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  user_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "User name is required."
+          : "Invalid user name.",
+    })
+    .trim(),
+});
+export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
