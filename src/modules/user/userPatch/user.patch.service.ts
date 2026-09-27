@@ -927,7 +927,7 @@ export const updateUserNameService = async (
         name: user.full_name,
         updated_user_name: updatedUser.user_name,
         updated_by: envVars.SUPER_ADMIN_NAME,
-        updated_by_position: "PRINCIPAL",   //  loggedInUser.position_name
+        updated_by_position: loggedInUser.position_name,   //  "PRINCIPAL"
         year: new Date().getFullYear(),
       });
       try {
@@ -954,13 +954,13 @@ export const updateUserNameService = async (
 export const updateUserPasswordService = async (
   userId: string,
   userPassword: string,
-  loggedInUser: { user_id: string },
+  loggedInUser: TLoggedInUser,
 ) => {
   return await prisma.$transaction(async (transaction) => {
     // FIND USER
     const user = await transaction.user.findUnique({
       where: { id: userId },
-      select: { id: true },
+      select: { id: true, full_name: true, email: true },
     });
     if (!user) {
       throw new AppError("User not found.", 404);
@@ -993,6 +993,33 @@ export const updateUserPasswordService = async (
       },
     });
 
+    // SEND EMAIL
+       if (user.email) {
+      const templatePath = path.join(
+        process.cwd(),
+        "src/templates/update_user_name_by_superadmin.ejs",
+      );
+
+      const html = await ejs.renderFile(templatePath, {
+        name: user.full_name,
+        updated_user_password: userPassword,
+        updated_by: envVars.SUPER_ADMIN_NAME,
+        updated_by_position: loggedInUser.position_name,   //  "PRINCIPAL"
+        year: new Date().getFullYear(),
+      });
+      try {
+        await transporter.sendMail({
+          from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
+          to: user.email,
+          subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+          html,
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to send email.";
+        throw new AppError(message, StatusCodes.BAD_REQUEST);
+      }
+    }
     // DO NOT RETURN THE PASSWORD OR PASSWORD HASH
     return { id: user.id, message: "User password updated successfully." };
   });
