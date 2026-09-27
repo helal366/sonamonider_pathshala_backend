@@ -3,26 +3,17 @@ import httpStatus from "http-status-codes";
 import { catchAsync } from "../../../utils/catchAsync.js";
 import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
 import { sendResponse } from "../../../utils/sendResponse.js";
-import {
-  deleteUserBloodGroupService,
-  deleteUserDateOfBirthService,
-  deleteUserHeightService,
-  deleteUserWeightService,
-  deleteUserReligionService,
-  deleteUserBirthCertificateNumberService,
-  deleteUserNidNumberService,
-  deleteUserPhotoUrlService,
-} from "./user.delete.service.js";
+import { deleteUserService } from "./user.delete.service.js";
 
 // ============================================================
-// DELETE BLOOD GROUP
+// DELETE BLOOD GROUP CONTROLLER
 // ============================================================
 
 export const deleteUserBloodGroup = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserBloodGroupService(
+    const result = await deleteUserService.deleteUserBloodGroupService(
       req.body.user_id,
       loggedInUser,
     );
@@ -36,16 +27,15 @@ export const deleteUserBloodGroup = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE DATE OF BIRTH
+// DELETE DATE OF BIRTH CONTROLLER
 // ============================================================
 
 export const deleteUserDateOfBirth = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserDateOfBirthService(
+    const result = await deleteUserService.deleteUserDateOfBirthService(
       req.body.user_id,
       loggedInUser,
     );
@@ -59,16 +49,15 @@ export const deleteUserDateOfBirth = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE HEIGHT
+// DELETE HEIGHT CONTROLLER
 // ============================================================
 
 export const deleteUserHeight = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserHeightService(
+    const result = await deleteUserService.deleteUserHeightService(
       req.body.user_id,
       loggedInUser,
     );
@@ -82,16 +71,15 @@ export const deleteUserHeight = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE WEIGHT
+// DELETE WEIGHT CONTROLLER
 // ============================================================
 
 export const deleteUserWeight = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserWeightService(
+    const result = await deleteUserService.deleteUserWeightService(
       req.body.user_id,
       loggedInUser,
     );
@@ -105,16 +93,15 @@ export const deleteUserWeight = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE RELIGION
+// DELETE RELIGION CONTROLLER
 // ============================================================
 
 export const deleteUserReligion = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserReligionService(
+    const result = await deleteUserService.deleteUserReligionService(
       req.body.user_id,
       loggedInUser,
     );
@@ -128,19 +115,19 @@ export const deleteUserReligion = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE BIRTH CERTIFICATE NUMBER
+// DELETE BIRTH CERTIFICATE NUMBER CONTROLLER
 // ============================================================
 
 export const deleteUserBirthCertificateNumber = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserBirthCertificateNumberService(
-      req.body.user_id,
-      loggedInUser,
-    );
+    const result =
+      await deleteUserService.deleteUserBirthCertificateNumberService(
+        req.body.user_id,
+        loggedInUser,
+      );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -151,16 +138,15 @@ export const deleteUserBirthCertificateNumber = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE NID NUMBER
+// DELETE NID NUMBER CONTROLLER
 // ============================================================
 
 export const deleteUserNidNumber = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserNidNumberService(
+    const result = await deleteUserService.deleteUserNidNumberService(
       req.body.user_id,
       loggedInUser,
     );
@@ -174,16 +160,15 @@ export const deleteUserNidNumber = catchAsync(
   },
 );
 
-
 // ============================================================
-// DELETE PHOTO URL
+// DELETE PHOTO URL CONTROLLER
 // ============================================================
 
 export const deleteUserPhotoUrl = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await deleteUserPhotoUrlService(
+    const result = await deleteUserService.deleteUserPhotoUrlService(
       req.body.user_id,
       loggedInUser,
     );
@@ -196,3 +181,13 @@ export const deleteUserPhotoUrl = catchAsync(
     });
   },
 );
+export const deleteUserController = {
+  deleteUserBloodGroup,
+  deleteUserDateOfBirth,
+  deleteUserHeight,
+  deleteUserWeight,
+  deleteUserReligion,
+  deleteUserBirthCertificateNumber,
+  deleteUserNidNumber,
+  deleteUserPhotoUrl,
+};

@@ -1,118 +1,100 @@
 import { Router } from "express";
 import { userAuth } from "../../../middlewares/userAuth.js";
 import { validateZodSchema } from "../../../middlewares/validate.zod.schema.js";
-import {
-  deleteUserBloodGroup,
-  deleteUserDateOfBirth,
-  deleteUserHeight,
-  deleteUserWeight,
-  deleteUserReligion,
-  deleteUserBirthCertificateNumber,
-  deleteUserNidNumber,
-  deleteUserPhotoUrl,
-} from "./user.delete.controller.js";
+import { deleteUserController } from "./user.delete.controller.js";
 
-import {
-  deleteUserBloodGroupZodSchema,
-  deleteUserDateOfBirthZodSchema,
-  deleteUserHeightZodSchema,
-  deleteUserWeightZodSchema,
-  deleteUserReligionZodSchema,
-  deleteUserBirthCertificateNumberZodSchema,
-  deleteUserNidNumberZodSchema,
-  deleteUserPhotoUrlZodSchema,
-} from "./user.delete.zod.validation.js";
-
-
+import { deleteUserFieldZodSchema } from "./user.delete.zod.validation.js";
 
 const router = Router();
 
 // ============================================================
-// DELETE BLOOD GROUP
+// DELETE BLOOD GROUP ROUTE
 // ============================================================
 
 router.delete(
   "/delete_blood_group",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserBloodGroupZodSchema),
-  deleteUserBloodGroup,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserBloodGroupZodSchema),
+  deleteUserController.deleteUserBloodGroup,
 );
 
 // ============================================================
-// DELETE DATE OF BIRTH
+// DELETE DATE OF BIRTH ROUTE
 // ============================================================
 
 router.delete(
   "/delete_date_of_birth",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserDateOfBirthZodSchema),
-  deleteUserDateOfBirth,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserDateOfBirthZodSchema),
+  deleteUserController.deleteUserDateOfBirth,
 );
 
 // ============================================================
-// DELETE HEIGHT
+// DELETE HEIGHT ROUTE
 // ============================================================
 
 router.delete(
   "/delete_height_in_cm",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserHeightZodSchema),
-  deleteUserHeight,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserHeightZodSchema),
+  deleteUserController.deleteUserHeight,
 );
 
 // ============================================================
-// DELETE WEIGHT
+// DELETE WEIGHT ROUTE
 // ============================================================
 
 router.delete(
   "/delete_weight_in_kg",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserWeightZodSchema),
-  deleteUserWeight,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserWeightZodSchema),
+  deleteUserController.deleteUserWeight,
 );
 
 // ============================================================
-// DELETE RELIGION
+// DELETE RELIGION ROUTE
 // ============================================================
 
 router.delete(
   "/delete_religion",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserReligionZodSchema),
-  deleteUserReligion,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserReligionZodSchema),
+  deleteUserController.deleteUserReligion,
 );
 
 // ============================================================
-// DELETE BIRTH CERTIFICATE NUMBER
+// DELETE BIRTH CERTIFICATE NUMBER ROUTE
 // ============================================================
 
 router.delete(
   "/delete_birth_certificate_number",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserBirthCertificateNumberZodSchema),
-  deleteUserBirthCertificateNumber,
+  validateZodSchema(
+    deleteUserFieldZodSchema.deleteUserBirthCertificateNumberZodSchema,
+  ),
+  deleteUserController.deleteUserBirthCertificateNumber,
 );
 
 // ============================================================
-// DELETE NID NUMBER
+// DELETE NID NUMBER ROUTE
 // ============================================================
 
 router.delete(
   "/delete_nid_number",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserNidNumberZodSchema),
-  deleteUserNidNumber,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserNidNumberZodSchema),
+  deleteUserController.deleteUserNidNumber,
 );
 
 // ============================================================
-// DELETE PHOTO URL
+// DELETE PHOTO URL ROUTE
 // ============================================================
 
 router.delete(
   "/delete_photo_url",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteUserPhotoUrlZodSchema),
-  deleteUserPhotoUrl,
+  validateZodSchema(deleteUserFieldZodSchema.deleteUserPhotoUrlZodSchema),
+  deleteUserController.deleteUserPhotoUrl,
 );
 
 export const userDeleteRouter: Router = router;

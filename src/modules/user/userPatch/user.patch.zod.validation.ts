@@ -466,4 +466,24 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
 
-
+export const updateUserPatchZodSchema = {
+    updateUserFullNameZodSchema,
+  updateUserGenderZodSchema,
+  updateUserBloodGroupZodSchema,
+  updateUserDateOfBirthZodSchema,
+  updateUserHeightZodSchema,
+  updateUserWeightZodSchema,
+  updateUserReligionZodSchema,
+  updateUserNationalityZodSchema,
+  updateUserBirthCertificateNumberZodSchema,
+  updateUserNidNumberZodSchema,
+  updateUserPhotoUrlZodSchema,
+  updateUserMobileNumberZodSchema,
+  updateUserEmailZodSchema,
+  updateUserMobileVerifiedZodSchema,
+  updateEmialVerifiedZodSchema,
+  updateUserActiveStatusZodSchema,
+  updateUserDeletedStatusZodSchema,
+  updateUserNameZodSchema,
+  updateUserPasswordZodSchema,
+}

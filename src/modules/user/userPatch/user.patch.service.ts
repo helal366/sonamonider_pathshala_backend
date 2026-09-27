@@ -13,7 +13,7 @@ import { UserPatchField, UserPatchValue } from "./user.patch.interface.js";
 // ============================================================
 // UPDATE USER FIELD
 // ============================================================
-const updateUserField = async (
+export const updateUserField = async (
   user_id: string,
   field: UserPatchField,
   value: UserPatchValue,
@@ -42,9 +42,6 @@ const updateUserField = async (
 
         email: true,
         is_email_verified: true,
-
-        user_name: true,
-        user_password: true,
 
         active_status: true,
         is_deleted: true,
@@ -88,7 +85,7 @@ const updateUserField = async (
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
-export const updateUserFullNameService = async (
+const updateUserFullNameService = async (
   userId: string,
   fullName: string,
   loggedInUser: TLoggedInUser,
@@ -98,7 +95,7 @@ export const updateUserFullNameService = async (
 // UPDATE GENDER
 // ============================================================
 
-export const updateUserGenderService = async (
+const updateUserGenderService = async (
   userId: string,
   gender: Gender,
   loggedInUser: TLoggedInUser,
@@ -108,7 +105,7 @@ export const updateUserGenderService = async (
 // UPDATE BLOOD GROUP
 // ============================================================
 
-export const updateUserBloodGroupService = async (
+const updateUserBloodGroupService = async (
   userId: string,
   bloodGroup: BloodGroup,
   loggedInUser: TLoggedInUser,
@@ -118,7 +115,7 @@ export const updateUserBloodGroupService = async (
 // UPDATE DATE OF BIRTH
 // ============================================================
 
-export const updateUserDateOfBirthService = async (
+const updateUserDateOfBirthService = async (
   userId: string,
   dateOfBirth: Date,
   loggedInUser: TLoggedInUser,
@@ -128,7 +125,7 @@ export const updateUserDateOfBirthService = async (
 // UPDATE HEIGHT
 // ============================================================
 
-export const updateUserHeightService = async (
+const updateUserHeightService = async (
   userId: string,
   heightInCm: number,
   loggedInUser: TLoggedInUser,
@@ -138,7 +135,7 @@ export const updateUserHeightService = async (
 // UPDATE WEIGHT
 // ============================================================
 
-export const updateUserWeightService = async (
+const updateUserWeightService = async (
   userId: string,
   weightInKg: number,
   loggedInUser: TLoggedInUser,
@@ -148,7 +145,7 @@ export const updateUserWeightService = async (
 // UPDATE RELIGION
 // ============================================================
 
-export const updateUserReligionService = async (
+const updateUserReligionService = async (
   userId: string,
   religion: Religion,
   loggedInUser: TLoggedInUser,
@@ -158,7 +155,7 @@ export const updateUserReligionService = async (
 // UPDATE NATIONALITY
 // ============================================================
 
-export const updateUserNationalityService = async (
+const updateUserNationalityService = async (
   userId: string,
   nationality: string,
   loggedInUser: TLoggedInUser,
@@ -168,7 +165,7 @@ export const updateUserNationalityService = async (
 // UPDATE BIRTH CERTIFICATE NUMBER
 // ============================================================
 
-export const updateUserBirthCertificateNumberService = async (
+const updateUserBirthCertificateNumberService = async (
   userId: string,
   birthCertificateNumber: string,
   loggedInUser: TLoggedInUser,
@@ -184,7 +181,7 @@ export const updateUserBirthCertificateNumberService = async (
 // UPDATE NID NUMBER
 // ============================================================
 
-export const updateUserNidNumberService = async (
+const updateUserNidNumberService = async (
   userId: string,
   nidNumber: string,
   loggedInUser: TLoggedInUser,
@@ -194,7 +191,7 @@ export const updateUserNidNumberService = async (
 // UPDATE PHOTO URL
 // ============================================================
 
-export const updateUserPhotoUrlService = async (
+const updateUserPhotoUrlService = async (
   userId: string,
   photoUrl: string,
   loggedInUser: TLoggedInUser,
@@ -203,7 +200,7 @@ export const updateUserPhotoUrlService = async (
 // ============================================================
 // UPDATE MOBILE NUMBER
 // ============================================================
-export const updateUserMobileNumberService = async (
+const updateUserMobileNumberService = async (
   userId: string,
   mobileNumber: string,
   loggedInUser: TLoggedInUser,
@@ -213,212 +210,54 @@ export const updateUserMobileNumberService = async (
 // UPDATE EMAIL NUMBER
 // ============================================================
 
-export const updateUserEmailService = async (
+const updateUserEmailService = async (
   userId: string,
   email: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-
-    // CHECK EMAIL ALREADY EXISTS
-    const existingUser = await transaction.user.findFirst({
-      where: { email, NOT: { id: userId } },
-      select: { id: true },
-    });
-
-    if (existingUser) {
-      throw new AppError("Email is already in use.", 409);
-    }
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: { email, updated_by: { connect: { id: loggedInUser.user_id } } },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { email: user.email },
-        new_value: { email: updatedUser.email },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "email", email, loggedInUser);
 
 // ============================================================
 // UPDATE MOBILE VERIFIED STATUS
 // ============================================================
-export const updateUserMobileVerifiedService = async (
+const updateUserMobileVerifiedService = async (
   userId: string,
   isMobileVerified: boolean,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, is_mobile_verified: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        is_mobile_verified: isMobileVerified,
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { is_mobile_verified: user.is_mobile_verified },
-        new_value: { is_mobile_verified: updatedUser.is_mobile_verified },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) =>
+  updateUserField(userId, "is_mobile_verified", isMobileVerified, loggedInUser);
 
 // ============================================================
 // UPDATE EMAIL VERIFIED STATUS
 // ============================================================
-export const updateEmialVerifiedService = async (
+const updateUserEmailVerifiedService = async (
   userId: string,
   isEmailVerified: boolean,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, is_email_verified: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        is_email_verified: isEmailVerified,
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { is_email_verified: user.is_email_verified },
-        new_value: { is_email_verified: updatedUser.is_email_verified },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) =>
+  updateUserField(userId, "is_email_verified", isEmailVerified, loggedInUser);
 
 // ============================================================
 // UPDATE USER ACTIVE STATUS SERVICE
 // ============================================================
-export const updateUserActiveStatusService = async (
+const updateUserActiveStatusService = async (
   userId: string,
   activeStatus: ActiveStatus,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    // FIND USER
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, active_status: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-
-    // UPDATE ACTIVE STATUS
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        active_status: activeStatus,
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    // CREATE AUDIT LOG
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { active_status: user.active_status },
-        new_value: { active_status: updatedUser.active_status },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "active_status", activeStatus, loggedInUser);
 
 // ============================================================
 // UPDATE USER DELETED STATUS
 // ============================================================
-export const updateUserDeletedStatusService = async (
+const updateUserDeletedStatusService = async (
   userId: string,
   isDeleted: boolean,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    // FIND USER
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, is_deleted: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-
-    // UPDATE DELETED STATUS
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        is_deleted: isDeleted,
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    // CREATE AUDIT LOG
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { is_deleted: user.is_deleted },
-        new_value: { is_deleted: updatedUser.is_deleted },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "is_deleted", isDeleted, loggedInUser);
 
 // ============================================================
 // UPDATE USER NAME SERVICE
 // ============================================================
-export const updateUserNameService = async (
+const updateUserNameService = async (
   userId: string,
   userName: string,
   loggedInUser: TLoggedInUser,
@@ -488,7 +327,7 @@ export const updateUserNameService = async (
 // ============================================================
 // UPDATE USER PASSWORD SERVICE
 // ============================================================
-export const updateUserPasswordService = async (
+const updateUserPasswordService = async (
   userId: string,
   userPassword: string,
   loggedInUser: TLoggedInUser,
@@ -561,3 +400,36 @@ export const updateUserPasswordService = async (
     return { id: user.id, message: "User password updated successfully." };
   });
 };
+
+export const updateUserPatchServices = {
+  // USER BASIC INFORMATION
+  updateUserFullNameService,
+  updateUserGenderService,
+  updateUserBloodGroupService,
+  updateUserDateOfBirthService,
+  updateUserHeightService,
+  updateUserWeightService,
+  updateUserReligionService,
+  updateUserNationalityService,
+  updateUserBirthCertificateNumberService,
+  updateUserNidNumberService,
+  updateUserPhotoUrlService,
+
+  // USER CONTACT INFORMATION
+  updateUserMobileNumberService,
+  updateUserEmailService,
+
+  // USER VERIFICATION STATUS
+  updateUserMobileVerifiedService,
+  updateUserEmailVerifiedService,
+
+  // USER ACCOUNT STATUS
+  updateUserActiveStatusService,
+  updateUserDeletedStatusService,
+
+  // USER ACCOUNT CREDENTIALS
+  updateUserNameService,
+  updateUserPasswordService,
+};
+
+

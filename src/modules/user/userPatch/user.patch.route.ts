@@ -1,49 +1,6 @@
 import { Router } from "express";
-
-import {
-  updateUserFullName,
-  updateUserGender,
-  updateUserBloodGroup,
-  updateUserDateOfBirth,
-  updateUserHeight,
-  updateUserWeight,
-  updateUserReligion,
-  updateUserNationality,
-  updateUserBirthCertificateNumber,
-  updateUserNidNumber,
-  updateUserPhotoUrl,
-  updateUserMobileNumber,
-  updateUserEmail,
-  updateUserMobileVerified,
-  updateEmialVerified,
-  updateUserActiveStatus,
-  updateUserDeletedStatus,
-  updateUserName,
-  updateUserPassword,
-} from "./user.patch.controller.js";
-
-import {
-  updateUserFullNameZodSchema,
-  updateUserGenderZodSchema,
-  updateUserBloodGroupZodSchema,
-  updateUserDateOfBirthZodSchema,
-  updateUserHeightZodSchema,
-  updateUserWeightZodSchema,
-  updateUserReligionZodSchema,
-  updateUserNationalityZodSchema,
-  updateUserBirthCertificateNumberZodSchema,
-  updateUserNidNumberZodSchema,
-  updateUserPhotoUrlZodSchema,
-  updateUserMobileNumberZodSchema,
-  updateUserEmailZodSchema,
-  updateUserMobileVerifiedZodSchema,
-  updateEmialVerifiedZodSchema,
-  updateUserActiveStatusZodSchema,
-  updateUserDeletedStatusZodSchema,
-  updateUserNameZodSchema,
-  updateUserPasswordZodSchema,
-} from "./user.patch.zod.validation.js";
-
+import {userPatchController} from "./user.patch.controller.js";
+import {updateUserPatchZodSchema} from "./user.patch.zod.validation.js";
 import { userAuth } from "../../../middlewares/userAuth.js";
 import { validateZodSchema } from "../../../middlewares/validate.zod.schema.js";
 
@@ -56,8 +13,8 @@ const router = Router();
 router.patch(
   "/update_full_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserFullNameZodSchema),
-  updateUserFullName,
+  validateZodSchema(updateUserPatchZodSchema.updateUserFullNameZodSchema),
+  userPatchController.updateUserFullName,
 );
 
 // ============================================================
@@ -67,8 +24,8 @@ router.patch(
 router.patch(
   "/update_gender",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserGenderZodSchema),
-  updateUserGender,
+  validateZodSchema(updateUserPatchZodSchema.updateUserGenderZodSchema),
+  userPatchController.updateUserGender,
 );
 
 // ============================================================
@@ -78,8 +35,8 @@ router.patch(
 router.patch(
   "/update_blood_group",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserBloodGroupZodSchema),
-  updateUserBloodGroup,
+  validateZodSchema(updateUserPatchZodSchema.updateUserBloodGroupZodSchema),
+  userPatchController.updateUserBloodGroup,
 );
 
 // ============================================================
@@ -89,8 +46,8 @@ router.patch(
 router.patch(
   "/update_date_of_birth",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserDateOfBirthZodSchema),
-  updateUserDateOfBirth,
+  validateZodSchema(updateUserPatchZodSchema.updateUserDateOfBirthZodSchema),
+  userPatchController.updateUserDateOfBirth,
 );
 
 // ============================================================
@@ -100,8 +57,8 @@ router.patch(
 router.patch(
   "/update_height_in_cm",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserHeightZodSchema),
-  updateUserHeight,
+  validateZodSchema(updateUserPatchZodSchema.updateUserHeightZodSchema),
+  userPatchController.updateUserHeight,
 );
 
 // ============================================================
@@ -111,8 +68,8 @@ router.patch(
 router.patch(
   "/update_weight_in_kg",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserWeightZodSchema),
-  updateUserWeight,
+  validateZodSchema(updateUserPatchZodSchema.updateUserWeightZodSchema),
+  userPatchController.updateUserWeight,
 );
 
 // ============================================================
@@ -122,8 +79,8 @@ router.patch(
 router.patch(
   "/update_religion",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserReligionZodSchema),
-  updateUserReligion,
+  validateZodSchema(updateUserPatchZodSchema.updateUserReligionZodSchema),
+  userPatchController.updateUserReligion,
 );
 
 // ============================================================
@@ -133,8 +90,8 @@ router.patch(
 router.patch(
   "/update_nationality",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserNationalityZodSchema),
-  updateUserNationality,
+  validateZodSchema(updateUserPatchZodSchema.updateUserNationalityZodSchema),
+  userPatchController.updateUserNationality,
 );
 
 // ============================================================
@@ -144,8 +101,8 @@ router.patch(
 router.patch(
   "/update_birth_certificate_number",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserBirthCertificateNumberZodSchema),
-  updateUserBirthCertificateNumber,
+  validateZodSchema(updateUserPatchZodSchema.updateUserBirthCertificateNumberZodSchema),
+  userPatchController.updateUserBirthCertificateNumber,
 );
 
 // ============================================================
@@ -155,8 +112,8 @@ router.patch(
 router.patch(
   "/update_nid_number",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserNidNumberZodSchema),
-  updateUserNidNumber,
+  validateZodSchema(updateUserPatchZodSchema.updateUserNidNumberZodSchema),
+  userPatchController.updateUserNidNumber,
 );
 
 // ============================================================
@@ -166,8 +123,8 @@ router.patch(
 router.patch(
   "/update_photo_url",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserPhotoUrlZodSchema),
-  updateUserPhotoUrl,
+  validateZodSchema(updateUserPatchZodSchema.updateUserPhotoUrlZodSchema),
+  userPatchController.updateUserPhotoUrl,
 );
 
 // ============================================================
@@ -176,8 +133,8 @@ router.patch(
 router.patch(
   "/update_mobile_number",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserMobileNumberZodSchema),
-  updateUserMobileNumber,
+  validateZodSchema(updateUserPatchZodSchema.updateUserMobileNumberZodSchema),
+  userPatchController.updateUserMobileNumber,
 );
 export const userPatchRouter: Router = router;
 
@@ -187,8 +144,8 @@ export const userPatchRouter: Router = router;
 router.patch(
   "/update_email",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateUserEmailZodSchema),
-  updateUserEmail,
+  validateZodSchema(updateUserPatchZodSchema.updateUserEmailZodSchema),
+  userPatchController.updateUserEmail,
 );
 
 // ============================================================
@@ -197,8 +154,8 @@ router.patch(
 router.patch(
   "/update_mobile_verified",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserMobileVerifiedZodSchema),
-  updateUserMobileVerified,
+  validateZodSchema(updateUserPatchZodSchema.updateUserMobileVerifiedZodSchema),
+  userPatchController.updateUserMobileVerified,
 );
 
 // ============================================================
@@ -207,8 +164,8 @@ router.patch(
 router.patch(
   "/update_email_verified",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateEmialVerifiedZodSchema),
-  updateEmialVerified,
+  validateZodSchema(updateUserPatchZodSchema.updateEmialVerifiedZodSchema),
+  userPatchController.updateUserEmailVerified,
 );
 
 // ============================================================
@@ -217,8 +174,8 @@ router.patch(
 router.patch(
   "/update_active_status",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserActiveStatusZodSchema),
-  updateUserActiveStatus,
+  validateZodSchema(updateUserPatchZodSchema.updateUserActiveStatusZodSchema),
+  userPatchController.updateUserActiveStatus,
 );
 
 // ============================================================
@@ -227,8 +184,8 @@ router.patch(
 router.patch(
   "/update_deleted_status",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserDeletedStatusZodSchema),
-  updateUserDeletedStatus,
+  validateZodSchema(updateUserPatchZodSchema.updateUserDeletedStatusZodSchema),
+  userPatchController.updateUserDeletedStatus,
 );
 
 // ============================================================
@@ -237,8 +194,8 @@ router.patch(
 router.patch(
   "/update_user_name",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserNameZodSchema),
-  updateUserName,
+  validateZodSchema(updateUserPatchZodSchema.updateUserNameZodSchema),
+  userPatchController.updateUserName,
 );
 
 // ============================================================
@@ -247,6 +204,6 @@ router.patch(
 router.patch(
   "/update_user_password",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserPasswordZodSchema),
-  updateUserPassword,
+  validateZodSchema(updateUserPatchZodSchema.updateUserPasswordZodSchema),
+  userPatchController.updateUserPassword,
 );

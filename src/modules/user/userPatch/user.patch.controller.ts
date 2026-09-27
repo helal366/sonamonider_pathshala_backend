@@ -1,27 +1,7 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status-codes";
 
-import {
-  updateUserFullNameService,
-  updateUserGenderService,
-  updateUserBloodGroupService,
-  updateUserDateOfBirthService,
-  updateUserHeightService,
-  updateUserWeightService,
-  updateUserReligionService,
-  updateUserNationalityService,
-  updateUserBirthCertificateNumberService,
-  updateUserNidNumberService,
-  updateUserPhotoUrlService,
-  updateUserMobileNumberService,
-  updateUserEmailService,
-  updateUserMobileVerifiedService,
-  updateEmialVerifiedService,
-  updateUserActiveStatusService,
-  updateUserDeletedStatusService,
-  updateUserNameService,
-  updateUserPasswordService,
-} from "./user.patch.service.js";
+import {updateUserPatchServices,} from "./user.patch.service.js";
 import { catchAsync } from "../../../utils/catchAsync.js";
 import { helperFunctions } from "../../../helperFunctions/helpers/helperFunctions.js";
 import { sendResponse } from "../../../utils/sendResponse.js";
@@ -29,11 +9,11 @@ import { sendResponse } from "../../../utils/sendResponse.js";
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
-export const updateUserFullName = catchAsync(
+const updateUserFullName = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserFullNameService(
+    const result = await updateUserPatchServices.updateUserFullNameService(
       req.body.user_id,
       req.body.full_name,
       loggedInUser,
@@ -52,11 +32,11 @@ export const updateUserFullName = catchAsync(
 // UPDATE GENDER
 // ============================================================
 
-export const updateUserGender = catchAsync(
+const updateUserGender = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserGenderService(
+    const result = await updateUserPatchServices.updateUserGenderService(
       req.body.user_id,
       req.body.gender,
       loggedInUser,
@@ -75,11 +55,11 @@ export const updateUserGender = catchAsync(
 // UPDATE BLOOD GROUP
 // ============================================================
 
-export const updateUserBloodGroup = catchAsync(
+const updateUserBloodGroup = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserBloodGroupService(
+    const result = await updateUserPatchServices.updateUserBloodGroupService(
       req.body.user_id,
       req.body.blood_group,
       loggedInUser,
@@ -98,11 +78,11 @@ export const updateUserBloodGroup = catchAsync(
 // UPDATE DATE OF BIRTH
 // ============================================================
 
-export const updateUserDateOfBirth = catchAsync(
+const updateUserDateOfBirth = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserDateOfBirthService(
+    const result = await updateUserPatchServices.updateUserDateOfBirthService(
       req.body.user_id,
       req.body.date_of_birth,
       loggedInUser,
@@ -121,11 +101,11 @@ export const updateUserDateOfBirth = catchAsync(
 // UPDATE HEIGHT
 // ============================================================
 
-export const updateUserHeight = catchAsync(
+const updateUserHeight = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserHeightService(
+    const result = await updateUserPatchServices.updateUserHeightService(
       req.body.user_id,
       req.body.height_in_cm,
       loggedInUser,
@@ -144,11 +124,11 @@ export const updateUserHeight = catchAsync(
 // UPDATE WEIGHT
 // ============================================================
 
-export const updateUserWeight = catchAsync(
+const updateUserWeight = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserWeightService(
+    const result = await updateUserPatchServices.updateUserWeightService(
       req.body.user_id,
       req.body.weight_in_kg,
       loggedInUser,
@@ -167,11 +147,11 @@ export const updateUserWeight = catchAsync(
 // UPDATE RELIGION
 // ============================================================
 
-export const updateUserReligion = catchAsync(
+const updateUserReligion = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserReligionService(
+    const result = await updateUserPatchServices.updateUserReligionService(
       req.body.user_id,
       req.body.religion,
       loggedInUser,
@@ -190,11 +170,11 @@ export const updateUserReligion = catchAsync(
 // UPDATE NATIONALITY
 // ============================================================
 
-export const updateUserNationality = catchAsync(
+const updateUserNationality = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserNationalityService(
+    const result = await updateUserPatchServices.updateUserNationalityService(
       req.body.user_id,
       req.body.nationality,
       loggedInUser,
@@ -213,11 +193,11 @@ export const updateUserNationality = catchAsync(
 // UPDATE BIRTH CERTIFICATE NUMBER
 // ============================================================
 
-export const updateUserBirthCertificateNumber = catchAsync(
+const updateUserBirthCertificateNumber = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserBirthCertificateNumberService(
+    const result = await updateUserPatchServices.updateUserBirthCertificateNumberService(
       req.body.user_id,
       req.body.birth_certificate_number,
       loggedInUser,
@@ -236,11 +216,11 @@ export const updateUserBirthCertificateNumber = catchAsync(
 // UPDATE NID NUMBER
 // ============================================================
 
-export const updateUserNidNumber = catchAsync(
+const updateUserNidNumber = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserNidNumberService(
+    const result = await updateUserPatchServices.updateUserNidNumberService(
       req.body.user_id,
       req.body.nid_number,
       loggedInUser,
@@ -259,11 +239,11 @@ export const updateUserNidNumber = catchAsync(
 // UPDATE PHOTO URL
 // ============================================================
 
-export const updateUserPhotoUrl = catchAsync(
+const updateUserPhotoUrl = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await updateUserPhotoUrlService(
+    const result = await updateUserPatchServices.updateUserPhotoUrlService(
       req.body.user_id,
       req.body.photo_url,
       loggedInUser,
@@ -281,10 +261,10 @@ export const updateUserPhotoUrl = catchAsync(
 // ============================================================
 // UPDATE MOBILE NUMBER
 // ============================================================
-export const updateUserMobileNumber = catchAsync(
+const updateUserMobileNumber = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserMobileNumberService(
+    const result = await updateUserPatchServices.updateUserMobileNumberService(
       req.body.user_id,
       req.body.mobile_number,
       loggedInUser,
@@ -301,10 +281,10 @@ export const updateUserMobileNumber = catchAsync(
 // ============================================================
 // UPDATE EMAIL NUMBER CONTROLLER
 // ============================================================
-export const updateUserEmail = catchAsync(
+const updateUserEmail = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserEmailService(
+    const result = await updateUserPatchServices.updateUserEmailService(
       req.body.user_id,
       req.body.email,
       loggedInUser,
@@ -321,10 +301,10 @@ export const updateUserEmail = catchAsync(
 // ============================================================
 // UPDATE MOBILE VERIFIED STATUS CONTROLLER
 // ============================================================
-export const updateUserMobileVerified = catchAsync(
+const updateUserMobileVerified = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserMobileVerifiedService(
+    const result = await updateUserPatchServices.updateUserMobileVerifiedService(
       req.body.user_id,
       req.body.is_mobile_verified,
       loggedInUser,
@@ -341,10 +321,10 @@ export const updateUserMobileVerified = catchAsync(
 // ============================================================
 // UPDATE EMAIL VERIFIED STATUS CONTROLLER
 // ============================================================
-export const updateEmialVerified = catchAsync(
+const updateUserEmailVerified = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateEmialVerifiedService(
+    const result = await updateUserPatchServices.updateUserEmailVerifiedService(
       req.body.user_id,
       req.body.is_email_verified,
       loggedInUser,
@@ -361,10 +341,10 @@ export const updateEmialVerified = catchAsync(
 // ============================================================
 // UPDATE USER ACTIVE STATUS CONTROLLER
 // ============================================================
-export const updateUserActiveStatus = catchAsync(
+const updateUserActiveStatus = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserActiveStatusService(
+    const result = await updateUserPatchServices.updateUserActiveStatusService(
       req.body.user_id,
       req.body.active_status,
       loggedInUser,
@@ -381,10 +361,10 @@ export const updateUserActiveStatus = catchAsync(
 // ============================================================
 // UPDATE USER DELETED STATUS CONTROLLER
 // ============================================================
-export const updateUserDeletedStatus = catchAsync(
+const updateUserDeletedStatus = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserDeletedStatusService(
+    const result = await updateUserPatchServices.updateUserDeletedStatusService(
       req.body.user_id,
       req.body.is_deleted,
       loggedInUser,
@@ -401,10 +381,10 @@ export const updateUserDeletedStatus = catchAsync(
 // ============================================================
 // UPDATE USER NAME CONTROLLER
 // ============================================================
-export const updateUserName = catchAsync(
+const updateUserName = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserNameService(
+    const result = await updateUserPatchServices.updateUserNameService(
       req.body.user_id,
       req.body.user_name,
       loggedInUser,
@@ -421,10 +401,10 @@ export const updateUserName = catchAsync(
 // ============================================================
 // UPDATE USER PASSWORD CONTROLLER
 // ============================================================
-export const updateUserPassword = catchAsync(
+const updateUserPassword = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await updateUserPasswordService(
+    const result = await updateUserPatchServices.updateUserPasswordService(
       req.body.user_id,
       req.body.user_password,
       loggedInUser,
@@ -437,3 +417,36 @@ export const updateUserPassword = catchAsync(
     });
   },
 );
+
+export const userPatchController = {
+  // USER BASIC INFORMATION
+  updateUserFullName,
+  updateUserGender,
+  updateUserBloodGroup,
+  updateUserDateOfBirth,
+  updateUserHeight,
+  updateUserWeight,
+  updateUserReligion,
+  updateUserNationality,
+  updateUserBirthCertificateNumber,
+  updateUserNidNumber,
+  updateUserPhotoUrl,
+
+  // USER CONTACT INFORMATION
+  updateUserMobileNumber,
+  updateUserEmail,
+
+  // USER VERIFICATION STATUS
+  updateUserMobileVerified,
+  updateUserEmailVerified,
+
+  // USER ACCOUNT STATUS
+  updateUserActiveStatus,
+  updateUserDeletedStatus,
+
+  // USER ACCOUNT CREDENTIALS
+  updateUserName,
+  updateUserPassword,
+};
+
+
