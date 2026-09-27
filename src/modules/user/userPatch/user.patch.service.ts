@@ -1,4 +1,4 @@
-import { ActiveStatus, Prisma } from "#db-client";
+import { ActiveStatus, BloodGroup, Gender, Prisma, Religion } from "#db-client";
 import path from "path";
 import ejs from "ejs";
 import { envVars } from "../../../config/index.js";
@@ -8,62 +8,91 @@ import bcrypt from "bcryptjs";
 import { transporter } from "../../../lib/nodemailer.js";
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../../commonInterfaces/interfaces.js";
+import { UserPatchField, UserPatchValue } from "./user.patch.interface.js";
 
+// ============================================================
+// UPDATE USER FIELD
+// ============================================================
+const updateUserField = async (
+  user_id: string,
+  field: UserPatchField,
+  value: UserPatchValue,
+  loggedInUser: TLoggedInUser,
+) => {
+  return prisma.$transaction(async (transaction) => {
+    // CHECK TARGET USER
+    const targetUser = await transaction.user.findUnique({
+      where: { id: user_id },
+      select: {
+        id: true,
+        full_name: true,
+        gender: true,
+        blood_group: true,
+        date_of_birth: true,
+        height_in_cm: true,
+        weight_in_kg: true,
+        religion: true,
+        nationality: true,
+        birth_certificate_number: true,
+        nid_number: true,
+        photo_url: true,
+
+        mobile_number: true,
+        is_mobile_verified: true,
+
+        email: true,
+        is_email_verified: true,
+
+        user_name: true,
+        user_password: true,
+
+        active_status: true,
+        is_deleted: true,
+      },
+    });
+
+    if (!targetUser) {
+      throw new AppError("User not found.", StatusCodes.NOT_FOUND);
+    }
+
+    // UPDATE USER FIELD
+    const updated = await transaction.user.update({
+      where: { id: user_id },
+      data: {
+        [field]: value,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await transaction.auditLog.create({
+      data: {
+        entity_id: user_id,
+        entity_name: "User",
+        old_value: {
+          user_id,
+          [field]: targetUser[field as keyof typeof targetUser],
+        },
+        new_value: {
+          user_id,
+          [field]: value,
+        },
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+      },
+    });
+
+    return updated;
+  });
+};
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
 export const updateUserFullNameService = async (
   userId: string,
   fullName: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        full_name: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        full_name: fullName,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          full_name: oldUser.full_name,
-        },
-        new_value: {
-          full_name: updatedUser.full_name,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "full_name", fullName, loggedInUser);
 
 // ============================================================
 // UPDATE GENDER
@@ -71,56 +100,9 @@ export const updateUserFullNameService = async (
 
 export const updateUserGenderService = async (
   userId: string,
-  gender: Prisma.UserUpdateInput["gender"],
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        gender: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        gender,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          gender: oldUser.gender,
-        },
-        new_value: {
-          gender: updatedUser.gender,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  gender: Gender,
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "gender", gender, loggedInUser);
 
 // ============================================================
 // UPDATE BLOOD GROUP
@@ -128,56 +110,9 @@ export const updateUserGenderService = async (
 
 export const updateUserBloodGroupService = async (
   userId: string,
-  bloodGroup: Prisma.UserUpdateInput["blood_group"],
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        blood_group: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        blood_group: bloodGroup,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          blood_group: oldUser.blood_group,
-        },
-        new_value: {
-          blood_group: updatedUser.blood_group,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  bloodGroup: BloodGroup,
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "blood_group", bloodGroup, loggedInUser);
 
 // ============================================================
 // UPDATE DATE OF BIRTH
@@ -186,55 +121,8 @@ export const updateUserBloodGroupService = async (
 export const updateUserDateOfBirthService = async (
   userId: string,
   dateOfBirth: Date,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        date_of_birth: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        date_of_birth: dateOfBirth,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          date_of_birth: oldUser.date_of_birth,
-        },
-        new_value: {
-          date_of_birth: updatedUser.date_of_birth,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "date_of_birth", dateOfBirth, loggedInUser);
 
 // ============================================================
 // UPDATE HEIGHT
@@ -243,55 +131,8 @@ export const updateUserDateOfBirthService = async (
 export const updateUserHeightService = async (
   userId: string,
   heightInCm: number,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        height_in_cm: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        height_in_cm: heightInCm,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          height_in_cm: oldUser.height_in_cm,
-        },
-        new_value: {
-          height_in_cm: updatedUser.height_in_cm,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "height_in_cm", heightInCm, loggedInUser);
 
 // ============================================================
 // UPDATE WEIGHT
@@ -300,55 +141,8 @@ export const updateUserHeightService = async (
 export const updateUserWeightService = async (
   userId: string,
   weightInKg: number,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        weight_in_kg: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        weight_in_kg: weightInKg,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          weight_in_kg: oldUser.weight_in_kg,
-        },
-        new_value: {
-          weight_in_kg: updatedUser.weight_in_kg,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "weight_in_kg", weightInKg, loggedInUser);
 
 // ============================================================
 // UPDATE RELIGION
@@ -356,56 +150,9 @@ export const updateUserWeightService = async (
 
 export const updateUserReligionService = async (
   userId: string,
-  religion: Prisma.UserUpdateInput["religion"],
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        religion: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        religion,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          religion: oldUser.religion,
-        },
-        new_value: {
-          religion: updatedUser.religion,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  religion: Religion,
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "religion", religion, loggedInUser);
 
 // ============================================================
 // UPDATE NATIONALITY
@@ -414,55 +161,8 @@ export const updateUserReligionService = async (
 export const updateUserNationalityService = async (
   userId: string,
   nationality: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        nationality: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        nationality,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          nationality: oldUser.nationality,
-        },
-        new_value: {
-          nationality: updatedUser.nationality,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "nationality", nationality, loggedInUser);
 
 // ============================================================
 // UPDATE BIRTH CERTIFICATE NUMBER
@@ -471,55 +171,14 @@ export const updateUserNationalityService = async (
 export const updateUserBirthCertificateNumberService = async (
   userId: string,
   birthCertificateNumber: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        birth_certificate_number: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        birth_certificate_number: birthCertificateNumber,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          birth_certificate_number: oldUser.birth_certificate_number,
-        },
-        new_value: {
-          birth_certificate_number: updatedUser.birth_certificate_number,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) =>
+  updateUserField(
+    userId,
+    "birth_certificate_number",
+    birthCertificateNumber,
+    loggedInUser,
+  );
 
 // ============================================================
 // UPDATE NID NUMBER
@@ -528,55 +187,8 @@ export const updateUserBirthCertificateNumberService = async (
 export const updateUserNidNumberService = async (
   userId: string,
   nidNumber: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        nid_number: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        nid_number: nidNumber,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          nid_number: oldUser.nid_number,
-        },
-        new_value: {
-          nid_number: updatedUser.nid_number,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "nid_number", nidNumber, loggedInUser);
 
 // ============================================================
 // UPDATE PHOTO URL
@@ -585,55 +197,8 @@ export const updateUserNidNumberService = async (
 export const updateUserPhotoUrlService = async (
   userId: string,
   photoUrl: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const oldUser = await transaction.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        photo_url: true,
-      },
-    });
-
-    if (!oldUser) {
-      throw new AppError("User not found.", 404);
-    }
-
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        photo_url: photoUrl,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: {
-          photo_url: oldUser.photo_url,
-        },
-        new_value: {
-          photo_url: updatedUser.photo_url,
-        },
-        changed_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      },
-    });
-
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "photo_url", photoUrl, loggedInUser);
 
 // ============================================================
 // UPDATE MOBILE NUMBER
@@ -641,36 +206,8 @@ export const updateUserPhotoUrlService = async (
 export const updateUserMobileNumberService = async (
   userId: string,
   mobileNumber: string,
-  loggedInUser: { user_id: string },
-) => {
-  return await prisma.$transaction(async (transaction) => {
-    const user = await transaction.user.findUnique({
-      where: { id: userId },
-      select: { id: true, mobile_number: true },
-    });
-    if (!user) {
-      throw new AppError("User not found.", 404);
-    }
-    const updatedUser = await transaction.user.update({
-      where: { id: userId },
-      data: {
-        mobile_number: mobileNumber,
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    await transaction.auditLog.create({
-      data: {
-        entity_id: userId,
-        entity_name: "User",
-        action: "UPDATE",
-        old_value: { mobile_number: user.mobile_number },
-        new_value: { mobile_number: updatedUser.mobile_number },
-        changed_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-    return updatedUser;
-  });
-};
+  loggedInUser: TLoggedInUser,
+) => updateUserField(userId, "mobile_number", mobileNumber, loggedInUser);
 
 // ============================================================
 // UPDATE EMAIL NUMBER
@@ -927,7 +464,7 @@ export const updateUserNameService = async (
         name: user.full_name,
         updated_user_name: updatedUser.user_name,
         updated_by: envVars.SUPER_ADMIN_NAME,
-        updated_by_position: loggedInUser.position_name,   //  "PRINCIPAL"
+        updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
         year: new Date().getFullYear(),
       });
       try {
@@ -994,7 +531,7 @@ export const updateUserPasswordService = async (
     });
 
     // SEND EMAIL
-       if (user.email) {
+    if (user.email) {
       const templatePath = path.join(
         process.cwd(),
         "src/templates/update_user_name_by_superadmin.ejs",
@@ -1004,7 +541,7 @@ export const updateUserPasswordService = async (
         name: user.full_name,
         updated_user_password: userPassword,
         updated_by: envVars.SUPER_ADMIN_NAME,
-        updated_by_position: loggedInUser.position_name,   //  "PRINCIPAL"
+        updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
         year: new Date().getFullYear(),
       });
       try {

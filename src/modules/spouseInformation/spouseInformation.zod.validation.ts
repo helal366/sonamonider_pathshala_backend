@@ -270,3 +270,18 @@ export const deleteSpouseInformationFieldZodSchema = z4.object({
 export type TDeleteSpouseInformationFieldZodSchema = z4.infer<
   typeof deleteSpouseInformationFieldZodSchema
 >;
+
+export const spouseInformationZodSchema = {
+  createSpouseInformationZodSchema,
+  deleteSpouseInformationZodSchema,
+  updateSpouseNameZodSchema,
+  updateSpouseContactNoZodSchema,
+  updateSpouseFatherNameZodSchema,
+  updateSpouseFatherContactNoZodSchema,
+  updateSpouseMotherNameZodSchema,
+  updateSpouseMotherContactNoZodSchema,
+  updateSpouseOccupationZodSchema,
+  updateSpouseJobTitleZodSchema,
+  updateSpouseMonthlyIncomeZodSchema,
+  deleteSpouseInformationFieldZodSchema
+}

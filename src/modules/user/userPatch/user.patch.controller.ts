@@ -29,7 +29,6 @@ import { sendResponse } from "../../../utils/sendResponse.js";
 // ============================================================
 // UPDATE FULL NAME
 // ============================================================
-
 export const updateUserFullName = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);

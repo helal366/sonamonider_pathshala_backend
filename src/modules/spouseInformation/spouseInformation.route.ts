@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
-import { createSpouseInformationZodSchema, deleteSpouseInformationFieldZodSchema, deleteSpouseInformationZodSchema, updateSpouseContactNoZodSchema, updateSpouseFatherContactNoZodSchema, updateSpouseFatherNameZodSchema, updateSpouseJobTitleZodSchema, updateSpouseMonthlyIncomeZodSchema, updateSpouseMotherContactNoZodSchema, updateSpouseMotherNameZodSchema, updateSpouseNameZodSchema, updateSpouseOccupationZodSchema } from "./spouseInformation.zod.validation.js";
+import { spouseInformationZodSchema} from "./spouseInformation.zod.validation.js";
 import { spouseInformationController } from "./spouseInformation.controller.js";
 import { spouseInformationPatchController } from "./spouseInformation.patch.controller.js";
 import { spouseInformationDeleteController } from "./spouseInformation.delete.controller.js";
@@ -14,7 +14,7 @@ const router = Router();
 router.post(
   "/create",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(createSpouseInformationZodSchema),
+  validateZodSchema(spouseInformationZodSchema.createSpouseInformationZodSchema),
   spouseInformationController.createSpouseInformation,
 );
 
@@ -25,7 +25,7 @@ router.post(
 router.delete(
   "/delete",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationZodSchema),
   spouseInformationController.deleteSpouseInformation,
 );
 export const spouseInformationRouter: Router = router;
@@ -36,7 +36,7 @@ export const spouseInformationRouter: Router = router;
 router.patch(
     "/update_full_name",
     userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-    validateZodSchema(updateSpouseNameZodSchema),
+    validateZodSchema(spouseInformationZodSchema.updateSpouseNameZodSchema),
     spouseInformationPatchController.updateSpouseName
 )
 
@@ -47,7 +47,7 @@ router.patch(
 router.patch(
   "/update_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseContactNoZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseContactNoZodSchema),
   spouseInformationPatchController.updateSpouseContactNo,
 );
 
@@ -58,7 +58,7 @@ router.patch(
 router.patch(
   "/update_father_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseFatherNameZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseFatherNameZodSchema),
   spouseInformationPatchController.updateSpouseFatherName,
 );
 
@@ -69,7 +69,7 @@ router.patch(
 router.patch(
   "/update_father_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseFatherContactNoZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseFatherContactNoZodSchema),
   spouseInformationPatchController.updateSpouseFatherContactNo,
 );
 
@@ -80,7 +80,7 @@ router.patch(
 router.patch(
   "/update_mother_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseMotherNameZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseMotherNameZodSchema),
   spouseInformationPatchController.updateSpouseMotherName,
 );
 
@@ -91,7 +91,7 @@ router.patch(
 router.patch(
   "/update_mother_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseMotherContactNoZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseMotherContactNoZodSchema),
   spouseInformationPatchController.updateSpouseMotherContactNo,
 );
 
@@ -102,7 +102,7 @@ router.patch(
 router.patch(
   "/update_occupation",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseOccupationZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseOccupationZodSchema),
   spouseInformationPatchController.updateSpouseOccupation,
 );
 
@@ -113,7 +113,7 @@ router.patch(
 router.patch(
   "/update_job_title",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseJobTitleZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseJobTitleZodSchema),
   spouseInformationPatchController.updateSpouseJobTitle,
 );
 
@@ -124,7 +124,7 @@ router.patch(
 router.patch(
   "/update_monthly_income",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(updateSpouseMonthlyIncomeZodSchema),
+  validateZodSchema(spouseInformationZodSchema.updateSpouseMonthlyIncomeZodSchema),
   spouseInformationPatchController.updateSpouseMonthlyIncome,
 );
 
@@ -136,7 +136,7 @@ router.patch(
 router.delete(
   "/delete_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseContactNo,
 );
 
@@ -147,7 +147,7 @@ router.delete(
 router.delete(
   "/delete_father_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseFatherName,
 );
 
@@ -158,7 +158,7 @@ router.delete(
 router.delete(
   "/delete_father_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseFatherContactNo,
 );
 
@@ -169,7 +169,7 @@ router.delete(
 router.delete(
   "/delete_mother_name",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseMotherName,
 );
 
@@ -180,7 +180,7 @@ router.delete(
 router.delete(
   "/delete_mother_contact_no",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseMotherContactNo,
 );
 
@@ -191,7 +191,7 @@ router.delete(
 router.delete(
   "/delete_occupation",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseOccupation,
 );
 
@@ -202,7 +202,7 @@ router.delete(
 router.delete(
   "/delete_job_title",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseJobTitle,
 );
 
@@ -213,7 +213,7 @@ router.delete(
 router.delete(
   "/delete_monthly_income",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(deleteSpouseInformationFieldZodSchema),
+  validateZodSchema(spouseInformationZodSchema.deleteSpouseInformationFieldZodSchema),
   spouseInformationDeleteController.deleteSpouseMonthlyIncome,
 );
 
