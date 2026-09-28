@@ -13,7 +13,7 @@ import { managementStaffPatchRouter } from "./modules/managementStaff/management
 import { fatherDetailsRouter } from "./modules/fatherDetails/fatherDetails.route.js";
 import { motherDetailsRouter } from "./modules/motherDetails/motherDetails.route.js";
 import { spouseInformationRouter } from "./modules/spouseInformation/spouseInformation.route.js";
-import { userAddressRouter } from "./modules/address/user/user.address.route.js";
+import { userAddressRouter } from "./modules/address/user/user.address.createDelete.route.js";
 import { spouseInformationAddressRouter } from "./modules/address/spouseInformation/spouseInformation.address.route.js";
 import { userPatchRouter } from "./modules/user/userPatch/user.patch.route.js";
 import { userDeleteRouter } from "./modules/user/userDelete/user.delete.route.js";
