@@ -1,11 +1,6 @@
 import { EducationDegree } from "#db-client";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 
-export type TMotherDetailsPatchService = (
-  payload: never,
-  loggedInUser: TLoggedInUser,
-) => Promise<unknown>;
-
 export interface ITargetUser {
   id: string;
   full_name: string;
@@ -25,16 +20,3 @@ export interface IMotherDetails {
   mobile_no_2: string | null;
   mobile_no_3: string | null;
 }
-
-export type MotherDetailsField =
-  | "mother_name"
-  | "nid_no"
-  | "occupation"
-  | "job_title"
-  | "educational_qualification"
-  | "monthly_income"
-  | "mobile_no_1"
-  | "mobile_no_2"
-  | "mobile_no_3";
-
-export type MotherDetailsValue = string | EducationDegree | null;

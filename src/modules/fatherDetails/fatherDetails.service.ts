@@ -7,9 +7,8 @@ import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
   TDisconnectFatherDetailsZodSchema,
+  TUpdateFatherDetailsFieldPayload,
 } from "./fatherDetails.zod.validation.js";
-
-
 
 // ======================================================
 // CREATE FATHER DETAILS
@@ -253,6 +252,72 @@ const connectFatherDetails = async (
   return result;
 };
 
+const updateFatherDetailsField = async (
+  payload: TUpdateFatherDetailsFieldPayload,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { user_id, field, value } = payload;
+  const targetUser = await prisma.user.findUnique({
+    where: { id: user_id },
+    select: {
+      id: true,
+      father_details_id: true,
+      father_details: {
+        select: {
+          father_name: true,
+          nid_no: true,
+          occupation: true,
+          job_title: true,
+          educational_qualification: true,
+          monthly_income: true,
+          mobile_no_1: true,
+          mobile_no_2: true,
+          mobile_no_3: true,
+        },
+      },
+    },
+  });
+
+  if (!targetUser) {
+    throw new AppError(
+      "The provided user does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+  if (!targetUser.father_details_id || !targetUser.father_details) {
+    throw new AppError(
+      "Father details are not connected to this user.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const fatherDetailsId = targetUser.father_details_id;
+  const fatherDetails = targetUser.father_details;
+
+  return prisma.$transaction(async (transaction) => {
+    const updated = await transaction.fatherDetails.update({
+      where: { id: fatherDetailsId },
+      data: {
+        [field]: value,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      } as Prisma.FatherDetailsUpdateInput,
+    });
+
+    await transaction.auditLog.create({
+      data: {
+        entity_id: fatherDetailsId,
+        entity_name: "FatherDetails",
+        old_value: { user_id, [field]: fatherDetails[field] },
+        new_value: { user_id, [field]: value },
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+      },
+    });
+
+    return updated;
+  });
+};
+
 // ======================================================
 // DISCONNECT FATHER DETAILS
 // ======================================================
@@ -384,5 +449,6 @@ const disconnectFatherDetails = async (
 export const fatherDetailsServices = {
   createFatherDetails,
   connectFatherDetails,
+  updateFatherDetailsField,
   disconnectFatherDetails,
 };

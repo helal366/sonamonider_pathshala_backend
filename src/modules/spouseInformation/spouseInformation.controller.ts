@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { spouseInformationServices } from "./spouseInformation.service.js";
+import type { TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zod.validation.js";
 
 // ============================================================
 // CREATE SPOUSE INFORMATION CONTROLLER
@@ -44,27 +45,25 @@ const deleteSpouseInformation = catchAsync(
 );
 
 // ============================================================
-// UPDATE SPOUSE FULL NAME CONTROLLER
-// ============================================================
-const updateSpouseName=  catchAsync(
+const updateSpouseInformationField = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await spouseInformationServices.updateSpouseName(
-      req.body,
+    const payload = req.body as TUpdateSpouseInformationFieldPayload;
+    const result = await spouseInformationServices.updateSpouseInformationField(
+      payload,
       loggedInUser,
     );
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Spouse information deleted successfully.",
+      message: "Spouse information updated successfully.",
       data: result,
     });
   },
 );
 
-
 export const spouseInformationController = {
   createSpouseInformation,
   deleteSpouseInformation,
-  updateSpouseName
+  updateSpouseInformationField,
 };

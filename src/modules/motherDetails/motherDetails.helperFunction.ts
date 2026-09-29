@@ -37,12 +37,6 @@ async function getTargetUser(user_id: string) {
       StatusCodes.NOT_FOUND,
     );
   }
-  if (!targetUser.mother_details_id || !targetUser.mother_details) {
-    throw new AppError(
-      "Mother details are not connected to this user.",
-      StatusCodes.NOT_FOUND,
-    );
-  }
   return targetUser;
 }
 const getTargetUserMotherDetails = async (

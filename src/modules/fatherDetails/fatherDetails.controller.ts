@@ -7,6 +7,7 @@ import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
   TDisconnectFatherDetailsZodSchema,
+  TUpdateFatherDetailsFieldPayload,
 } from "./fatherDetails.zod.validation.js";
 
 import { fatherDetailsServices } from "./fatherDetails.service.js";
@@ -54,11 +55,10 @@ const connectFatherDetails = catchAsync(
 
     const payload: TConnectFatherDetailsZodSchema = req.body;
 
-    const result =
-      await fatherDetailsServices.connectFatherDetails(
-        payload,
-        loggedInUser,
-      );
+    const result = await fatherDetailsServices.connectFatherDetails(
+      payload,
+      loggedInUser,
+    );
 
     sendResponse(res, {
       success: true,
@@ -69,6 +69,27 @@ const connectFatherDetails = catchAsync(
   },
 );
 
+const updateFatherDetailsField = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
+    }
+
+    const payload: TUpdateFatherDetailsFieldPayload = req.body;
+    const result = await fatherDetailsServices.updateFatherDetailsField(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Father details updated successfully.",
+      data: result,
+    });
+  },
+);
 
 // ======================================================
 // DISCONNECT FATHER DETAILS
@@ -78,19 +99,15 @@ const disconnectFatherDetails = catchAsync(
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
-      throw new AppError(
-        "Please login.",
-        StatusCodes.UNAUTHORIZED,
-      );
+      throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
     }
 
     const payload: TDisconnectFatherDetailsZodSchema = req.body;
 
-    const result =
-      await fatherDetailsServices.disconnectFatherDetails(
-        payload,
-        loggedInUser,
-      );
+    const result = await fatherDetailsServices.disconnectFatherDetails(
+      payload,
+      loggedInUser,
+    );
 
     sendResponse(res, {
       success: true,
@@ -108,5 +125,6 @@ const disconnectFatherDetails = catchAsync(
 export const fatherDetailsController = {
   createFatherDetails,
   connectFatherDetails,
+  updateFatherDetailsField,
   disconnectFatherDetails,
 };

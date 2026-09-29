@@ -2,7 +2,10 @@ import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import { TCreateSpouseInformationZodSchema } from "./spouseInformation.zod.validation.js";
+import {
+  TCreateSpouseInformationZodSchema,
+  TUpdateSpouseInformationFieldPayload,
+} from "./spouseInformation.zod.validation.js";
 import { Prisma } from "#db-client";
 
 // ============================================================
@@ -315,15 +318,70 @@ const deleteSpouseInformation = async (
   });
 };
 
-// ============================================================
-// UPDATE SPOUSE FULL NAME SERVICE
-// ============================================================
-const updateSpouseName = async (
-  payload: { user_id: string },
+const updateSpouseInformationField = async (
+  payload: TUpdateSpouseInformationFieldPayload,
   loggedInUser: TLoggedInUser,
-) => {};
+) => {
+  const { user_id, field, value } = payload;
+  const targetUser = await prisma.user.findUnique({
+    where: { id: user_id },
+    select: {
+      id: true,
+      spouse_information: {
+        select: {
+          id: true,
+          full_name: true,
+          contact_no: true,
+          father_name: true,
+          father_contact_no: true,
+          mother_name: true,
+          mother_contact_no: true,
+          occupation: true,
+          job_title: true,
+          monthly_income: true,
+        },
+      },
+    },
+  });
+
+  if (!targetUser) {
+    throw new AppError(
+      "The provided user does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const spouseInformation = targetUser.spouse_information;
+  if (!spouseInformation) {
+    throw new AppError("Spouse information not found.", StatusCodes.NOT_FOUND);
+  }
+
+  return prisma.$transaction(async (transaction) => {
+    const updated = await transaction.spouseInformation.update({
+      where: { id: spouseInformation.id },
+      data: {
+        [field]: value,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      } as Prisma.SpouseInformationUpdateInput,
+    });
+
+    await transaction.auditLog.create({
+      data: {
+        entity_id: spouseInformation.id,
+        entity_name: "SpouseInformation",
+        old_value: { user_id, [field]: spouseInformation[field] },
+        new_value: { user_id, [field]: value },
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+      },
+    });
+
+    return updated;
+  });
+};
+
 export const spouseInformationServices = {
   createSpouseInformation,
   deleteSpouseInformation,
-  updateSpouseName,
+  updateSpouseInformationField,
 };
