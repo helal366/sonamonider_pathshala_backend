@@ -27,6 +27,8 @@ import {
   TUserCreatePayload,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
+  TUpdateUserNameZodSchema,
+  TUpdateUserPasswordZodSchema,
 } from "./user.zod.validation.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 
@@ -794,7 +796,7 @@ const updateSingleUserFieldAdmin = async (
   }
 
   // UPDATE USER
-  const updatedUser = (await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: user_id },
     data: {
       [field]: value,
@@ -804,7 +806,7 @@ const updateSingleUserFieldAdmin = async (
         },
       },
     },
-  }))
+  });
 
   // CREATE AUDIT LOG
   const typedField = field as keyof typeof user;
@@ -829,10 +831,10 @@ const updateSingleUserFieldAdmin = async (
 };
 
 // UPDATE SINGLE USER FIELD SUPER ADMIN SERVICE LAYER
-const updateSingleUserFieldSuperAdmin = async(
-     payload: TUpdateSingleUserFieldSuperAdminZodSchema,
+const updateSingleUserFieldSuperAdmin = async (
+  payload: TUpdateSingleUserFieldSuperAdminZodSchema,
   loggedInUser: TLoggedInUser,
-)=>{
+) => {
   const { user_id, field, value } = payload;
   // CHECK USER EXISTANCE
   const user = await prisma.user.findUnique({
@@ -845,12 +847,12 @@ const updateSingleUserFieldSuperAdmin = async(
       active_status: true,
     },
   });
-    if (!user) {
+  if (!user) {
     throw new AppError("User not found.", StatusCodes.NOT_FOUND);
-  };
+  }
 
-    // UPDATE USER
-  const updatedUser = (await prisma.user.update({
+  // UPDATE USER
+  const updatedUser = await prisma.user.update({
     where: { id: user_id },
     data: {
       [field]: value,
@@ -860,7 +862,7 @@ const updateSingleUserFieldSuperAdmin = async(
         },
       },
     },
-  }))
+  });
 
   // CREATE AUDIT LOG
   const typedField = field as keyof typeof user;
@@ -882,8 +884,148 @@ const updateSingleUserFieldSuperAdmin = async(
   });
 
   return updatedUser;
+};
 
-}
+const updateUserName = async (
+  payload: TUpdateUserNameZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const {user_id, user_name} = payload;
+   return await prisma.$transaction(async (transaction) => {
+      // FIND USER
+      const user = await transaction.user.findUnique({
+        where: { id: user_id },
+        select: { id: true, user_name: true, full_name: true, email: true },
+      });
+      if (!user) {
+        throw new AppError("User not found.", 404);
+      }
+  
+      // UPDATE USER NAME
+      const updatedUser = await transaction.user.update({
+        where: { id: user_id },
+        data: {
+          user_name: user_name,
+          updated_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+  
+      // CREATE AUDIT LOG
+      await transaction.auditLog.create({
+        data: {
+          entity_id: user_id,
+          entity_name: "User",
+          action: "UPDATE",
+          old_value: { user_name: user.user_name },
+          new_value: { user_name },
+          changed_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+  
+      if (user.email) {
+        const templatePath = path.join(
+          process.cwd(),
+          "src/templates/update_user_name_by_superadmin.ejs",
+        );
+  
+        const html = await ejs.renderFile(templatePath, {
+          name: user.full_name,
+          updated_user_name: updatedUser.user_name,
+          updated_by: envVars.SUPER_ADMIN_NAME,
+          updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
+          year: new Date().getFullYear(),
+        });
+        try {
+          await transporter.sendMail({
+            from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
+            to: user.email,
+            subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+            html,
+          });
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Failed to send email.";
+          throw new AppError(message, StatusCodes.BAD_REQUEST);
+        }
+      }
+  
+      return updatedUser;
+    });
+};
+
+const updateUserPassword = async (
+  payload: TUpdateUserPasswordZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const {user_id, user_password} = payload
+    return await prisma.$transaction(async (transaction) => {
+      // FIND USER
+      const user = await transaction.user.findUnique({
+        where: { id: user_id },
+        select: { id: true, full_name: true, email: true, user_password: true },
+      });
+      if (!user) {
+        throw new AppError("User not found.", 404);
+      }
+  
+      // HASH PASSWORD
+      const hashedPassword = await bcrypt.hash(
+        user_password,
+        Number(envVars.BCRYPT_SALT_ROUND),
+      );
+  
+      // UPDATE USER PASSWORD
+      await transaction.user.update({
+        where: { id: user_id },
+        data: {
+          user_password: hashedPassword,
+          updated_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+  
+      // CREATE AUDIT LOG
+      await transaction.auditLog.create({
+        data: {
+          entity_id: user_id,
+          entity_name: "User",
+          action: "UPDATE",
+          old_value: { user_password: "[REDACTED]" },
+          new_value: { user_password: "[CHANGED]" },
+          changed_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+  
+      // SEND EMAIL
+      if (user.email) {
+        const templatePath = path.join(
+          process.cwd(),
+          "src/templates/update_user_name_by_superadmin.ejs",
+        );
+  
+        const html = await ejs.renderFile(templatePath, {
+          name: user.full_name,
+          updated_user_password: user_password,
+          updated_by: envVars.SUPER_ADMIN_NAME,
+          updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
+          year: new Date().getFullYear(),
+        });
+        try {
+          await transporter.sendMail({
+            from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
+            to: user.email,
+            subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+            html,
+          });
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Failed to send email.";
+          throw new AppError(message, StatusCodes.BAD_REQUEST);
+        }
+      }
+      // DO NOT RETURN THE PASSWORD OR PASSWORD HASH
+      return { id: user.id, message: "User password updated successfully." };
+    });
+};
 export const userServices = {
   createUser,
   changePassword,
@@ -891,5 +1033,7 @@ export const userServices = {
   promoteUserRolePosition,
   changeUserPosition,
   updateSingleUserFieldAdmin,
-  updateSingleUserFieldSuperAdmin
+  updateSingleUserFieldSuperAdmin,
+  updateUserName,
+  updateUserPassword,
 };

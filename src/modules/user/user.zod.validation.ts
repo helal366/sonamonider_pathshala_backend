@@ -340,3 +340,47 @@ const superAdminFieldsUnion = z4.discriminatedUnion("field", [
 // FIX: Wrapped with z4.object({}).and() to resolve the router middleware type signature error
 export const updateSingleUserFieldSuperAdminZodSchema = z4.object({}).and(superAdminFieldsUnion);
 export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<typeof updateSingleUserFieldSuperAdminZodSchema>;
+
+// ============================================================
+// UPDATE USER NAME ROUTE
+// ============================================================
+export const updateUserNameZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  user_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "User name is required."
+          : "Invalid user name.",
+    })
+    .trim(),
+});
+export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
+
+// ============================================================
+// UPDATE USER PASSWORD
+// ============================================================
+export const updateUserPasswordZodSchema = z4.object({
+  user_id: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
+    })
+    .trim(),
+  user_password: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "User password is required."
+          : "Invalid user password.",
+    })
+    .min(6, { error: "User password must be at least 6 characters long." }),
+});
+export type TUpdateUserPasswordZodSchema = z4.infer<
+  typeof updateUserPasswordZodSchema
+>;

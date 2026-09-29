@@ -11,8 +11,11 @@
 
 ### User routes
 
+- Create User
 - POST /api/v1/smps/user/create_user
-  JSON: {
+  JSON: 
+  ```json
+  {
   "full_name": "USER NAME",
   "mobile_number":"USER MOBILE NUMBER",
   "email": "USER EMAIL ADDRESS",
@@ -20,207 +23,65 @@
   "role_name": "USER ROLE",
   "position_name": "USER POSITION",
   "joining_date": "JOINING ISO DATE STRING"
-  }  
+  } 
+  ``` 
   ------> Only the required values are set here. See the zod schema to get the full requirement
 
+- Change Password
 - PATCH /api/v1/smps/user/change_password
-  JSON: {
+  JSON: 
+  ```json
+  {
   "full_name": "USER NAME",
   "mobile_number":"USER MOBILE NUMBER",
   "current_password": "USER CURRENT PASSWORD",
   "new_password": "USER NEW PASSWORD",
   "confirm_password": "USER NEW PASSWORD"
   }
+  ```
 
+- Update User Position
 - POST /api/v1/smps/user/forget_password
-  JSON: {
+  JSON: 
+  ```json
+  {
   "email": "USER EMAIL"
   }
-
+  ```
+- Update User Role Position
 - PATCH /api/v1/smps/user/promote_user_role_position
-  JSON: {
+  JSON: 
+  ```json
+  {
   "full_name": "USER FULL NAME",
   "mobile_number": "USER 11 DIGIT BANGLADESHI MOBILE NUMBER",
   "position_name": "TARGET POSITION NAME",
   "role_name": "TARGET ROLE NAME",
   "promoted_date": "PROMOTION ISO DATE STRING"
   }
+  ```
 
-
-### User Patch Routes
-
-1. Update Full Name
-
-- PATCH `/api/v1/smps/user_patch/update_full_name`
-JSON:
+- Update User Field for Admin
+- PATCH /api/v1/smps/user/update_single_user_field_admin
 ```json
 {
-  "user_id": "USER_UUID",
-  "full_name": "John Doe"
-}
-````
-
-2. Update Gender
-* PATCH `/api/v1/smps/user_patch/update_gender`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "gender": "MALE"
+  "user_id": "USER ID STRING",
+  "field": "USER FIELD",
+  "value": "FIELD VALUE"
 }
 ```
 
-3. Update Blood Group
-* PATCH `/api/v1/smps/user_patch/update_blood_group`
-JSON:
+- Update User Field for Super Admin
+- PATCH /api/v1/smps/user/update_single_user_field_super_admin
 ```json
 {
-  "user_id": "USER_UUID",
-  "blood_group": "A_POSITIVE"
+  "user_id": "USER ID STRING",
+  "field": "USER FIELD",
+  "value": "FIELD VALUE"
 }
 ```
-
-4. Update Date of Birth
-* PATCH `/api/v1/smps/user_patch/update_date_of_birth`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "date_of_birth": "2005-05-15"
-}
-```
-
-5. Update Height
-* PATCH `/api/v1/smps/user_patch/update_height_in_cm`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "height_in_cm": 170
-}
-```
-
-6. Update Weight
-* PATCH `/api/v1/smps/user_patch/update_weight_in_kg`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "weight_in_kg": 65
-}
-```
-
-7. Update Religion
-* PATCH `/api/v1/smps/user_patch/update_religion`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "religion": "ISLAM"
-}
-```
-
-8. Update Nationality
-* PATCH `/api/v1/smps/user_patch/update_nationality`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "nationality": "Bangladeshi"
-}
-```
-
-9. Update Birth Certificate Number
-* PATCH `/api/v1/smps/user_patch/update_birth_certificate_number`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "birth_certificate_number": "12345678901234567"
-}
-```
-
-10. Update NID Number
-* PATCH `/api/v1/smps/user_patch/update_nid_number`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "nid_number": "1234567890"
-}
-```
-
-11. Update Photo URL
-* PATCH `/api/v1/smps/user_patch/update_photo_url`
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "photo_url": "https://example.com/profile.jpg"
-}
-```
-
-12. Update Mobile Number
-
-* PATCH `/api/v1/smps/user_patch/update_mobile_number`
-
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "mobile_number": "01712345678"
-}
-```
-
-13. Update Email
-PATCH /api/v1/smps/user_patch/update_email
-
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "email": "user@example.com"
-}
-```
-14. Upate Is Mobile Verified
-PATCH /api/v1/smps/user_patch/update_mobile_verified
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "is_mobile_verified": true /* false */
-}
-```
-
-15. Update Is Email Verified
-PATCH /api/v1/smps/user_patch/update_email_verified
-JSON: 
-```json
-{
-  "user_id": "USER_UUID",
-  "is_email_verified": true /* false */
-}
-```
-16. Update Active Status
-PATCH /api/v1/smps/user_patch/update_active_status
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "active_status": "ACTIVE"
-}
-```
-17. Update Is Deleted
-PATCH /api/v1/smps/user_patch/update_deleted_status
-JSON:
-```json
-{
-  "user_id": "USER_UUID",
-  "is_deleted": true /* false */
-}
-```
-18. Update User Name
-PATCH /api/v1/smps/user_patch/update_user_name
+- Update User Name
+- PATCH/api/v1/smps/user/update_user_name
 JSON:
 ```json
 {
@@ -228,95 +89,15 @@ JSON:
   "user_name": "new_user_name"
 }
 ```
-19. Update User Password
-PATCH /api/v1/smps/user_patch/update_user_password
+
+- Update User Password
+- PATCH /api/v1/smps/user/update_user_password
 JSON:
 ```json
 {
   "user_id": "USER_UUID",
   "user_password": "new_password"
 }
-```
-### User Delete Routes
-
-> Delete routes only clear the selected field by setting its value to `null`.
-> The User record itself is not deleted.
-
-1. Delete Blood Group
-* DELETE `/api/v1/smps/user_delete/delete_blood_group`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-2. Delete Date of Birth
-* DELETE `/api/v1/smps/user_delete/delete_date_of_birth`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-3. Delete Height
-* DELETE `/api/v1/smps/user_delete/delete_height_in_cm`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-4. Delete Weight
-* DELETE `/api/v1/smps/user_delete/delete_weight_in_kg`
-JSON:
-
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-5. Delete Religion
-* DELETE `/api/v1/smps/user_delete/delete_religion`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-6. Delete Birth Certificate Number
-* DELETE `/api/v1/smps/user_delete/delete_birth_certificate_number`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-7. Delete NID Number
-* DELETE `/api/v1/smps/user_delete/delete_nid_number`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-8. Delete Photo URL
-* DELETE `/api/v1/smps/user_delete/delete_photo_url`
-JSON:
-```json
-{
-  "user_id": "USER_UUID"
-}
-```
-
-```
-**Note:** For `blood_group` and `religion`, I used example enum values. Replace `A_POSITIVE` / `ISLAM` with the exact enum members from your Prisma schema if they differ.
 ```
 
 ### Email routes

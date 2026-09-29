@@ -13,10 +13,7 @@ import { managementStaffPatchRouter } from "./modules/managementStaff/management
 import { fatherDetailsRouter } from "./modules/fatherDetails/fatherDetails.route.js";
 import { motherDetailsRouter } from "./modules/motherDetails/motherDetails.route.js";
 import { spouseInformationRouter } from "./modules/spouseInformation/spouseInformation.route.js";
-import { userAddressRouter } from "./modules/address/user/user.address.createDelete.route.js";
-import { spouseInformationAddressRouter } from "./modules/address/spouseInformation/spouseInformation.address.route.js";
-import { userPatchRouter } from "./modules/user/userPatch/user.patch.route.js";
-import { userDeleteRouter } from "./modules/user/userDelete/user.delete.route.js";
+import { userAddressRouter } from "./modules/address/address.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -28,15 +25,12 @@ app.use("/api/v1/smps/auth", authRouter);
 app.use("/api/v1/smps/email", emailRouter);
 app.use("/api/v1/smps/user", userRouter);
 app.use("/api/v1/smps/user", userAddressRouter);
-app.use("/api/v1/smps/user_patch", userPatchRouter);
-app.use("/api/v1/smps/user_delete", userDeleteRouter);
 app.use("/api/v1/smps/management_staff_patch", managementStaffPatchRouter);
 app.use("/api/v1/smps/position", positionRouter);
 app.use("/api/v1/smps/role", roleRouter);
 app.use("/api/v1/smps/father_details", fatherDetailsRouter);
 app.use("/api/v1/smps/mother_details", motherDetailsRouter);
 app.use("/api/v1/smps/spouse_information", spouseInformationRouter);
-app.use("/api/v1/smps/spouse_information", spouseInformationAddressRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

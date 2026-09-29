@@ -11,6 +11,8 @@ import {
   TUserCreatePayload,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
+  TUpdateUserPasswordZodSchema,
+  TUpdateUserNameZodSchema,
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
@@ -117,7 +119,6 @@ const updateSingleUserFieldAdmin = catchAsync(
   async (req: Request, res: Response) => {
     const payload: TUpdateSingleUserFieldAdminZodSchema = req.body;
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
-    const field = payload.field;
 
     const result = await userServices.updateSingleUserFieldAdmin(
       payload,
@@ -127,7 +128,7 @@ const updateSingleUserFieldAdmin = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: `${loggedInUser.full_name}'s ${field} updated successful.`,
+      message: `Field updated successful.`,
       data: result,
     });
   },
@@ -138,7 +139,6 @@ const updateSingleUserFieldSuperAdmin = catchAsync(
   async (req: Request, res: Response) => {
     const payload: TUpdateSingleUserFieldSuperAdminZodSchema = req.body;
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
-    const field = payload.field;
 
     const result = await userServices.updateSingleUserFieldSuperAdmin(
       payload,
@@ -148,7 +148,45 @@ const updateSingleUserFieldSuperAdmin = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: `${loggedInUser.full_name}'s ${field} updated successful.`,
+      message: `Field updated successful.`,
+      data: result,
+    });
+  },
+);
+// UPDATE USER NAME CONTROLLER
+const updateUserName = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TUpdateUserNameZodSchema = req.body;
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+
+    const result = await userServices.updateUserName(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Field updated successful.`,
+      data: result,
+    });
+  },
+);
+// UPDATE USER PASSWORD CONTROLLER
+const updateUserPassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TUpdateUserPasswordZodSchema = req.body;
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+
+    const result = await userServices.updateUserPassword(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Field updated successful.`,
       data: result,
     });
   },
@@ -160,5 +198,7 @@ export const userController = {
   promoteUserRolePosition,
   changeUserPosition,
   updateSingleUserFieldAdmin,
-  updateSingleUserFieldSuperAdmin
+  updateSingleUserFieldSuperAdmin,
+  updateUserName,
+  updateUserPassword
 };

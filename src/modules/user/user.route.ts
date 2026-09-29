@@ -8,6 +8,8 @@ import {
   forgetPasswordZodSchema,
   userCreateZodSchema,
   updateSingleUserFieldAdminZodSchema,
+  updateUserNameZodSchema,
+  updateUserPasswordZodSchema,
 } from "./user.zod.validation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
@@ -65,4 +67,26 @@ router.patch(
   validateZodSchema(updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldSuperAdmin
 )
+// ==========================================
+// UPDATE USER NAME ROUTE
+// ==========================================
+router.patch(
+  "/update_user_name",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserNameZodSchema),
+  userController.updateUserName
+)
+
+
+
+// ============================================================
+// UPDATE USER NAME ROUTE
+// ============================================================
+router.patch(
+  "/update_user_password",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateUserPasswordZodSchema),
+  userController.updateUserPassword,
+);
+
 export const userRouter: Router = router;
