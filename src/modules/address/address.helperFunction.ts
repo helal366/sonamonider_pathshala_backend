@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
-import { AddressOwnerType, AddressType } from "./address.interface";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../lib/prisma.js";
+import { AddressOwnerType, AddressType } from "./address.interface.js";
 
 const findAddressIdHelperFunction = async (
   owner_type: AddressOwnerType,

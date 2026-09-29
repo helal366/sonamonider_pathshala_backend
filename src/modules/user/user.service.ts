@@ -5,10 +5,7 @@ import { userHelperFunction } from "./user.helper.function.js";
 import { prisma } from "../../lib/prisma.js";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis.js";
-import path from "path";
-import ejs from "ejs";
 import bcrypt from "bcryptjs";
-import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
 import {
   clearCacheRoles,
@@ -31,6 +28,17 @@ import {
   TUpdateUserPasswordZodSchema,
 } from "./user.zod.validation.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { emailServices } from "../email/email.service.js";
+import {
+  issueOtpAndSendEmail,
+  sendVerificationResultEmail,
+} from "../email/email.helper.function.js";
+
+const privilegedRoleRank: Record<string, number> = {
+  TEACHER_ADMIN: 1,
+  ADMIN: 2,
+  SUPER_ADMIN: 3,
+};
 
 // CREATE USER SERVICE LAYER
 const createUser = async (
@@ -59,6 +67,26 @@ const createUser = async (
     throw new AppError(
       `Provided Role: ${cleanRole} is not a valid role.`,
       StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const callerRoleRank = privilegedRoleRank[loggedInUser.role_name];
+  const requestedRoleRank = privilegedRoleRank[cleanRole];
+  if (
+    cleanRole !== "SUPER_ADMIN" &&
+    callerRoleRank !== undefined &&
+    requestedRoleRank !== undefined &&
+    requestedRoleRank >= callerRoleRank
+  ) {
+    throw new AppError(
+      "You do not have permission to assign this role.",
+      StatusCodes.FORBIDDEN,
+    );
+  }
+  if (cleanRole === "SUPER_ADMIN" && loggedInUser.role_name !== "SUPER_ADMIN") {
+    throw new AppError(
+      "Only a super admin can create another super admin.",
+      StatusCodes.FORBIDDEN,
     );
   }
 
@@ -91,169 +119,159 @@ const createUser = async (
   const user_name =
     userCount === 0 ? mobile_number : `${mobile_number}-${userCount + 1}`;
 
-  // 6. Create DB records atomically
-  const newUser = await prisma.$transaction(async (transaction) => {
-    // A) Create the User and nested ManagementStaff profile
-    const createdUser = await transaction.user.create({
-      data: {
-        full_name,
-        mobile_number,
-        email,
-        ...rest,
-        user_name,
-
-        role: {
-          connect: { id: roleExists.id },
-        },
-
-        position: {
-          connect: { id: positionExists.id },
-        },
-
-        created_by: {
-          connect: { id: loggedInUser.user_id },
-        },
-
-        management_staff_profile: {
-          create: {
+  // 6. Create DB records and deliver the verification email atomically.
+  const otpKey = `new_user_welcome_otp:${email}`;
+  let otpIssued = false;
+  const newUser = await prisma
+    .$transaction(
+      async (transaction) => {
+        // A) Create the User and nested ManagementStaff profile
+        const createdUser = await transaction.user.create({
+          data: {
             full_name,
             mobile_number,
             email,
+            ...rest,
+            user_name,
 
-            current_position: {
-              connect: { id: positionExists.id },
+            role: {
+              connect: { id: roleExists.id },
             },
 
-            current_role: {
-              connect: { id: roleExists.id },
+            position: {
+              connect: { id: positionExists.id },
             },
 
             created_by: {
               connect: { id: loggedInUser.user_id },
             },
+
+            management_staff_profile: {
+              create: {
+                full_name,
+                mobile_number,
+                email,
+
+                current_position: {
+                  connect: { id: positionExists.id },
+                },
+
+                current_role: {
+                  connect: { id: roleExists.id },
+                },
+
+                created_by: {
+                  connect: { id: loggedInUser.user_id },
+                },
+              },
+            },
           },
-        },
-      },
-      include: {
-        management_staff_profile: true,
-      },
-
-      omit: {
-        user_password: true,
-      },
-    });
-
-    if (!createdUser.management_staff_profile) {
-      throw new AppError(
-        "Failed to initialize management staff profile during onboarding.",
-        StatusCodes.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
-    // This gives the user their very first history block with end_date: null
-    await transaction.promotionHistory.create({
-      data: {
-        management_staff_id: createdUser.management_staff_profile.id,
-        position_id: positionExists.id,
-        role_id: roleExists.id,
-        start_date: effectiveJoiningDate, // Tracks initial joining date as the active point
-      },
-    });
-
-    // 🆕 C) Refactored Audit Log generation using direct model creation with required changed_by_id
-    await transaction.auditLog.createMany({
-      data: [
-        {
-          entity_id: createdUser.id,
-          entity_name: "User",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            full_name,
-            mobile_number,
-            email,
-            role_name: cleanRole,
-            position_name: cleanPosition,
+          include: {
+            management_staff_profile: true,
           },
-          action: "CREATE",
-          changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
-        },
-        {
-          entity_id: createdUser.management_staff_profile.id,
-          entity_name: "ManagementStaff",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            full_name,
-            mobile_number,
-            email,
-            role_id: roleExists.id,
-            position_id: positionExists.id,
+
+          omit: {
+            user_password: true,
           },
-          action: "CREATE",
-          changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
-        },
-        {
-          entity_id: createdUser.management_staff_profile.id, // Linked to the staff profile it documents
-          entity_name: "PromotionHistory",
-          old_value: Prisma.JsonNull,
-          new_value: {
+        });
+
+        if (!createdUser.management_staff_profile) {
+          throw new AppError(
+            "Failed to initialize management staff profile during onboarding.",
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        }
+
+        // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
+        // This gives the user their very first history block with end_date: null
+        await transaction.promotionHistory.create({
+          data: {
             management_staff_id: createdUser.management_staff_profile.id,
-            role_id: roleExists.id,
             position_id: positionExists.id,
-            start_date: new Date().toISOString(),
-            end_date: null,
+            role_id: roleExists.id,
+            start_date: effectiveJoiningDate, // Tracks initial joining date as the active point
           },
-          action: "CREATE",
-          changed_by_id: loggedInUser.user_id,
-        },
-      ],
+        });
+
+        // 🆕 C) Refactored Audit Log generation using direct model creation with required changed_by_id
+        await transaction.auditLog.createMany({
+          data: [
+            {
+              entity_id: createdUser.id,
+              entity_name: "User",
+              old_value: Prisma.JsonNull,
+              new_value: {
+                full_name,
+                mobile_number,
+                email,
+                role_name: cleanRole,
+                position_name: cleanPosition,
+              },
+              action: "CREATE",
+              changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
+            },
+            {
+              entity_id: createdUser.management_staff_profile.id,
+              entity_name: "ManagementStaff",
+              old_value: Prisma.JsonNull,
+              new_value: {
+                full_name,
+                mobile_number,
+                email,
+                role_id: roleExists.id,
+                position_id: positionExists.id,
+              },
+              action: "CREATE",
+              changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
+            },
+            {
+              entity_id: createdUser.management_staff_profile.id, // Linked to the staff profile it documents
+              entity_name: "PromotionHistory",
+              old_value: Prisma.JsonNull,
+              new_value: {
+                management_staff_id: createdUser.management_staff_profile.id,
+                role_id: roleExists.id,
+                position_id: positionExists.id,
+                start_date: new Date().toISOString(),
+                end_date: null,
+              },
+              action: "CREATE",
+              changed_by_id: loggedInUser.user_id,
+            },
+          ],
+        });
+
+        const expirationSeconds = 5 * 60;
+        const otpValue = crypto.randomInt(100000, 1000000).toString();
+        await issueOtpAndSendEmail({
+          key: otpKey,
+          otp: otpValue,
+          expirationSeconds,
+          to: email,
+          templateName: "create_user_email_verify.ejs",
+          subject:
+            "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
+          templateData: {
+            name: full_name,
+            user_name: createdUser.user_name ?? user_name,
+            OTP: otpValue,
+            year: new Date().getFullYear(),
+          },
+        });
+        otpIssued = true;
+
+        return createdUser;
+      },
+      { timeout: 30000 },
+    )
+    .catch(async (error: unknown) => {
+      if (otpIssued) {
+        await redisClient.del(otpKey).catch(() => undefined);
+      }
+      throw error;
     });
 
-    return createdUser;
-  });
-
-  // 7. Generate OTP after DB success
-  const expirationSeconds = 5 * 60;
-  const otpKey = `new_user_welcome_otp:${email}`;
-  const otpValue = crypto.randomInt(100000, 1000000).toString();
-
-  // 8. Store OTP
-  await redisClient.set(otpKey, otpValue, {
-    expiration: {
-      type: "EX",
-      value: expirationSeconds,
-    },
-  });
-
-  // 9. Render email
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/create_user_email_verify.ejs",
-  );
-
-  const html = await ejs.renderFile(templatePath, {
-    name: full_name,
-    OTP: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-    year: new Date().getFullYear(),
-  });
-
-  // 10. Send email
-  try {
-    await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: email,
-      subject: "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
-      html,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to send email.";
-
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
-  }
-
-  return newUser;
+  return { user: newUser, email_sent: true };
 };
 
 // CHANGE PASSWORD SERVICE LAYER
@@ -261,14 +279,9 @@ const changePassword = async (
   payload: TChangePasswordPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { full_name, mobile_number, current_password, new_password } = payload;
+  const { current_password, new_password } = payload;
   const user = await prisma.user.findUnique({
-    where: {
-      user_full_name_mobile_unique: {
-        full_name,
-        mobile_number,
-      },
-    },
+    where: { id: loggedInUser.user_id },
     select: {
       id: true,
       user_password: true,
@@ -277,12 +290,19 @@ const changePassword = async (
     },
   });
 
-  if (!user || !user.user_password || !user.email) {
+  if (!user || !user.user_password) {
     throw new AppError(
       "User account or password was not found.",
       StatusCodes.NOT_FOUND,
     );
   }
+  if (!user.email) {
+    throw new AppError(
+      "An email address is required to change the password.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  const userEmail = user.email;
 
   const isCurrentPasswordValid = await bcrypt.compare(
     current_password,
@@ -334,97 +354,26 @@ const changePassword = async (
           },
         },
       });
+
+      await sendVerificationResultEmail({
+        to: userEmail,
+        templateName: "change_password_success.ejs",
+        subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
+        templateData: {
+          name: user.full_name,
+        },
+      });
     },
     {
-      timeout: 15000,
+      timeout: 30000,
     },
   );
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/change_password_success.ejs",
-  );
-
-  const html = await ejs.renderFile(templatePath, {
-    name: user.full_name,
-    password: new_password,
-    year: new Date().getFullYear(),
-  });
-
-  try {
-    await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: user.email,
-      subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
-      html,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to send password change email.";
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
-  }
+  return { email_sent: true };
 };
 
 // FORGET PASSWORD SERVICE LAYER
 const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
-  const normalizedEmail = email.trim().toLowerCase();
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-    select: {
-      full_name: true,
-      email: true,
-      is_email_verified: true,
-    },
-  });
-
-  if (!user || !user.email) {
-    throw new AppError(
-      "No user found with this email address.",
-      StatusCodes.NOT_FOUND,
-    );
-  }
-
-  if (!user.is_email_verified) {
-    throw new AppError(
-      "Please verify your email address before resetting the password.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
-
-  const expirationSeconds = 5 * 60;
-  const otpValue = crypto.randomInt(100000, 1000000).toString();
-  const otpKey = `forget_password_otp:${normalizedEmail}`;
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/forget_password_otp.ejs",
-  );
-  const html = await ejs.renderFile(templatePath, {
-    name: user.full_name,
-    OTP: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-    year: new Date().getFullYear(),
-  });
-
-  await redisClient.set(otpKey, otpValue, {
-    expiration: {
-      type: "EX",
-      value: expirationSeconds,
-    },
-  });
-
-  try {
-    await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: normalizedEmail,
-      subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
-      html,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to send email.";
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
-  }
+  await emailServices.sendForgetPasswordOtp({ email });
 };
 
 // PROMOTE USER ROLE POSITION SERVICE LAYER
@@ -788,6 +737,7 @@ const updateSingleUserFieldAdmin = async (
       photo_url: true,
       mobile_number: true,
       email: true,
+      management_staff_profile: { select: { id: true } },
     },
   });
 
@@ -795,36 +745,85 @@ const updateSingleUserFieldAdmin = async (
     throw new AppError("User not found.", StatusCodes.NOT_FOUND);
   }
 
-  // UPDATE USER
-  const updatedUser = await prisma.user.update({
-    where: { id: user_id },
-    data: {
-      [field]: value,
-      updated_by: {
-        connect: {
-          id: loggedInUser.user_id,
-        },
-      },
-    },
-  });
-
-  // CREATE AUDIT LOG
   const typedField = field as keyof typeof user;
-  await prisma.auditLog.create({
-    data: {
-      entity_id: user_id,
-      entity_name: "User",
-      action: "UPDATE",
-      changed_by: {
-        connect: { id: loggedInUser.user_id },
+  if (user.management_staff_profile && field === "email" && value === null) {
+    throw new AppError(
+      "A management staff profile must have an email address.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  const normalizedValue =
+    field === "email" && typeof value === "string"
+      ? value.trim().toLowerCase()
+      : value;
+
+  const updatedUser = await prisma.$transaction(async (transaction) => {
+    const updated = await transaction.user.update({
+      where: { id: user_id },
+      data: {
+        [field]: normalizedValue,
+        updated_by: { connect: { id: loggedInUser.user_id } },
       },
-      old_value: {
-        [field]: user[typedField],
+      omit: { user_password: true },
+    });
+
+    if (user.management_staff_profile) {
+      const profileId = user.management_staff_profile.id;
+      if (field === "full_name") {
+        await transaction.managementStaff.update({
+          where: { id: profileId },
+          data: {
+            full_name: normalizedValue as string,
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          },
+        });
+      } else if (field === "mobile_number") {
+        await transaction.managementStaff.update({
+          where: { id: profileId },
+          data: {
+            mobile_number: normalizedValue as string,
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          },
+        });
+      } else if (field === "email") {
+        await transaction.managementStaff.update({
+          where: { id: profileId },
+          data: {
+            email: normalizedValue as string,
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          },
+        });
+      }
+      if (
+        field === "full_name" ||
+        field === "mobile_number" ||
+        field === "email"
+      ) {
+        await transaction.auditLog.create({
+          data: {
+            entity_id: profileId,
+            entity_name: "ManagementStaff",
+            action: "UPDATE",
+            changed_by: { connect: { id: loggedInUser.user_id } },
+            old_value: { [field]: user[typedField] },
+            new_value: { [field]: normalizedValue },
+          },
+        });
+      }
+    }
+
+    await transaction.auditLog.create({
+      data: {
+        entity_id: user_id,
+        entity_name: "User",
+        action: "UPDATE",
+        changed_by: { connect: { id: loggedInUser.user_id } },
+        old_value: { [field]: user[typedField] },
+        new_value: { [field]: normalizedValue },
       },
-      new_value: {
-        [field]: value,
-      },
-    },
+    });
+
+    return updated;
   });
 
   return updatedUser;
@@ -862,6 +861,7 @@ const updateSingleUserFieldSuperAdmin = async (
         },
       },
     },
+    omit: { user_password: true },
   });
 
   // CREATE AUDIT LOG
@@ -890,8 +890,9 @@ const updateUserName = async (
   payload: TUpdateUserNameZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-  const {user_id, user_name} = payload;
-   return await prisma.$transaction(async (transaction) => {
+  const { user_id, user_name } = payload;
+  const updatedUser = await prisma.$transaction(
+    async (transaction) => {
       // FIND USER
       const user = await transaction.user.findUnique({
         where: { id: user_id },
@@ -900,7 +901,13 @@ const updateUserName = async (
       if (!user) {
         throw new AppError("User not found.", 404);
       }
-  
+      if (!user.email) {
+        throw new AppError(
+          "A user email address is required to update the username.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
       // UPDATE USER NAME
       const updatedUser = await transaction.user.update({
         where: { id: user_id },
@@ -908,8 +915,9 @@ const updateUserName = async (
           user_name: user_name,
           updated_by: { connect: { id: loggedInUser.user_id } },
         },
+        omit: { user_password: true },
       });
-  
+
       // CREATE AUDIT LOG
       await transaction.auditLog.create({
         data: {
@@ -921,59 +929,58 @@ const updateUserName = async (
           changed_by: { connect: { id: loggedInUser.user_id } },
         },
       });
-  
-      if (user.email) {
-        const templatePath = path.join(
-          process.cwd(),
-          "src/templates/update_user_name_by_superadmin.ejs",
-        );
-  
-        const html = await ejs.renderFile(templatePath, {
+
+      await sendVerificationResultEmail({
+        to: user.email,
+        templateName: "update_user_name_by_superadmin.ejs",
+        subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+        templateData: {
           name: user.full_name,
-          updated_user_name: updatedUser.user_name,
+          updated_user_name: updatedUser.user_name ?? "",
           updated_by: envVars.SUPER_ADMIN_NAME,
-          updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
-          year: new Date().getFullYear(),
-        });
-        try {
-          await transporter.sendMail({
-            from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-            to: user.email,
-            subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
-            html,
-          });
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "Failed to send email.";
-          throw new AppError(message, StatusCodes.BAD_REQUEST);
-        }
-      }
-  
-      return updatedUser;
-    });
+          updated_by_position: loggedInUser.position_name,
+        },
+      });
+
+      return {
+        id: updatedUser.id,
+        user_name: updatedUser.user_name,
+      };
+    },
+    { timeout: 30000 },
+  );
+
+  return { ...updatedUser, email_sent: true };
 };
 
 const updateUserPassword = async (
   payload: TUpdateUserPasswordZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-  const {user_id, user_password} = payload
-    return await prisma.$transaction(async (transaction) => {
+  const { user_id, user_password } = payload;
+  const updatedUser = await prisma.$transaction(
+    async (transaction) => {
       // FIND USER
       const user = await transaction.user.findUnique({
         where: { id: user_id },
-        select: { id: true, full_name: true, email: true, user_password: true },
+        select: { id: true, full_name: true, email: true },
       });
       if (!user) {
         throw new AppError("User not found.", 404);
       }
-  
+      if (!user.email) {
+        throw new AppError(
+          "A user email address is required to update the password.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
       // HASH PASSWORD
       const hashedPassword = await bcrypt.hash(
         user_password,
         Number(envVars.BCRYPT_SALT_ROUND),
       );
-  
+
       // UPDATE USER PASSWORD
       await transaction.user.update({
         where: { id: user_id },
@@ -982,7 +989,7 @@ const updateUserPassword = async (
           updated_by: { connect: { id: loggedInUser.user_id } },
         },
       });
-  
+
       // CREATE AUDIT LOG
       await transaction.auditLog.create({
         data: {
@@ -994,37 +1001,29 @@ const updateUserPassword = async (
           changed_by: { connect: { id: loggedInUser.user_id } },
         },
       });
-  
-      // SEND EMAIL
-      if (user.email) {
-        const templatePath = path.join(
-          process.cwd(),
-          "src/templates/update_user_name_by_superadmin.ejs",
-        );
-  
-        const html = await ejs.renderFile(templatePath, {
+
+      await sendVerificationResultEmail({
+        to: user.email,
+        templateName: "update_user_password_by_super_admin.ejs",
+        subject: "Your SONAMONIDER PATHSHALA Password Was Updated.",
+        templateData: {
           name: user.full_name,
           updated_user_password: user_password,
           updated_by: envVars.SUPER_ADMIN_NAME,
-          updated_by_position: loggedInUser.position_name, //  "PRINCIPAL"
-          year: new Date().getFullYear(),
-        });
-        try {
-          await transporter.sendMail({
-            from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-            to: user.email,
-            subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
-            html,
-          });
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "Failed to send email.";
-          throw new AppError(message, StatusCodes.BAD_REQUEST);
-        }
-      }
-      // DO NOT RETURN THE PASSWORD OR PASSWORD HASH
-      return { id: user.id, message: "User password updated successfully." };
-    });
+          updated_by_position: loggedInUser.position_name,
+        },
+      });
+
+      return { id: user.id, full_name: user.full_name, email: user.email };
+    },
+    { timeout: 30000 },
+  );
+
+  return {
+    id: updatedUser.id,
+    message: "User password updated successfully.",
+    email_sent: true,
+  };
 };
 export const userServices = {
   createUser,

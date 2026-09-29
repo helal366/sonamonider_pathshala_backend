@@ -32,8 +32,10 @@ const createUser = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.CREATED,
-      message: `User created successfully.`,
-      data: result,
+      message: result.email_sent
+        ? "User created successfully."
+        : "User created, but the verification email could not be sent. Request a resend.",
+      data: result.user,
     });
   },
 );
@@ -48,12 +50,14 @@ const changePassword = catchAsync(
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    await userServices.changePassword(payload, loggedInUser);
+    const result = await userServices.changePassword(payload, loggedInUser);
 
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: "Password changed successfully.",
+      message: result.email_sent
+        ? "Password changed successfully."
+        : "Password changed successfully, but the notification email could not be sent.",
     });
   },
 );
@@ -128,7 +132,7 @@ const updateSingleUserFieldAdmin = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: `Field updated successful.`,
+      message: "Field updated successfully.",
       data: result,
     });
   },
@@ -154,43 +158,37 @@ const updateSingleUserFieldSuperAdmin = catchAsync(
   },
 );
 // UPDATE USER NAME CONTROLLER
-const updateUserName = catchAsync(
-  async (req: Request, res: Response) => {
-    const payload: TUpdateUserNameZodSchema = req.body;
-    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+const updateUserName = catchAsync(async (req: Request, res: Response) => {
+  const payload: TUpdateUserNameZodSchema = req.body;
+  const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await userServices.updateUserName(
-      payload,
-      loggedInUser,
-    );
+  const result = await userServices.updateUserName(payload, loggedInUser);
 
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: `Field updated successful.`,
-      data: result,
-    });
-  },
-);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: result.email_sent
+      ? "User name updated successfully."
+      : "User name updated successfully, but the notification email could not be sent.",
+    data: result,
+  });
+});
 // UPDATE USER PASSWORD CONTROLLER
-const updateUserPassword = catchAsync(
-  async (req: Request, res: Response) => {
-    const payload: TUpdateUserPasswordZodSchema = req.body;
-    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
+  const payload: TUpdateUserPasswordZodSchema = req.body;
+  const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
 
-    const result = await userServices.updateUserPassword(
-      payload,
-      loggedInUser,
-    );
+  const result = await userServices.updateUserPassword(payload, loggedInUser);
 
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: `Field updated successful.`,
-      data: result,
-    });
-  },
-);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: result.email_sent
+      ? "Password updated successfully."
+      : "Password updated successfully, but the notification email could not be sent.",
+    data: result,
+  });
+});
 export const userController = {
   createUser,
   changePassword,
@@ -200,5 +198,5 @@ export const userController = {
   updateSingleUserFieldAdmin,
   updateSingleUserFieldSuperAdmin,
   updateUserName,
-  updateUserPassword
+  updateUserPassword,
 };

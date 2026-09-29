@@ -1,5 +1,5 @@
 import { EducationDegree } from "#db-client";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 
 export type TMotherDetailsPatchService = (
   payload: never,
@@ -11,7 +11,7 @@ export interface ITargetUser {
   full_name: string;
   mother_details_id: string | null;
   mother_details: IMotherDetails | null;
-};
+}
 
 export interface IMotherDetails {
   id: string;
@@ -24,7 +24,7 @@ export interface IMotherDetails {
   mobile_no_1: string | null;
   mobile_no_2: string | null;
   mobile_no_3: string | null;
-};
+}
 
 export type MotherDetailsField =
   | "mother_name"
@@ -37,4 +37,4 @@ export type MotherDetailsField =
   | "mobile_no_2"
   | "mobile_no_3";
 
-  export type MotherDetailsValue = string | EducationDegree | null;
+export type MotherDetailsValue = string | EducationDegree | null;

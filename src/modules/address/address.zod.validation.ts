@@ -3,7 +3,7 @@ import {
   ADDRESS_UPDATE_FIELDS,
   AddressOwnerType,
   AddressType,
-} from "./address.interface";
+} from "./address.interface.js";
 
 // ============================================================
 // CREATE ADDRESS ZOD SCHEMA

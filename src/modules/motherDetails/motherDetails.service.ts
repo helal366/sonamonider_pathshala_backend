@@ -1,17 +1,14 @@
 import { Prisma } from "#db-client";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 import { motherDetailsHelperFunctions } from "./motherDetails.helperFunction.js";
-import {
-  IMotherDetails,
-  ITargetUser,
-} from "./motherDetails.interface";
+import { IMotherDetails, ITargetUser } from "./motherDetails.interface.js";
 
 import {
   TConnectMotherDetailsZodSchema,
   TCreateMotherDetailsZodSchema,
   TDisconnectMotherDetailsZodSchema,
-} from "./motherDetails.zod.validation";
+} from "./motherDetails.zod.validation.js";
 
 // ============================================================
 // CREATE MOTHER DETAILS CONTROLLER

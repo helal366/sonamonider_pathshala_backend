@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
-import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
-import { userAddressServices } from "./address.service";
-import { TDeleteAddressZodSchema } from "./address.zod.validation";
+import { userAddressServices } from "./address.service.js";
+import { TDeleteAddressZodSchema } from "./address.zod.validation.js";
 
 // ============================================================
 // UPDATE ADDRESS CONTROLLER
 // ============================================================
-const createAddress= catchAsync(
-  async (req: Request, res: Response, next: NextFunction)=>{
-      const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+const createAddress = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
 
     const result = await userAddressServices.createAddress(
@@ -26,15 +26,15 @@ const createAddress= catchAsync(
       message: `Address created successfully.`,
       data: result,
     });
-  }
-)
+  },
+);
 
 // ============================================================
 // DELETE ADDRESS CONTROLLER
 // ============================================================
-const deleteAddress= catchAsync(
-  async (req: Request, res: Response, next: NextFunction)=>{
-      const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+const deleteAddress = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload: TDeleteAddressZodSchema = req.body;
 
     const result = await userAddressServices.deleteAddress(
@@ -48,8 +48,8 @@ const deleteAddress= catchAsync(
       message: `Address deleted successfully.`,
       data: result,
     });
-  }
-)
+  },
+);
 // ============================================================
 // UPDATE ADDRESS FIELD CONTROLLER
 // ============================================================

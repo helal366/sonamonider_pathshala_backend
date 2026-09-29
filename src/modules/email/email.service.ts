@@ -1,14 +1,10 @@
 import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
-import ejs from "ejs";
-import path from "path";
 import bcrypt from "bcryptjs";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { envVars } from "../../config/index.js";
 import { prisma } from "../../lib/prisma.js";
 import { redisClient } from "../../lib/redis.js";
-import { transporter } from "../../lib/nodemailer.js";
 import type {
   TResendOtpForgetPasswordPayload,
   TResendOtpEmailPayload,
@@ -17,6 +13,7 @@ import type {
 } from "./email.zod.validation.js";
 import {
   createTemporaryPassword,
+  issueOtpAndSendEmail,
   sendVerificationResultEmail,
 } from "./email.helper.function.js";
 
@@ -28,6 +25,7 @@ const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
     select: {
       email: true,
       full_name: true,
+      user_name: true,
       is_email_verified: true,
     },
   });
@@ -49,36 +47,20 @@ const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
   const expirationSeconds = 5 * 60;
   const otpValue = crypto.randomInt(100000, 1000000).toString();
   const otpKey = `new_user_welcome_otp:${normalizedEmail}`;
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/resend_otp_email_verify.ejs",
-  );
-  const html = await ejs.renderFile(templatePath, {
-    name: user.full_name,
-    OTP: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-    year: new Date().getFullYear(),
-  });
-
-  await redisClient.set(otpKey, otpValue, {
-    expiration: {
-      type: "EX",
-      value: expirationSeconds,
+  await issueOtpAndSendEmail({
+    key: otpKey,
+    otp: otpValue,
+    expirationSeconds,
+    to: normalizedEmail,
+    templateName: "resend_otp_email_verify.ejs",
+    subject: "Your New SONAMONIDER PATHSHALA Verification Code",
+    templateData: {
+      name: user.full_name,
+      user_name: user.user_name ?? "",
+      OTP: otpValue,
+      year: new Date().getFullYear(),
     },
   });
-
-  try {
-    await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: normalizedEmail,
-      subject: "Your New SONAMONIDER PATHSHALA Verification Code",
-      html,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to send email.";
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
-  }
 };
 
 // VERIFY EMAIL WHILE REGISTRATION OR USER CREATION
@@ -89,8 +71,8 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
     select: {
       id: true,
       full_name: true,
-      mobile_number: true,
       email: true,
+      user_name: true,
       is_email_verified: true,
     },
   });
@@ -130,57 +112,57 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   const temporaryPassword = createTemporaryPassword();
   const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
-  await prisma.$transaction(async (transaction) => {
-    await transaction.user.update({
-      where: {
-        user_full_name_mobile_unique: {
-          full_name: user.full_name,
-          mobile_number: user.mobile_number,
+  await prisma.$transaction(
+    async (transaction) => {
+      await transaction.user.update({
+        where: { id: user.id },
+        data: {
+          is_email_verified: true,
+          user_password: hashedPassword,
+          updated_by: {
+            connect: { id: user.id },
+          },
         },
-      },
-      data: {
-        is_email_verified: true,
-        user_password: hashedPassword,
-        updated_by: {
-          connect: { id: user.id },
-        },
-      },
-    });
+      });
 
-    await transaction.user.update({
-      where: { id: user.id },
-      data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: user.id,
-              entity_name: "User",
-              old_value: {
-                is_email_verified: false,
-                password_set: false,
+      await transaction.user.update({
+        where: { id: user.id },
+        data: {
+          audit_logs: {
+            create: [
+              {
+                entity_id: user.id,
+                entity_name: "User",
+                old_value: {
+                  is_email_verified: false,
+                  password_set: false,
+                },
+                new_value: {
+                  is_email_verified: true,
+                  password_set: true,
+                },
+                action: "UPDATE",
               },
-              new_value: {
-                is_email_verified: true,
-                password_set: true,
-              },
-              action: "UPDATE",
-            },
-          ],
+            ],
+          },
         },
-      },
-    });
-  });
+      });
+
+      await sendVerificationResultEmail({
+        to: normalizedEmail,
+        templateName: "success_email_verify.ejs",
+        subject: "SONAMONIDER PATHSHALA Email Verified Successfully",
+        templateData: {
+          name: user.full_name,
+          user_name: user.user_name ?? "",
+          password: temporaryPassword,
+        },
+      });
+    },
+    { timeout: 30000 },
+  );
 
   await redisClient.del(otpKey);
-  await sendVerificationResultEmail({
-    to: normalizedEmail,
-    templateName: "success_email_verify.ejs",
-    subject: "SONAMONIDER PATHSHALA Email Verified Successfully",
-    templateData: {
-      name: user.full_name,
-      password: temporaryPassword,
-    },
-  });
 };
 
 // SEND FORGET PASSWORD OTP
@@ -214,36 +196,19 @@ const sendForgetPasswordOtp = async ({
   const expirationSeconds = 5 * 60;
   const otpValue = crypto.randomInt(100000, 1000000).toString();
   const otpKey = `forget_password_otp:${normalizedEmail}`;
-  const templatePath = path.join(
-    process.cwd(),
-    "src/templates/forget_password_otp.ejs",
-  );
-  const html = await ejs.renderFile(templatePath, {
-    name: user.full_name,
-    OTP: otpValue,
-    expirationMinutes: expirationSeconds / 60,
-    year: new Date().getFullYear(),
-  });
-
-  await redisClient.set(otpKey, otpValue, {
-    expiration: {
-      type: "EX",
-      value: expirationSeconds,
+  await issueOtpAndSendEmail({
+    key: otpKey,
+    otp: otpValue,
+    expirationSeconds,
+    to: normalizedEmail,
+    templateName: "forget_password_otp.ejs",
+    subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
+    templateData: {
+      name: user.full_name,
+      OTP: otpValue,
+      year: new Date().getFullYear(),
     },
   });
-
-  try {
-    await transporter.sendMail({
-      from: `"${envVars.EMAIL_SENDER_NAME}" <${envVars.EMAIL_SENDER}>`,
-      to: normalizedEmail,
-      subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
-      html,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to send email.";
-    throw new AppError(message, StatusCodes.BAD_REQUEST);
-  }
 };
 
 // FORGET PASSWORD VERIFY EMAIL
@@ -296,50 +261,49 @@ const verifyEmailForgetPassword = async ({
   const newPassword = createTemporaryPassword();
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  await prisma.$transaction(async (transaction) => {
-    await transaction.user.update({
-      where: {
-        user_full_name_mobile_unique: {
-          full_name: user.full_name,
-          mobile_number: user.mobile_number,
+  await prisma.$transaction(
+    async (transaction) => {
+      await transaction.user.update({
+        where: { id: user.id },
+        data: {
+          user_password: hashedPassword,
+          updated_by: {
+            connect: { id: user.id },
+          },
         },
-      },
-      data: {
-        user_password: hashedPassword,
-        updated_by: {
-          connect: { id: user.id },
-        },
-      },
-    });
+      });
 
-    await transaction.user.update({
-      where: { id: user.id },
-      data: {
-        audit_logs: {
-          create: [
-            {
-              entity_id: user.id,
-              entity_name: "User",
-              old_value: Prisma.JsonNull,
-              new_value: { password_reset: true },
-              action: "UPDATE",
-            },
-          ],
+      await transaction.user.update({
+        where: { id: user.id },
+        data: {
+          audit_logs: {
+            create: [
+              {
+                entity_id: user.id,
+                entity_name: "User",
+                old_value: Prisma.JsonNull,
+                new_value: { password_reset: true },
+                action: "UPDATE",
+              },
+            ],
+          },
         },
-      },
-    });
-  });
+      });
+
+      await sendVerificationResultEmail({
+        to: normalizedEmail,
+        templateName: "forget_password_success.ejs",
+        subject: "SONAMONIDER PATHSHALA Password Reset Successful",
+        templateData: {
+          name: user.full_name,
+          password: newPassword,
+        },
+      });
+    },
+    { timeout: 30000 },
+  );
 
   await redisClient.del(otpKey);
-  await sendVerificationResultEmail({
-    to: normalizedEmail,
-    templateName: "forget_password_success.ejs",
-    subject: "SONAMONIDER PATHSHALA Password Reset Successful",
-    templateData: {
-      name: user.full_name,
-      password: newPassword,
-    },
-  });
 };
 
 // RESEND OTP FORGET PASSWORD

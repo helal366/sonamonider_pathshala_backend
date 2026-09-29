@@ -8,7 +8,7 @@ import {
   GENDER_ENUM,
   RELIGION_ENUM,
   STRING_FIELDS,
-} from "./user.interface";
+} from "./user.interface.js";
 
 // CREATE USER ZOD SCHEMA
 const userCreateZodSchema = z4.object({
@@ -55,6 +55,8 @@ const userCreateZodSchema = z4.object({
           ? "Email is required."
           : "Invalid email format",
     })
+    .trim()
+    .toLowerCase()
     .check(z4.email("Invalid email format")),
   position_name: z4.string({
     error: (issue) =>
@@ -83,25 +85,6 @@ export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
 // CHANGE PASSWORD ZOD SCHEMA
 const changePasswordZodSchema = z4
   .object({
-    full_name: z4
-      .string({
-        error: (issue) =>
-          issue.input === undefined
-            ? "Full name is required."
-            : "Invalid name format",
-      })
-      .trim()
-      .min(1, "Full name is required."),
-    mobile_number: z4
-      .string({
-        error: (issue) =>
-          issue.input === undefined
-            ? "Mobile number is required."
-            : "Invalid mobile number format.",
-      })
-      .trim()
-      .length(11, "Mobile number must be 11 digit and start with 01")
-      .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
     current_password: z4
       .string({
         error: (issue) =>
@@ -117,7 +100,7 @@ const changePasswordZodSchema = z4
             ? "New password is required."
             : "Invalid new password format.",
       })
-      .min(6, "New password must be at least 8 characters."),
+      .min(8, "New password must be at least 8 characters."),
     confirm_password: z4
       .string({
         error: (issue) =>
@@ -125,7 +108,7 @@ const changePasswordZodSchema = z4
             ? "Confirm password is required."
             : "Invalid confirm password format.",
       })
-      .min(6, "Confirm password must be at least 8 characters."),
+      .min(8, "Confirm password must be at least 8 characters."),
   })
   .check(({ value, issues }) => {
     if (value.new_password !== value.confirm_password) {
@@ -244,17 +227,42 @@ export type TChangeUserPositionZodSchema = z4.infer<
   typeof changeUserPositionZodSchema
 >;
 
-
 // ==============================================
 // UPDATE SINGLE USER FIELD ADMIN ZOD SCHEMA
 // ==============================================
 const adminFieldsUnion = z4.discriminatedUnion("field", [
   //1. Rule for standard string text fields
-  z4.object({
-    user_id: z4.string().trim(),
-    field: z4.enum(STRING_FIELDS),
-    value: z4.string().trim().nullable(),
-  }),
+  z4
+    .object({
+      user_id: z4.string().trim(),
+      field: z4.enum(STRING_FIELDS),
+      value: z4.string().trim().nullable(),
+    })
+    .check(({ value: parsed, issues }) => {
+      if (
+        parsed.field === "email" &&
+        parsed.value !== null &&
+        !z4.email().safeParse(parsed.value).success
+      ) {
+        issues.push({
+          code: "custom",
+          input: parsed.value,
+          message: "Invalid email format.",
+          path: ["value"],
+        });
+      }
+      if (
+        parsed.field === "mobile_number" &&
+        (parsed.value === null || !/^01\d{9}$/.test(parsed.value))
+      ) {
+        issues.push({
+          code: "custom",
+          input: parsed.value,
+          message: "Invalid Bangladeshi mobile number.",
+          path: ["value"],
+        });
+      }
+    }),
 
   //2. Rule for float/decimal fields (height_in_cm, weight_in_kg)
   z4.object({
@@ -306,13 +314,10 @@ const adminFieldsUnion = z4.discriminatedUnion("field", [
   }),
 ]);
 
-const updateSingleUserFieldAdminZodSchema = z4
-  .object({})
-  .and(adminFieldsUnion);
+const updateSingleUserFieldAdminZodSchema = z4.object({}).and(adminFieldsUnion);
 export type TUpdateSingleUserFieldAdminZodSchema = z4.infer<
   typeof updateSingleUserFieldAdminZodSchema
 >;
-
 
 // ===================================================
 // UPDATE SINGLE USER FIELD SUPER ADMIN ZOD SCHEMA
@@ -322,10 +327,15 @@ const superAdminFieldsUnion = z4.discriminatedUnion("field", [
   z4.object({
     user_id: z4.string().trim(),
     field: z4.enum(["is_mobile_verified", "is_email_verified", "is_deleted"]),
-    // Preprocess handles raw booleans or form/string conversions safely
     value: z4.preprocess(
-      (val) => (val === "" || val === null || val === undefined ? null : val),
-      z4.coerce.boolean()
+      (val) => {
+        if (typeof val !== "string") return val;
+        const normalized = val.trim().toLowerCase();
+        if (normalized === "true") return true;
+        if (normalized === "false") return false;
+        return val;
+      },
+      z4.boolean({ message: "Expected a boolean value." }),
     ),
   }),
 
@@ -333,13 +343,19 @@ const superAdminFieldsUnion = z4.discriminatedUnion("field", [
   z4.object({
     user_id: z4.string().trim(),
     field: z4.literal("active_status"),
-    value: z4.enum(ACTIVE_STATUS_ENUM, { message: "Invalid Active Status value." }),
+    value: z4.enum(ACTIVE_STATUS_ENUM, {
+      message: "Invalid Active Status value.",
+    }),
   }),
 ]);
 
 // FIX: Wrapped with z4.object({}).and() to resolve the router middleware type signature error
-const updateSingleUserFieldSuperAdminZodSchema = z4.object({}).and(superAdminFieldsUnion);
-export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<typeof updateSingleUserFieldSuperAdminZodSchema>;
+const updateSingleUserFieldSuperAdminZodSchema = z4
+  .object({})
+  .and(superAdminFieldsUnion);
+export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<
+  typeof updateSingleUserFieldSuperAdminZodSchema
+>;
 
 // ============================================================
 // UPDATE USER NAME ROUTE
@@ -358,7 +374,8 @@ const updateUserNameZodSchema = z4.object({
           ? "User name is required."
           : "Invalid user name.",
     })
-    .trim(),
+    .trim()
+    .min(1, "User name is required."),
 });
 export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
 
@@ -385,7 +402,6 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
 
-
 export const userZodSchema = {
   userCreateZodSchema,
   changePasswordZodSchema,
@@ -395,5 +411,5 @@ export const userZodSchema = {
   updateSingleUserFieldAdminZodSchema,
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
-  updateUserPasswordZodSchema
-}
+  updateUserPasswordZodSchema,
+};

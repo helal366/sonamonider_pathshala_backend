@@ -1,5 +1,5 @@
-import { envVars } from "../config";
-import { prisma } from "../lib/prisma";
+import { envVars } from "../config/index.js";
+import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcryptjs";
 
 const seedSuperAdminRolePrincipalPosition = async () => {
@@ -102,5 +102,3 @@ export const runInitialSeed = async () => {
 
   console.log("Initial seed completed successfully.");
 };
-
-

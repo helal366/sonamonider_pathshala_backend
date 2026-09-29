@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 import { Prisma } from "#db-client";
 import {
   SpouseInformationField,
@@ -57,8 +57,7 @@ const updateSpouseInformationField = async (
 
   if (!spouseInfo || !spouseInfoId) {
     throw new AppError("Spouse information not found.", StatusCodes.NOT_FOUND);
-  };
-
+  }
 
   return prisma.$transaction(async (transaction) => {
     const updated = await transaction.spouseInformation.update({
@@ -105,7 +104,6 @@ const updateSpouseName = async (
     payload.full_name,
     loggedInUser,
   );
-
 
 // ============================================================
 // UPDATE SPOUSE CONTACT NO SERVICE

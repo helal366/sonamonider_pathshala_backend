@@ -5,12 +5,12 @@ import { StatusCodes } from "http-status-codes";
 import { Prisma } from "#db-client";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { prisma } from "../../lib/prisma";
-import { SpouseInformationDeleteField, SpouseInformationDeleteValue } from "./spouseInformation.interface.js";
+import { prisma } from "../../lib/prisma.js";
 import {
-  TDeleteSpouseInformationFieldZodSchema,
-} from "./spouseInformation.zod.validation";
-
+  SpouseInformationDeleteField,
+  SpouseInformationDeleteValue,
+} from "./spouseInformation.interface.js";
+import { TDeleteSpouseInformationFieldZodSchema } from "./spouseInformation.zod.validation.js";
 
 // ============================================================
 // DELETE SPOUSE INFORMATION FIELD
@@ -52,14 +52,11 @@ const deleteSpouseInformationField = async (
     );
   }
 
-// CHECK SPOUSE INFORMATION
+  // CHECK SPOUSE INFORMATION
   const spouseInformation = targetUser.spouse_information;
 
   if (!spouseInformation) {
-    throw new AppError(
-      "Spouse information not found.",
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError("Spouse information not found.", StatusCodes.NOT_FOUND);
   }
 
   const spouseInformationId = spouseInformation.id;
@@ -68,10 +65,10 @@ const deleteSpouseInformationField = async (
   const oldValue =
     spouseInformation[field as keyof typeof spouseInformation] ?? null;
 
- // DELETE SPOUSE INFORMATION FIELD
+  // DELETE SPOUSE INFORMATION FIELD
   return prisma.$transaction(async (transaction) => {
-    const updatedSpouseInformation =
-      await transaction.spouseInformation.update({
+    const updatedSpouseInformation = await transaction.spouseInformation.update(
+      {
         where: {
           id: spouseInformationId,
         },
@@ -83,7 +80,8 @@ const deleteSpouseInformationField = async (
             },
           },
         } as Prisma.SpouseInformationUpdateInput,
-      });
+      },
+    );
 
     // CREATE AUDIT LOG
     await transaction.auditLog.create({
@@ -113,12 +111,7 @@ const deleteSpouseInformationField = async (
 const deleteSpouseContactNo = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "contact_no",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "contact_no", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE FATHER NAME
@@ -126,12 +119,7 @@ const deleteSpouseContactNo = async (
 const deleteSpouseFatherName = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "father_name",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "father_name", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE FATHER CONTACT NO
@@ -139,12 +127,7 @@ const deleteSpouseFatherName = async (
 const deleteSpouseFatherContactNo = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "father_contact_no",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "father_contact_no", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE MOTHER NAME
@@ -152,12 +135,7 @@ const deleteSpouseFatherContactNo = async (
 const deleteSpouseMotherName = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "mother_name",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "mother_name", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE MOTHER CONTACT NO
@@ -165,12 +143,7 @@ const deleteSpouseMotherName = async (
 const deleteSpouseMotherContactNo = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "mother_contact_no",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "mother_contact_no", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE OCCUPATION
@@ -178,12 +151,7 @@ const deleteSpouseMotherContactNo = async (
 const deleteSpouseOccupation = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "occupation",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "occupation", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE JOB TITLE
@@ -191,12 +159,7 @@ const deleteSpouseOccupation = async (
 const deleteSpouseJobTitle = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "job_title",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "job_title", loggedInUser);
 
 // ============================================================
 // DELETE SPOUSE MONTHLY INCOME
@@ -204,12 +167,7 @@ const deleteSpouseJobTitle = async (
 const deleteSpouseMonthlyIncome = async (
   payload: TDeleteSpouseInformationFieldZodSchema,
   loggedInUser: TLoggedInUser,
-) =>
-  deleteSpouseInformationField(
-    payload,
-    "monthly_income",
-    loggedInUser,
-  );
+) => deleteSpouseInformationField(payload, "monthly_income", loggedInUser);
 
 // ============================================================
 // EXPORT SPOUSE INFORMATION DELETE SERVICES

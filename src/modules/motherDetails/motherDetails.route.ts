@@ -17,8 +17,8 @@ import {
   updateMotherMobileNo1ZodSchema,
   updateMotherMobileNo2ZodSchema,
   updateMotherMobileNo3ZodSchema,
-} from "./motherDetails.zod.validation";
-import { motherDetailsPatchController } from "./motherDetails.patch.controller";
+} from "./motherDetails.zod.validation.js";
+import { motherDetailsPatchController } from "./motherDetails.patch.controller.js";
 
 const router = Router();
 
@@ -239,8 +239,7 @@ router.delete(
   motherDetailsController.disconnectMotherDetails,
 );
 
-export const motherDetailsRouter:Router = router;
-
+export const motherDetailsRouter: Router = router;
 
 // import { Router } from "express";
 

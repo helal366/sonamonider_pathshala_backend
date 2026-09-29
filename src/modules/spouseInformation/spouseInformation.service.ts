@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 import { TCreateSpouseInformationZodSchema } from "./spouseInformation.zod.validation.js";
 import { Prisma } from "#db-client";
 
@@ -315,18 +315,15 @@ const deleteSpouseInformation = async (
   });
 };
 
-
 // ============================================================
 // UPDATE SPOUSE FULL NAME SERVICE
 // ============================================================
-const updateSpouseName=async(
-   payload: { user_id: string },
+const updateSpouseName = async (
+  payload: { user_id: string },
   loggedInUser: TLoggedInUser,
-)=>{
-
-}
+) => {};
 export const spouseInformationServices = {
   createSpouseInformation,
   deleteSpouseInformation,
-  updateSpouseName
+  updateSpouseName,
 };

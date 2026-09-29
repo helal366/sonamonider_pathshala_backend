@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AppError } from "../globalError/globalErrorHelperFunction";
+import { AppError } from "../globalError/globalErrorHelperFunction.js";
 import { StatusCodes } from "http-status-codes";
 
 const requiredUser = (req: Request) => {
@@ -9,5 +9,5 @@ const requiredUser = (req: Request) => {
   return req.user;
 };
 export const helperFunctions = {
-    requiredUser
-}
+  requiredUser,
+};

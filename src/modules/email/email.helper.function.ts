@@ -5,6 +5,7 @@ import { transporter } from "../../lib/nodemailer.js";
 import { envVars } from "../../config/index.js";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { redisClient } from "../../lib/redis.js";
 
 export const createTemporaryPassword = () => {
   const uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -67,5 +68,60 @@ export const sendVerificationResultEmail = async ({
     const message =
       error instanceof Error ? error.message : "Failed to send email.";
     throw new AppError(message, StatusCodes.BAD_REQUEST);
+  }
+};
+
+export const issueOtpAndSendEmail = async ({
+  key,
+  otp,
+  expirationSeconds,
+  to,
+  templateName,
+  subject,
+  templateData,
+}: {
+  key: string;
+  otp: string;
+  expirationSeconds: number;
+  to: string;
+  templateName: string;
+  subject: string;
+  templateData: Record<string, string | number>;
+}) => {
+  const previousOtp = await redisClient.get(key);
+  const previousTtl = previousOtp === null ? -2 : await redisClient.ttl(key);
+
+  await redisClient.set(key, otp, {
+    expiration: { type: "EX", value: expirationSeconds },
+  });
+
+  try {
+    await sendVerificationResultEmail({
+      to,
+      templateName,
+      subject,
+      templateData: {
+        ...templateData,
+        expirationMinutes: expirationSeconds / 60,
+      },
+    });
+  } catch (error) {
+    try {
+      if (previousOtp === null || previousTtl === 0 || previousTtl === -2) {
+        await redisClient.del(key);
+      } else if (previousTtl === -1) {
+        await redisClient.set(key, previousOtp);
+      } else {
+        await redisClient.set(key, previousOtp, {
+          expiration: { type: "EX", value: previousTtl },
+        });
+      }
+    } catch {
+      throw new AppError(
+        "Email delivery failed and the previous verification code could not be restored.",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+    throw error;
   }
 };

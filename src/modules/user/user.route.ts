@@ -68,10 +68,8 @@ router.patch(
   userController.updateUserName
 )
 
-
-
 // ============================================================
-// UPDATE USER NAME ROUTE
+// UPDATE USER PASSWORD ROUTE
 // ============================================================
 router.patch(
   "/update_user_password",

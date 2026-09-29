@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import { runInitialSeed } from "./seed";
+import { prisma } from "../lib/prisma.js";
+import { runInitialSeed } from "./seed.js";
 
 const main = async () => {
   await prisma.$connect();
