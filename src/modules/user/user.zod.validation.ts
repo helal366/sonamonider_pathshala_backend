@@ -1,5 +1,14 @@
 import { BloodGroup, Gender, Religion } from "#db-client";
 import z4 from "zod/v4";
+import {
+  ACTIVE_STATUS_ENUM,
+  BLOOD_GROUP_ENUM,
+  DATE_FIELDS,
+  FLOAT_FIELDS,
+  GENDER_ENUM,
+  RELIGION_ENUM,
+  STRING_FIELDS,
+} from "./user.interface";
 
 // CREATE USER ZOD SCHEMA
 export const userCreateZodSchema = z4.object({
@@ -234,3 +243,100 @@ export const changeUserPositionZodSchema = z4.object({
 export type TChangeUserPositionZodSchema = z4.infer<
   typeof changeUserPositionZodSchema
 >;
+
+
+// ==============================================
+// UPDATE SINGLE USER FIELD ADMIN ZOD SCHEMA
+// ==============================================
+const adminFieldsUnion = z4.discriminatedUnion("field", [
+  //1. Rule for standard string text fields
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.enum(STRING_FIELDS),
+    value: z4.string().trim().nullable(),
+  }),
+
+  //2. Rule for float/decimal fields (height_in_cm, weight_in_kg)
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.enum(FLOAT_FIELDS),
+    value: z4.preprocess(
+      (val) =>
+        val === "" || val === null || val === undefined ? null : Number(val),
+      z4.number().nullable(),
+    ),
+  }),
+
+  //3. Rule for date fields (date_of_birth)
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.enum(DATE_FIELDS),
+    value: z4.preprocess(
+      (val) => (typeof val === "string" && val ? new Date(val) : val),
+      z4
+        .date()
+        .nullable()
+        .refine((date) => !date || !isNaN(date.getTime()), {
+          message: "Invalid date format.",
+        }),
+    ),
+  }),
+
+  // 4. Gender Enum (Non-nullable in Prisma)
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.literal("gender"),
+    value: z4.enum(GENDER_ENUM, { message: "Invalid Gender value." }),
+  }),
+
+  // 5. Blood Group Enum (Nullable)
+  z4.object({
+    user_id: z4.string().trim().toUpperCase(),
+    field: z4.literal("blood_group"),
+    value: z4.enum(BLOOD_GROUP_ENUM, "Invalid Blood group.").nullable(),
+  }),
+
+  // 6. Religion Enum (Nullable)
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.literal("religion"),
+    value: z4
+      .enum(RELIGION_ENUM, { message: "Invalid Religion value." })
+      .nullable(),
+  }),
+]);
+
+export const updateSingleUserFieldAdminZodSchema = z4
+  .object({})
+  .and(adminFieldsUnion);
+export type TUpdateSingleUserFieldAdminZodSchema = z4.infer<
+  typeof updateSingleUserFieldAdminZodSchema
+>;
+
+
+// ===================================================
+// UPDATE SINGLE USER FIELD SUPER ADMIN ZOD SCHEMA
+// ===================================================
+const superAdminFieldsUnion = z4.discriminatedUnion("field", [
+  // 1. Rule for Boolean Status Flags (is_mobile_verified, is_email_verified, is_deleted)
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.enum(["is_mobile_verified", "is_email_verified", "is_deleted"]),
+    // Preprocess handles raw booleans or form/string conversions safely
+    value: z4.preprocess(
+      (val) => (val === "" || val === null || val === undefined ? null : val),
+      z4.coerce.boolean()
+    ),
+  }),
+
+  // 2. Rule for system Active Status Enum
+  z4.object({
+    user_id: z4.string().trim(),
+    field: z4.literal("active_status"),
+    value: z4.enum(ACTIVE_STATUS_ENUM, { message: "Invalid Active Status value." }),
+  }),
+]);
+
+// FIX: Wrapped with z4.object({}).and() to resolve the router middleware type signature error
+export const updateSingleUserFieldSuperAdminZodSchema = z4.object({}).and(superAdminFieldsUnion);
+export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<typeof updateSingleUserFieldSuperAdminZodSchema>;

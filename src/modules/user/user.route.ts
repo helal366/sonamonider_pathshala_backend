@@ -7,6 +7,7 @@ import {
   promoteUserRolePositionZodSchema,
   forgetPasswordZodSchema,
   userCreateZodSchema,
+  updateSingleUserFieldAdminZodSchema,
 } from "./user.zod.validation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
@@ -45,5 +46,23 @@ router.patch(
   validateZodSchema(changeUserPositionZodSchema),
   userController.changeUserPosition,
 );
+// ==========================================
+// UPDATE SINGLE USER FIELD ADMIN ROUTE
+// ==========================================
+router.patch(
+  "/update_single_user_field_admin",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodSchema(updateSingleUserFieldAdminZodSchema),
+  userController.updateSingleUserFieldAdmin
+)
 
+// ==========================================
+// UPDATE SINGLE USER FIELD SUPER ADMIN ROUTE
+// ==========================================
+router.patch(
+  "/update_single_user_field_super_admin",
+  userAuth("SUPER_ADMIN"),
+  validateZodSchema(updateSingleUserFieldAdminZodSchema),
+  userController.updateSingleUserFieldSuperAdmin
+)
 export const userRouter: Router = router;

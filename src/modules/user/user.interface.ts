@@ -1,3 +1,5 @@
+import { ActiveStatus, BloodGroup, Gender, Religion } from "#db-client";
+
 export interface IExistencePayload {
   role_name: string;
   full_name: string;
@@ -7,3 +9,86 @@ export interface IUserCount {
   role_name: string;
   mobile_number: string;
 }
+
+// ==========================================
+// UPDATE SINGLE USER FIELD ADMIN ZOD SCHEMA
+// ==========================================
+
+// Use Object.values() combined with 'as const' typing to create strict tuple arrays
+export const GENDER_ENUM = Object.values(Gender) as [Gender, ...Gender[]];
+export const BLOOD_GROUP_ENUM = Object.values(BloodGroup) as [
+  BloodGroup,
+  ...BloodGroup[],
+];
+export const RELIGION_ENUM = Object.values(Religion) as [
+  Religion,
+  ...Religion[],
+];
+
+
+// Keep your base structural groupings clean
+export const STRING_FIELDS = [
+  "full_name",
+  "nationality",
+  "birth_certificate_number",
+  "nid_number",
+  "photo_url",
+  "mobile_number",
+  "email",
+] as const;
+
+export const FLOAT_FIELDS = ["height_in_cm", "weight_in_kg"] as const;
+export const DATE_FIELDS = ["date_of_birth"] as const;
+
+// Combined list of standard admin fields for easy validation referencing elsewhere
+export const UPDATE_SINGLE_USER_FIELD_ADMIN = [
+  ...STRING_FIELDS,
+  ...FLOAT_FIELDS,
+  ...DATE_FIELDS,
+  "gender",
+  "blood_group",
+  "religion",
+] as const;
+
+// =================================================
+// UPDATE SINGLE USER FIELD SUPER ADMIN ZOD SCHEMA
+// =================================================
+export const ACTIVE_STATUS_ENUM = Object.values(ActiveStatus) as [
+  ActiveStatus,
+  ...ActiveStatus[],
+];
+export const UPDATE_SINGLE_USER_FIELD_SUPER_ADMIN = [
+  "is_mobile_verified",
+  "is_email_verified",
+  "active_status",
+  "is_deleted",
+] as const;
+
+export type UserPatchValue =
+  | string
+  | number
+  | Date
+  | ActiveStatus
+  | Gender
+  | BloodGroup
+  | Religion
+  | boolean
+  | null;
+
+export type UserDeleteField =
+  | "blood_group"
+  | "date_of_birth"
+  | "height_in_cm"
+  | "weight_in_kg"
+  | "religion"
+  | "birth_certificate_number"
+  | "nid_number"
+  | "photo_url";
+
+export type UserDeleteValue =
+  | BloodGroup
+  | Date
+  | number
+  | Religion
+  | string
+  | null;

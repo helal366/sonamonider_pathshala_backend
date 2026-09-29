@@ -9,8 +9,12 @@ import {
   TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUserCreatePayload,
+  TUpdateSingleUserFieldAdminZodSchema,
+  TUpdateSingleUserFieldSuperAdminZodSchema,
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 
 // CREATE USER
 const createUser = catchAsync(
@@ -67,7 +71,6 @@ const forgetPassword = catchAsync(
   },
 );
 
-
 // PROMOTE USER ROLE POSITION
 const promoteUserRolePosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -96,17 +99,9 @@ const promoteUserRolePosition = catchAsync(
 const changeUserPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangeUserPositionZodSchema = req.body;
-    const loggedInUser = req.user;
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
 
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
-
-    const result =
-      await userServices.changeUserPosition(
-        payload,
-        loggedInUser,
-      );
+    const result = await userServices.changeUserPosition(payload, loggedInUser);
 
     sendResponse(res, {
       success: true,
@@ -116,10 +111,54 @@ const changeUserPosition = catchAsync(
     });
   },
 );
+
+// UPDATE SINGLE USER FIELD ADMIN CONTROLLER
+const updateSingleUserFieldAdmin = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TUpdateSingleUserFieldAdminZodSchema = req.body;
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+    const field = payload.field;
+
+    const result = await userServices.updateSingleUserFieldAdmin(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `${loggedInUser.full_name}'s ${field} updated successful.`,
+      data: result,
+    });
+  },
+);
+
+// UPDATE SINGLE USER FIELD ADMIN CONTROLLER
+const updateSingleUserFieldSuperAdmin = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TUpdateSingleUserFieldSuperAdminZodSchema = req.body;
+    const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
+    const field = payload.field;
+
+    const result = await userServices.updateSingleUserFieldSuperAdmin(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `${loggedInUser.full_name}'s ${field} updated successful.`,
+      data: result,
+    });
+  },
+);
 export const userController = {
   createUser,
   changePassword,
   forgetPassword,
   promoteUserRolePosition,
-  changeUserPosition
+  changeUserPosition,
+  updateSingleUserFieldAdmin,
+  updateSingleUserFieldSuperAdmin
 };

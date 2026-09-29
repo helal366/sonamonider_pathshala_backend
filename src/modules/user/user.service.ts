@@ -25,16 +25,26 @@ import {
   TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUserCreatePayload,
+  TUpdateSingleUserFieldAdminZodSchema,
+  TUpdateSingleUserFieldSuperAdminZodSchema,
 } from "./user.zod.validation.js";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 
-// CREATE USER
+// CREATE USER SERVICE LAYER
 const createUser = async (
   payload: TUserCreatePayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   // 1. Extract + normalize
-  const { full_name, mobile_number, email, position_name, role_name, joining_date,...rest } =
-    payload;
+  const {
+    full_name,
+    mobile_number,
+    email,
+    position_name,
+    role_name,
+    joining_date,
+    ...rest
+  } = payload;
 
   const cleanRole = role_name.trim().toUpperCase();
   const cleanPosition = position_name.trim().toUpperCase();
@@ -134,11 +144,11 @@ const createUser = async (
     if (!createdUser.management_staff_profile) {
       throw new AppError(
         "Failed to initialize management staff profile during onboarding.",
-        StatusCodes.INTERNAL_SERVER_ERROR
+        StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
-      // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
+    // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
     // This gives the user their very first history block with end_date: null
     await transaction.promotionHistory.create({
       data: {
@@ -150,12 +160,12 @@ const createUser = async (
     });
 
     // 🆕 C) Refactored Audit Log generation using direct model creation with required changed_by_id
-   await transaction.auditLog.createMany({
+    await transaction.auditLog.createMany({
       data: [
         {
           entity_id: createdUser.id,
           entity_name: "User",
-          old_value: Prisma.JsonNull, 
+          old_value: Prisma.JsonNull,
           new_value: {
             full_name,
             mobile_number,
@@ -169,7 +179,7 @@ const createUser = async (
         {
           entity_id: createdUser.management_staff_profile.id,
           entity_name: "ManagementStaff",
-          old_value: Prisma.JsonNull, 
+          old_value: Prisma.JsonNull,
           new_value: {
             full_name,
             mobile_number,
@@ -189,11 +199,11 @@ const createUser = async (
             role_id: roleExists.id,
             position_id: positionExists.id,
             start_date: new Date().toISOString(),
-            end_date: null
+            end_date: null,
           },
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
-        }
+        },
       ],
     });
 
@@ -244,7 +254,7 @@ const createUser = async (
   return newUser;
 };
 
-// CHANGE PASSWORD
+// CHANGE PASSWORD SERVICE LAYER
 const changePassword = async (
   payload: TChangePasswordPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -354,7 +364,7 @@ const changePassword = async (
   }
 };
 
-// FORGET PASSWORD
+// FORGET PASSWORD SERVICE LAYER
 const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   const normalizedEmail = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
@@ -415,12 +425,13 @@ const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   }
 };
 
-// PROMOTE USER ROLE POSITION
+// PROMOTE USER ROLE POSITION SERVICE LAYER
 const promoteUserRolePosition = async (
   payload: TPromoteUserRolePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { full_name, mobile_number, position_name, role_name, promoted_date } = payload;
+  const { full_name, mobile_number, position_name, role_name, promoted_date } =
+    payload;
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
   const effectivePromotedDate = new Date(promoted_date);
@@ -462,11 +473,11 @@ const promoteUserRolePosition = async (
           id: true,
           current_role_id: true,
           current_position_id: true,
-          promotion_history: { 
-            where: {end_date: null},
-            select:{id: true},
-            take: 1
-          }
+          promotion_history: {
+            where: { end_date: null },
+            select: { id: true },
+            take: 1,
+          },
         },
       },
     },
@@ -490,7 +501,7 @@ const promoteUserRolePosition = async (
     );
   }
   // 5. Execute the database changes within a safe transaction block
-   const result= await prisma.$transaction(
+  const result = await prisma.$transaction(
     async (transaction) => {
       if (!targetStaff.management_staff_profile) {
         throw new AppError(
@@ -498,32 +509,36 @@ const promoteUserRolePosition = async (
           StatusCodes.NOT_FOUND,
         );
       }
-      if(targetStaff.management_staff_profile.promotion_history.length===0){
-        throw new AppError("Active promotion history not found.",StatusCodes.NOT_FOUND)
+      if (targetStaff.management_staff_profile.promotion_history.length === 0) {
+        throw new AppError(
+          "Active promotion history not found.",
+          StatusCodes.NOT_FOUND,
+        );
       }
 
-      const activeHistoryID = targetStaff.management_staff_profile.promotion_history[0]?.id
+      const activeHistoryID =
+        targetStaff.management_staff_profile.promotion_history[0]?.id;
       // A) Terminate previous historical entries if a prior valid history tracking line exists
-      if(activeHistoryID){
+      if (activeHistoryID) {
         await transaction.promotionHistory.update({
           where: {
-            id: activeHistoryID
+            id: activeHistoryID,
           },
           data: {
-            end_date: effectivePromotedDate
-          }
-        })
+            end_date: effectivePromotedDate,
+          },
+        });
       }
 
-       // B) Open the fresh new career path tracking timeline entry
+      // B) Open the fresh new career path tracking timeline entry
       await transaction.promotionHistory.create({
         data: {
           management_staff_id: targetStaff.management_staff_profile.id,
           position_id: positionExists.id,
           role_id: existingRole.id,
-          start_date: effectivePromotedDate
-        }
-      })
+          start_date: effectivePromotedDate,
+        },
+      });
       // Direct updates on the user and profile references (No PromotionHistory entries created)
       const updatedUser = await transaction.user.update({
         where: { id: targetStaff.id },
@@ -577,13 +592,16 @@ const promoteUserRolePosition = async (
             entity_id: targetStaff.management_staff_profile.id,
             entity_name: "ManagementStaff",
             old_value: {
-              role_id: targetStaff.management_staff_profile.current_role_id ?? null,
-              position_id: targetStaff.management_staff_profile.current_position_id ?? null,
+              role_id:
+                targetStaff.management_staff_profile.current_role_id ?? null,
+              position_id:
+                targetStaff.management_staff_profile.current_position_id ??
+                null,
             },
             new_value: {
               role_id: existingRole.id,
               position_id: positionExists.id,
-          },
+            },
             action: "UPDATE",
             changed_by_id: loggedInUser.user_id,
           },
@@ -595,13 +613,13 @@ const promoteUserRolePosition = async (
       timeout: 10000,
     },
     // 5. Invalidate the memory caches after a successful transaction complete
-  );    
+  );
   clearCacheRoles();
   clearCachePositions();
-  return result
+  return result;
 };
 
-// CHANGE USER POSITION
+// CHANGE USER POSITION SERVICE LAYER
 const changeUserPosition = async (
   payload: TChangeUserPositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -641,7 +659,11 @@ const changeUserPosition = async (
     },
   });
 
-  if (!targetStaff || !targetStaff.current_role || !targetStaff.current_role.role_name) {
+  if (
+    !targetStaff ||
+    !targetStaff.current_role ||
+    !targetStaff.current_role.role_name
+  ) {
     throw new AppError(
       "The requested user does not exist.",
       StatusCodes.NOT_FOUND,
@@ -661,7 +683,6 @@ const changeUserPosition = async (
     role_name: currentRoleName,
     position_name: cleanPosition,
   });
-
 
   return prisma.$transaction(async (transaction) => {
     if (!targetStaff.management_staff_profile) {
@@ -731,10 +752,144 @@ const changeUserPosition = async (
     return changedStaff;
   });
 };
+
+// UPDATE SINGLE USER FIELD ADMIN SERVICE LAYER
+const updateSingleUserFieldAdmin = async (
+  payload: TUpdateSingleUserFieldAdminZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const { user_id, field, value } = payload;
+
+  // PROTECT REQUIRED FIELD FROM NULL
+  if ((field === "full_name" || field === "gender") && !value) {
+    throw new AppError(
+      `${field.toUpperCase()}  is required.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  // CHECK USER EXISTANCE
+  const user = await prisma.user.findUnique({
+    where: { id: user_id },
+    select: {
+      id: true,
+      full_name: true,
+      gender: true,
+      blood_group: true,
+      date_of_birth: true,
+      height_in_cm: true,
+      weight_in_kg: true,
+      religion: true,
+      nationality: true,
+      birth_certificate_number: true,
+      nid_number: true,
+      photo_url: true,
+      mobile_number: true,
+      email: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError("User not found.", StatusCodes.NOT_FOUND);
+  }
+
+  // UPDATE USER
+  const updatedUser = (await prisma.user.update({
+    where: { id: user_id },
+    data: {
+      [field]: value,
+      updated_by: {
+        connect: {
+          id: loggedInUser.user_id,
+        },
+      },
+    },
+  }))
+
+  // CREATE AUDIT LOG
+  const typedField = field as keyof typeof user;
+  await prisma.auditLog.create({
+    data: {
+      entity_id: user_id,
+      entity_name: "User",
+      action: "UPDATE",
+      changed_by: {
+        connect: { id: loggedInUser.user_id },
+      },
+      old_value: {
+        [field]: user[typedField],
+      },
+      new_value: {
+        [field]: value,
+      },
+    },
+  });
+
+  return updatedUser;
+};
+
+// UPDATE SINGLE USER FIELD SUPER ADMIN SERVICE LAYER
+const updateSingleUserFieldSuperAdmin = async(
+     payload: TUpdateSingleUserFieldSuperAdminZodSchema,
+  loggedInUser: TLoggedInUser,
+)=>{
+  const { user_id, field, value } = payload;
+  // CHECK USER EXISTANCE
+  const user = await prisma.user.findUnique({
+    where: { id: user_id },
+    select: {
+      id: true,
+      is_mobile_verified: true,
+      is_email_verified: true,
+      is_deleted: true,
+      active_status: true,
+    },
+  });
+    if (!user) {
+    throw new AppError("User not found.", StatusCodes.NOT_FOUND);
+  };
+
+    // UPDATE USER
+  const updatedUser = (await prisma.user.update({
+    where: { id: user_id },
+    data: {
+      [field]: value,
+      updated_by: {
+        connect: {
+          id: loggedInUser.user_id,
+        },
+      },
+    },
+  }))
+
+  // CREATE AUDIT LOG
+  const typedField = field as keyof typeof user;
+  await prisma.auditLog.create({
+    data: {
+      entity_id: user_id,
+      entity_name: "User",
+      action: "UPDATE",
+      changed_by: {
+        connect: { id: loggedInUser.user_id },
+      },
+      old_value: {
+        [field]: user[typedField],
+      },
+      new_value: {
+        [field]: value,
+      },
+    },
+  });
+
+  return updatedUser;
+
+}
 export const userServices = {
   createUser,
   changePassword,
   forgetPassword,
   promoteUserRolePosition,
   changeUserPosition,
+  updateSingleUserFieldAdmin,
+  updateSingleUserFieldSuperAdmin
 };
