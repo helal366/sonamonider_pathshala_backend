@@ -11,7 +11,7 @@ import {
 } from "./user.interface";
 
 // CREATE USER ZOD SCHEMA
-export const userCreateZodSchema = z4.object({
+const userCreateZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -81,7 +81,7 @@ export const userCreateZodSchema = z4.object({
 export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
 
 // CHANGE PASSWORD ZOD SCHEMA
-export const changePasswordZodSchema = z4
+const changePasswordZodSchema = z4
   .object({
     full_name: z4
       .string({
@@ -141,7 +141,7 @@ export const changePasswordZodSchema = z4
 export type TChangePasswordPayload = z4.infer<typeof changePasswordZodSchema>;
 
 // FORGET PASSWORD  ZOD SCHEMA
-export const forgetPasswordZodSchema = z4.object({
+const forgetPasswordZodSchema = z4.object({
   email: z4
     .string("Email is required.")
     .trim()
@@ -151,7 +151,7 @@ export const forgetPasswordZodSchema = z4.object({
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
 
 // PROMOTE USER ROLE AND POSITION ZOD SCHEMA
-export const promoteUserRolePositionZodSchema = z4.object({
+const promoteUserRolePositionZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -206,7 +206,7 @@ export type TPromoteUserRolePositionZodSchema = z4.infer<
 >;
 
 // UPDATE USER POSITION ZOD SCHEMA
-export const changeUserPositionZodSchema = z4.object({
+const changeUserPositionZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -306,7 +306,7 @@ const adminFieldsUnion = z4.discriminatedUnion("field", [
   }),
 ]);
 
-export const updateSingleUserFieldAdminZodSchema = z4
+const updateSingleUserFieldAdminZodSchema = z4
   .object({})
   .and(adminFieldsUnion);
 export type TUpdateSingleUserFieldAdminZodSchema = z4.infer<
@@ -338,13 +338,13 @@ const superAdminFieldsUnion = z4.discriminatedUnion("field", [
 ]);
 
 // FIX: Wrapped with z4.object({}).and() to resolve the router middleware type signature error
-export const updateSingleUserFieldSuperAdminZodSchema = z4.object({}).and(superAdminFieldsUnion);
+const updateSingleUserFieldSuperAdminZodSchema = z4.object({}).and(superAdminFieldsUnion);
 export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<typeof updateSingleUserFieldSuperAdminZodSchema>;
 
 // ============================================================
 // UPDATE USER NAME ROUTE
 // ============================================================
-export const updateUserNameZodSchema = z4.object({
+const updateUserNameZodSchema = z4.object({
   user_id: z4
     .string({
       error: (issue) =>
@@ -365,7 +365,7 @@ export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
 // ============================================================
 // UPDATE USER PASSWORD
 // ============================================================
-export const updateUserPasswordZodSchema = z4.object({
+const updateUserPasswordZodSchema = z4.object({
   user_id: z4
     .string({
       error: (issue) =>
@@ -384,3 +384,16 @@ export const updateUserPasswordZodSchema = z4.object({
 export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
+
+
+export const userZodSchema = {
+  userCreateZodSchema,
+  changePasswordZodSchema,
+  forgetPasswordZodSchema,
+  promoteUserRolePositionZodSchema,
+  changeUserPositionZodSchema,
+  updateSingleUserFieldAdminZodSchema,
+  updateSingleUserFieldSuperAdminZodSchema,
+  updateUserNameZodSchema,
+  updateUserPasswordZodSchema
+}

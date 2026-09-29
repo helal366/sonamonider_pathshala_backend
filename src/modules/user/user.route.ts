@@ -1,51 +1,42 @@
 import { Router } from "express";
 import { userController } from "./user.controller.js";
 import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
-import {
-  changePasswordZodSchema,
-  changeUserPositionZodSchema,
-  promoteUserRolePositionZodSchema,
-  forgetPasswordZodSchema,
-  userCreateZodSchema,
-  updateSingleUserFieldAdminZodSchema,
-  updateUserNameZodSchema,
-  updateUserPasswordZodSchema,
-} from "./user.zod.validation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
+import { userZodSchema } from "./user.zod.validation.js";
 
 const router = Router();
 
 router.post(
   "/create_user",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(userCreateZodSchema),
+  validateZodSchema(userZodSchema.userCreateZodSchema),
   userController.createUser,
 );
 
 router.patch(
   "/change_password",
   userAuth(),
-  validateZodSchema(changePasswordZodSchema),
+  validateZodSchema(userZodSchema.changePasswordZodSchema),
   userController.changePassword,
 );
 
 router.post(
   "/forget_password",
-  validateZodSchema(forgetPasswordZodSchema),
+  validateZodSchema(userZodSchema.forgetPasswordZodSchema),
   userController.forgetPassword,
 );
 
 router.patch(
   "/promote_user_role_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(promoteUserRolePositionZodSchema),
+  validateZodSchema(userZodSchema.promoteUserRolePositionZodSchema),
   userController.promoteUserRolePosition,
 );
 
 router.patch(
   "/change_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(changeUserPositionZodSchema),
+  validateZodSchema(userZodSchema.changeUserPositionZodSchema),
   userController.changeUserPosition,
 );
 // ==========================================
@@ -54,7 +45,7 @@ router.patch(
 router.patch(
   "/update_single_user_field_admin",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(updateSingleUserFieldAdminZodSchema),
+  validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldAdmin
 )
 
@@ -64,7 +55,7 @@ router.patch(
 router.patch(
   "/update_single_user_field_super_admin",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateSingleUserFieldAdminZodSchema),
+  validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldSuperAdmin
 )
 // ==========================================
@@ -73,7 +64,7 @@ router.patch(
 router.patch(
   "/update_user_name",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserNameZodSchema),
+  validateZodSchema(userZodSchema.updateUserNameZodSchema),
   userController.updateUserName
 )
 
@@ -85,7 +76,7 @@ router.patch(
 router.patch(
   "/update_user_password",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateUserPasswordZodSchema),
+  validateZodSchema(userZodSchema.updateUserPasswordZodSchema),
   userController.updateUserPassword,
 );
 
