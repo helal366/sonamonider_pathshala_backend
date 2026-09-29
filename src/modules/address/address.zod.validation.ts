@@ -17,7 +17,8 @@ export const createAddressZodSchema = z4.object({
           ? "Required ID is required."
           : "Invalid required ID.",
     })
-    .trim(),
+    .trim()
+    .min(1, "Required ID is required."),
 
   flat_no: z4.string().trim().optional(),
   house_no: z4.string().trim().optional(),
@@ -50,10 +51,8 @@ export const createAddressZodSchema = z4.object({
 
   country: z4.string().trim().default("Bangladesh"),
 
-
   owner_type: z4.enum(AddressOwnerType, "Invalid address owner type."),
   address_type: z4.enum(AddressType, "Invalid address type."),
-
 });
 
 export type TCreateAddressZodSchema = z4.infer<typeof createAddressZodSchema>;
@@ -70,7 +69,11 @@ export const deleteAddressZodSchema = z4.object({
           ? "Required ID is required."
           : "Invalid required ID.",
     })
-    .trim(),
+    .trim()
+    .min(1, "Required ID is required."),
+
+  owner_type: z4.enum(AddressOwnerType, "Invalid address owner type."),
+  address_type: z4.enum(AddressType, "Invalid address type."),
 });
 
 export type TDeleteAddressZodSchema = z4.infer<typeof deleteAddressZodSchema>;
@@ -87,15 +90,18 @@ export const updateAddressFieldZodSchema = z4.object({
           ? "Required ID is required."
           : "Invalid required ID.",
     })
-    .trim(),
+    .trim()
+    .min(1, "Required ID is required."),
 
   field: z4.enum(ADDRESS_UPDATE_FIELDS, "Invalid field name"),
-   value: z4.string({
+  value: z4
+    .string({
       error: (issue) =>
-        issue.input === undefined
-          ? "Value is required."
-          : "Invalid value.",
-    }).trim().nullable(),
+        issue.input === undefined ? "Value is required." : "Invalid value.",
+    })
+    .trim()
+    .min(1, "Value cannot be empty.")
+    .nullable(),
 
   owner_type: z4.enum(AddressOwnerType, "Invalid address owner type."),
   address_type: z4.enum(AddressType, "Invalid address type."),
@@ -109,7 +115,6 @@ export const updateAddressFieldZodSchema = z4.object({
 export type TUpdateAddressFieldZodSchema = z4.infer<
   typeof updateAddressFieldZodSchema
 >;
-
 
 export const addressZodSchema = {
   createAddressZodSchema,

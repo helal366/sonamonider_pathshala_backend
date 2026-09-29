@@ -4,7 +4,8 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { userAddressService } from "./address.service";
+import { userAddressServices } from "./address.service";
+import { TDeleteAddressZodSchema } from "./address.zod.validation";
 
 // ============================================================
 // UPDATE ADDRESS CONTROLLER
@@ -14,7 +15,7 @@ const createAddress= catchAsync(
       const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
 
-    const result = await userAddressService.createAddress(
+    const result = await userAddressServices.createAddress(
       loggedInUser,
       payload,
     );
@@ -34,9 +35,9 @@ const createAddress= catchAsync(
 const deleteAddress= catchAsync(
   async (req: Request, res: Response, next: NextFunction)=>{
       const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body;
+    const payload: TDeleteAddressZodSchema = req.body;
 
-    const result = await userAddressService.deleteAddress(
+    const result = await userAddressServices.deleteAddress(
       loggedInUser,
       payload,
     );
@@ -57,7 +58,7 @@ const updateUserAddressField = catchAsync(
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
 
-    const result = await userAddressService.updateUserAddressFiled(
+    const result = await userAddressServices.updateUserAddressFiled(
       loggedInUser,
       payload,
     );
@@ -70,7 +71,7 @@ const updateUserAddressField = catchAsync(
     });
   },
 );
-export const userAddressPatchController = {
+export const userAddressController = {
   createAddress,
   deleteAddress,
   updateUserAddressField,

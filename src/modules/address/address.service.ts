@@ -4,6 +4,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateAddressZodSchema,
+  TDeleteAddressZodSchema,
   TUpdateAddressFieldZodSchema,
 } from "./address.zod.validation.js";
 import { Prisma } from "#db-client";
@@ -63,38 +64,32 @@ const createAddress = async (
     },
   };
 
-  const addressId= await addressHelperFunctions.findAddressIdHelperFunction(owner_type, required_id);
+  return prisma.$transaction(async (transaction) => {
+    const address =
+      address_type === AddressType.PRESENT
+        ? await transaction.presentAddress.create({ data: createPayload })
+        : await transaction.permanentAddress.create({ data: createPayload });
 
-
-  let address;
-  if (address_type === AddressType.PRESENT) {
-    address = await prisma.presentAddress.create({
-      data: createPayload,
+    await transaction.auditLog.create({
+      data: {
+        entity_id: address.id,
+        entity_name:
+          address_type === AddressType.PRESENT
+            ? "PresentAddress"
+            : "PermanentAddress",
+        action: "CREATE",
+        old_value: Prisma.JsonNull,
+        new_value: address as unknown as Prisma.InputJsonValue,
+        changed_by: {
+          connect: {
+            id: loggedInUser.user_id,
+          },
+        },
+      },
     });
-  } else if (address_type === AddressType.PERMANENT) {
-    address = await prisma.permanentAddress.create({
-      data: createPayload,
-    });
-  };
 
-  if(!address || !address.id){
-    throw new AppError(`Inter Server Error. Address not created.`,StatusCodes.INTERNAL_SERVER_ERROR)
-  };
-
-  await prisma.auditLog.create({
-    data: {
-      entity_id: address?.id,
-      entity_name: AddressType.PRESENT ? "PresentAddress" : "PermanentAddress",
-      action: "CREATE",
-      old_value: Prisma.JsonNull,
-      new_value: address as unknown as Prisma.InputJsonValue,
-      changed_by: {
-        connect:{
-          id: loggedInUser.user_id
-        }
-      }
-    }
-  })
+    return address;
+  });
 };
 
 // ============================================================
@@ -102,65 +97,56 @@ const createAddress = async (
 // ============================================================
 const deleteAddress = async (
   loggedInUser: TLoggedInUser,
-  payload: TCreateAddressZodSchema,
+  payload: TDeleteAddressZodSchema,
 ) => {
   const { owner_type, address_type, required_id } = payload;
 
   // FIND USER ADDRESS ID
-  const addressId= await addressHelperFunctions.findAddressIdHelperFunction(owner_type, required_id);
+  const addressId = await addressHelperFunctions.findAddressIdHelperFunction(
+    owner_type,
+    required_id,
+    address_type,
+  );
 
+  return prisma.$transaction(async (transaction) => {
+    const oldAddress = await {
+      [AddressType.PRESENT]: (id: string) =>
+        transaction.presentAddress.findUnique({ where: { id } }),
+      [AddressType.PERMANENT]: (id: string) =>
+        transaction.permanentAddress.findUnique({ where: { id } }),
+    }[address_type](addressId);
 
+    if (!oldAddress) {
+      throw new AppError("Address not found.", StatusCodes.NOT_FOUND);
+    }
 
-  // FIND ADDRESS BEFORE DELETE
-  let oldAddress;
-  if (address_type === AddressType.PRESENT) {
-    oldAddress = await prisma.presentAddress.findUnique({
-      where: { id: addressId },
-    });
-  } else {
-    oldAddress = await prisma.permanentAddress.findUnique({
-      where: { id: addressId },
-    });
-  }
-  if (!oldAddress) {
-    throw new AppError("Address not found.", 404);
-  }
-  // DELETE ADDRESS
-  let deletedAddress;
-  if (address_type === AddressType.PRESENT) {
-    deletedAddress = await prisma.presentAddress.delete({
-      where: {
-        id: addressId,
-      },
-    });
-  } else {
-    deletedAddress = await prisma.permanentAddress.delete({
-      where: {
-        id: addressId,
-      },
-    });
-  }
-  // AUDIT LOG
+    const deletedAddress = await {
+      [AddressType.PRESENT]: (id: string) =>
+        transaction.presentAddress.delete({ where: { id } }),
+      [AddressType.PERMANENT]: (id: string) =>
+        transaction.permanentAddress.delete({ where: { id } }),
+    }[address_type](addressId);
 
-  await prisma.auditLog.create({
-    data: {
-      entity_id: addressId,
-      entity_name:
-        address_type === AddressType.PRESENT
-          ? "PresentAddress"
-          : "PermanentAddress",
-      action: "DELETE",
-      old_value: oldAddress as unknown as Prisma.InputJsonValue,
-      new_value: Prisma.JsonNull,
-      changed_by: {
-        connect: {
-          id: loggedInUser.user_id,
+    await transaction.auditLog.create({
+      data: {
+        entity_id: addressId,
+        entity_name:
+          address_type === AddressType.PRESENT
+            ? "PresentAddress"
+            : "PermanentAddress",
+        action: "DELETE",
+        old_value: oldAddress as unknown as Prisma.InputJsonValue,
+        new_value: Prisma.JsonNull,
+        changed_by: {
+          connect: {
+            id: loggedInUser.user_id,
+          },
         },
       },
-    },
-  });
+    });
 
-  return deletedAddress;
+    return deletedAddress;
+  });
 };
 
 // ============================================================
@@ -171,81 +157,76 @@ const updateUserAddressFiled = async (
   payload: TUpdateAddressFieldZodSchema,
 ) => {
   const { required_id, field, value, owner_type, address_type } = payload;
-  
-  // FIND USER ADDRESS ID
-  const addressId= await addressHelperFunctions.findAddressIdHelperFunction(owner_type, required_id);
 
-  let oldAddress;
-  if (address_type === AddressType.PRESENT) {
-    oldAddress = await prisma.presentAddress.findUnique({
-      where: { id: addressId },
-    });
-  } else if (address_type === AddressType.PERMANENT) {
-    oldAddress = await prisma.permanentAddress.findUnique({
-      where: { id: addressId },
-    });
-  }
-  if (!oldAddress) {
-    throw new AppError(`Address not found.`, StatusCodes.NOT_FOUND);
-  }
+  // FIND USER ADDRESS ID
+  const addressId = await addressHelperFunctions.findAddressIdHelperFunction(
+    owner_type,
+    required_id,
+    address_type,
+  );
 
   // PREVENT NULL FOR REQUIRED FIELDS
   if (
     (field === "thana" || field === "district" || field === "country") &&
-    value === null
+    (value === null || value.trim() === "")
   ) {
     throw new AppError(`${field} cannot be empty.`, 400);
   }
 
-  // UPDATE ADDRESS
-  let updatedAddress;
-  if (address_type === AddressType.PRESENT) {
-    updatedAddress = (await prisma.presentAddress.update({
-      where: { id: addressId },
+  return prisma.$transaction(async (transaction) => {
+    const oldAddress = await {
+      [AddressType.PRESENT]: (id: string) =>
+        transaction.presentAddress.findUnique({ where: { id } }),
+      [AddressType.PERMANENT]: (id: string) =>
+        transaction.permanentAddress.findUnique({ where: { id } }),
+    }[address_type](addressId);
+
+    if (!oldAddress) {
+      throw new AppError("Address not found.", StatusCodes.NOT_FOUND);
+    }
+
+    const updatedAddress =
+      address_type === AddressType.PRESENT
+        ? await transaction.presentAddress.update({
+            where: { id: addressId },
+            data: {
+              [field]: value,
+              updated_by: { connect: { id: loggedInUser.user_id } },
+            },
+          })
+        : await transaction.permanentAddress.update({
+            where: { id: addressId },
+            data: {
+              [field]: value,
+              updated_by: { connect: { id: loggedInUser.user_id } },
+            } as Prisma.PermanentAddressUpdateInput,
+          });
+
+    await transaction.auditLog.create({
       data: {
-        [field]: value,
-        updated_by: {
+        entity_id: addressId,
+        entity_name:
+          address_type === AddressType.PRESENT
+            ? "PresentAddress"
+            : "PermanentAddress",
+        action: "UPDATE",
+        old_value: {
+          [field]: oldAddress[field],
+        },
+        new_value: {
+          [field]: value,
+        },
+        changed_by: {
           connect: { id: loggedInUser.user_id },
         },
       },
-    })) as Prisma.PresentAddressUpdateInput;
-  } else if (address_type === AddressType.PERMANENT) {
-    updatedAddress = await prisma.permanentAddress.update({
-      where: {
-        id: addressId,
-      },
-      data: {
-        [field]: value,
-        updated_by: {
-          connect: {
-            id: loggedInUser.user_id,
-          },
-        },
-      } as Prisma.PermanentAddressUpdateInput,
     });
-  }
 
-  // AUDIT LOG
-  await prisma.auditLog.create({
-    data: {
-      entity_id: addressId,
-      entity_name: AddressType.PRESENT ? "PresentAddress" : "PermanentAddress",
-      action: "UPDATE",
-      old_value: {
-        [field]: oldAddress[field],
-      },
-      new_value: {
-        [field]: value,
-      },
-      changed_by: {
-        connect: { id: loggedInUser.user_id },
-      },
-    },
+    return updatedAddress;
   });
-  return updatedAddress;
 };
 
-export const userAddressService = {
+export const userAddressServices = {
   createAddress,
   deleteAddress,
   updateUserAddressFiled,
