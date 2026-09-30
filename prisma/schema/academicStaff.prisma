@@ -1,0 +1,34 @@
+model AcademicStaff{
+  id String @id @default(uuid())
+  full_name     String
+  mobile_number String
+  email         String @unique
+
+    academic_results         AcademicResult? @relation(name: "academic_staff_academic_result")
+
+  current_position_id String?
+  current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  current_role_id String?
+  current_role    UserRole? @relation("academic_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  promotion_history PromotionHistory[]
+
+  teaching_experience_year    Int?
+  teaching_experience_month   Int?
+  alternative_contact_no      String[]
+  extra_curricular_activities String[]
+
+  user_id           String @unique
+  user_primary_data User   @relation("academic_staff_profile",fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  created_by_id String?
+  created_by    User?   @relation("academic_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("academic_staff_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  @@map("academic_staffs")
+}

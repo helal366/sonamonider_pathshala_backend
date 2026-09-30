@@ -31,10 +31,18 @@ model User {
   position_id      String?
   current_position UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  management_staff_profile ManagementStaff?
+  management_staff_profile ManagementStaff? @relation("management_staff_profile")
+  academic_staff_profile AcademicStaff? @relation("academic_staff_profile")
+  student_profile Student? @relation("student_profile")
 
   created_management_staffs ManagementStaff[] @relation("management_staff_created_by")
   updated_management_staffs ManagementStaff[] @relation("management_staff_updated_by")
+
+  created_academic_staffs AcademicStaff[] @relation("academic_staff_created_by")
+  updated_academic_staffs AcademicStaff[] @relation("academic_staff_updated_by")
+
+  created_students Student[] @relation("student_created_by")
+  updated_students Student[] @relation("student_updated_by")
 
   audit_logs AuditLog[] @relation("audit_log_changed_by")
 

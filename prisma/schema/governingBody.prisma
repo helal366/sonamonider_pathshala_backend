@@ -1,0 +1,7 @@
+model GoverningBody{
+    id String @id @default(uuid())
+    full_name     String
+    mobile_number String
+    email         String @unique
+    academic_results         AcademicResult? @relation(name:"governing_body_academic_result")
+}

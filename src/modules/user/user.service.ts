@@ -45,7 +45,7 @@ const createUser = async (
   payload: TUserCreatePayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  // 1. Extract + normalize
+  //  Extract + normalize
   const {
     full_name,
     mobile_number,
@@ -60,7 +60,11 @@ const createUser = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const effectiveJoiningDate = new Date(joining_date);
 
-  // 2. Validate role
+  // 1. Check the role and position are authorized to create or not. 
+  // Called helper function
+  userHelperFunction.userCreationRolePostionCheck(cleanRole, cleanPosition); 
+
+  //  2. Validate role
   const roleExists = await findRoleExistence(cleanRole);
 
   if (!roleExists) {
@@ -70,25 +74,25 @@ const createUser = async (
     );
   }
 
-  const callerRoleRank = privilegedRoleRank[loggedInUser.role_name];
-  const requestedRoleRank = privilegedRoleRank[cleanRole];
-  if (
-    cleanRole !== "SUPER_ADMIN" &&
-    callerRoleRank !== undefined &&
-    requestedRoleRank !== undefined &&
-    requestedRoleRank >= callerRoleRank
-  ) {
-    throw new AppError(
-      "You do not have permission to assign this role.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
-  if (cleanRole === "SUPER_ADMIN" && loggedInUser.role_name !== "SUPER_ADMIN") {
-    throw new AppError(
-      "Only a super admin can create another super admin.",
-      StatusCodes.FORBIDDEN,
-    );
-  }
+  // const callerRoleRank = privilegedRoleRank[loggedInUser.role_name];
+  // const requestedRoleRank = privilegedRoleRank[cleanRole];
+  // if (
+  //   cleanRole !== "SUPER_ADMIN" &&
+  //   callerRoleRank !== undefined &&
+  //   requestedRoleRank !== undefined &&
+  //   requestedRoleRank >= callerRoleRank
+  // ) {
+  //   throw new AppError(
+  //     "You do not have permission to assign this role.",
+  //     StatusCodes.FORBIDDEN,
+  //   );
+  // }
+  // if (cleanRole === "SUPER_ADMIN" && loggedInUser.role_name !== "SUPER_ADMIN") {
+  //   throw new AppError(
+  //     "Only a super admin can create another super admin.",
+  //     StatusCodes.FORBIDDEN,
+  //   );
+  // }
 
   // 3. Validate role-position relationship
   const positionExists = await checkRolePositionPair({

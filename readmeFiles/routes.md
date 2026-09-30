@@ -80,6 +80,7 @@
   "value": "FIELD VALUE"
 }
 ```
+
 - Update User Name
 - PATCH/api/v1/smps/user/update_user_name
 JSON:
