@@ -4,7 +4,7 @@ model AcademicStaff{
   mobile_number String
   email         String @unique
 
-    academic_results         AcademicResult? @relation(name: "academic_staff_academic_result")
+  academic_results         AcademicResult? @relation(name: "academic_staff_academic_result")
 
   current_position_id String?
   current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -30,5 +30,7 @@ model AcademicStaff{
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+
+  @@unique([full_name, mobile_number], name: "academic_full_name_mobile_unique")
   @@map("academic_staffs")
 }

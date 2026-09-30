@@ -3,6 +3,8 @@ model Student{
   full_name     String
   mobile_number String
   email         String @unique
+  active_class_id String
+  active_class Class @relation("student_active_classes", fields: [active_class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   user_id           String @unique
   user_primary_data User   @relation("student_profile",fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -13,4 +15,10 @@ model Student{
   
   updated_by_id String?
   updated_by    User?   @relation("student_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([full_name, mobile_number], name: "student_full_name_mobile_unique")
+  @@map("students")
 }

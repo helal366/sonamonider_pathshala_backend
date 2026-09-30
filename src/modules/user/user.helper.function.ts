@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import { IExistencePayload, IUserCount } from "./user.interface.js";
+import { IDynamicProfilePayload, IExistencePayload, IUserCount } from "./user.interface.js";
 
 const userExistence = async ({
   role_name: role,
@@ -9,13 +9,8 @@ const userExistence = async ({
   mobile_number,
 }: IExistencePayload) => {
   let user = null;
-  if (
-    role === "SUPER_ADMIN" ||
-    role === "TEACHER_ADMIN" ||
-    role === "ADMIN" ||
-    role === "MANAGEMENT"
-  ) {
-    user = await prisma.managementStaff.findUnique({
+  if (role === "MANAGEMENT") {
+    return await prisma.managementStaff.findUnique({
       where: {
         management_full_name_mobile_unique: {
           full_name,
@@ -24,30 +19,47 @@ const userExistence = async ({
       },
     });
   } else if (role === "STUDENT") {
-  } else if (role === "GOVERNING_BODY") {
+    return await prisma.student.findUnique({
+      where: {
+        student_full_name_mobile_unique: {
+          full_name,
+          mobile_number,
+        },
+      },
+    });
   } else if (role === "ACADEMIC") {
+    return await prisma.academicStaff.findUnique({
+      where: {
+        academic_full_name_mobile_unique: {
+          full_name,
+          mobile_number,
+        },
+      },
+    });
+  } else if (role === "GOVERNING_BODY") {
+    return await prisma.governingBody.findUnique({
+      where: {
+        governing_body_full_name_mobile_unique: {
+          full_name,
+          mobile_number,
+        },
+      },
+    });
   }
-  return user;
+  return null;
 };
 
 const userCount = async ({ role_name: role, mobile_number }: IUserCount) => {
-  let userCount = 0;
-  if (
-    role === "SUPER_ADMIN" ||
-    role === "TEACHER_ADMIN" ||
-    role === "ADMIN" ||
-    role === "MANAGEMENT"
-  ) {
-    userCount = await prisma.managementStaff.count({
-      where: {
-        mobile_number,
-      },
-    });
+  if (role === "MANAGEMENT") {
+    return await prisma.managementStaff.count({ where: { mobile_number } });
   } else if (role === "STUDENT") {
+    return await prisma.student.count({ where: { mobile_number } });
   } else if (role === "GOVERNING_BODY") {
-  } else if (role === "TEACHER" || role === "ACADEMIC") {
+    return await prisma.governingBody.count({ where: { mobile_number } });
+  } else if (role === "ACADEMIC") {
+    return await prisma.governingBody.count({ where: { mobile_number } });
   }
-  return userCount;
+  return 0;
 };
 
 const userCreationRolePostionCheck = (
@@ -75,11 +87,82 @@ const userCreationRolePostionCheck = (
     position_name !== "STUDENT" &&
     position_name !== "GOVERNING_BODY"
   ) {
-    throw new AppError(`The user with the provided position ${position_name} is not allowed to create.`, StatusCodes.UNAUTHORIZED)
+    throw new AppError(
+      `The user with the provided position ${position_name} is not allowed to create.`,
+      StatusCodes.UNAUTHORIZED,
+    );
   }
 };
+
+const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
+    const {
+    cleanRole,
+    full_name,
+    mobile_number,
+    email,
+    positionId,
+    roleId,
+    loggedInUserId,
+    active_class_id,
+  } = payload;
+
+  let targetEntityName = "";
+  const profileData: Record<string, any> = {};
+
+  if(cleanRole === "MANAGEMENT"){
+    targetEntityName = "ManagementStaff";
+    profileData.manegement_staff_profile = {
+      create: {
+        full_name,
+        mobile_number,
+        email,
+        current_position: {connect: {id:positionId}},
+        current_role: {connect: {id: roleId}},
+        created_by: {connect: {id: loggedInUserId}}
+      }
+    }
+  }else if (cleanRole === "ACADEMIC") {
+    targetEntityName = "AcademicStaff";
+    profileData.academic_staff_profile = {
+      create: {
+        full_name,
+        mobile_number,
+        email,
+        current_position: { connect: { id: positionId } },
+        current_role: { connect: { id: roleId } },
+        created_by: { connect: { id: loggedInUserId } },
+      },
+    };
+  }else if (cleanRole === "STUDENT") {
+    if (!active_class_id) {
+      throw new AppError("active_class_id is required to onboard a Student profile.", StatusCodes.BAD_REQUEST);
+    }
+    targetEntityName = "Student";
+    profileData.student_profile = {
+      create: {
+        full_name,
+        mobile_number,
+        email,
+        active_class: { connect: { id: active_class_id } },
+        created_by: { connect: { id: loggedInUserId } },
+      },
+    };
+  }else if (cleanRole === "GOVERNING_BODY") {
+    targetEntityName = "GoverningBody";
+    profileData.governing_body_profile = {
+      create: {
+        full_name,
+        mobile_number,
+        email,
+        created_by: { connect: { id: loggedInUserId } },
+      },
+    };
+  }
+  return { profileData, targetEntityName };
+}
 export const userHelperFunction = {
   userExistence,
   userCount,
-  userCreationRolePostionCheck
+  userCreationRolePostionCheck,
+  buildDynamicProfileData
 };

@@ -60,9 +60,9 @@ const createUser = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const effectiveJoiningDate = new Date(joining_date);
 
-  // 1. Check the role and position are authorized to create or not. 
+  // 1. Check the role and position are authorized to create or not.
   // Called helper function
-  userHelperFunction.userCreationRolePostionCheck(cleanRole, cleanPosition); 
+  userHelperFunction.userCreationRolePostionCheck(cleanRole, cleanPosition);
 
   //  2. Validate role
   const roleExists = await findRoleExistence(cleanRole);
@@ -73,26 +73,6 @@ const createUser = async (
       StatusCodes.NOT_FOUND,
     );
   }
-
-  // const callerRoleRank = privilegedRoleRank[loggedInUser.role_name];
-  // const requestedRoleRank = privilegedRoleRank[cleanRole];
-  // if (
-  //   cleanRole !== "SUPER_ADMIN" &&
-  //   callerRoleRank !== undefined &&
-  //   requestedRoleRank !== undefined &&
-  //   requestedRoleRank >= callerRoleRank
-  // ) {
-  //   throw new AppError(
-  //     "You do not have permission to assign this role.",
-  //     StatusCodes.FORBIDDEN,
-  //   );
-  // }
-  // if (cleanRole === "SUPER_ADMIN" && loggedInUser.role_name !== "SUPER_ADMIN") {
-  //   throw new AppError(
-  //     "Only a super admin can create another super admin.",
-  //     StatusCodes.FORBIDDEN,
-  //   );
-  // }
 
   // 3. Validate role-position relationship
   const positionExists = await checkRolePositionPair({
@@ -129,15 +109,27 @@ const createUser = async (
   const newUser = await prisma
     .$transaction(
       async (transaction) => {
+        // 💡 CALLING THE HELPER FUNCTION HERE
+        const { profileData, targetEntityName } =
+          userHelperFunction.buildDynamicProfileData({
+            cleanRole,
+            full_name,
+            mobile_number,
+            email,
+            positionId: positionExists.id,
+            roleId: roleExists.id,
+            loggedInUserId: loggedInUser.user_id,
+            active_class_id: payload.active_class_id,
+          });
         // A) Create the User and nested ManagementStaff profile
         const createdUser = await transaction.user.create({
           data: {
             full_name,
             mobile_number,
             email,
-            ...rest,
             user_name,
-
+            ...rest,
+            ...profileData,
             role: {
               connect: { id: roleExists.id },
             },
@@ -149,36 +141,78 @@ const createUser = async (
             created_by: {
               connect: { id: loggedInUser.user_id },
             },
-
-            management_staff_profile: {
-              create: {
-                full_name,
-                mobile_number,
-                email,
-
-                current_position: {
-                  connect: { id: positionExists.id },
-                },
-
-                current_role: {
-                  connect: { id: roleExists.id },
-                },
-
-                created_by: {
-                  connect: { id: loggedInUser.user_id },
-                },
-              },
-            },
           },
           include: {
             management_staff_profile: true,
+            academic_staff_profile: true,
+            student_profile: true,
+            governing_body_profile: true,
           },
-
           omit: {
             user_password: true,
           },
         });
 
+        // Extract specific entity profile ID for audit log linking rules
+        let subProfileId = "";
+        if (cleanRole === "MANAGEMENT")
+          subProfileId = createdUser.management_staff_profile?.id || "";
+        if (cleanRole === "ACADEMIC")
+          subProfileId = createdUser.academic_staff_profile?.id || "";
+        if (cleanRole === "STUDENT")
+          subProfileId = createdUser.student_profile?.id || "";
+        if (cleanRole === "GOVERNING_BODY")
+          subProfileId = createdUser.governing_body_profile?.id || "";
+
+        if (!subProfileId) {
+          throw new AppError(
+            `Failed to initialize associated ${targetEntityName} profile record during onboarding.`,
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        };
+
+        // Initialized array sets for scalable audit insertions
+        const auditRecords: Prisma.AuditLogCreateManyInput[] = [
+        {
+          entity_id: createdUser.id,
+          entity_name: "User",
+          old_value: Prisma.JsonNull,
+          new_value: { full_name, mobile_number, email, role_name: cleanRole, position_name: cleanPosition },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id,
+        },
+        {
+          entity_id: subProfileId,
+          entity_name: targetEntityName,
+          old_value: Prisma.JsonNull,
+          new_value: { full_name, mobile_number, email, role_id: roleExists.id, position_id: positionExists.id },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id,
+        },
+      ];
+
+      // Seed Promotion History blocks (Only valid for Staff profiles)
+      if(cleanRole === "MANAGEMENT" || cleanRole === "ACADEMIC"){
+        await transaction.promotionHistory.create({
+          data: {
+            management_staff_id: cleanRole === "MANAGEMENT" ? subProfileId : undefined,
+            academic_staff_id: cleanRole === "ACADEMIC" ? subProfileId : undefined,
+            position_id: positionExists.id,
+            role_id: roleExists.id,
+            start_date: effectiveJoiningDate,
+          }
+        })
+      }
+
+      // Add additional tracking metadata audit line item
+        auditRecords.push({
+          entity_id: subProfileId,
+          entity_name: "PromotionHistory",
+          old_value: Prisma.JsonNull,
+          new_value: { role_id: roleExists.id, position_id: positionExists.id, start_date: effectiveJoiningDate.toISOString(), end_date: null },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id,
+        });
         if (!createdUser.management_staff_profile) {
           throw new AppError(
             "Failed to initialize management staff profile during onboarding.",
@@ -186,65 +220,10 @@ const createUser = async (
           );
         }
 
-        // 🚀 🆕 B) SEED THE INITIAL BASELINE PROMOTION HISTORY RECORD
-        // This gives the user their very first history block with end_date: null
-        await transaction.promotionHistory.create({
-          data: {
-            management_staff_id: createdUser.management_staff_profile.id,
-            position_id: positionExists.id,
-            role_id: roleExists.id,
-            start_date: effectiveJoiningDate, // Tracks initial joining date as the active point
-          },
-        });
-
-        // 🆕 C) Refactored Audit Log generation using direct model creation with required changed_by_id
-        await transaction.auditLog.createMany({
-          data: [
-            {
-              entity_id: createdUser.id,
-              entity_name: "User",
-              old_value: Prisma.JsonNull,
-              new_value: {
-                full_name,
-                mobile_number,
-                email,
-                role_name: cleanRole,
-                position_name: cleanPosition,
-              },
-              action: "CREATE",
-              changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
-            },
-            {
-              entity_id: createdUser.management_staff_profile.id,
-              entity_name: "ManagementStaff",
-              old_value: Prisma.JsonNull,
-              new_value: {
-                full_name,
-                mobile_number,
-                email,
-                role_id: roleExists.id,
-                position_id: positionExists.id,
-              },
-              action: "CREATE",
-              changed_by_id: loggedInUser.user_id, // 🆕 Satisfies schema non-null rule
-            },
-            {
-              entity_id: createdUser.management_staff_profile.id, // Linked to the staff profile it documents
-              entity_name: "PromotionHistory",
-              old_value: Prisma.JsonNull,
-              new_value: {
-                management_staff_id: createdUser.management_staff_profile.id,
-                role_id: roleExists.id,
-                position_id: positionExists.id,
-                start_date: new Date().toISOString(),
-                end_date: null,
-              },
-              action: "CREATE",
-              changed_by_id: loggedInUser.user_id,
-            },
-          ],
-        });
-
+        // Bulk resolve tracking inputs
+      await transaction.auditLog.createMany({ data: auditRecords });
+      
+        // Async email notification verification rules distribution step
         const expirationSeconds = 5 * 60;
         const otpValue = crypto.randomInt(100000, 1000000).toString();
         await issueOtpAndSendEmail({
