@@ -34,12 +34,6 @@ import {
   sendVerificationResultEmail,
 } from "../email/email.helper.function.js";
 
-const privilegedRoleRank: Record<string, number> = {
-  TEACHER_ADMIN: 1,
-  ADMIN: 2,
-  SUPER_ADMIN: 3,
-};
-
 // CREATE USER SERVICE LAYER
 const createUser = async (
   payload: TUserCreatePayload,
@@ -169,47 +163,66 @@ const createUser = async (
             `Failed to initialize associated ${targetEntityName} profile record during onboarding.`,
             StatusCodes.INTERNAL_SERVER_ERROR,
           );
-        };
+        }
 
         // Initialized array sets for scalable audit insertions
         const auditRecords: Prisma.AuditLogCreateManyInput[] = [
-        {
-          entity_id: createdUser.id,
-          entity_name: "User",
-          old_value: Prisma.JsonNull,
-          new_value: { full_name, mobile_number, email, role_name: cleanRole, position_name: cleanPosition },
-          action: "CREATE",
-          changed_by_id: loggedInUser.user_id,
-        },
-        {
-          entity_id: subProfileId,
-          entity_name: targetEntityName,
-          old_value: Prisma.JsonNull,
-          new_value: { full_name, mobile_number, email, role_id: roleExists.id, position_id: positionExists.id },
-          action: "CREATE",
-          changed_by_id: loggedInUser.user_id,
-        },
-      ];
+          {
+            entity_id: createdUser.id,
+            entity_name: "User",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name,
+              mobile_number,
+              email,
+              role_name: cleanRole,
+              position_name: cleanPosition,
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          },
+          {
+            entity_id: subProfileId,
+            entity_name: targetEntityName,
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name,
+              mobile_number,
+              email,
+              role_id: roleExists.id,
+              position_id: positionExists.id,
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          },
+        ];
 
-      // Seed Promotion History blocks (Only valid for Staff profiles)
-      if(cleanRole === "MANAGEMENT" || cleanRole === "ACADEMIC"){
-        await transaction.promotionHistory.create({
-          data: {
-            management_staff_id: cleanRole === "MANAGEMENT" ? subProfileId : undefined,
-            academic_staff_id: cleanRole === "ACADEMIC" ? subProfileId : undefined,
-            position_id: positionExists.id,
-            role_id: roleExists.id,
-            start_date: effectiveJoiningDate,
-          }
-        })
-      }
+        // Seed Promotion History blocks (Only valid for Staff profiles)
+        if (cleanRole === "MANAGEMENT" || cleanRole === "ACADEMIC") {
+          await transaction.promotionHistory.create({
+            data: {
+              management_staff_id:
+                cleanRole === "MANAGEMENT" ? subProfileId : undefined,
+              academic_staff_id:
+                cleanRole === "ACADEMIC" ? subProfileId : undefined,
+              position_id: positionExists.id,
+              role_id: roleExists.id,
+              start_date: effectiveJoiningDate,
+            },
+          });
+        }
 
-      // Add additional tracking metadata audit line item
+        // Add additional tracking metadata audit line item
         auditRecords.push({
           entity_id: subProfileId,
           entity_name: "PromotionHistory",
           old_value: Prisma.JsonNull,
-          new_value: { role_id: roleExists.id, position_id: positionExists.id, start_date: effectiveJoiningDate.toISOString(), end_date: null },
+          new_value: {
+            role_id: roleExists.id,
+            position_id: positionExists.id,
+            start_date: effectiveJoiningDate.toISOString(),
+            end_date: null,
+          },
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
         });
@@ -221,8 +234,8 @@ const createUser = async (
         }
 
         // Bulk resolve tracking inputs
-      await transaction.auditLog.createMany({ data: auditRecords });
-      
+        await transaction.auditLog.createMany({ data: auditRecords });
+
         // Async email notification verification rules distribution step
         const expirationSeconds = 5 * 60;
         const otpValue = crypto.randomInt(100000, 1000000).toString();
@@ -396,24 +409,21 @@ const promoteUserRolePosition = async (
         mobile_number,
       },
     },
-    select: {
-      id: true,
-      role_id: true,
-      position_id: true,
+    include: {
       current_role: { select: { role_name: true } },
       current_position: { select: { position_name: true } },
       management_staff_profile: {
-        select: {
-          id: true,
-          current_role_id: true,
-          current_position_id: true,
-          promotion_history: {
-            where: { end_date: null },
-            select: { id: true },
-            take: 1,
-          },
+        include: {
+          promotion_history: { where: { end_date: null }, take: 1 },
         },
       },
+      academic_staff_profile: {
+        include: {
+          promotion_history: { where: { end_date: null }, take: 1 },
+        },
+      },
+      student_profile: true,
+      governing_body_profile: true,
     },
   });
 
@@ -424,11 +434,11 @@ const promoteUserRolePosition = async (
     );
   }
 
+  const currentRoleName = targetStaff.current_role?.role_name;
+  const currentPositionName = targetStaff.current_position?.position_name;
+
   // 4. Compare existing user role position with the provided role position
-  if (
-    targetStaff.current_role?.role_name === cleanRole &&
-    targetStaff.current_position?.position_name === cleanPosition
-  ) {
+  if (currentRoleName === cleanRole && currentPositionName === cleanPosition) {
     throw new AppError(
       "User already occupy the provided role and position",
       StatusCodes.CONFLICT,
@@ -437,26 +447,24 @@ const promoteUserRolePosition = async (
   // 5. Execute the database changes within a safe transaction block
   const result = await prisma.$transaction(
     async (transaction) => {
-      if (!targetStaff.management_staff_profile) {
-        throw new AppError(
-          "The requested user's management staff profile does not exist.",
-          StatusCodes.NOT_FOUND,
-        );
-      }
-      if (targetStaff.management_staff_profile.promotion_history.length === 0) {
-        throw new AppError(
-          "Active promotion history not found.",
-          StatusCodes.NOT_FOUND,
-        );
-      }
+      let currentActiveHistoryId: string | null = null;
+      let currentProfileId: string | null = null;
+      let currentEntityName = "";
 
-      const activeHistoryID =
-        targetStaff.management_staff_profile.promotion_history[0]?.id;
-      // A) Terminate previous historical entries if a prior valid history tracking line exists
-      if (activeHistoryID) {
+       // Identify the user's CURRENT active profile details to terminate history
+      if(currentRoleName === "MANAGEMENT" && targetStaff.management_staff_profile){
+        currentProfileId = targetStaff.management_staff_profile.id;
+        currentEntityName = "ManagementStaff";
+        currentActiveHistoryId = targetStaff.management_staff_profile.promotion_history[0]?.id || null;
+      }else if(currentRoleName === "ACADEMIC" && targetStaff.academic_staff_profile){
+        currentProfileId === targetStaff.academic_staff_profile.id;
+        currentEntityName === "AcademicStaff";
+        currentActiveHistoryId = targetStaff.academic_staff_profile.promotion_history[0]?.id || null;
+      }
+      if(currentActiveHistoryId){
         await transaction.promotionHistory.update({
           where: {
-            id: activeHistoryID,
+            id: currentActiveHistoryId,
           },
           data: {
             end_date: effectivePromotedDate,
@@ -464,90 +472,116 @@ const promoteUserRolePosition = async (
         });
       }
 
-      // B) Open the fresh new career path tracking timeline entry
-      await transaction.promotionHistory.create({
-        data: {
-          management_staff_id: targetStaff.management_staff_profile.id,
-          position_id: positionExists.id,
-          role_id: existingRole.id,
-          start_date: effectivePromotedDate,
-        },
-      });
-      // Direct updates on the user and profile references (No PromotionHistory entries created)
+      // Prepare conditional dynamic query payloads for updating/creating target profiles
+      const userUpdateData: Prisma.UserUpdateInput = {
+        updated_by: { connect: { id: loggedInUser.user_id } },
+        current_role: { connect: { id: existingRole.id } },
+        current_position: { connect: { id: positionExists.id } },
+      };
+
+      const auditRecords: Prisma.AuditLogCreateManyInput[] = [
+        {
+          entity_id: targetStaff.id,
+          entity_name: "User",
+          old_value: { role: currentRoleName || null, position: targetStaff.current_position?.position_name || null },
+          new_value: { role: cleanRole, position: cleanPosition },
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
+        }
+      ];
+
+      // Handle Promotion Mapping Target: MANAGEMENT
+      if (cleanRole === "MANAGEMENT") {
+        if (targetStaff.management_staff_profile) {
+          // Standard promotion within management profile
+          userUpdateData.management_staff_profile = {
+            update: {
+              current_role: { connect: { id: existingRole.id } },
+              current_position: { connect: { id: positionExists.id } },
+              updated_by: { connect: { id: loggedInUser.user_id } },
+            }
+          };
+        } 
+      }
+         // Handle Promotion Mapping Target: ACADEMIC
+      else if (cleanRole === "ACADEMIC") {
+        if (targetStaff.academic_staff_profile) {
+          // Standard promotion within academic profile
+          userUpdateData.academic_staff_profile = {
+            update: {
+              current_role: { connect: { id: existingRole.id } },
+              current_position: { connect: { id: positionExists.id } },
+              updated_by: { connect: { id: loggedInUser.user_id } },
+            }
+          };
+        }
+      }
+        else {
+          // Cross-role promotion from another role (e.g. Management -> Academic): Instantiate new profile
+          userUpdateData.academic_staff_profile = {
+            create: {
+              full_name, mobile_number, email: targetStaff.email || "",
+              current_role: { connect: { id: existingRole.id } },
+              current_position: { connect: { id: positionExists.id } },
+              created_by: { connect: { id: loggedInUser.user_id } },
+            }
+          };
+        }
+
+        // B) Commit primary field modifications to the database
       const updatedUser = await transaction.user.update({
         where: { id: targetStaff.id },
-
-        data: {
-          updated_by: {
-            connect: { id: loggedInUser.user_id },
-          },
-          role: {
-            connect: { id: existingRole.id },
-          },
-          position: {
-            connect: { id: positionExists.id },
-          },
-
-          management_staff_profile: {
-            update: {
-              current_role: {
-                connect: { id: existingRole.id },
-              },
-              current_position: {
-                connect: { id: positionExists.id },
-              },
-              updated_by: {
-                connect: { id: loggedInUser.user_id },
-              },
-            },
-          },
+        data: userUpdateData,
+        include: {
+          management_staff_profile: true,
+          academic_staff_profile: true,
         },
-        omit: { user_password: true },
+        omit: { user_password: true }
       });
 
-      // D) Enforce business changes logging inside the general system audit tracker
-      await transaction.auditLog.createMany({
-        data: [
-          {
-            entity_id: targetStaff.id,
-            entity_name: "User",
-            old_value: {
-              role: targetStaff.current_role?.role_name ?? null,
-              position: targetStaff.current_position?.position_name ?? null,
-            },
-            new_value: {
-              role: cleanRole,
-              position: cleanPosition,
-            },
-            action: "UPDATE",
-            changed_by_id: loggedInUser.user_id,
-          },
-          {
-            entity_id: targetStaff.management_staff_profile.id,
-            entity_name: "ManagementStaff",
-            old_value: {
-              role_id:
-                targetStaff.management_staff_profile.current_role_id ?? null,
-              position_id:
-                targetStaff.management_staff_profile.current_position_id ??
-                null,
-            },
-            new_value: {
-              role_id: existingRole.id,
-              position_id: positionExists.id,
-            },
-            action: "UPDATE",
-            changed_by_id: loggedInUser.user_id,
-          },
-        ],
+       // Recalculate target profile ID post-update execution to ensure accuracy
+      let targetProfileId = "";
+      if (cleanRole === "MANAGEMENT") targetProfileId = updatedUser.management_staff_profile?.id || "";
+      if (cleanRole === "ACADEMIC") targetProfileId = updatedUser.academic_staff_profile?.id || "";
+
+      // C) Create the fresh new Promotion History tracking line item with the new joining date
+      await transaction.promotionHistory.create({
+        data: {
+          management_staff_id: cleanRole === "MANAGEMENT" ? targetProfileId : undefined,
+          academic_staff_id: cleanRole === "ACADEMIC" ? targetProfileId : undefined,
+          position_id: positionExists.id,
+          role_id: existingRole.id,
+          start_date: effectivePromotedDate, // 🚀 Sets the new joining timeline milestone
+        },
       });
+
+       // D) Append history milestones to audit trails
+      auditRecords.push({
+        entity_id: targetProfileId,
+        entity_name: "PromotionHistory",
+        old_value: Prisma.JsonNull,
+        new_value: { role_id: existingRole.id, position_id: positionExists.id, start_date: effectivePromotedDate.toISOString() },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+
+      auditRecords.push({
+        entity_id: targetProfileId,
+        entity_name: cleanRole === "MANAGEMENT" ? "ManagementStaff" : "AcademicStaff",
+        old_value: currentProfileId ? { role: currentRoleName } : Prisma.JsonNull,
+        new_value: { role_id: existingRole.id, position_id: positionExists.id },
+        action: currentProfileId ? "UPDATE" : "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+
+      await transaction.auditLog.createMany({ data: auditRecords });
+
       return updatedUser;
     },
-    {
-      timeout: 10000,
-    },
-    // 5. Invalidate the memory caches after a successful transaction complete
+    { timeout: 15000 },
   );
+
+   // 7. Flush memory caches to sync state for subsequent app requests
   clearCacheRoles();
   clearCachePositions();
   return result;
