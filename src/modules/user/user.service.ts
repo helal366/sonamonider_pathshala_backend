@@ -382,7 +382,15 @@ const promoteUserRolePosition = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
   const effectivePromotedDate = new Date(promoted_date);
-  // 1. Verify that the requested master role exists
+
+  // 1a. Enforce business rule: Only administrative and academic staff participate in promotions
+  if (cleanRole !== "ADMIN" && cleanRole !== "TEACHER_ADMIN" && cleanRole !== "MANAGEMENT" && cleanRole !== "ACADEMIC") {
+    throw new AppError(
+      `Users targeting the role ${cleanRole} cannot be processed via the promotion pipeline.`,
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  // 1b. Verify that the requested master role exists
   const existingRole = await prisma.userRole.findUnique({
     where: { role_name: cleanRole },
     select: { id: true },
@@ -451,17 +459,27 @@ const promoteUserRolePosition = async (
       let currentProfileId: string | null = null;
       let currentEntityName = "";
 
-       // Identify the user's CURRENT active profile details to terminate history
-      if(currentRoleName === "MANAGEMENT" && targetStaff.management_staff_profile){
+      // Identify the user's CURRENT active profile details to terminate history
+      if (
+        (currentRoleName === "MANAGEMENT" ||
+          currentRoleName === "ADMIN" ||
+          currentRoleName === "TEACHER_ADMIN") &&
+        targetStaff.management_staff_profile
+      ) {
         currentProfileId = targetStaff.management_staff_profile.id;
         currentEntityName = "ManagementStaff";
-        currentActiveHistoryId = targetStaff.management_staff_profile.promotion_history[0]?.id || null;
-      }else if(currentRoleName === "ACADEMIC" && targetStaff.academic_staff_profile){
-        currentProfileId === targetStaff.academic_staff_profile.id;
-        currentEntityName === "AcademicStaff";
-        currentActiveHistoryId = targetStaff.academic_staff_profile.promotion_history[0]?.id || null;
+        currentActiveHistoryId =
+          targetStaff.management_staff_profile.promotion_history[0]?.id || null;
+      } else if (
+        currentRoleName === "ACADEMIC" &&
+        targetStaff.academic_staff_profile
+      ) {
+        currentProfileId = targetStaff.academic_staff_profile.id;
+        currentEntityName = "AcademicStaff";
+        currentActiveHistoryId =
+          targetStaff.academic_staff_profile.promotion_history[0]?.id || null;
       }
-      if(currentActiveHistoryId){
+      if (currentActiveHistoryId) {
         await transaction.promotionHistory.update({
           where: {
             id: currentActiveHistoryId,
@@ -483,52 +501,47 @@ const promoteUserRolePosition = async (
         {
           entity_id: targetStaff.id,
           entity_name: "User",
-          old_value: { role: currentRoleName || null, position: targetStaff.current_position?.position_name || null },
+          old_value: {
+            role: currentRoleName || null,
+            position: targetStaff.current_position?.position_name || null,
+          },
           new_value: { role: cleanRole, position: cleanPosition },
           action: "UPDATE",
           changed_by_id: loggedInUser.user_id,
-        }
+        },
       ];
 
-      // Handle Promotion Mapping Target: MANAGEMENT
-      if (cleanRole === "MANAGEMENT") {
-        if (targetStaff.management_staff_profile) {
-          // Standard promotion within management profile
-          userUpdateData.management_staff_profile = {
-            update: {
-              current_role: { connect: { id: existingRole.id } },
-              current_position: { connect: { id: positionExists.id } },
-              updated_by: { connect: { id: loggedInUser.user_id } },
-            }
-          };
-        } 
-      }
-         // Handle Promotion Mapping Target: ACADEMIC
-      else if (cleanRole === "ACADEMIC") {
-        if (targetStaff.academic_staff_profile) {
-          // Standard promotion within academic profile
-          userUpdateData.academic_staff_profile = {
-            update: {
-              current_role: { connect: { id: existingRole.id } },
-              current_position: { connect: { id: positionExists.id } },
-              updated_by: { connect: { id: loggedInUser.user_id } },
-            }
-          };
+     // Handle Promotion Mapping Target: MANAGEMENT / ADMIN / TEACHER_ADMIN
+      const isManagementTrack = cleanRole === "MANAGEMENT" || cleanRole === "ADMIN" || cleanRole === "TEACHER_ADMIN";
+      
+      if (isManagementTrack) {
+        if (!targetStaff.management_staff_profile) {
+          throw new AppError("Management staff profile not found.", StatusCodes.NOT_FOUND);
         }
+        userUpdateData.management_staff_profile = {
+          update: {
+            current_role: { connect: { id: existingRole.id } },
+            current_position: { connect: { id: positionExists.id } },
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          }
+        };
       }
-        else {
-          // Cross-role promotion from another role (e.g. Management -> Academic): Instantiate new profile
-          userUpdateData.academic_staff_profile = {
-            create: {
-              full_name, mobile_number, email: targetStaff.email || "",
-              current_role: { connect: { id: existingRole.id } },
-              current_position: { connect: { id: positionExists.id } },
-              created_by: { connect: { id: loggedInUser.user_id } },
-            }
-          };
-        }
 
-        // B) Commit primary field modifications to the database
+      // Handle Promotion Mapping Target: ACADEMIC
+      else if (cleanRole === "ACADEMIC") {
+        if (!targetStaff.academic_staff_profile) {
+          throw new AppError("Academic staff profile not found.", StatusCodes.NOT_FOUND);
+        }
+        userUpdateData.academic_staff_profile = {
+          update: {
+            current_role: { connect: { id: existingRole.id } },
+            current_position: { connect: { id: positionExists.id } },
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          }
+        };
+      }
+
+      // B) Commit primary field modifications to the database
       const updatedUser = await transaction.user.update({
         where: { id: targetStaff.id },
         data: userUpdateData,
@@ -536,39 +549,50 @@ const promoteUserRolePosition = async (
           management_staff_profile: true,
           academic_staff_profile: true,
         },
-        omit: { user_password: true }
+        omit: { user_password: true },
       });
 
-       // Recalculate target profile ID post-update execution to ensure accuracy
+      // Recalculate target profile ID post-update execution to ensure accuracy
       let targetProfileId = "";
-      if (cleanRole === "MANAGEMENT") targetProfileId = updatedUser.management_staff_profile?.id || "";
-      if (cleanRole === "ACADEMIC") targetProfileId = updatedUser.academic_staff_profile?.id || "";
+      if (isManagementTrack)
+        targetProfileId = updatedUser.management_staff_profile?.id || "";
+      if (cleanRole === "ACADEMIC")
+        targetProfileId = updatedUser.academic_staff_profile?.id || "";
 
       // C) Create the fresh new Promotion History tracking line item with the new joining date
       await transaction.promotionHistory.create({
         data: {
-          management_staff_id: cleanRole === "MANAGEMENT" ? targetProfileId : undefined,
-          academic_staff_id: cleanRole === "ACADEMIC" ? targetProfileId : undefined,
+          management_staff_id:
+            isManagementTrack ? targetProfileId : undefined,
+          academic_staff_id:
+            cleanRole === "ACADEMIC" ? targetProfileId : undefined,
           position_id: positionExists.id,
           role_id: existingRole.id,
           start_date: effectivePromotedDate, // 🚀 Sets the new joining timeline milestone
         },
       });
 
-       // D) Append history milestones to audit trails
+      // D) Append history milestones to audit trails
       auditRecords.push({
         entity_id: targetProfileId,
         entity_name: "PromotionHistory",
         old_value: Prisma.JsonNull,
-        new_value: { role_id: existingRole.id, position_id: positionExists.id, start_date: effectivePromotedDate.toISOString() },
+        new_value: {
+          role_id: existingRole.id,
+          position_id: positionExists.id,
+          start_date: effectivePromotedDate.toISOString(),
+        },
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
       });
 
       auditRecords.push({
         entity_id: targetProfileId,
-        entity_name: cleanRole === "MANAGEMENT" ? "ManagementStaff" : "AcademicStaff",
-        old_value: currentProfileId ? { role: currentRoleName } : Prisma.JsonNull,
+        entity_name:
+          isManagementTrack ? "ManagementStaff" : "AcademicStaff",
+        old_value: currentProfileId
+          ? { role: currentRoleName }
+          : Prisma.JsonNull,
         new_value: { role_id: existingRole.id, position_id: positionExists.id },
         action: currentProfileId ? "UPDATE" : "CREATE",
         changed_by_id: loggedInUser.user_id,
@@ -581,7 +605,7 @@ const promoteUserRolePosition = async (
     { timeout: 15000 },
   );
 
-   // 7. Flush memory caches to sync state for subsequent app requests
+  // 7. Flush memory caches to sync state for subsequent app requests
   clearCacheRoles();
   clearCachePositions();
   return result;
