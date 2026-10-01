@@ -10,10 +10,11 @@ const createPayload = (payload: TCreateAcademicResultZodSchema) => {
     fazil_result,
     masters_result,
     kamil,
-    ...rest
   } = payload;
-  let existingData: Record<string, any> = {...rest};
-    if (ssc_result) existingData.ssc_result = ssc_result;
+  
+  let existingData: Record<string, any> = {};
+
+  if (ssc_result) existingData.ssc_result = ssc_result;
   if (dakhil_result) existingData.dakhil_result = dakhil_result;
   if (hsc_result) existingData.hsc_result = hsc_result;
   if (alim_result) existingData.alim_result = alim_result;
@@ -21,13 +22,9 @@ const createPayload = (payload: TCreateAcademicResultZodSchema) => {
   if (fazil_result) existingData.fazil_result = fazil_result;
   if (masters_result) existingData.masters_result = masters_result;
   if (kamil) existingData.kamil = kamil;
+  return existingData
 };
 
-//   ssc_result     String?
-//   dakhil_result,  String?
-//   hsc_result,     String?
-//   alim_result,    String?
-//   hons_result,    String?
-//   fazil_result,   String?
-//   masters_result, String?
-//   kamil,          String?
+export const academicResultHelper = {
+  createPayload
+}
