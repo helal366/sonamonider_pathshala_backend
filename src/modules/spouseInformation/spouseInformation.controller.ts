@@ -45,6 +45,8 @@ const deleteSpouseInformation = catchAsync(
 );
 
 // ============================================================
+// UPDATE SPOUSE INFORMATION FIELD CONTROLLER
+// ============================================================
 const updateSpouseInformationField = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);

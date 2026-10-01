@@ -8,6 +8,12 @@
 * pnpm dlx vercel env add
 * pnpm dlx vercel env ls
 * pnpm dlx vercel --prod
+* pnpm vercel env rm DATABASE_URL
+* pnpm vercel env rm DATABASE_URL_DIRECT
+* pnpm vercel env add DATABASE_URL
+* pnpm vercel env add DATABASE_URL_DIRECT
+
+
 * 
 * pnpm store prune
 * pnpm config set fetch-timeout 60000
@@ -24,4 +30,23 @@
 
 3. Push to your repository (e.g., GitHub, GitLab)
 * git push origin main
+
+
+
+## Total time check for transaction:
+```
+console.time("Total Transaction Time");
+
+await prisma.$transaction(async (tx) => {
+  console.time("Step 1: First Query");
+  const step1 = await tx.model.findMany({...}); // Adjust to your model
+  console.timeEnd("Step 1: First Query");
+
+  console.time("Step 2: Second Query");
+  const step2 = await tx.model.update({...}); // Adjust to your model
+  console.timeEnd("Step 2: Second Query");
+});
+
+console.timeEnd("Total Transaction Time");
+```
 

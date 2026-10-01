@@ -61,13 +61,6 @@ const createUser = async (
   //  2. Validate role
   const roleExists = await findRoleExistence(cleanRole);
 
-  if (!roleExists) {
-    throw new AppError(
-      `Provided Role: ${cleanRole} is not a valid role.`,
-      StatusCodes.NOT_FOUND,
-    );
-  }
-
   // 3. Validate role-position relationship
   const positionExists = await checkRolePositionPair({
     role_name: cleanRole,
@@ -382,6 +375,9 @@ const promoteUserRolePosition = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
   const effectivePromotedDate = new Date(promoted_date);
+  if(cleanRole === "SUPER_ADMIN"){
+    throw new AppError(`Super Admin is not promotable.`, StatusCodes.BAD_REQUEST)
+  }
 
   // 1a. Enforce business rule: Only administrative and academic staff participate in promotions
   if (cleanRole !== "ADMIN" && cleanRole !== "TEACHER_ADMIN" && cleanRole !== "MANAGEMENT" && cleanRole !== "ACADEMIC") {
@@ -457,7 +453,6 @@ const promoteUserRolePosition = async (
     async (transaction) => {
       let currentActiveHistoryId: string | null = null;
       let currentProfileId: string | null = null;
-      let currentEntityName = "";
 
       // Identify the user's CURRENT active profile details to terminate history
       if (
@@ -467,7 +462,6 @@ const promoteUserRolePosition = async (
         targetStaff.management_staff_profile
       ) {
         currentProfileId = targetStaff.management_staff_profile.id;
-        currentEntityName = "ManagementStaff";
         currentActiveHistoryId =
           targetStaff.management_staff_profile.promotion_history[0]?.id || null;
       } else if (
@@ -475,7 +469,6 @@ const promoteUserRolePosition = async (
         targetStaff.academic_staff_profile
       ) {
         currentProfileId = targetStaff.academic_staff_profile.id;
-        currentEntityName = "AcademicStaff";
         currentActiveHistoryId =
           targetStaff.academic_staff_profile.promotion_history[0]?.id || null;
       }

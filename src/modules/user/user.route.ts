@@ -43,7 +43,7 @@ router.patch(
 // UPDATE SINGLE USER FIELD ADMIN ROUTE
 // ==========================================
 router.patch(
-  "/update_single_user_field_admin",
+  "/update_user_single_field_admin",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldAdmin
@@ -53,7 +53,7 @@ router.patch(
 // UPDATE SINGLE USER FIELD SUPER ADMIN ROUTE
 // ==========================================
 router.patch(
-  "/update_single_user_field_super_admin",
+  "/update_user_single_field_super_admin",
   userAuth("SUPER_ADMIN"),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldSuperAdmin

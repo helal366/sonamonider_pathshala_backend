@@ -35,12 +35,6 @@ const createPosition = async (
 
   // 2. Verify that the role exists in the master database
   const existingRole = await findRoleExistence(cleanRole);
-  if (!existingRole) {
-    throw new AppError(
-      `Your provided role : ${cleanRole} does not exist.`,
-      StatusCodes.NOT_FOUND,
-    );
-  }
 
   // 3. Atomatically create the position record and write the audit trace log
   const createdNewPosition = await prisma.$transaction(async (transaction) => {

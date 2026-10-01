@@ -30,6 +30,9 @@ router.delete(
   spouseInformationController.deleteSpouseInformation,
 );
 
+// ============================================================
+// UPDATE SPOUSE INFORMATION FIELD ROUTE
+// ============================================================
 router.patch(
   "/update_spouse_information_field",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),

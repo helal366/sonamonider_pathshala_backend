@@ -67,6 +67,9 @@ export type TDeleteSpouseInformationZodSchema = z4.infer<
   typeof deleteSpouseInformationZodSchema
 >;
 
+// ============================================================
+// UPDATE SPOUSE INFORMATION FIELD ROUTE
+// ============================================================
 const updateSpouseInformationFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
     user_id: z4.string().trim().min(1, "User ID is required."),

@@ -1,4 +1,6 @@
+import { StatusCodes } from "http-status-codes";
 import { prisma } from "../../lib/prisma.js";
+import { AppError } from "../globalError/globalErrorHelperFunction.js";
 
 export interface ICacheRole {
   id: string;
@@ -39,5 +41,11 @@ export const findRoleExistence = async (role_name: string) => {
   const findRole = validRoles.find(
     (singleRole) => singleRole.role_name === role_name,
   );
+  if(!findRole){
+    throw new AppError(
+          `Provided Role: ${role_name} is not a valid role.`,
+          StatusCodes.NOT_FOUND,
+        );
+  }
   return findRole;
 };
