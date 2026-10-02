@@ -13,6 +13,17 @@ router.post(
     "/create",
     userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
     validateZodSchema(classZodSchema.createClassZodSchema),
-    classController.createClass
+    classController.createClassName
+);
+
+
+// =============================================
+// DELETE CLASS NAME ZOD SCHEMA
+// =============================================
+router.delete(
+    "/delete/:class_id",
+    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+    validateZodSchema(classZodSchema.deleteClassZodSchema),
+    classController.deleteClassName
 )
 export const classRouter:Router = router;

@@ -6,7 +6,7 @@ import { AcademicResult_Update_Fields, Staff_Role_Name } from "./academicResult.
 // ==========================================
 const createAcademicResultZodSchema = z4.object({
   required_id: z4
-    .string({
+    .uuid({
       error: (issue) => {
         issue.input === undefined
           ? "Record ID  is required"
@@ -53,7 +53,7 @@ export type TCreateAcademicResultZodSchema = z4.infer<
 // ==========================================
 const deleteAcademicResultZodSchema = z4.object({
   academic_result_id: z4
-    .string({
+    .uuid({
       error: (issue) => {
         issue.input === undefined
           ? "Academic result ID  is required"
@@ -72,7 +72,7 @@ export type TDeleteAcademicResultZodSchema = z4.infer<
 // ==========================================
 const updateAcademicResultFieldZodSchema = z4.object({
   academic_result_id: z4
-    .string({
+    .uuid({
       error: (issue) => {
         issue.input === undefined
           ? "Academic result ID  is required"
