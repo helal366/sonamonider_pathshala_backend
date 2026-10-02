@@ -4,7 +4,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { classServices } from "./class.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TDeleteClassNameZodSchema } from "./class.zod.validation";
+import { TDeleteClassNameZodSchema, TUpdateClassFieldZodSchema } from "./class.zod.validation";
 
 
 // =============================================
@@ -41,8 +41,34 @@ const deleteClassName = catchAsync(async(req:Request, res:Response)=>{
         message: `Class name deleted successfully.`,
         data: result
     })
+});
+
+// =============================================
+// UPDATE CLASS FIELD ZOD SCHEMA
+// =============================================
+const updateClassField = catchAsync(async(req:Request, res: Response)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload:TUpdateClassFieldZodSchema={
+        params: req.params as TUpdateClassFieldZodSchema["params"],
+        body: req.body as TUpdateClassFieldZodSchema["body"]
+    };
+    const {class_id} = payload.params;
+    const {field, value} = payload.body;
+    const updatePayload = {
+        class_id, field, value
+    }
+
+    const result = await classServices.updateClassField(updatePayload, loggedInUser);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Class field updated successfully.`,
+        data: result
+    })
 })
 export const classController = {
     createClassName,
-    deleteClassName
+    deleteClassName,
+    updateClassField
 }

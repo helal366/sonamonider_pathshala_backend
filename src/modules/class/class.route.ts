@@ -11,7 +11,7 @@ const router = Router();
 // =============================================
 router.post(
     "/create",
-    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+    userAuth("SUPER_ADMIN"),
     validateZodSchema(classZodSchema.createClassZodSchema),
     classController.createClassName
 );
@@ -22,8 +22,17 @@ router.post(
 // =============================================
 router.delete(
     "/delete/:class_id",
-    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+    userAuth("SUPER_ADMIN"),
     validateZodSchema(classZodSchema.deleteClassNameZodSchema),
     classController.deleteClassName
+);
+
+// =============================================
+// UPDATE CLASS FIELD ZOD SCHEMA
+// =============================================
+router.patch(
+    "/update/:class_id",
+    userAuth("SUPER_ADMIN"),
+    validateZodSchema(classZodSchema.updateClassFieldZodSchema),
 )
 export const classRouter:Router = router;

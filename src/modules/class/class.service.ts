@@ -65,7 +65,51 @@ const deleteClassName = async (
     return deleteClassData;
   });
 };
+
+// =============================================
+// UPDATE CLASS FIELD ZOD SCHEMA
+// =============================================
+const updateClassField = async (
+    updatePayload:
+  {class_id: string,
+  field: string,
+  value: string | boolean,},
+  loggedInUser:TLoggedInUser
+) => {
+    const {class_id, field, value} = updatePayload
+    return await prisma.$transaction(async(tx)=>{
+        const existingClass = await tx.class.findUnique({
+          where: { id: class_id },
+        });
+        if (!existingClass) {
+          throw new AppError(`Provided class not found.`, StatusCodes.NOT_FOUND);
+        }
+
+        const updated = await tx.class.update({
+            where:{id: class_id},
+            data: {
+                [field]:value,
+                updated_by: {connect:{id: loggedInUser.user_id}}
+            }
+        });
+
+        await tx.auditLog.create({
+            data: {
+                entity_id: class_id,
+                entity_name: "Class",
+                action: "UPDATE",
+                changed_by:{connect:{id: loggedInUser.user_id}},
+                old_value: {
+                    [field]: existingClass[field as keyof typeof existingClass]
+                } as Prisma.InputJsonValue,
+                new_value: { [field]: value } as Prisma.InputJsonValue
+            }
+        })
+        return updated;
+    })
+};
 export const classServices = {
   createClassName,
   deleteClassName,
+  updateClassField,
 };

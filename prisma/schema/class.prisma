@@ -1,6 +1,7 @@
 model Class {
   id   String @id @default(uuid())
   class_name String @unique
+  is_active_class Boolean @default(true)
   active_students Student[] @relation("student_active_classes")
 
   created_by_id String?
