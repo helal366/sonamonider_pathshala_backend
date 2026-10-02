@@ -54,8 +54,8 @@ model User {
 
   audit_logs AuditLog[] @relation("audit_log_changed_by")
 
-  created_academic_results AcademicResult[] @relation("academic_result_created_by")
-  updated_academic_results AcademicResult[] @relation("academic_result_updated_by")
+  created_academic_result AcademicResult[] @relation("academic_result_created_by")
+  updated_academic_result AcademicResult[] @relation("academic_result_updated_by")
 
   created_father_details FatherDetails[] @relation("father_details_created_by")
   updated_father_details FatherDetails[] @relation("father_details_updated_by")

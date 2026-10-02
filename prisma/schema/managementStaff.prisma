@@ -4,7 +4,7 @@ model ManagementStaff {
   mobile_number String
   email         String @unique
 
-  academic_results         AcademicResult? @relation(name: "management_staff_academic_result")
+  academic_result         AcademicResult? @relation(name: "management_staff_academic_result")
   working_experience_year  Int?
   working_experience_month Int?
   alternative_contact_no   String[]

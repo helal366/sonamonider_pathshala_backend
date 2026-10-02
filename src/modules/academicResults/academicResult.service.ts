@@ -3,7 +3,12 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions";
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { TCreateAcademicResultZodSchema, TDeleteAcademicResultZodSchema, TGetSingleAcademicResultZodSchema, TUpdateAcademicResultField } from "./academicResult.zod.validation";
+import {
+  TCreateAcademicResultZodSchema,
+  TDeleteAcademicResultZodSchema,
+  TGetSingleAcademicResultZodSchema,
+  TUpdateAcademicResultField,
+} from "./academicResult.zod.validation";
 import { prisma } from "../../lib/prisma";
 import { academicResultHelper } from "./academicResult.helperFunction";
 import { Prisma } from "#db-client";
@@ -86,109 +91,117 @@ const createAcademicResult = async (
       StatusCodes.NOT_FOUND,
     );
   }
-  return await prisma.$transaction(async(tx)=>{
-     // 7. create Academic Result
-     const academicResult = await tx.academicResult.create({
-       data: {
-         ...createPayloadData,
-         created_by: { connect: { id: loggedInUser.user_id } },
-         [targetFieldName]: { connect: { id: payload.required_id } }, 
-       },
-     });
-   
-     await tx.auditLog.create({
-       data: {
-         entity_id: academicResult.id,
-         entity_name: auditEntityName,
-         action: "CREATE",
-         changed_by: { connect: { id: loggedInUser.user_id } },
-         old_value: Prisma.JsonNull,
-         new_value: academicResult as unknown as Prisma.InputJsonValue,
-       },
-     });
-     return academicResult
- })
+  return await prisma.$transaction(async (tx) => {
+    // 7. create Academic Result
+    const academicResult = await tx.academicResult.create({
+      data: {
+        ...createPayloadData,
+        created_by: { connect: { id: loggedInUser.user_id } },
+        [targetFieldName]: { connect: { id: payload.required_id } },
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        entity_id: academicResult.id,
+        entity_name: auditEntityName,
+        action: "CREATE",
+        changed_by: { connect: { id: loggedInUser.user_id } },
+        old_value: Prisma.JsonNull,
+        new_value: academicResult as unknown as Prisma.InputJsonValue,
+      },
+    });
+    return academicResult;
+  });
 };
 
 // =============================================
 // DELETE ACADEMIC RESULT SERVICE LAYER
 // =============================================
-const deleteAcademicResult = async(
-  payload:TDeleteAcademicResultZodSchema,
-  loggedInUser:TLoggedInUser
-)=>{
-  const {academic_result_id} = payload;
+const deleteAcademicResult = async (
+  payload: TDeleteAcademicResultZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const { academic_result_id } = payload;
 
   const academicResult = await prisma.academicResult.findUnique({
-    where: {id: academic_result_id}
+    where: { id: academic_result_id },
   });
-  if(!academicResult){
-    throw new AppError(`Academic result record not found.`, StatusCodes.NOT_FOUND)
-  };
-  return await prisma.$transaction(async(tx)=>{
+  if (!academicResult) {
+    throw new AppError(
+      `Academic result record not found.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+  return await prisma.$transaction(async (tx) => {
     const deleteAcademicResult = await tx.academicResult.delete({
-      where: {id: academic_result_id}
+      where: { id: academic_result_id },
     });
     await tx.auditLog.create({
       data: {
         entity_id: academic_result_id,
         entity_name: "AcademicResult",
         action: "DELETE",
-        changed_by: {connect: {id: loggedInUser.user_id}},
+        changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: academicResult as unknown as Prisma.InputJsonValue,
-        new_value: Prisma.JsonNull
-      }
-    })
-    return deleteAcademicResult
+        new_value: Prisma.JsonNull,
+      },
+    });
+    return deleteAcademicResult;
   });
 };
 
 // =============================================
 // UPDATE ACADEMIC RESULT FIELD SERVICE LAYER
 // =============================================
-const updateAcademicResultField = async(
+const updateAcademicResultField = async (
   payload: TUpdateAcademicResultField,
-  loggedInUser: TLoggedInUser
-)=>{
+  loggedInUser: TLoggedInUser,
+) => {
   // 1. Destructure payload
-  const {academic_result_id, field, value} = payload
+  const { academic_result_id, field, value } = payload;
 
   // 2. Check the existancce of the academic result id
   const existingAcademicResult = await prisma.academicResult.findUnique({
-    where: {id: academic_result_id}
+    where: { id: academic_result_id },
   });
-  if(!existingAcademicResult){
-    throw new AppError(``, StatusCodes.NOT_FOUND)
-  };
+  if (!existingAcademicResult) {
+    throw new AppError(``, StatusCodes.NOT_FOUND);
+  }
 
   // 3. update the field and create audit log with transaction
-  return await prisma.$transaction(async(tx)=>{
+  return await prisma.$transaction(async (tx) => {
     // update field with value
     const updated = await tx.academicResult.update({
-      where:{id: academic_result_id},
+      where: { id: academic_result_id },
       data: {
-        [field]: value
-      }
+        [field]: value,
+      },
     });
     // create audit log
     await tx.auditLog.create({
-      data:{
+      data: {
         entity_id: academic_result_id,
         entity_name: "AcademicResult",
         action: "UPDATE",
-        changed_by: {connect: {id: loggedInUser.user_id}},
-        old_value: {[field]: existingAcademicResult[field as keyof typeof existingAcademicResult]},
-        new_value: {[field]: updated[field as keyof typeof updated]}
-      }
-    })
-    return updated
+        changed_by: { connect: { id: loggedInUser.user_id } },
+        old_value: {
+          [field]:
+            existingAcademicResult[
+              field as keyof typeof existingAcademicResult
+            ],
+        },
+        new_value: { [field]: updated[field as keyof typeof updated] },
+      },
+    });
+    return updated;
   });
 };
 
 // ==========================================
 // GET ALL ACADEMIC RESULTS SERVICE LAYER
 // ==========================================
-const getAllAcademicResults=async()=>{
+const getAllAcademicResults = async () => {
   // 1. get all academic results with person's basic info.
   const academicResults = await prisma.academicResult.findMany({
     include: {
@@ -197,18 +210,18 @@ const getAllAcademicResults=async()=>{
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: {select: {role_name: true}},
-          current_position: {select: {position_name: true}}
-        }
+          current_role: { select: { role_name: true } },
+          current_position: { select: { position_name: true } },
+        },
       },
       academic_staff: {
         select: {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: {select: {role_name: true}},
-          current_position: {select: {position_name: true}}
-        }
+          current_role: { select: { role_name: true } },
+          current_position: { select: { position_name: true } },
+        },
       },
       governing_body: {
         select: {
@@ -216,40 +229,40 @@ const getAllAcademicResults=async()=>{
           mobile_number: true,
           email: true,
           user_primary_data: {
-          select: {current_role: true, current_position: true}
-          }
-        }
-      }
-    }
+            select: { current_role: true, current_position: true },
+          },
+        },
+      },
+    },
   });
   return academicResults;
-}
+};
 
 // ================================================
 // GET SINGLE ACADEMIC RESULT BY ID SERVICE LAYER
 // ================================================
-const getSingleAcademicResult=(async (academic_result_id:string) => {
+const getSingleAcademicResult = async (academic_result_id: string) => {
   // 1. get the single academic result
   const singleAcademicResult = await prisma.academicResult.findUnique({
-    where: {id: academic_result_id},
+    where: { id: academic_result_id },
     include: {
       management_staff: {
         select: {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: {select: {role_name: true}},
-          current_position: {select: {position_name: true}}
-        }
+          current_role: { select: { role_name: true } },
+          current_position: { select: { position_name: true } },
+        },
       },
       academic_staff: {
         select: {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: {select: {role_name: true}},
-          current_position: {select: {position_name: true}}
-        }
+          current_role: { select: { role_name: true } },
+          current_position: { select: { position_name: true } },
+        },
       },
       governing_body: {
         select: {
@@ -257,23 +270,51 @@ const getSingleAcademicResult=(async (academic_result_id:string) => {
           mobile_number: true,
           email: true,
           user_primary_data: {
-          select: {current_role: true, current_position: true}
-          }
-        }
-      }
-    }
+            select: { current_role: true, current_position: true },
+          },
+        },
+      },
+    },
   });
 
   // 2. Throw a strict 404 error if the record is missing
   if (!singleAcademicResult) {
-    throw new AppError("Academic result record not found.", StatusCodes.NOT_FOUND);
+    throw new AppError(
+      "Academic result record not found.",
+      StatusCodes.NOT_FOUND,
+    );
   }
-  return singleAcademicResult
-})
+  return singleAcademicResult;
+};
+
+// ==================================================
+// GET ACADEMIC RESULT BY STAFF ID SERVICE LAYER
+// ==================================================
+const getAcademicResultByStaffId = async (
+  staff_id: string,
+  staff_role_name: string,
+) => {
+  const prismaTableName = academicResultHelper.findStaffTable(staff_role_name);
+  const staffModel = (prisma as any)[prismaTableName];
+  const staffData = await staffModel.findUnique({
+    where: { id: staff_id },
+    include: {
+      academic_result: true,
+    },
+  });
+  if (!staffData) {
+    throw new AppError(
+      `Staff or Governing Body data not found`,
+      StatusCodes.NOT_FOUND,
+    );
+  };
+  return staffData
+};
 export const academicResultServices = {
   createAcademicResult,
   deleteAcademicResult,
   updateAcademicResultField,
   getAllAcademicResults,
-  getSingleAcademicResult
+  getSingleAcademicResult,
+  getAcademicResultByStaffId,
 };

@@ -52,6 +52,16 @@ router.get(
     "/:academic_result_id",
     userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
     validateZodSchema(academicResultZodSchema.getSingleAcademicResultZodSchema),
-    academicResultController.getSingleAcademicResult
+    academicResultController.getSingleAcademicResult,
+);
+
+// ===============================================
+// GET ACADEMIC RESULT BY STAFF ID ROUTE
+// ===============================================
+router.get(
+    "/:staff_id",
+    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+    validateZodSchema(academicResultZodSchema.getAcademicResultByStaffIdZodSchema),
+    academicResultController.getAcademicResultByStaffId,
 )
 export const academicResultRouter: Router = router;

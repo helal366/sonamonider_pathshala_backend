@@ -4,7 +4,7 @@ model AcademicStaff{
   mobile_number String
   email         String @unique
 
-  academic_results         AcademicResult? @relation(name: "academic_staff_academic_result")
+  academic_result         AcademicResult? @relation(name: "academic_staff_academic_result")
 
   current_position_id String?
   current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

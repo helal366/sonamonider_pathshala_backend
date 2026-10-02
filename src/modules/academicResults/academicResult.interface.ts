@@ -8,3 +8,12 @@ export const AcademicResult_Update_Fields = [
   "masters_result", 
   "kamil",          
 ]  as const
+
+export const Staff_Role_Name = [
+  "SUPER_ADMIN",
+  "TEACHER_ADMIN",
+  "ADMIN",
+  "MANAGEMENT",
+  "ACADEMIC", 
+  "GOVERNING_BODY",
+] as const

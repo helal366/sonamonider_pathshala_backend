@@ -26,7 +26,7 @@ CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', 'MSC', 'M_COM', 'M_ARTS', 'PHD', 'ALIM', 'DAKHIL', 'KAMIL', 'FAZIL', 'OTHERS');
 
 -- CreateTable
-CREATE TABLE "academic_results" (
+CREATE TABLE "academic_result" (
     "id" TEXT NOT NULL,
     "ssc_result" TEXT,
     "dakhil_result" TEXT,
@@ -44,7 +44,7 @@ CREATE TABLE "academic_results" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
-    CONSTRAINT "academic_results_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "academic_result_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -332,13 +332,13 @@ CREATE TABLE "user_roles" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "academic_results_management_staff_id_key" ON "academic_results"("management_staff_id");
+CREATE UNIQUE INDEX "academic_result_management_staff_id_key" ON "academic_result"("management_staff_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "academic_results_academic_staff_id_key" ON "academic_results"("academic_staff_id");
+CREATE UNIQUE INDEX "academic_result_academic_staff_id_key" ON "academic_result"("academic_staff_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "academic_results_governing_body_id_key" ON "academic_results"("governing_body_id");
+CREATE UNIQUE INDEX "academic_result_governing_body_id_key" ON "academic_result"("governing_body_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "academic_staffs_email_key" ON "academic_staffs"("email");
@@ -440,19 +440,19 @@ CREATE UNIQUE INDEX "user_positions_position_name_key" ON "user_positions"("posi
 CREATE UNIQUE INDEX "user_roles_role_name_key" ON "user_roles"("role_name");
 
 -- AddForeignKey
-ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_management_staff_id_fkey" FOREIGN KEY ("management_staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_management_staff_id_fkey" FOREIGN KEY ("management_staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_academic_staff_id_fkey" FOREIGN KEY ("academic_staff_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_academic_staff_id_fkey" FOREIGN KEY ("academic_staff_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_governing_body_id_fkey" FOREIGN KEY ("governing_body_id") REFERENCES "governing_bodies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_governing_body_id_fkey" FOREIGN KEY ("governing_body_id") REFERENCES "governing_bodies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

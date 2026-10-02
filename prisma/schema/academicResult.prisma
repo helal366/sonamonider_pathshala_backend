@@ -28,5 +28,5 @@ model AcademicResult {
   updated_at DateTime? @updatedAt
 
   
-  @@map("academic_results")
+  @@map("academic_result")
 }
