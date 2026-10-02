@@ -3,11 +3,14 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions";
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { TCreateAcademicResultZodSchema } from "./academicResult.zod.validation";
+import { TCreateAcademicResultZodSchema, TDeleteAcademicResultZodSchema, TGetSingleAcademicResultZodSchema, TUpdateAcademicResultField } from "./academicResult.zod.validation";
 import { prisma } from "../../lib/prisma";
 import { academicResultHelper } from "./academicResult.helperFunction";
 import { Prisma } from "#db-client";
 
+// =============================================
+// CREATE ACADEMIC RESULT SERVICE LAYER
+// =============================================
 const createAcademicResult = async (
   payload: TCreateAcademicResultZodSchema,
   loggedInUser: TLoggedInUser,
@@ -107,6 +110,170 @@ const createAcademicResult = async (
  })
 };
 
+// =============================================
+// DELETE ACADEMIC RESULT SERVICE LAYER
+// =============================================
+const deleteAcademicResult = async(
+  payload:TDeleteAcademicResultZodSchema,
+  loggedInUser:TLoggedInUser
+)=>{
+  const {academic_result_id} = payload;
+
+  const academicResult = await prisma.academicResult.findUnique({
+    where: {id: academic_result_id}
+  });
+  if(!academicResult){
+    throw new AppError(`Academic result record not found.`, StatusCodes.NOT_FOUND)
+  };
+  return await prisma.$transaction(async(tx)=>{
+    const deleteAcademicResult = await tx.academicResult.delete({
+      where: {id: academic_result_id}
+    });
+    await tx.auditLog.create({
+      data: {
+        entity_id: academic_result_id,
+        entity_name: "AcademicResult",
+        action: "DELETE",
+        changed_by: {connect: {id: loggedInUser.user_id}},
+        old_value: academicResult as unknown as Prisma.InputJsonValue,
+        new_value: Prisma.JsonNull
+      }
+    })
+    return deleteAcademicResult
+  });
+};
+
+// =============================================
+// UPDATE ACADEMIC RESULT FIELD SERVICE LAYER
+// =============================================
+const updateAcademicResultField = async(
+  payload: TUpdateAcademicResultField,
+  loggedInUser: TLoggedInUser
+)=>{
+  // 1. Destructure payload
+  const {academic_result_id, field, value} = payload
+
+  // 2. Check the existancce of the academic result id
+  const existingAcademicResult = await prisma.academicResult.findUnique({
+    where: {id: academic_result_id}
+  });
+  if(!existingAcademicResult){
+    throw new AppError(``, StatusCodes.NOT_FOUND)
+  };
+
+  // 3. update the field and create audit log with transaction
+  return await prisma.$transaction(async(tx)=>{
+    // update field with value
+    const updated = await tx.academicResult.update({
+      where:{id: academic_result_id},
+      data: {
+        [field]: value
+      }
+    });
+    // create audit log
+    await tx.auditLog.create({
+      data:{
+        entity_id: academic_result_id,
+        entity_name: "AcademicResult",
+        action: "UPDATE",
+        changed_by: {connect: {id: loggedInUser.user_id}},
+        old_value: {[field]: existingAcademicResult[field as keyof typeof existingAcademicResult]},
+        new_value: {[field]: updated[field as keyof typeof updated]}
+      }
+    })
+    return updated
+  });
+};
+
+// ==========================================
+// GET ALL ACADEMIC RESULTS SERVICE LAYER
+// ==========================================
+const getAllAcademicResults=async()=>{
+  // 1. get all academic results with person's basic info.
+  const academicResults = await prisma.academicResult.findMany({
+    include: {
+      management_staff: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          current_role: {select: {role_name: true}},
+          current_position: {select: {position_name: true}}
+        }
+      },
+      academic_staff: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          current_role: {select: {role_name: true}},
+          current_position: {select: {position_name: true}}
+        }
+      },
+      governing_body: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          user_primary_data: {
+          select: {current_role: true, current_position: true}
+          }
+        }
+      }
+    }
+  });
+  return academicResults;
+}
+
+// ================================================
+// GET SINGLE ACADEMIC RESULT BY ID SERVICE LAYER
+// ================================================
+const getSingleAcademicResult=(async (academic_result_id:string) => {
+  // 1. get the single academic result
+  const singleAcademicResult = await prisma.academicResult.findUnique({
+    where: {id: academic_result_id},
+    include: {
+      management_staff: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          current_role: {select: {role_name: true}},
+          current_position: {select: {position_name: true}}
+        }
+      },
+      academic_staff: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          current_role: {select: {role_name: true}},
+          current_position: {select: {position_name: true}}
+        }
+      },
+      governing_body: {
+        select: {
+          full_name: true,
+          mobile_number: true,
+          email: true,
+          user_primary_data: {
+          select: {current_role: true, current_position: true}
+          }
+        }
+      }
+    }
+  });
+
+  // 2. Throw a strict 404 error if the record is missing
+  if (!singleAcademicResult) {
+    throw new AppError("Academic result record not found.", StatusCodes.NOT_FOUND);
+  }
+  return singleAcademicResult
+})
 export const academicResultServices = {
   createAcademicResult,
+  deleteAcademicResult,
+  updateAcademicResultField,
+  getAllAcademicResults,
+  getSingleAcademicResult
 };

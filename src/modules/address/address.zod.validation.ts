@@ -8,7 +8,6 @@ import {
 // ============================================================
 // CREATE ADDRESS ZOD SCHEMA
 // ============================================================
-
 export const createAddressZodSchema = z4.object({
   required_id: z4
     .string({
@@ -60,7 +59,6 @@ export type TCreateAddressZodSchema = z4.infer<typeof createAddressZodSchema>;
 // ============================================================
 // DELETE COMPLETE ADDRESS ZOD SCHEMA
 // ============================================================
-
 export const deleteAddressZodSchema = z4.object({
   required_id: z4
     .string({
