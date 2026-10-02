@@ -8,6 +8,7 @@ import {
   GENDER_ENUM,
   RELIGION_ENUM,
   STRING_FIELDS,
+  VALID_USER_ROLES,
 } from "./user.interface.js";
 
 // CREATE USER ZOD SCHEMA
@@ -64,7 +65,7 @@ const userCreateZodSchema = z4.object({
         ? "User position is required."
         : "Invalid user position format",
   }),
-  role_name: z4.string({
+  role_name: z4.enum(VALID_USER_ROLES, {
     error: (issue) =>
       issue.input === undefined
         ? "User role is required."

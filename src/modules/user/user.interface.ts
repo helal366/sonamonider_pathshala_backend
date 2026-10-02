@@ -1,5 +1,9 @@
 import { ActiveStatus, BloodGroup, Gender, Religion } from "#db-client";
+import { prisma } from "../../lib/prisma";
 
+// ==========================================
+// CREATE USER
+// ==========================================
 export interface IExistencePayload {
   role_name: string;
   full_name: string;
@@ -21,6 +25,41 @@ export interface IDynamicProfilePayload {
   active_class_id?: string;
 }
 
+export const VALID_USER_ROLES = [
+  "MANAGEMENT",
+  "ACADEMIC",
+  "STUDENT",
+  "GOVERNING_BODY"
+] as const;
+
+export type TCleanRole = typeof VALID_USER_ROLES[number];
+
+export interface ICreatedUserWithProfiles{
+  management_staff_profile?: {id:string} | null;
+  academic_staff_profile?: {id:string} | null;
+  student_profile?: {id:string} | null;
+  governing_body_profile: {id:string} | null;
+}
+
+export interface IFindSubProfilePayload{
+  cleanRole: TCleanRole,
+  createdUser: ICreatedUserWithProfiles,
+  targetEntityName: string
+}
+
+export interface IBuildInitialAuditRecordsPayload {
+  userId: string;
+  subProfileId: string;
+  targetEntityName: string;
+  full_name: string;
+  mobile_number: string;
+  email: string | null; // Allow null if optional in your system
+  cleanRole: string;
+  cleanPosition: string;
+  roleId: string;
+  positionId: string;
+  loggedInUserId: string;
+}
 // ==========================================
 // UPDATE SINGLE USER FIELD ADMIN 
 // ==========================================

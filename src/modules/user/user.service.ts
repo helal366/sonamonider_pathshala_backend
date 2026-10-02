@@ -33,6 +33,8 @@ import {
   issueOtpAndSendEmail,
   sendVerificationResultEmail,
 } from "../email/email.helper.function.js";
+import { TCleanRole } from "./user.interface.js";
+import { connect } from "http2";
 
 // CREATE USER SERVICE LAYER
 const createUser = async (
@@ -50,7 +52,7 @@ const createUser = async (
     ...rest
   } = payload;
 
-  const cleanRole = role_name.trim().toUpperCase();
+  const cleanRole = role_name.trim().toUpperCase() as TCleanRole;
   const cleanPosition = position_name.trim().toUpperCase();
   const effectiveJoiningDate = new Date(joining_date);
 
@@ -141,54 +143,28 @@ const createUser = async (
         });
 
         // Extract specific entity profile ID for audit log linking rules
-        let subProfileId = "";
-        if (cleanRole === "MANAGEMENT")
-          subProfileId = createdUser.management_staff_profile?.id || "";
-        if (cleanRole === "ACADEMIC")
-          subProfileId = createdUser.academic_staff_profile?.id || "";
-        if (cleanRole === "STUDENT")
-          subProfileId = createdUser.student_profile?.id || "";
-        if (cleanRole === "GOVERNING_BODY")
-          subProfileId = createdUser.governing_body_profile?.id || "";
+        const subProfileId = userHelperFunction.findSubProfileId({
+          cleanRole,
+          createdUser,
+          targetEntityName,
+        });
 
-        if (!subProfileId) {
-          throw new AppError(
-            `Failed to initialize associated ${targetEntityName} profile record during onboarding.`,
-            StatusCodes.INTERNAL_SERVER_ERROR,
-          );
-        }
-
+        const buildAuditRecordsPayload = {
+          userId: createdUser.id,
+          subProfileId,
+          targetEntityName,
+          full_name,
+          mobile_number,
+          email,
+          cleanRole,
+          cleanPosition,
+          roleId: roleExists.id,
+          positionId: positionExists.id,
+          loggedInUserId: loggedInUser.user_id,
+        };
         // Initialized array sets for scalable audit insertions
-        const auditRecords: Prisma.AuditLogCreateManyInput[] = [
-          {
-            entity_id: createdUser.id,
-            entity_name: "User",
-            old_value: Prisma.JsonNull,
-            new_value: {
-              full_name,
-              mobile_number,
-              email,
-              role_name: cleanRole,
-              position_name: cleanPosition,
-            },
-            action: "CREATE",
-            changed_by_id: loggedInUser.user_id,
-          },
-          {
-            entity_id: subProfileId,
-            entity_name: targetEntityName,
-            old_value: Prisma.JsonNull,
-            new_value: {
-              full_name,
-              mobile_number,
-              email,
-              role_id: roleExists.id,
-              position_id: positionExists.id,
-            },
-            action: "CREATE",
-            changed_by_id: loggedInUser.user_id,
-          },
-        ];
+        const auditRecords: Prisma.AuditLogCreateManyInput[] =
+          userHelperFunction.buildInitialAuditRecords(buildAuditRecordsPayload);
 
         // Seed Promotion History blocks (Only valid for Staff profiles)
         if (cleanRole === "MANAGEMENT" || cleanRole === "ACADEMIC") {
@@ -205,6 +181,29 @@ const createUser = async (
           });
         }
 
+        // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
+        if (cleanRole === "STUDENT" && subProfileId) {
+          const classHistory = await transaction.classHistory.create({
+            data: {
+              student: { connect: { id: subProfileId } },
+              class: { connect: { id: payload.active_class_id! } },
+              start_date: new Date(),
+              created_by: { connect: { id: loggedInUser.user_id } },
+            },
+          });
+          auditRecords.push({
+            entity_id: classHistory.id,
+            entity_name: "ClassHistory",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              class_id: payload.active_class_id,
+              start_date: new Date().toISOString(),
+              action: "INITIAL_ENROLLMENT",
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
         // Add additional tracking metadata audit line item
         auditRecords.push({
           entity_id: subProfileId,
@@ -375,12 +374,20 @@ const promoteUserRolePosition = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
   const effectivePromotedDate = new Date(promoted_date);
-  if(cleanRole === "SUPER_ADMIN"){
-    throw new AppError(`Super Admin is not promotable.`, StatusCodes.BAD_REQUEST)
+  if (cleanRole === "SUPER_ADMIN") {
+    throw new AppError(
+      `Super Admin is not promotable.`,
+      StatusCodes.BAD_REQUEST,
+    );
   }
 
   // 1a. Enforce business rule: Only administrative and academic staff participate in promotions
-  if (cleanRole !== "ADMIN" && cleanRole !== "TEACHER_ADMIN" && cleanRole !== "MANAGEMENT" && cleanRole !== "ACADEMIC") {
+  if (
+    cleanRole !== "ADMIN" &&
+    cleanRole !== "TEACHER_ADMIN" &&
+    cleanRole !== "MANAGEMENT" &&
+    cleanRole !== "ACADEMIC"
+  ) {
     throw new AppError(
       `Users targeting the role ${cleanRole} cannot be processed via the promotion pipeline.`,
       StatusCodes.BAD_REQUEST,
@@ -504,33 +511,42 @@ const promoteUserRolePosition = async (
         },
       ];
 
-     // Handle Promotion Mapping Target: MANAGEMENT / ADMIN / TEACHER_ADMIN
-      const isManagementTrack = cleanRole === "MANAGEMENT" || cleanRole === "ADMIN" || cleanRole === "TEACHER_ADMIN";
-      
+      // Handle Promotion Mapping Target: MANAGEMENT / ADMIN / TEACHER_ADMIN
+      const isManagementTrack =
+        cleanRole === "MANAGEMENT" ||
+        cleanRole === "ADMIN" ||
+        cleanRole === "TEACHER_ADMIN";
+
       if (isManagementTrack) {
         if (!targetStaff.management_staff_profile) {
-          throw new AppError("Management staff profile not found.", StatusCodes.NOT_FOUND);
+          throw new AppError(
+            "Management staff profile not found.",
+            StatusCodes.NOT_FOUND,
+          );
         }
         userUpdateData.management_staff_profile = {
           update: {
             current_role: { connect: { id: existingRole.id } },
             current_position: { connect: { id: positionExists.id } },
             updated_by: { connect: { id: loggedInUser.user_id } },
-          }
+          },
         };
       }
 
       // Handle Promotion Mapping Target: ACADEMIC
       else if (cleanRole === "ACADEMIC") {
         if (!targetStaff.academic_staff_profile) {
-          throw new AppError("Academic staff profile not found.", StatusCodes.NOT_FOUND);
+          throw new AppError(
+            "Academic staff profile not found.",
+            StatusCodes.NOT_FOUND,
+          );
         }
         userUpdateData.academic_staff_profile = {
           update: {
             current_role: { connect: { id: existingRole.id } },
             current_position: { connect: { id: positionExists.id } },
             updated_by: { connect: { id: loggedInUser.user_id } },
-          }
+          },
         };
       }
 
@@ -555,8 +571,7 @@ const promoteUserRolePosition = async (
       // C) Create the fresh new Promotion History tracking line item with the new joining date
       await transaction.promotionHistory.create({
         data: {
-          management_staff_id:
-            isManagementTrack ? targetProfileId : undefined,
+          management_staff_id: isManagementTrack ? targetProfileId : undefined,
           academic_staff_id:
             cleanRole === "ACADEMIC" ? targetProfileId : undefined,
           position_id: positionExists.id,
@@ -581,8 +596,7 @@ const promoteUserRolePosition = async (
 
       auditRecords.push({
         entity_id: targetProfileId,
-        entity_name:
-          isManagementTrack ? "ManagementStaff" : "AcademicStaff",
+        entity_name: isManagementTrack ? "ManagementStaff" : "AcademicStaff",
         old_value: currentProfileId
           ? { role: currentRoleName }
           : Prisma.JsonNull,

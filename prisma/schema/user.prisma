@@ -32,10 +32,9 @@ model User {
   current_position UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_profile ManagementStaff? @relation("management_staff_profile")
-  academic_staff_profile AcademicStaff? @relation("academic_staff_profile")
-  student_profile Student? @relation("student_profile")
-  governing_body_profile GoverningBody? @relation("governing_body_profile")
-
+  academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")
+  student_profile          Student?         @relation("student_profile")
+  governing_body_profile   GoverningBody?   @relation("governing_body_profile")
 
   created_management_staffs ManagementStaff[] @relation("management_staff_created_by")
   updated_management_staffs ManagementStaff[] @relation("management_staff_updated_by")
@@ -51,6 +50,9 @@ model User {
 
   created_classes Class[] @relation("class_created_by")
   updated_classes Class[] @relation("class_updated_by")
+
+  created_class_history ClassHistory[] @relation("class_history_created_by")
+  updated_class_history ClassHistory[] @relation("class_history_updated_by")
 
   audit_logs AuditLog[] @relation("audit_log_changed_by")
 

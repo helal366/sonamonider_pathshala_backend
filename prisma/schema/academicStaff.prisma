@@ -1,10 +1,10 @@
-model AcademicStaff{
-  id String @id @default(uuid())
+model AcademicStaff {
+  id            String @id @default(uuid())
   full_name     String
   mobile_number String
   email         String @unique
 
-  academic_result         AcademicResult? @relation(name: "academic_staff_academic_result")
+  academic_result AcademicResult? @relation(name: "academic_staff_academic_result")
 
   current_position_id String?
   current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -20,7 +20,7 @@ model AcademicStaff{
   extra_curricular_activities String[]
 
   user_id           String @unique
-  user_primary_data User   @relation("academic_staff_profile",fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_primary_data User   @relation("academic_staff_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
   created_by    User?   @relation("academic_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

@@ -3,7 +3,7 @@ model UserRole {
   role_name String @unique
 
   current_management_staffs ManagementStaff[] @relation("management_current_role")
-  current_academic_staffs AcademicStaff[] @relation("academic_current_role")
+  current_academic_staffs   AcademicStaff[]   @relation("academic_current_role")
   positions                 UserPosition[]    @relation("role_position_relation")
   user                      User[]            @relation("user_role_relation")
 

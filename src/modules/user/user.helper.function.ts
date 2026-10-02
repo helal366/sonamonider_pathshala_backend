@@ -1,15 +1,17 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import { IDynamicProfilePayload, IExistencePayload, IUserCount } from "./user.interface.js";
+import { IBuildInitialAuditRecordsPayload, IDynamicProfilePayload, IExistencePayload, IFindSubProfilePayload, IUserCount } from "./user.interface.js";
+import { Prisma } from "#db-client";
+
+const isManagement = ["MANAGEMENT"]
 
 const userExistence = async ({
   role_name: role,
   full_name,
   mobile_number,
 }: IExistencePayload) => {
-  let user = null;
-  if (role === "MANAGEMENT") {
+  if (isManagement.includes(role)) {
     return await prisma.managementStaff.findUnique({
       where: {
         management_full_name_mobile_unique: {
@@ -50,14 +52,14 @@ const userExistence = async ({
 };
 
 const userCount = async ({ role_name: role, mobile_number }: IUserCount) => {
-  if (role === "MANAGEMENT") {
+  if (isManagement.includes(role)) {
     return await prisma.managementStaff.count({ where: { mobile_number } });
   } else if (role === "STUDENT") {
     return await prisma.student.count({ where: { mobile_number } });
   } else if (role === "GOVERNING_BODY") {
     return await prisma.governingBody.count({ where: { mobile_number } });
   } else if (role === "ACADEMIC") {
-    return await prisma.governingBody.count({ where: { mobile_number } });
+    return await prisma.academicStaff.count({ where: { mobile_number } });
   }
   return 0;
 };
@@ -109,9 +111,9 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
   let targetEntityName = "";
   const profileData: Record<string, any> = {};
 
-  if(cleanRole === "MANAGEMENT"){
+  if(isManagement.includes(cleanRole)){
     targetEntityName = "ManagementStaff";
-    profileData.manegement_staff_profile = {
+    profileData.management_staff_profile = {
       create: {
         full_name,
         mobile_number,
@@ -159,10 +161,81 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
     };
   }
   return { profileData, targetEntityName };
+};
+
+const findSubProfileId = (payload: IFindSubProfilePayload) =>{
+  const {cleanRole, createdUser, targetEntityName} = payload
+  let subProfileId = "";
+        if (isManagement.includes(cleanRole))
+          subProfileId = createdUser.management_staff_profile?.id || "";
+        if (cleanRole === "ACADEMIC")
+          subProfileId = createdUser.academic_staff_profile?.id || "";
+        if (cleanRole === "STUDENT")
+          subProfileId = createdUser.student_profile?.id || "";
+        if (cleanRole === "GOVERNING_BODY")
+          subProfileId = createdUser.governing_body_profile?.id || "";
+
+        if (!subProfileId) {
+          throw new AppError(
+            `Failed to initialize associated ${targetEntityName} profile record during onboarding.`,
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        }
+        return subProfileId
+};
+
+const buildInitialAuditRecords = (
+  payload: IBuildInitialAuditRecordsPayload
+): Prisma.AuditLogCreateManyInput[] => {
+  const {
+    userId,
+    subProfileId,
+    targetEntityName,
+    full_name,
+    mobile_number,
+    email,
+    cleanRole,
+    cleanPosition,
+    roleId,
+    positionId,
+    loggedInUserId,
+  } = payload;
+  return [
+    {
+      entity_id: userId,
+      entity_name: "User",
+      old_value: Prisma.JsonNull,
+      new_value: {
+        full_name,
+        mobile_number,
+        email,
+        role_name: cleanRole,
+        position_name: cleanPosition,
+      } as Prisma.InputJsonValue,
+      action: "CREATE",
+      changed_by_id: loggedInUserId,
+    },
+    {
+      entity_id: subProfileId,
+      entity_name: targetEntityName,
+      old_value: Prisma.JsonNull,
+      new_value: {
+        full_name,
+        mobile_number,
+        email,
+        role_id: roleId,
+        position_id: positionId,
+      } as Prisma.InputJsonValue,
+      action: "CREATE",
+      changed_by_id: loggedInUserId,
+    },
+  ];
 }
 export const userHelperFunction = {
   userExistence,
   userCount,
   userCreationRolePostionCheck,
-  buildDynamicProfileData
+  buildDynamicProfileData,
+  findSubProfileId,
+  buildInitialAuditRecords
 };

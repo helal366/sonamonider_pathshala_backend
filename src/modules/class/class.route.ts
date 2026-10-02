@@ -18,7 +18,7 @@ router.post(
 
 
 // =============================================
-// DELETE CLASS NAME ZOD SCHEMA
+// DELETE CLASS NAME ROUTE
 // =============================================
 router.delete(
     "/delete/:class_id",
@@ -28,11 +28,21 @@ router.delete(
 );
 
 // =============================================
-// UPDATE CLASS FIELD ZOD SCHEMA
+// UPDATE CLASS FIELD ROUTE
 // =============================================
 router.patch(
     "/update/:class_id",
     userAuth("SUPER_ADMIN"),
     validateZodSchema(classZodSchema.updateClassFieldZodSchema),
+    classController.updateClassField
+)
+
+// =============================================
+// GET ALL CLASS NAME ROUTE
+// =============================================
+router.get(
+    "/",
+    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+    classController.getAllClassNames
 )
 export const classRouter:Router = router;

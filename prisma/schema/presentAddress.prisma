@@ -1,6 +1,6 @@
 model PresentAddress {
   id            String  @id @default(uuid())
-  flat_no String?
+  flat_no       String?
   house_no      String?
   house_name    String?
   plot_no       String?

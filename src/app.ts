@@ -16,6 +16,7 @@ import { spouseInformationRouter } from "./modules/spouseInformation/spouseInfor
 import { userAddressRouter } from "./modules/address/address.route.js";
 import { academicResultRouter } from "./modules/academicResults/academicResult.route.js";
 import { classRouter } from "./modules/class/class.route.js";
+import { studentRouter } from "./modules/student/student.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -35,6 +36,7 @@ app.use("/api/v1/smps/mother_details", motherDetailsRouter);
 app.use("/api/v1/smps/spouse_information", spouseInformationRouter);
 app.use("/api/v1/smps/academic_result", academicResultRouter);
 app.use("/api/v1/smps/class", classRouter);
+app.use("/api/v1/smps/student", studentRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

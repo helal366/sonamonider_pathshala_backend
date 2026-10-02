@@ -1,22 +1,22 @@
-model GoverningBody{
-    id String @id @default(uuid())
-    full_name     String
-    mobile_number String
-    email         String @unique
-    academic_result         AcademicResult? @relation(name:"governing_body_academic_result")
+model GoverningBody {
+  id              String          @id @default(uuid())
+  full_name       String
+  mobile_number   String
+  email           String          @unique
+  academic_result AcademicResult? @relation(name: "governing_body_academic_result")
 
-    user_id           String @unique
-    user_primary_data User   @relation("governing_body_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_id           String @unique
+  user_primary_data User   @relation("governing_body_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    created_by_id String?
-    created_by    User?   @relation("governing_bodies_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by_id String?
+  created_by    User?   @relation("governing_bodies_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-    updated_by_id String?
-    updated_by    User?   @relation("governing_bodies_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by_id String?
+  updated_by    User?   @relation("governing_bodies_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-    created_at    DateTime  @default(now())
-    updated_at    DateTime? @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
-    @@unique([full_name, mobile_number], name: "governing_body_full_name_mobile_unique")
-    @@map("governing_bodies")
+  @@unique([full_name, mobile_number], name: "governing_body_full_name_mobile_unique")
+  @@map("governing_bodies")
 }

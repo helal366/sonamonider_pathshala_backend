@@ -4,6 +4,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 import { TCreateClassZodSchema } from "./class.zod.validation";
+import { IUpdateClassField } from "./class.interface";
 
 // =============================================
 // CREATE CLASS NAME SERVICE LAYER
@@ -67,13 +68,10 @@ const deleteClassName = async (
 };
 
 // =============================================
-// UPDATE CLASS FIELD ZOD SCHEMA
+// UPDATE CLASS FIELD SERVICE LAYER
 // =============================================
 const updateClassField = async (
-    updatePayload:
-  {class_id: string,
-  field: string,
-  value: string | boolean,},
+    updatePayload:IUpdateClassField,
   loggedInUser:TLoggedInUser
 ) => {
     const {class_id, field, value} = updatePayload
@@ -108,8 +106,20 @@ const updateClassField = async (
         return updated;
     })
 };
+
+// =============================================
+// GET ALL CLASS NAME SERVICE LAYER
+// =============================================
+const getAllClassNames=async()=>{
+  return await prisma.class.findMany({
+    include: {
+      active_students: true
+    }
+  })
+}
 export const classServices = {
   createClassName,
   deleteClassName,
   updateClassField,
+  getAllClassNames,
 };

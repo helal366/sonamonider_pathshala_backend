@@ -7,7 +7,7 @@ model UserPosition {
 
   user                      User[]            @relation("user_position_relation")
   current_management_staffs ManagementStaff[] @relation("management_current_position")
-  current_academic_staffs AcademicStaff[] @relation("academic_current_position")
+  current_academic_staffs   AcademicStaff[]   @relation("academic_current_position")
 
   promotion_history PromotionHistory[]
 

@@ -10,13 +10,13 @@ model AcademicResult {
   kamil          String?
 
   management_staff_id String?          @unique
-  management_staff    ManagementStaff? @relation(name: "management_staff_academic_result",fields: [management_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  management_staff    ManagementStaff? @relation(name: "management_staff_academic_result", fields: [management_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  academic_staff_id String? @unique
-  academic_staff AcademicStaff? @relation(name: "academic_staff_academic_result",fields: [academic_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  academic_staff_id String?        @unique
+  academic_staff    AcademicStaff? @relation(name: "academic_staff_academic_result", fields: [academic_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  governing_body_id String? @unique
-  governing_body GoverningBody? @relation(name: "governing_body_academic_result", fields: [governing_body_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  governing_body_id String?        @unique
+  governing_body    GoverningBody? @relation(name: "governing_body_academic_result", fields: [governing_body_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
   created_by    User?   @relation("academic_result_created_by", fields: [created_by_id], references: [id])
@@ -27,6 +27,5 @@ model AcademicResult {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  
   @@map("academic_result")
 }

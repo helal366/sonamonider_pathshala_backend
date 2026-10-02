@@ -44,7 +44,7 @@ const deleteClassName = catchAsync(async(req:Request, res:Response)=>{
 });
 
 // =============================================
-// UPDATE CLASS FIELD ZOD SCHEMA
+// UPDATE CLASS FIELD CONTROLLER
 // =============================================
 const updateClassField = catchAsync(async(req:Request, res: Response)=>{
     const loggedInUser = helperFunctions.requiredUser(req);
@@ -66,9 +66,24 @@ const updateClassField = catchAsync(async(req:Request, res: Response)=>{
         message: `Class field updated successfully.`,
         data: result
     })
+});
+
+// =============================================
+// GET ALL CLASS NAME CONTROLLER
+// =============================================
+const getAllClassNames = catchAsync(async(req:Request, res: Response)=>{
+    helperFunctions.requiredUser(req);
+    const result = await classServices.getAllClassNames();
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Class names retrieved successfully.`,
+        data: result
+    })
 })
 export const classController = {
     createClassName,
     deleteClassName,
-    updateClassField
+    updateClassField,
+    getAllClassNames
 }
