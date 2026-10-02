@@ -4,7 +4,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { classServices } from "./class.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TDeleteClassZodSchema } from "./class.zod.validation";
+import { TDeleteClassNameZodSchema } from "./class.zod.validation";
 
 
 // =============================================
@@ -28,8 +28,8 @@ const createClassName=catchAsync(async(req:Request, res:Response)=>{
 // =============================================
 const deleteClassName = catchAsync(async(req:Request, res:Response)=>{
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload:TDeleteClassZodSchema = {
-        params: req.params as TDeleteClassZodSchema["params"]
+    const payload:TDeleteClassNameZodSchema = {
+        params: req.params as TDeleteClassNameZodSchema["params"]
     };
     const {class_id} = payload.params;
 

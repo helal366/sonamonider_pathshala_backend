@@ -17,7 +17,7 @@ export type TCreateClassZodSchema = z4.infer<typeof createClassZodSchema>;
 // =============================================
 // DELETE CLASS NAME ZOD SCHEMA
 // =============================================
-const deleteClassZodSchema = z4.object({
+const deleteClassNameZodSchema = z4.object({
     params: z4.object({
         class_id: z4.uuid({
             error: (issue)=>{
@@ -28,8 +28,8 @@ const deleteClassZodSchema = z4.object({
         })
     })
 });
-export type TDeleteClassZodSchema =z4.infer<typeof deleteClassZodSchema>
+export type TDeleteClassNameZodSchema =z4.infer<typeof deleteClassNameZodSchema>
 export const classZodSchema = {
     createClassZodSchema,
-    deleteClassZodSchema
+    deleteClassNameZodSchema
 }

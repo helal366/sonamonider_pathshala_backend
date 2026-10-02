@@ -23,7 +23,7 @@ router.post(
 router.delete(
     "/delete/:class_id",
     userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-    validateZodSchema(classZodSchema.deleteClassZodSchema),
+    validateZodSchema(classZodSchema.deleteClassNameZodSchema),
     classController.deleteClassName
 )
 export const classRouter:Router = router;
