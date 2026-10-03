@@ -1,0 +1,38 @@
+import { Router } from "express";
+import { userAuth } from "../../middlewares/userAuth";
+import { validateZodSchema } from "../../middlewares/validate.zod.schema";
+import { academicYearZodSchema } from "./academicYear.zod.validation";
+import { academicYearController } from "./academicYear.controller";
+
+const router = Router();
+
+// ==========================================
+// CREATE ACADEMIC YEAR ROUTE
+// ==========================================
+router.post(
+    "/create",
+    userAuth("SUPER_ADMIN"),
+    validateZodSchema(academicYearZodSchema.createAcademicYearZodSchema),
+    academicYearController.createAcademicYear
+);
+
+// ==========================================
+// DELETE ACADEMIC YEAR ROUTE
+// ==========================================
+router.delete(
+    "/delete",
+    userAuth("SUPER_ADMIN"),
+    validateZodSchema(academicYearZodSchema.deleteAcademicYearZodSchema),
+    academicYearController.deleteAcademicYear
+);
+
+// ==========================================
+// UPDATE ACADEMIC YEAR FIELD ROUTE
+// ==========================================
+router.patch(
+    "/update_field",
+    userAuth("SUPER_ADMIN"),
+    validateZodSchema(academicYearZodSchema.updateAcademicYearFieldZodSchema),
+    academicYearController.updateAcademicYearField
+);
+export const academicYearRouter:Router = router;

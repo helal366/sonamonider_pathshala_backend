@@ -183,10 +183,18 @@ const createUser = async (
 
         // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
         if (cleanRole === "STUDENT" && subProfileId) {
+          const academicYearName = await transaction.academicYear.findUnique({
+            where: {academic_year_name: payload.year_name},
+            select: {id:true}
+          });if(!academicYearName){
+            throw new AppError(`Provided Academic Year ${payload.year_name} not found`, StatusCodes.NOT_FOUND)
+          }
+
           const classHistory = await transaction.classHistory.create({
             data: {
               student: { connect: { id: subProfileId } },
               class: { connect: { id: payload.active_class_id! } },
+              academic_year: {connect: {id: academicYearName.id}},
               start_date: new Date(),
               created_by: { connect: { id: loggedInUser.user_id } },
             },

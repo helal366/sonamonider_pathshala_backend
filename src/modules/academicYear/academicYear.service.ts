@@ -1,0 +1,116 @@
+import { Prisma } from "#db-client";
+import { StatusCodes } from "http-status-codes";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { prisma } from "../../lib/prisma";
+import { TCreateAcademicYearZodSchema, TdeleteAcademicYearZodSchema, TUpdateAcademicYearFieldZodSchema } from "./academicYear.zod.validation";
+
+// ==========================================
+// CREATE ACADEMIC YEAR SERVICE LAYER
+// ==========================================
+const createAcademicYear=async(
+    payload:TCreateAcademicYearZodSchema,
+    loggedInUser:TLoggedInUser
+)=>{
+    const {academic_year_name} = payload;
+    return await prisma.$transaction(async(tx)=>{
+        const academicYear = await tx.academicYear.create({
+            data: {
+                academic_year_name,
+                created_by: {connect: {id: loggedInUser.user_id}}
+            },
+            select: {id: true, academic_year_name: true}
+        });
+        await tx.auditLog.create({
+            data:{
+                entity_id: academicYear.id,
+                entity_name: "AcademicYear",
+                action: "CREATE",
+                changed_by: {connect: {id: loggedInUser.user_id}},
+                old_value: Prisma.JsonNull,
+                new_value: academicYear as unknown as Prisma.InputJsonValue
+            }
+        });
+        return academicYear;
+    })
+};
+
+
+// ==========================================
+// DELETE ACADEMIC YEAR SERVICE LAYER
+// ==========================================
+const deleteAcademicYear=async(
+    payload:TdeleteAcademicYearZodSchema,
+    loggedInUser:TLoggedInUser
+)=>{
+    const {academic_year_id} = payload;
+    return await prisma.$transaction(async(tx)=>{
+        const academicYearExistance = await tx.academicYear.findUnique({
+            where: {id: academic_year_id},
+            select: {id: true, name: true}
+        });
+        if(!academicYearExistance){
+            throw new AppError(`Academic year not found.`, StatusCodes.NOT_FOUND)
+        };
+
+        const deleted = await tx.academicYear.delete({where: {id:academic_year_id}});
+        await tx.auditLog.create({
+            data: {
+                entity_id: academic_year_id,
+                entity_name: "AcademicYear",
+                action: "DELETE",
+                changed_by: {connect: {id: loggedInUser.user_id}},
+                old_value: academicYearExistance as unknown as Prisma.InputJsonValue,
+                new_value: Prisma.JsonNull 
+            }
+        })
+        return deleted
+    })
+};
+
+// ==========================================
+// UPDATE ACADEMIC YEAR FIELD SERVICE LAYER
+// ==========================================
+const updateAcademicYearField=async(
+    payload:TUpdateAcademicYearFieldZodSchema,
+    loggedInUser:TLoggedInUser
+)=>{
+    const {academic_year_id, field, value} = payload;
+    return prisma.$transaction(async(tx)=>{
+        const academicYearExistance = await tx.academicYear.findUnique({
+            where: {id: academic_year_id},
+            select: {id: true, name: true}
+        });
+        if(!academicYearExistance){
+            throw new AppError(`Academic year not found.`, StatusCodes.NOT_FOUND)
+        };
+        
+        const updated = await tx.academicYear.update({
+            where: {id: academic_year_id},
+            data: {
+                [field]:value
+            }
+        });
+
+        await tx.auditLog.create({
+            data:{
+                entity_id: academic_year_id,
+                entity_name: "AcademicYear",
+                action: "UPDATE",
+                changed_by: {connect: {id: loggedInUser.user_id}},
+                old_value: {
+                    [field] : academicYearExistance[field as keyof typeof academicYearExistance],
+                },
+                new_value: value    
+            }
+        })
+
+        return updated
+    })
+};
+
+export const academicYearServices = {
+    createAcademicYear,
+    deleteAcademicYear,
+    updateAcademicYearField
+}

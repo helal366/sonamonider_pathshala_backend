@@ -80,7 +80,8 @@ const userCreateZodSchema = z4.object({
     })
     .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 
-    active_class_id: z4.string().trim().optional()
+    active_class_id: z4.string().trim().optional(),
+    year_name: z4.string().trim().optional(),
 });
 
 export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;

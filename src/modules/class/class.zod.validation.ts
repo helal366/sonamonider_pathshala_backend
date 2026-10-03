@@ -14,6 +14,7 @@ const createClassZodSchema = z4.object({
     })
     .trim()
     .min(1, "Class name is required."),
+
 });
 export type TCreateClassZodSchema = z4.infer<typeof createClassZodSchema>;
 
