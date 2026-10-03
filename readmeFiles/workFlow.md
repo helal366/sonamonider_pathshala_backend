@@ -17,3 +17,7 @@
 * An OTP with 5 minutes life time will send to user email. 
 * User will verify email with that OTP .
 * After successful email verification, a random password will create and update to database and send to user email.
+
+
+## STUDENT READMISSION (model Student and model ClassHistory)
+Suppose, A student is going for readmission. He will readmit at November'26 and now at Grade One. He will readmit for Grade Two. When his readmission will create, the Grade One admission will close with adding a end_date to ClassHistory and Grade Two ClassHistory will open. Grade One admission ClassHistory will receive an end_date at 31st December 2026. and Grade Two readmission will receive a start_date at 1st Jan'27. But the readmission entry date is suppose 3rd Nov'26. So after entry the active_class of Student model will not change. Rather it will change at 1st january 2027. 

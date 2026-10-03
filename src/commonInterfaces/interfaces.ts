@@ -11,6 +11,12 @@ export interface ICacheRole {
   role_name: string;
 }
 
+
+export interface ICacheRole {
+  id: string;
+  role_name: string;
+}
+
 export interface IRolePositionPairPayload {
   role_name: string;
   position_name: string;

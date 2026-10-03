@@ -2,7 +2,10 @@ model ClassHistory {
   id String @id @default(uuid())
 
   start_date DateTime
-  end_date DateTime?
+  end_date   DateTime?
+
+  academic_year_id String
+  academic_year AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -19,5 +22,11 @@ model ClassHistory {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
+  @@index([start_date])
+  @@index([end_date])
+  @@index([student_id, end_date])
   @@map("class_history")
 }
+
+// index: readmission time: (student_id and end_date = null) this will be the search input to get the admission data
+// index: start_date

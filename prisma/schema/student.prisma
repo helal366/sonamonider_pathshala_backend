@@ -1,9 +1,9 @@
 model Student {
-  id              String @id @default(uuid())
-  full_name       String
-  mobile_number   String
-  email           String @unique
-  
+  id            String @id @default(uuid())
+  full_name     String
+  mobile_number String
+  email         String @unique
+
   active_class_id String
   active_class    Class  @relation("student_active_classes", fields: [active_class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 

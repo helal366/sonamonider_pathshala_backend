@@ -1,5 +1,8 @@
 import z4 from "zod/v4";
 
+// ============================================================
+// STUDENT READMISSION ZOD SCHEMA
+// ============================================================
 const studentReadmissionZodSchema = z4.object({
   student_id: z4.uuid({
     error: (issue) => {
@@ -10,3 +13,8 @@ const studentReadmissionZodSchema = z4.object({
   }),
   
 });
+export type TStudentReadmissionZodSchema = z4.infer<typeof studentReadmissionZodSchema>;
+
+export const studentZodSchema = {
+  studentReadmissionZodSchema,
+}

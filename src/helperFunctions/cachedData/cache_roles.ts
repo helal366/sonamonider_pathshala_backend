@@ -1,11 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../globalError/globalErrorHelperFunction.js";
+import { ICacheRole } from "../../commonInterfaces/interfaces.js";
 
-export interface ICacheRole {
-  id: string;
-  role_name: string;
-}
 
 let cacheValidRoles: Promise<ICacheRole[]> | null = null;
 export const getValidRoles = async (): Promise<ICacheRole[]> => {
