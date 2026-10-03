@@ -114,8 +114,64 @@ const updateAcademicYearField=async(
     })
 };
 
+// ==========================================
+// GET ALL ACADEMIC YEAR SERVICE LAYER
+// ==========================================
+const getAllAcademicYearName=async()=>{
+    return await prisma.academicYear.findMany({
+        select: {id: true, academic_year_name: true},
+        orderBy: {academic_year_name: "desc"}
+    })
+};
+
+const getSingleAcademicYearWithHistory=async(academic_year_id:string)=>{
+    const academicYear = await prisma.academicYear.findUnique({
+        where: {id: academic_year_id},
+        select: {
+            id: true,
+            academic_year_name: true,
+            _count: {
+                select: {class_history: true}
+            }
+        }
+    });
+
+    if(!academicYear){
+        throw new AppError(`Academic year not found.`, StatusCodes.NOT_FOUND)
+    };
+
+    const activeClassesInYear = await prisma.classHistory.findMany({
+        where: { academic_year_id },
+        distinct: ['class_id'],
+        select: {
+            student: {
+                select: {
+                    id: true,
+                    full_name: true,
+                    email: true,
+                    mobile_number: true,
+                    // Includes their current structural active class context
+                    active_class: {
+                        select: {
+                            id: true,
+                            class_name: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return {
+        ...academicYear,
+        total_student_allocations: academicYear._count.class_history,
+        students: activeClassesInYear.map(item => item.student)
+    }
+}
 export const academicYearServices = {
     createAcademicYear,
     deleteAcademicYear,
-    updateAcademicYearField
+    updateAcademicYearField,
+    getAllAcademicYearName,
+    getSingleAcademicYearWithHistory
 }

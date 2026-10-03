@@ -4,6 +4,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { academicYearServices } from "./academicYear.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import { TGetSingleAcademicYearZodSchema } from "./academicYear.zod.validation";
 
 // ==========================================
 // CREATE ACADEMIC YEAR CONTROLLER
@@ -52,9 +53,40 @@ const updateAcademicYearField = catchAsync(async(req:Request, res:Response)=>{
         data: result
     })
 });
+
+// ==========================================
+// GET ALL ACADEMIC YEAR CONTROLLER
+// ==========================================
+const getAllAcademicYearName = catchAsync(async(req:Request, res:Response)=>{
+    helperFunctions.requiredUser(req);
+    const result = await academicYearServices.getAllAcademicYearName();
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Academic Years retrieved successfully.`,
+        data: result
+    })
+});
+
+const getSingleAcademicYearWithHistory= catchAsync(async(req:Request, res:Response)=>{
+    helperFunctions.requiredUser(req);
+    const payload:TGetSingleAcademicYearZodSchema = {
+        params: req.params as TGetSingleAcademicYearZodSchema["params"]
+    };
+    const academic_year_id = payload.params.academic_year_id
+    const result = await academicYearServices.getSingleAcademicYearWithHistory(academic_year_id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Academic Year retrieved successfully.`,
+        data: result
+    })
+});
 export const academicYearController = {
     createAcademicYear,
     deleteAcademicYear,
-    updateAcademicYearField
+    updateAcademicYearField,
+    getAllAcademicYearName,
+    getSingleAcademicYearWithHistory
 }
 

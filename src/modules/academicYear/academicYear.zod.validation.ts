@@ -54,8 +54,19 @@ export type TUpdateAcademicYearFieldZodSchema = z4.infer<
   typeof updateAcademicYearFieldZodSchema
 >;
 
+// ==========================================
+// GET SINGLE ACADEMIC YEAR ZOD SCHEMA
+// ==========================================
+const getSingleAcademicYearZodSchema = z4.object({
+  params: z4.object({
+    academic_year_id: z4.uuid("Invalid ID format.")
+  })
+});
+export type TGetSingleAcademicYearZodSchema = z4.infer<typeof getSingleAcademicYearZodSchema>;
+
 export const academicYearZodSchema = {
   createAcademicYearZodSchema,
   deleteAcademicYearZodSchema,
   updateAcademicYearFieldZodSchema,
+  getSingleAcademicYearZodSchema
 };

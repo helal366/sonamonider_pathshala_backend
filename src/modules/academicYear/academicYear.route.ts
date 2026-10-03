@@ -35,4 +35,22 @@ router.patch(
     validateZodSchema(academicYearZodSchema.updateAcademicYearFieldZodSchema),
     academicYearController.updateAcademicYearField
 );
+
+// ==========================================
+// GET ALL ACADEMIC YEAR ROUTE
+// ==========================================
+router.get(
+    "/",
+    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+    academicYearController.getAllAcademicYearName
+);
+
+// ==========================================
+// GET SINGLE ACADEMIC YEAR ROUTE
+// ==========================================
+router.get(
+    "/:id",
+    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+    academicYearController.getSingleAcademicYearWithHistory
+)
 export const academicYearRouter:Router = router;
