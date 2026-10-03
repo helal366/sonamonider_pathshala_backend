@@ -4,6 +4,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 import { TCreateAcademicYearZodSchema, TdeleteAcademicYearZodSchema, TUpdateAcademicYearFieldZodSchema } from "./academicYear.zod.validation";
+import { academicYearCache } from "../../helperFunctions/cachedData/cache_academic_year";
 
 // ==========================================
 // CREATE ACADEMIC YEAR SERVICE LAYER
@@ -13,6 +14,7 @@ const createAcademicYear=async(
     loggedInUser:TLoggedInUser
 )=>{
     const {academic_year_name} = payload;
+    await academicYearCache.checkAcademicYearAvailability(academic_year_name);
     return await prisma.$transaction(async(tx)=>{
         const academicYear = await tx.academicYear.create({
             data: {
@@ -47,7 +49,7 @@ const deleteAcademicYear=async(
     return await prisma.$transaction(async(tx)=>{
         const academicYearExistance = await tx.academicYear.findUnique({
             where: {id: academic_year_id},
-            select: {id: true, name: true}
+            select: {id: true, academic_year_name: true}
         });
         if(!academicYearExistance){
             throw new AppError(`Academic year not found.`, StatusCodes.NOT_FOUND)
@@ -76,10 +78,11 @@ const updateAcademicYearField=async(
     loggedInUser:TLoggedInUser
 )=>{
     const {academic_year_id, field, value} = payload;
+    await academicYearCache.checkAcademicYearAvailability(value);
     return prisma.$transaction(async(tx)=>{
         const academicYearExistance = await tx.academicYear.findUnique({
             where: {id: academic_year_id},
-            select: {id: true, name: true}
+            select: {id: true, academic_year_name: true}
         });
         if(!academicYearExistance){
             throw new AppError(`Academic year not found.`, StatusCodes.NOT_FOUND)
@@ -100,8 +103,10 @@ const updateAcademicYearField=async(
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: {
                     [field] : academicYearExistance[field as keyof typeof academicYearExistance],
-                },
-                new_value: value    
+                } as Prisma.InputJsonValue,
+                new_value: {
+                    [field]: value
+                } as Prisma.InputJsonValue    
             }
         })
 
