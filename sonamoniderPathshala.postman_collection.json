@@ -1,811 +1,918 @@
 {
-	"info": {
-		"_postman_id": "07aad42f-f726-4052-b866-90dba4d8b709",
-		"name": "sonamoniderPathshala",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "53905528",
-		"_collection_link": "https://helalskr77-4059593.postman.co/workspace/Md-Al-Helal-Sarker's-Workspace~5083976b-e4fc-4f13-8014-05fa1c8501de/collection/53905528-07aad42f-f726-4052-b866-90dba4d8b709?action=share&source=collection_link&creator=53905528"
-	},
-	"item": [
-		{
-			"name": "User Role",
-			"item": [
-				{
-					"name": "Create Role",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"role_name\": \"teacher\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/role/create_role",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"role",
-								"create_role"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Role",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"roleName\":\"Teacher\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/roles/delete",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"roles",
-								"delete"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Roles",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"roleName\":\"Teacher\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/roles/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"roles",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Role",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"current_role_name\": \"MANAGEMENTS\",\n    \"new_role_name\": \"MANAGEMENT\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/role/update_role",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"role",
-								"update_role"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "User Position",
-			"item": [
-				{
-					"name": "Create Position",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"role_name\": \"GOVERNING_BODY\",\r\n    \"position_name\": \"GOVERNING_BODY\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/position/create_position",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"position",
-								"create_position"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Position",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"positionName\":\"security\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/positions/delete",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"positions",
-								"delete"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Positions",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"positionName\":\"security\"\r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/positions/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"positions",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Teacher Responsibility",
-			"item": [
-				{
-					"name": "Create Responsibility",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"responsibility_name\": \"responsible_teacher\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/responsibillities/create",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"responsibillities",
-								"create"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Responsibilities",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5000/smps/responsibillities/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"responsibillities",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single Responsibility",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"responsibilityName\": \"teacher\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/responsibillities/singleResponsibility",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"responsibillities",
-								"singleResponsibility"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Single Responsibility",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"responsibilityName\": \"SUBJECT_UPDATE\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/responsibillities/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"responsibillities",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Single Responsibility",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"presentResponsibility\":\"subject\",\r\n    \"updateResponsibility\":\"subject_update\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/responsibillities/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"responsibillities",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "User",
-			"item": [
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"full_name\": \"Md Al Helal Sarker\",\r\n    \"mobile_number\":\"01786112996\",\r\n    \"email\": \"helal56876@gmail.com\",\r\n    \"gender\": \"MALE\",\r\n    \"role_name\": \"MANAGEMENT\",\r\n    \"position_name\": \"MANAGEMENT_STAFF\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/user/create_user",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"user",
-								"create_user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "changePassword",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"full_name\": \"Faysal Ahmed\",\n    \"mobile_number\":\"01511556616\",\n  \"current_password\": \"G3u*FW\",\n  \"new_password\": \"123456\",\n  \"confirm_password\": \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/user/change_password",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"user",
-								"change_password"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Auth Login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"user_name\":\"01511556616\", \r\n    \"user_password\":\"G3u*FW\" \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/auth/login",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Auth Logout",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/auth/logout",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"auth",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Student ClassName",
-			"item": [
-				{
-					"name": "Create Class",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"class_name\":\"GRADE_ten_BANGLA\"   \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/classes/create",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"classes",
-								"create"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Class Name",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"class_name\":\"nursery\"   \r\n}"
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/classes/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"classes",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Single Class Name",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"present_class_name\":\"GRADE TWO ENGLISH\" ,\r\n    \"new_class_name\": \"GRADE _WO_ENGLISH\"  \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/classes/single_update",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"classes",
-								"single_update"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Single Class Name",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"class_name\":\"GRADE ONE ENGLISH\"   \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/smps/classes/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"smps",
-								"classes",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Email",
-			"item": [
-				{
-					"name": "Verify Email",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n   \"email\": \"fais23635@gmail.com\",\n    \"otp\": \"933626\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/email/verify_email",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"email",
-								"verify_email"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Resend OTP verify email",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{    \n    \"email\": \"fais23635@gmail.com\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/email/resend_otp_email_verify",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"email",
-								"resend_otp_email_verify"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "UserPatch",
-			"item": [
-				{
-					"name": "Change User Role",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": ""
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "ManagementStaff",
-			"item": [
-				{
-					"name": "Change User Role",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"full_name\": \"Md Al Helal Sarker\",\n    \"mobile_number\":\"01786112996\",\n    \"role_name\": \"management\",\n    \"position_name\": \"administrative_staff\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/user_patch/change_role",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"user_patch",
-								"change_role"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "FatherDetails",
-			"item": [
-				{
-					"name": "Create father details",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"user_id\":\"e1073241-ad32-4100-9ece-db62fd4087b7\",\n    \"father_name\":\"Faruk Ahmed\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/v1/smps/father_details/create_father_details",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"v1",
-								"smps",
-								"father_details",
-								"create_father_details"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "07aad42f-f726-4052-b866-90dba4d8b709",
+    "name": "sonamoniderPathshala",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53905528",
+    "description": "API requests grouped by module. Set the token variable to the access token returned by the login request for protected routes."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "token", "value": "" },
+    { "key": "userId", "value": "00000000-0000-4000-8000-000000000001" },
+    { "key": "classId", "value": "00000000-0000-4000-8000-000000000002" },
+    { "key": "academicYearId", "value": "00000000-0000-4000-8000-000000000003" },
+    { "key": "academicResultId", "value": "00000000-0000-4000-8000-000000000004" },
+    { "key": "staffId", "value": "00000000-0000-4000-8000-000000000005" },
+    { "key": "fatherDetailsId", "value": "00000000-0000-4000-8000-000000000006" },
+    { "key": "motherDetailsId", "value": "00000000-0000-4000-8000-000000000007" },
+    { "key": "email", "value": "user@example.com" }
+  ],
+  "item": [
+    {
+      "name": "General",
+      "item": [
+        {
+          "name": "API Home",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"USER_NAME_OR_MOBILE_NUMBER\",\n  \"user_password\": \"USER_PASSWORD\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/auth/login",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/auth/logout",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Email",
+      "item": [
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/email/verify_email",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Resend Email Verification OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/email/resend_otp_email_verify",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Forgot Password OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/email/send_otp_forget_password",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Resend Forgot Password OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/email/resend_otp_forget_password",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Forgot Password Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/email/verify_email_forget_password",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"gender\": \"MALE\",\n  \"email\": \"{{email}}\",\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\",\n  \"joining_date\": \"2026-01-01T00:00:00.000Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/create_user"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"CURRENT_PASSWORD\",\n  \"new_password\": \"NEW_PASSWORD\",\n  \"confirm_password\": \"NEW_PASSWORD\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/change_password"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/forget_password",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Promote User Role and Position",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\",\n  \"promoted_date\": \"2026-01-01T00:00:00.000Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/promote_user_role_position"
+          },
+          "response": []
+        },
+        {
+          "name": "Change User Position",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"position_name\": \"TEACHER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/change_position"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Field as Admin",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"full_name\",\n  \"value\": \"UPDATED_USER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_admin"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Field as Super Admin",
+          "description": "The route currently validates this body with the admin-field schema; the payload shows the super-admin field shape expected by the endpoint.",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"active_status\",\n  \"value\": \"ACTIVE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_super_admin"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Name",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"user_name\": \"NEW_USER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_name"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"user_password\": \"NEW_PASSWORD\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_password"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_name\": \"ACADEMIC\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/role/create_role"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_role_name\": \"CURRENT_ROLE_NAME\",\n  \"new_role_name\": \"NEW_ROLE_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/role/update_role"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_name\": \"ROLE_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/role/delete_role"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/role/get_roles"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Role by ID",
+          "protocolProfileBehavior": { "disableBodyPruning": true },
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"id\": \"{{userId}}\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/role/get_role/{{userId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Positions",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Position",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/position/create_position"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Position",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"present_position_name\": \"CURRENT_POSITION\",\n  \"update_position_name\": \"NEW_POSITION\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/position/update_position"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Position",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position_name\": \"POSITION_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/position/delete_position"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Positions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/position/get_positions"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Position by ID",
+          "protocolProfileBehavior": { "disableBodyPruning": true },
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"id\": \"{{userId}}\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/position/get_position/{{userId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create User Address",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"thana\": \"DHAKA\",\n  \"district\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/address/create_address"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User Address",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Address Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"field\": \"district\",\n  \"value\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/user/address/update_address_field"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Father Details",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Father Details",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"father_name\": \"FATHER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/father_details/create_father_details"
+          },
+          "response": []
+        },
+        {
+          "name": "Connect Father Details",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"father_details_id\": \"{{fatherDetailsId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/father_details/connect_father_details"
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Father Details",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/father_details/disconnect_father_details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Father Details Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"father_name\",\n  \"value\": \"FATHER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/father_details/update_father_details_field"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Mother Details",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Mother Details",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"mother_name\": \"MOTHER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/create_mother_details"
+          },
+          "response": []
+        },
+        {
+          "name": "Connect Mother Details",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"mother_details_id\": \"{{motherDetailsId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/connect_mother_details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Mother Details Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"mother_name\",\n  \"value\": \"MOTHER_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/update_mother_details_field"
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Mother Details",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/disconnect_mother_details"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Spouse Information",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Spouse Information",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"full_name\": \"SPOUSE_FULL_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/create"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Spouse Information",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/delete"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Spouse Information Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"full_name\",\n  \"value\": \"SPOUSE_FULL_NAME\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/update_spouse_information_field"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classes",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Class",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_name\": \"PLAYGROUP\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/class/create"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class",
+          "description": "The request body mirrors the current Zod schema; the class ID is also included in the URL path.",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"class_id\": \"{{classId}}\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/class/delete/{{classId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class Field",
+          "description": "The request body mirrors the current Zod schema; the class ID is also included in the URL path.",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"class_id\": \"{{classId}}\"\n  },\n  \"body\": {\n    \"field\": \"class_name\",\n    \"value\": \"NEW_CLASS_NAME\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/class/update/{{classId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Readmission",
+          "description": "This route is registered but currently has no controller or response handler.",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{userId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student/readmission"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Academic Years",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Academic Year",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_name\": \"2026-2027\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/create"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Academic Year",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_id\": \"{{academicYearId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Academic Year Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_id\": \"{{academicYearId}}\",\n  \"field\": \"academic_year_name\",\n  \"value\": \"2027-2028\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Academic Years",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Academic Year by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/{{academicYearId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Academic Results",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Academic Result",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"required_id\": \"{{staffId}}\",\n  \"role_name\": \"ACADEMIC\",\n  \"position_name\": \"TEACHER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/create"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Academic Result",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_result_id\": \"{{academicResultId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Academic Result Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_result_id\": \"{{academicResultId}}\",\n  \"field\": \"ssc_result\",\n  \"value\": \"A+\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Academic Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Academic Result by ID",
+          "description": "The current GET validation middleware reads the params object from the JSON body; the ID is also included in the URL path.",
+          "protocolProfileBehavior": { "disableBodyPruning": true },
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"academic_result_id\": \"{{academicResultId}}\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{academicResultId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Academic Result by Staff ID",
+          "description": "This request matches a registered route, but its /:staff_id path is shadowed by the earlier /:academic_result_id route. The current GET validation middleware also reads params from the JSON body.",
+          "protocolProfileBehavior": { "disableBodyPruning": true },
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"params\": {\n    \"staff_id\": \"{{staffId}}\",\n    \"staff_role_name\": \"ACADEMIC\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{staffId}}"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }

@@ -95,6 +95,50 @@ const createPrincipal = async () => {
   }
 };
 
+const createAdminRolePosition = async () => {
+  // Check SUPER_ADMIN role
+  let adminRole = await prisma.userRole.findUnique({
+    where: {
+      role_name: "ADMIN",
+    },
+  });
+
+  // Create role only if it doesn't exist
+  if (!adminRole) {
+    adminRole = await prisma.userRole.create({
+      data: {
+        role_name: "ADMIN",
+      },
+    });
+
+    // Check PRINCIPAL position
+    let CoOrdinatorPosition = await prisma.userPosition.findUnique({
+      where: {
+        position_name: "CO-ORDINATOR",
+      },
+    });
+    // Create position only if it doesn't exist
+    if (!CoOrdinatorPosition) {
+      CoOrdinatorPosition = await prisma.userPosition.create({
+        data: {
+          position_name: "PRINCIPAL",
+          role: {
+            connect: {
+              id: adminRole.id,
+            },
+          },
+        },
+      });
+      console.log("ADMIN role created.");
+    } else {
+      console.log("ADMIN role already exists.");
+    }
+  }
+};
+
+const createCoOrdinator = async()=>{
+  
+}
 export const runInitialSeed = async () => {
   await seedSuperAdminRolePrincipalPosition();
 

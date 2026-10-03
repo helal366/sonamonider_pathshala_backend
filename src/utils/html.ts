@@ -1,6 +1,6 @@
 export const html = `<html>
       <head>
-        <title>SONAMONIDER PATHSHALA</title>
+        <title>SONAMONIDER PATHSHALA & HIGH SCHOOL</title>
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body class="bg-gray-200">

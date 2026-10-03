@@ -1,7 +1,5 @@
-cat > .vercelignore <<'EOF'
 node_modules/
 .git/
-!.env
-.env.*
+.env*
+!.env.example
 *.log
-EOF

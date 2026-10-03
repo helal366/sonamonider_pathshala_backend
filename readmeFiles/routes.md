@@ -1,553 +1,649 @@
-### Auth routes
+## Auth routes
 
+- Log In
 - POST /api/v1/smps/auth/login
-  JSON: {
-  "user_id": "USER_UUID"
-  "user_password": "USER_PASSWORD"
-  }
+  JSON:
 
-- POST /api/v1/smps/auth/logout
-  JSON: {}
-
-### User routes
-
-- Create User
-- POST /api/v1/smps/user/create_user
-  JSON: 
-  ```json
-  {
-  "full_name": "USER NAME",
-  "mobile_number":"USER MOBILE NUMBER",
-  "email": "USER EMAIL ADDRESS",
-  "gender": "USER GENDER",
-  "role_name": "USER ROLE",
-  "position_name": "USER POSITION",
-  "joining_date": "JOINING ISO DATE STRING"
-  } 
-  ``` 
-  ------> Only the required values are set here. See the zod schema to get the full requirement
-
-- Change Password
-- PATCH /api/v1/smps/user/change_password
-  JSON: 
-  ```json
-  {
-  "full_name": "USER NAME",
-  "mobile_number":"USER MOBILE NUMBER",
-  "current_password": "USER CURRENT PASSWORD",
-  "new_password": "USER NEW PASSWORD",
-  "confirm_password": "USER NEW PASSWORD"
-  }
-  ```
-
-- Update User Position
-- POST /api/v1/smps/user/forget_password
-  JSON: 
-  ```json
-  {
-  "email": "USER EMAIL"
-  }
-  ```
-- Update User Role Position
-- PATCH /api/v1/smps/user/promote_user_role_position
-  JSON: 
-  ```json
-  {
-  "full_name": "USER FULL NAME",
-  "mobile_number": "USER 11 DIGIT BANGLADESHI MOBILE NUMBER",
-  "position_name": "TARGET POSITION NAME",
-  "role_name": "TARGET ROLE NAME",
-  "promoted_date": "PROMOTION ISO DATE STRING"
-  }
-  ```
-
-- Update User Field for Admin
-- PATCH /api/v1/smps/user/update_single_user_field_admin
 ```json
 {
-  "user_id": "USER ID STRING",
-  "field": "USER FIELD",
-  "value": "FIELD VALUE"
+  "user_name": "USER_NAME_OR_MOBILE_NUMBER",
+  "user_password": "USER_PASSWORD"
 }
 ```
 
-- Update User Field for Super Admin
-- PATCH /api/v1/smps/user/update_single_user_field_super_admin
+- Log Out
+- POST /api/v1/smps/auth/logout
+  JSON:
+
+```json
+{}
+```
+
+## Email routes
+
+- Verify Email
+- POST /api/v1/smps/email/verify_email
+  JSON:
+
 ```json
 {
-  "user_id": "USER ID STRING",
-  "field": "USER FIELD",
-  "value": "FIELD VALUE"
+  "email": "USER_EMAIL",
+  "otp": "123456"
+}
+```
+
+- Resend Email Verification OTP
+- POST /api/v1/smps/email/resend_otp_email_verify
+  JSON:
+
+```json
+{
+  "email": "USER_EMAIL"
+}
+```
+
+- Send Forgot Password OTP
+- POST /api/v1/smps/email/send_otp_forget_password
+  JSON:
+
+```json
+{
+  "email": "USER_EMAIL"
+}
+```
+
+- Resend Forgot Password OTP
+- POST /api/v1/smps/email/resend_otp_forget_password
+  JSON:
+
+```json
+{
+  "email": "USER_EMAIL"
+}
+```
+
+- Verify Forgot Password Email
+- POST /api/v1/smps/email/verify_email_forget_password
+  JSON:
+
+```json
+{
+  "email": "USER_EMAIL",
+  "otp": "123456"
+}
+```
+
+## User routes
+
+- Create User
+- POST /api/v1/smps/user/create_user
+  JSON:
+
+```json
+{
+  "full_name": "USER_FULL_NAME",
+  "mobile_number": "01712345678",
+  "gender": "GENDER_VALUE",
+  "email": "USER_EMAIL",
+  "position_name": "USER_POSITION",
+  "role_name": "USER_ROLE",
+  "joining_date": "2026-01-01T00:00:00.000Z"
+}
+```
+
+------> Only the required values are set here. See the zod schema to get the full requirement
+
+- Change Password
+- PATCH /api/v1/smps/user/change_password
+  JSON:
+
+```json
+{
+  "current_password": "CURRENT_PASSWORD",
+  "new_password": "NEW_PASSWORD",
+  "confirm_password": "NEW_PASSWORD"
+}
+```
+
+- Request Password Reset
+- POST /api/v1/smps/user/forget_password
+  JSON:
+
+```json
+{
+  "email": "USER_EMAIL"
+}
+```
+
+- Promote User Role and Position
+- PATCH /api/v1/smps/user/promote_user_role_position
+  JSON:
+
+```json
+{
+  "full_name": "USER_FULL_NAME",
+  "mobile_number": "01712345678",
+  "position_name": "TARGET_POSITION",
+  "role_name": "TARGET_ROLE",
+  "promoted_date": "2026-01-01T00:00:00.000Z"
+}
+```
+
+- Change User Position
+- PATCH /api/v1/smps/user/change_position
+  JSON:
+
+```json
+{
+  "full_name": "USER_FULL_NAME",
+  "mobile_number": "01712345678",
+  "position_name": "TARGET_POSITION"
+}
+```
+
+- Update a User Field as Admin
+- PATCH /api/v1/smps/user/update_user_single_field_admin
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "field": "FIELD_NAME",
+  "value": "FIELD_VALUE"
+}
+```
+
+- Update a User Field as Super Admin
+- PATCH /api/v1/smps/user/update_user_single_field_super_admin
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "field": "FIELD_NAME",
+  "value": true
 }
 ```
 
 - Update User Name
-- PATCH/api/v1/smps/user/update_user_name
-JSON:
+- PATCH /api/v1/smps/user/update_user_name
+  JSON:
+
 ```json
 {
   "user_id": "USER_UUID",
-  "user_name": "new_user_name"
+  "user_name": "NEW_USER_NAME"
 }
 ```
 
 - Update User Password
 - PATCH /api/v1/smps/user/update_user_password
-JSON:
+  JSON:
+
 ```json
 {
   "user_id": "USER_UUID",
-  "user_password": "new_password"
+  "user_password": "NEW_PASSWORD"
 }
 ```
 
-### Email routes
+## Role routes
 
-- POST /api/v1/smps/email/verify_email
-  JSON: {
-  "email": "USER EMAIL",
-  "otp": "OTP SENT TO EMAIL"
-  }
-
-- POST /api/v1/smps/email/resend_otp_email_verify
-  JSON: {
-  "email": "USER EMAIL"
-  }
-
-- POST /api/v1/smps/email/send_otp_forget_password
-  JSON: {}
-
-- POST /api/v1/smps/email/resend_otp_forget_password
-- POST /api/v1/smps/email/verify_email_forget_password
-
-### Role routes
-
+- Create Role
 - POST /api/v1/smps/role/create_role
-  JSON: {
-  "role_name": "USER ROLE NAME",
-  }
+  JSON:
 
-- PATCH /api/v1/smps/role/update_role
-  JSON: {
-  "current_role_name": "OLD OR MISSPELLED ROLE NAME",
-  "new_role_name": "CORRECTED OR NEW ROLE NAME"
-  }
-
-- DELETE /api/v1/smps/role/update_role
-  JSON: {
-  "role_name": "TARGET ROLE NAME"
-  }
-
-- GET /api/v1/smps/role/get_roles
-  JSON: {}
-
-- GET /api/v1/smps/role/get_role:id
-  JSON: {}
-
-### Position routes
-
-- POST /api/v1/smps/position/create_position
-  JSON: {
-  "role_name": "USER ROLE NAME",
-  "position_name": "USER POSITION NAME"
-  }
-
-- PATCH /api/v1/smps/position/update_position
-  JSON: {
-  "present_position_name": "PRESENT POSITION NAME",
-  "update_position_name": "UPDATE POSITION NAME"
-  }
-
-- DELETE /api/v1/smps/position/delete_position
-  JSON: {
-  "position_name": "POSITION NAME"
-  }
-
-- GET /api/v1/smps/position/get_positions
-  JSON: {}
-
-- GET /api/v1/smps/position/get_position:id
-  JSON: {}
-
-### Father details
-
-- POST /api/v1/smps/father_details/create_father_details
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-  ------> Only the required values are set here. See the zod schema to get the full requirement
-
-- POST OR CONNECT /api/v1/smps/father_details/connect_father_details
-JSON: {
-"user_id": "USER_UUID"
-"father_details_id": "FATHER DETAILS UUID"
+```json
+{
+  "role_name": "ROLE_NAME"
 }
+```
 
-- DELETE OR DISCONNECT /api/v1/smps/father_details/disconnect_father_details
-  JSON: {
-  "user_id": "USER_UUID"
-  }
+- Update Role
+- PATCH /api/v1/smps/role/update_role
+  JSON:
 
-- PATCH /api/v1/smps/father_details/update_father_name
-  JSON: {
-  "user_id": "USER_UUID",
-  "father_name": "USER FATHER NAME"
-  }
+```json
+{
+  "current_role_name": "CURRENT_ROLE_NAME",
+  "new_role_name": "NEW_ROLE_NAME"
+}
+```
 
-- PATCH /api/v1/smps/father_details/update_father_nid
-  JSON: {
-  "user_id": "USER_UUID",
-  "nid_no": "USER FATHER NID "
-  }
+- Delete Role
+- DELETE /api/v1/smps/role/delete_role
+  JSON:
 
-- PATCH /api/v1/smps/father_details/update_father_occupation
-  JSON: {
-  "user_id": "USER_UUID",
-  "occupation": "USER FATHER OCCUPATION"
-  }
+```json
+{
+  "role_name": "ROLE_NAME"
+}
+```
 
-- PATCH /api/v1/smps/father_details/update_father_job_title
-  JSON: {
-  "user_id": "USER_UUID",
-  "job_title": "USER FATHER JOB TITLE"
-  }
+- Get All Roles
+- GET /api/v1/smps/role/get_roles
+  JSON:
 
-- PATCH /api/v1/smps/father_details/update_father_educational_qualification
-  JSON: {
-  "user_id": "USER_UUID",
-  "educational_qualification": "USER FATHER EDUCATIONAL QUALIFICATION"
-  }
+```json
+{}
+```
 
-- PATCH /api/v1/smps/father_details/update_father_monthly_income
-  JSON: {
-  "user_id": "USER_UUID",
-  "monthly_income": "USER FATHER MONTHLY INCOME"
-  }
+- Get a Role by ID
+- GET /api/v1/smps/role/get_role/:id
+  JSON:
 
-- PATCH /api/v1/smps/update_father_mobile_no_1
-  JSON: {
-  "user_id": "USER_UUID",
-  "mobile_no_1": "USER FATHER MOBILE NUMBER 1"
-  }
+```json
+{}
+```
 
-- PATCH /api/v1/smps/father_details/update_father_mobile_no_2
-  JSON: {
-  "user_id": "USER_UUID",
-  "mobile_no_1": "USER FATHER MOBILE NUMBER 2"
-  }
+## Position routes
 
-- PATCH /api/v1/smps/father_details/update_father_mobile_no_3
-  JSON: {
-  "user_id": "USER_UUID",
-  "mobile_no_1": "USER FATHER MOBILE NUMBER 3"
-  }
+- Create Position
+- POST /api/v1/smps/position/create_position
+  JSON:
 
-- DELETE /api/v1/smps/father_details/delete_father_nid
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+```json
+{
+  "position_name": "POSITION_NAME",
+  "role_name": "ROLE_NAME"
+}
+```
 
-- DELETE /api/v1/smps/father_details/delete_father_occupation
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+- Update Position
+- PATCH /api/v1/smps/position/update_position
+  JSON:
 
-- DELETE /api/v1/smps/father_details/delete_father_job_title
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+```json
+{
+  "present_position_name": "CURRENT_POSITION_NAME",
+  "update_position_name": "NEW_POSITION_NAME"
+}
+```
 
-- DELETE /api/v1/smps/father_details/delete_father_educational_qualification
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+- Delete Position
+- DELETE /api/v1/smps/position/delete_position
+  JSON:
 
-- DELETE /api/v1/smps/father_details/delete_father_monthly_income
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+```json
+{
+  "position_name": "POSITION_NAME"
+}
+```
 
-- DELETE /api/v1/smps/father_details/delete_father_mobile_no_1
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+- Get All Positions
+- GET /api/v1/smps/position/get_positions
+  JSON:
 
-- DELETE /api/v1/smps/father_details/delete_father_mobile_no_2
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+```json
+{}
+```
 
-- DELETE /api/v1/smps/father_details/delete_father_mobile_no_3
-  JSON: {
-  "user_id": "USER_UUID",
-  }
+- Get a Position by ID
+- GET /api/v1/smps/position/get_position/:id
+  JSON:
 
-### Mother details
+```json
+{}
+```
 
-- POST /api/v1/smps/mother_details/create_mother_details
-  JSON: {
-  "user_id": "USER_UUID"
-  }
+## Address routes
+
+- Create User Address
+- POST /api/v1/smps/user/address/create_address
+  JSON:
+
+```json
+{
+  "required_id": "USER_UUID",
+  "thana": "THANA_NAME",
+  "district": "DISTRICT_NAME",
+  "owner_type": "ADDRESS_OWNER_TYPE",
+  "address_type": "ADDRESS_TYPE"
+}
+```
+
 ------> Only the required values are set here. See the zod schema to get the full requirement
 
-- POST OR CONNECT /api/v1/smps/mother_details/connect_mother_details
-JSON: {
-"user_id": "USER_UUID"
-"father_details_id": "MOTHER DETAILS UUID"
+- Delete User Address
+- DELETE /api/v1/smps/user/address/delete_address
+  JSON:
+
+```json
+{
+  "required_id": "USER_UUID",
+  "owner_type": "ADDRESS_OWNER_TYPE",
+  "address_type": "ADDRESS_TYPE"
 }
+```
 
-- DELETE OR DISCONNECT /api/v1/smps/mother_details/disconnect_mother_details
-  JSON: {
-  "user_id": "USER_UUID"
-  }
+- Update User Address Field
+- PATCH /api/v1/smps/user/address/update_address_field
+  JSON:
 
-- PATCH /api/v1/smps/mother_details/update_mother_name
-JSON: {
-"user_id": "USER_UUID",
-"mother_name": "USER MOTHER NAME"
+```json
+{
+  "required_id": "USER_UUID",
+  "field": "ADDRESS_FIELD",
+  "value": "FIELD_VALUE",
+  "owner_type": "ADDRESS_OWNER_TYPE",
+  "address_type": "ADDRESS_TYPE"
 }
+```
 
-- PATCH /api/v1/smps/mother_details/update_mother_nid
-JSON: {
-"user_id": "USER_UUID",
-"nid_no": "USER MOTHER NID"
-}
+## Father details routes
 
-- PATCH /api/v1/smps/mother_details/update_mother_occupation
-JSON: {
-"user_id": "USER_UUID",
-"occupation": "USER MOTHER OCCUPATION"
-}
+- Create Father Details
+- POST /api/v1/smps/father_details/create_father_details
+  JSON:
 
-- PATCH /api/v1/smps/mother_details/update_mother_job_title
-JSON: {
-"user_id": "USER_UUID",
-"job_title": "USER MOTHER JOB TITLE"
-}
-
-- PATCH /api/v1/smps/mother_details/update_mother_educational_qualification
-JSON: {
-"user_id": "USER_UUID",
-"educational_qualification": "USER MOTHER EDUCATIONAL QUALIFICATION"
-}
-
-- PATCH /api/v1/smps/mother_details/update_mother_monthly_income
-JSON: {
-"user_id": "USER_UUID",
-"monthly_income": "USER MOTHER MONTHLY INCOME"
-}
-
-- PATCH /api/v1/smps/mother_details/update_mother_mobile_no_1
-JSON: {
-"user_id": "USER_UUID",
-"mobile_no_1": "USER MOTHER MOBILE NUMBER 1"
-}
-
-- PATCH /api/v1/smps/mother_details/update_mother_mobile_no_2
-JSON: {
-"user_id": "USER_UUID",
-"mobile_no_2": "USER MOTHER MOBILE NUMBER 2"
-}
-
-- PATCH /api/v1/smps/mother_details/update_mother_mobile_no_3
-JSON: {
-"user_id": "USER_UUID",
-"mobile_no_3": "USER MOTHER MOBILE NUMBER 3"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_nid
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_occupation
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_job_title
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_educational_qualification
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_monthly_income
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_mobile_no_1
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_mobile_no_2
-JSON: {
-"user_id": "USER_UUID"
-}
-
-- DELETE /api/v1/smps/mother_details/delete_mother_mobile_no_3
-JSON: {
-"user_id": "USER_UUID"
-}
-
-
-### Spouse Information
-
-* POST /api/v1/smps/spouse_information/create
-
-JSON: {
-
+```json
+{
   "user_id": "USER_UUID",
-  "full_name": "USER SPOUSE FULL NAME",
-  "contact_no": "USER SPOUSE CONTACT NUMBER",
-  "father_name": "USER SPOUSE FATHER NAME",
-  "father_contact_no": "USER SPOUSE FATHER CONTACT NUMBER",
-  "mother_name": "USER SPOUSE MOTHER NAME",
-  "mother_contact_no": "USER SPOUSE MOTHER CONTACT NUMBER",
-  "occupation": "USER SPOUSE OCCUPATION",
-  "job_title": "USER SPOUSE JOB TITLE",
-  "monthly_income": "USER SPOUSE MONTHLY INCOME",
-  "present_address": {
-    "house_no": "HOUSE NUMBER",
-    "house_name": "HOUSE NAME",
-    "plot_no": "PLOT NUMBER",
-    "road_no": "ROAD NUMBER",
-    "neighbourhood": "NEIGHBOURHOOD",
-    "region": "REGION",
-    "village": "VILLAGE",
-    "post_code": 1234,
-    "post_office": "POST OFFICE",
-    "thana": "THANA",
-    "district": "DISTRICT",
-    "country": "Bangladesh"
+  "father_name": "FATHER_NAME"
+}
+```
+
+------> Only the required values are set here. See the zod schema to get the full requirement
+
+- Connect Father Details
+- POST /api/v1/smps/father_details/connect_father_details
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "father_details_id": "FATHER_DETAILS_UUID"
+}
+```
+
+- Disconnect Father Details
+- PATCH /api/v1/smps/father_details/disconnect_father_details
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+- Update Father Details Field
+- PATCH /api/v1/smps/father_details/update_father_details_field
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "field": "FATHER_DETAILS_FIELD",
+  "value": "FIELD_VALUE"
+}
+```
+
+## Mother details routes
+
+- Create Mother Details
+- POST /api/v1/smps/mother_details/create_mother_details
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "mother_name": "MOTHER_NAME"
+}
+```
+
+------> Only the required values are set here. See the zod schema to get the full requirement
+
+- Connect Mother Details
+- POST /api/v1/smps/mother_details/connect_mother_details
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "mother_details_id": "MOTHER_DETAILS_UUID"
+}
+```
+
+- Update Mother Details Field
+- PATCH /api/v1/smps/mother_details/update_mother_details_field
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "field": "MOTHER_DETAILS_FIELD",
+  "value": "FIELD_VALUE"
+}
+```
+
+- Disconnect Mother Details
+- PATCH /api/v1/smps/mother_details/disconnect_mother_details
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+## Spouse information routes
+
+- Create Spouse Information
+- POST /api/v1/smps/spouse_information/create
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "full_name": "SPOUSE_FULL_NAME"
+}
+```
+
+------> Only the required values are set here. See the zod schema to get the full requirement
+
+- Delete Spouse Information
+- DELETE /api/v1/smps/spouse_information/delete
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID"
+}
+```
+
+- Update Spouse Information Field
+- PATCH /api/v1/smps/spouse_information/update_spouse_information_field
+  JSON:
+
+```json
+{
+  "user_id": "USER_UUID",
+  "field": "SPOUSE_INFORMATION_FIELD",
+  "value": "FIELD_VALUE"
+}
+```
+
+## Class routes
+
+- Create Class
+- POST /api/v1/smps/class/create
+  JSON:
+
+```json
+{
+  "class_name": "CLASS_NAME"
+}
+```
+
+- Delete Class
+- DELETE /api/v1/smps/class/delete/:class_id
+  JSON:
+
+```json
+{
+  "params": {
+    "class_id": "CLASS_UUID"
+  }
+}
+```
+
+- Update Class Field
+- PATCH /api/v1/smps/class/update/:class_id
+  JSON:
+
+```json
+{
+  "params": {
+    "class_id": "CLASS_UUID"
   },
-
-  "permanent_address": {
-    "house_no": "HOUSE NUMBER",
-    "house_name": "HOUSE NAME",
-    "plot_no": "PLOT NUMBER",
-    "road_no": "ROAD NUMBER",
-    "neighbourhood": "NEIGHBOURHOOD",
-    "region": "REGION",
-    "village": "VILLAGE",
-    "post_code": 1234,
-    "post_office": "POST OFFICE",
-    "thana": "THANA",
-    "district": "DISTRICT",
-    "country": "Bangladesh"
+  "body": {
+    "field": "class_name",
+    "value": "NEW_CLASS_NAME"
   }
+}
+```
 
+- Get All Classes
+- GET /api/v1/smps/class
+  JSON:
+
+```json
+{}
+```
+
+## Student routes
+
+- Readmit Student
+- PATCH /api/v1/smps/student/readmission
+  JSON:
+
+```json
+{
+  "student_id": "STUDENT_UUID"
+}
+```
+
+## Academic year routes
+
+- Create Academic Year
+- POST /api/v1/smps/academic_year/create
+  JSON:
+
+```json
+{
+  "academic_year_name": "2026-2027"
+}
+```
+
+- Delete Academic Year
+- DELETE /api/v1/smps/academic_year/delete
+  JSON:
+
+```json
+{
+  "academic_year_id": "ACADEMIC_YEAR_UUID"
+}
+```
+
+- Update Academic Year Field
+- PATCH /api/v1/smps/academic_year/update_field
+  JSON:
+
+```json
+{
+  "academic_year_id": "ACADEMIC_YEAR_UUID",
+  "field": "academic_year_name",
+  "value": "2027-2028"
+}
+```
+
+- Get All Academic Years
+- GET /api/v1/smps/academic_year
+  JSON:
+
+```json
+{}
+```
+
+- Get an Academic Year by ID
+- GET /api/v1/smps/academic_year/:id
+  JSON:
+
+```json
+{
+  "params": {
+    "academic_year_id": "ACADEMIC_YEAR_UUID"
   }
+}
+```
 
-------> Only `user_id` and `full_name` are required here. All other spouse fields are optional. `present_address` and `permanent_address` are also optional. See the Zod schema to get the full requirement.
+## Academic result routes
 
-* DELETE /api/v1/smps/spouse_information/delete
-  JSON: {
-    "user_id": "USER_UUID"
+- Create Academic Result
+- POST /api/v1/smps/academic_result/create
+  JSON:
+
+```json
+{
+  "required_id": "STAFF_OR_GOVERNING_BODY_UUID",
+  "role_name": "ROLE_NAME",
+  "position_name": "POSITION_NAME"
+}
+```
+
+------> Only the required values are set here. See the zod schema to get the full requirement
+
+- Delete Academic Result
+- POST /api/v1/smps/academic_result/delete
+  JSON:
+
+```json
+{
+  "academic_result_id": "ACADEMIC_RESULT_UUID"
+}
+```
+
+- Update Academic Result Field
+- PATCH /api/v1/smps/academic_result/update_field
+  JSON:
+
+```json
+{
+  "academic_result_id": "ACADEMIC_RESULT_UUID",
+  "field": "ACADEMIC_RESULT_FIELD",
+  "value": "FIELD_VALUE"
+}
+```
+
+- Get All Academic Results
+- GET /api/v1/smps/academic_result
+  JSON:
+
+```json
+{}
+```
+
+- Get an Academic Result by ID
+- GET /api/v1/smps/academic_result/:academic_result_id
+  JSON:
+
+```json
+{
+  "params": {
+    "academic_result_id": "ACADEMIC_RESULT_UUID"
   }
-------> This deletes the complete spouse information of the specified user, including the connected present and permanent addresses.
+}
+```
 
-* PATCH /api/v1/smps/spouse_information/update_full_name
-  JSON: {
-  "user_id": "USER_UUID",
-  "full_name": "USER SPOUSE FULL NAME"
+- Get Academic Result by Staff ID
+- GET /api/v1/smps/academic_result/:staff_id
+  JSON:
+
+```json
+{
+  "params": {
+    "staff_id": "STAFF_UUID",
+    "staff_role_name": "STAFF_ROLE_NAME"
   }
-
-* PATCH /api/v1/smps/spouse_information/update_contact_no
-  JSON: {
-  "user_id": "USER_UUID",
-  "contact_no": "USER SPOUSE CONTACT NUMBER"
-  }
-
-------> `contact_no` can be set to `null` when clearing the value.
-
-* PATCH /api/v1/smps/spouse_information/update_father_name
-  JSON: {
-  "user_id": "USER_UUID",
-  "father_name": "USER SPOUSE FATHER NAME"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_father_contact_no
-  JSON: {
-  "user_id": "USER_UUID",
-  "father_contact_no": "USER SPOUSE FATHER CONTACT NUMBER"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_mother_name
-  JSON: {
-  "user_id": "USER_UUID",
-  "mother_name": "USER SPOUSE MOTHER NAME"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_mother_contact_no
-  JSON: {
-  "user_id": "USER_UUID",
-  "mother_contact_no": "USER SPOUSE MOTHER CONTACT NUMBER"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_occupation
-  JSON: {
-  "user_id": "USER_UUID",
-  "occupation": "USER SPOUSE OCCUPATION"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_job_title
-  JSON: {
-  "user_id": "USER_UUID",
-  "job_title": "USER SPOUSE JOB TITLE"
-  }
-
-* PATCH /api/v1/smps/spouse_information/update_monthly_income
-  JSON: {
-  "user_id": "USER_UUID",
-  "monthly_income": "USER SPOUSE MONTHLY INCOME"
-  }
-
-------> The PATCH endpoints for nullable fields accept `null` when you want to clear the existing value.
-
-* DELETE /api/v1/smps/spouse_information/delete_contact_no
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_father_name
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_father_contact_no
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_mother_name
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_mother_contact_no
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_occupation
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_job_title
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-* DELETE /api/v1/smps/spouse_information/delete_monthly_income
-  JSON: {
-  "user_id": "USER_UUID"
-  }
-
-------> The field DELETE endpoints set the selected optional field to `null`. There is no `delete_full_name` endpoint because `full_name` is required.
+}
+```

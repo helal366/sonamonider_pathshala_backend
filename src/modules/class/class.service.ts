@@ -112,8 +112,9 @@ const updateClassField = async (
 // =============================================
 const getAllClassNames=async()=>{
   return await prisma.class.findMany({
-    include: {
-      active_students: true
+    select:{
+      id:true,
+      class_name: true
     }
   })
 }

@@ -69,6 +69,18 @@ CREATE TABLE "academic_staffs" (
 );
 
 -- CreateTable
+CREATE TABLE "AcademicYear" (
+    "id" TEXT NOT NULL,
+    "academic_year_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "AcademicYear_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "audit_logs" (
     "audit_id" TEXT NOT NULL,
     "entity_id" TEXT NOT NULL,
@@ -86,12 +98,29 @@ CREATE TABLE "audit_logs" (
 CREATE TABLE "classes" (
     "id" TEXT NOT NULL,
     "class_name" TEXT NOT NULL,
+    "is_active_class" BOOLEAN NOT NULL DEFAULT true,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "classes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "class_history" (
+    "id" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3),
+    "academic_year_id" TEXT NOT NULL,
+    "class_id" TEXT NOT NULL,
+    "student_id" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "class_history_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -350,6 +379,9 @@ CREATE UNIQUE INDEX "academic_staffs_user_id_key" ON "academic_staffs"("user_id"
 CREATE UNIQUE INDEX "academic_staffs_full_name_mobile_number_key" ON "academic_staffs"("full_name", "mobile_number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "AcademicYear_academic_year_name_key" ON "AcademicYear"("academic_year_name");
+
+-- CreateIndex
 CREATE INDEX "audit_logs_created_at_idx" ON "audit_logs"("created_at");
 
 -- CreateIndex
@@ -360,6 +392,15 @@ CREATE INDEX "audit_logs_entity_name_entity_id_created_at_idx" ON "audit_logs"("
 
 -- CreateIndex
 CREATE UNIQUE INDEX "classes_class_name_key" ON "classes"("class_name");
+
+-- CreateIndex
+CREATE INDEX "class_history_start_date_idx" ON "class_history"("start_date");
+
+-- CreateIndex
+CREATE INDEX "class_history_end_date_idx" ON "class_history"("end_date");
+
+-- CreateIndex
+CREATE INDEX "class_history_student_id_end_date_idx" ON "class_history"("student_id", "end_date");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "governing_bodies_email_key" ON "governing_bodies"("email");
@@ -470,6 +511,12 @@ ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_created_by_id_fkey
 ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "AcademicYear" ADD CONSTRAINT "AcademicYear_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AcademicYear" ADD CONSTRAINT "AcademicYear_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -477,6 +524,21 @@ ALTER TABLE "classes" ADD CONSTRAINT "classes_created_by_id_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "AcademicYear"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
