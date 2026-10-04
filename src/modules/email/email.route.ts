@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { emailController } from "./email.controller.js";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
 import {
   resendOtpEmailZodSchema,
   resendOtpForgetPasswordZodSchema,

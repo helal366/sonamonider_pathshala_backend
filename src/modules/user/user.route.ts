@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userController } from "./user.controller.js";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { userZodSchema } from "./user.zod.validation.js";
 
@@ -46,8 +46,8 @@ router.patch(
   "/update_user_single_field_admin",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
-  userController.updateSingleUserFieldAdmin
-)
+  userController.updateSingleUserFieldAdmin,
+);
 
 // ==========================================
 // UPDATE SINGLE USER FIELD SUPER ADMIN ROUTE
@@ -56,8 +56,8 @@ router.patch(
   "/update_user_single_field_super_admin",
   userAuth("SUPER_ADMIN"),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
-  userController.updateSingleUserFieldSuperAdmin
-)
+  userController.updateSingleUserFieldSuperAdmin,
+);
 // ==========================================
 // UPDATE USER NAME ROUTE
 // ==========================================
@@ -65,8 +65,8 @@ router.patch(
   "/update_user_name",
   userAuth("SUPER_ADMIN"),
   validateZodSchema(userZodSchema.updateUserNameZodSchema),
-  userController.updateUserName
-)
+  userController.updateUserName,
+);
 
 // ============================================================
 // UPDATE USER PASSWORD ROUTE

@@ -82,7 +82,7 @@ NURANI_ADVANCE: হরকত অধ্যায় থেকে শেষ পর্
 NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 
 ## Class scheduling/timimg:
-**SPECIAL PERIODS: **
+**QURANIC PERIODS: **
 - NURANI_MORNING: 07:00 to 08:0
 - NAZERA_MORINING: 06:00 to 08:00
 - HIFZ_MORNING: 06:00 to 08:00

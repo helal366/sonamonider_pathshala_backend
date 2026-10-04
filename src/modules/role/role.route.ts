@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { roleController } from "./role.controller.js";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
-import { createRoleZodSchema, deleteRoleZodSchema, getSingleRoleZodSchema, updateRoleZodSchema } from "./role.zod.validation.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
+import {
+  createRoleZodSchema,
+  deleteRoleZodSchema,
+  getSingleRoleZodSchema,
+  updateRoleZodSchema,
+} from "./role.zod.validation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();
@@ -16,7 +21,7 @@ router.patch(
   "/update_role",
   userAuth("SUPER_ADMIN"),
   validateZodSchema(updateRoleZodSchema),
-  roleController.updateRole
+  roleController.updateRole,
 );
 
 // REGISTER ROUTE

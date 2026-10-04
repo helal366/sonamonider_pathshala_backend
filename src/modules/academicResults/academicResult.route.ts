@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema";
+import { validateZodSchema } from "../../middlewares/validateZodSchemaBody";
 import { academicResultZodSchema } from "./academicResult.zod.validation";
 import { academicResultController } from "./academicResult.controller";
 
@@ -30,38 +30,40 @@ router.post(
 // UPDATE ACADEMIC RESULT FIELD ROUTE
 // ==========================================
 router.patch(
-    "/update_field",
-    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-    validateZodSchema(academicResultZodSchema.updateAcademicResultFieldZodSchema),
-    academicResultController.updateAcademicResultField
+  "/update_field",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodSchema(academicResultZodSchema.updateAcademicResultFieldZodSchema),
+  academicResultController.updateAcademicResultField,
 );
 
 // ==========================================
 // GET ALL ACADEMIC RESULTS ROUTE
 // ==========================================
 router.get(
-    "/",
-    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-    academicResultController.getAllAcademicResults
+  "/",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  academicResultController.getAllAcademicResults,
 );
 
 // ==========================================
 // GET SINGLE ACADEMIC RESULT BY ID ROUTE
 // ==========================================
 router.get(
-    "/:academic_result_id",
-    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-    validateZodSchema(academicResultZodSchema.getSingleAcademicResultZodSchema),
-    academicResultController.getSingleAcademicResult,
+  "/:academic_result_id",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodSchema(academicResultZodSchema.getSingleAcademicResultZodSchema),
+  academicResultController.getSingleAcademicResult,
 );
 
 // ===============================================
 // GET ACADEMIC RESULT BY STAFF ID ROUTE
 // ===============================================
 router.get(
-    "/:staff_id",
-    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-    validateZodSchema(academicResultZodSchema.getAcademicResultByStaffIdZodSchema),
-    academicResultController.getAcademicResultByStaffId,
-)
+  "/:staff_id",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodSchema(
+    academicResultZodSchema.getAcademicResultByStaffIdZodSchema,
+  ),
+  academicResultController.getAcademicResultByStaffId,
+);
 export const academicResultRouter: Router = router;

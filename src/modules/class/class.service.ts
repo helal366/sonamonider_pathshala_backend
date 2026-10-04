@@ -15,6 +15,12 @@ const createClassName = async (
 ) => {
   const { class_name } = payload;
   return await prisma.$transaction(async (tx) => {
+    const existingClass = await tx.class.findUnique({
+      where:{class_name}
+    });
+    if(existingClass){
+      throw new AppError(`Provided class ${class_name} already exists `, StatusCodes.CONFLICT)
+    }
     const createdNewClass = await tx.class.create({
       data: {
         class_name,

@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
-import { validateZodSchema } from "../../middlewares/validate.zod.schema.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
 import { addressZodSchema } from "./address.zod.validation.js";
 import { userAddressController } from "./address.controller.js";
 
