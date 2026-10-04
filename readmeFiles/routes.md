@@ -647,3 +647,51 @@
   }
 }
 ```
+
+## Shift routes
+
+- Create Shift
+- POST /api/v1/smps/shift/create
+  JSON:
+
+```json
+{
+  "shift_name": "SHIFT_NAME"
+}
+```
+
+- Delete Shift
+- DELETE /api/v1/smps/shift/delete/:id
+  JSON:
+
+```json
+{
+  "params": {
+    "id": "SHIFT_UUID"
+  }
+}
+```
+
+- Update Shift Field
+- PATCH /api/v1/smps/shift/update/:id
+  JSON:
+
+```json
+{
+  "params": {
+    "id": "SHIFT_UUID"
+  },
+  "body": {
+    "field": "shift_name",
+    "value": "NEW_SHIFT_NAME"
+  }
+}
+```
+
+- Get Shift Names
+- GET /api/v1/smps/shift
+  JSON:
+
+```json
+{}
+```

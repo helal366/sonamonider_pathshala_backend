@@ -4,7 +4,10 @@ import { NextFunction, Request, Response } from "express";
 import { shiftServices } from "./shift.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { shiftZodSchema } from "./shift.zod.validation";
+import {
+    shiftZodSchema,
+    TUpdateShiftFieldParamsZodSchema,
+} from "./shift.zod.validation";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 
 // =============================================
@@ -45,11 +48,52 @@ const deleteShift=catchAsync(async(req:Request, res:Response)=>{
 // =============================================
 // UPDATE SHIFT FIELD CONTROLLER
 // =============================================
-const updateShiftField = catchAsync(async(req:Request, res:Response)=>{
-
+const updateShiftField = catchAsync(async(
+    req: Request<TUpdateShiftFieldParamsZodSchema>,
+    res: Response,
+)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload = req.body;
+    const {id} = req.params;
+    const result = await shiftServices.updateShiftField(
+        payload, loggedInUser, id
+    );
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Shift field updated successfully.`,
+        data: result
+    })
 })
-export const shiftController = {
+
+// =============================================
+// GET SHIFT NAMES CONTROLLER
+// =============================================
+const getShiftNames = catchAsync(async(req:Request, res:Response)=>{
+    helperFunctions.requiredUser(req);
+    const result = await shiftServices.getShiftNames();
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Shift names retrieved successfully.`,
+        data: result
+    })
+});
+
+type ShiftController = {
+    createShift: (req: Request, res: Response, next: NextFunction) => void;
+    deleteShift: (req: Request, res: Response, next: NextFunction) => void;
+    updateShiftField: (
+        req: Request<TUpdateShiftFieldParamsZodSchema>,
+        res: Response,
+        next: NextFunction,
+    ) => void;
+    getShiftNames: (req: Request, res: Response, next: NextFunction) => void;
+};
+
+export const shiftController: ShiftController = {
     createShift,
     deleteShift,
-    updateShiftField
+    updateShiftField,
+    getShiftNames
 }

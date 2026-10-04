@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { positionController } from "./position.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
 import {
   createPositionZodSchema,
   deletePositionZodSchema,

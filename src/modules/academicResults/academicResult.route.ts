@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validateZodSchemaBody";
+import { validateZodSchema } from "../../middlewares/validateZodSchema";
 import { academicResultZodSchema } from "./academicResult.zod.validation";
 import { academicResultController } from "./academicResult.controller";
 

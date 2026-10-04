@@ -16,6 +16,7 @@
     { "key": "staffId", "value": "00000000-0000-4000-8000-000000000005" },
     { "key": "fatherDetailsId", "value": "00000000-0000-4000-8000-000000000006" },
     { "key": "motherDetailsId", "value": "00000000-0000-4000-8000-000000000007" },
+    { "key": "shiftId", "value": "00000000-0000-4000-8000-000000000008" },
     { "key": "email", "value": "user@example.com" }
   ],
   "item": [
@@ -724,6 +725,61 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/v1/smps/class"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shifts",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Shift",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shift_name\": \"MORNING\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/shift/create"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Shift",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/shift/delete/{{shiftId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Shift Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"shift_name\",\n  \"value\": \"EVENING\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/shift/update/{{shiftId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shift Names",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/shift"
           },
           "response": []
         }

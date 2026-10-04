@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TCreateShiftZodSchema } from "./shift.zod.validation";
+import { TCreateShiftZodSchema, TUpdateShiftFieldZodSchema } from "./shift.zod.validation";
 import { Prisma } from "#db-client";
 import { notFound } from '../../middlewares/notFound';
 
@@ -17,7 +17,7 @@ const createShift = async(
     const cleanShiftName = shift_name.trim().toUpperCase();
     return prisma.$transaction(async(tx)=>{
         const existingShift = await tx.shift.findUnique({
-            where: {shift_name:cleanShiftName}
+            where: {shift_name:cleanShiftName},
         });
         if(existingShift){
             throw new AppError(`The provided shift name ${cleanShiftName} already exists.`, StatusCodes.CONFLICT)
@@ -53,7 +53,7 @@ const deleteShift = async(
 )=>{
     return prisma.$transaction(async(tx)=>{
         const existingShift = await tx.shift.findUnique({
-            where: {id: shift_id}
+            where: {id: shift_id},
         });
         if(!existingShift){
             throw new AppError(`Shift not found`, StatusCodes.NOT_FOUND)
@@ -80,11 +80,58 @@ const deleteShift = async(
 // =============================================
 // UPDATE SHIFT FIELD SERVICE LAYER
 // =============================================
-const updateShiftField = async()=>{
+const updateShiftField = async(
+     payload:TUpdateShiftFieldZodSchema, 
+     loggedInUser:TLoggedInUser, 
+     shift_id: string
+)=>{
+    const {field, value} = payload;
+    const cleanValue = value.trim().toUpperCase();
+    return await prisma.$transaction(async(tx)=>{
+        const existingShift = await tx.shift.findUnique({
+            where: {id:shift_id},
+        });
+        if(!existingShift){
+            throw new AppError(`Shift not found`, StatusCodes.NOT_FOUND)
+        }; 
+        const updated = await tx.shift.update({
+            where: {id: shift_id},
+            data: {
+                [field]: cleanValue,
+                updated_by: {connect: {id: loggedInUser.user_id}}
+            }
+        });
+        await tx.auditLog.create({
+            data:{
+                entity_id: existingShift.id,
+                entity_name: "Shift",
+                action: "UPDATE",
+                changed_by: {connect: {id: loggedInUser.user_id}},
+                old_value: {
+                    [field]: existingShift[field as keyof typeof existingShift]
+                },
+                new_value: {
+                    [field]: cleanValue
+                }
+            }
+        })
+        return updated;
+    })
+};
 
+// =============================================
+// GET SHIFT NAMES SERVICE LAYER
+// =============================================
+const getShiftNames = async()=>{
+    const shiftNames = await prisma.shift.findMany({
+        select: {id: true, shift_name: true},
+        orderBy: {shift_name: "asc"}
+    });
+    return shiftNames
 }
 export const shiftServices = {
     createShift,
     deleteShift,
-    updateShiftField
+    updateShiftField,
+    getShiftNames
 }

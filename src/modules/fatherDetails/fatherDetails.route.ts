@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { fatherDetailsController } from "./fatherDetails.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchemaBody.js";
+import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { fatherDetailsZodSchema } from "./fatherDetails.zod.validation.js";
 
