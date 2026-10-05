@@ -14,6 +14,10 @@ model AcademicStaff {
 
   promotion_history PromotionHistory[]
   students_in_responsibility Student[]
+  subject_as_subject_teacher String?
+
+  grade_group_class_id String? @unique
+  grade_group_teacher_class Class? @relation(fields: [grade_group_class_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   teaching_experience_year    Int?
   teaching_experience_month   Int?

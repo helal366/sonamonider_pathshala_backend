@@ -16,6 +16,9 @@ export type TStudentReadmissionZodSchema = z4.infer<
   typeof studentReadmissionZodSchema
 >;
 
+// =============================================
+// ADD RESPONSIBLE TEACHER ZOD SCHEMA
+// =============================================
 const addResponsibleTeacherZodSchema = z4.object({
   student_id: z4.uuid("Invalid Student ID format."),
   teacher_full_name: z4

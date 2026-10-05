@@ -5,6 +5,7 @@ model Class {
   active_students Student[] @relation("student_active_classes")
 
   class_history ClassHistory[]
+  grade_group_teacher AcademicStaff?
 
   created_by_id String?
   created_by    User?   @relation("class_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
