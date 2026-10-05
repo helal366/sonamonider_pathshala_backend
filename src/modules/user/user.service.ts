@@ -21,7 +21,7 @@ import {
   TChangeUserPositionZodSchema,
   TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
-  TUserCreatePayload,
+  TUserCreateZodSchema,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserNameZodSchema,
@@ -38,7 +38,7 @@ import { connect } from "http2";
 
 // CREATE USER SERVICE LAYER
 const createUser = async (
-  payload: TUserCreatePayload,
+  payload: TUserCreateZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   //  Extract + normalize
@@ -90,7 +90,7 @@ const createUser = async (
   });
 
   const user_name =
-    userCount === 0 ? mobile_number : `${mobile_number}-${userCount + 1}`;
+    userCount === 0 ? mobile_number : `${mobile_number}-${userCount}`;
 
   // 6. Create DB records and deliver the verification email atomically.
   const otpKey = `new_user_welcome_otp:${email}`;
@@ -184,21 +184,42 @@ const createUser = async (
         // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
         if (cleanRole === "STUDENT" && subProfileId) {
           const academicYearName = await transaction.academicYear.findUnique({
-            where: {academic_year_name: payload.year_name},
-            select: {id:true}
-          });if(!academicYearName){
-            throw new AppError(`Provided Academic Year ${payload.year_name} not found`, StatusCodes.NOT_FOUND)
-          }
+            where: { academic_year_name: payload.year_name },
+            select: { id: true },
+          });
 
+          if (!academicYearName) {
+            throw new AppError(
+              `Provided Academic Year ${payload.year_name} not found`,
+              StatusCodes.NOT_FOUND,
+            );
+          }
+          const cleanShiftName = payload.shift_name?.trim().toUpperCase();
+          const existingShift = await transaction.shift.findUnique({
+            where: { shift_name: cleanShiftName },
+            select: { id: true, shift_name: true },
+          });
+          if (!existingShift) {
+            throw new AppError(
+              `Provided shift ${cleanShiftName} is not found.`,
+              StatusCodes.NOT_FOUND,
+            );
+          };
+          if(!payload.roll_number){
+            throw new AppError("Roll number is required." , StatusCodes.NOT_FOUND)
+          }
           const classHistory = await transaction.classHistory.create({
             data: {
               student: { connect: { id: subProfileId } },
               class: { connect: { id: payload.active_class_id! } },
-              academic_year: {connect: {id: academicYearName.id}},
+              academic_year: { connect: { id: academicYearName.id } },
+              shift: { connect: { id: existingShift?.id } },
+              roll_number: payload.roll_number,
               start_date: new Date(),
               created_by: { connect: { id: loggedInUser.user_id } },
             },
           });
+          
           auditRecords.push({
             entity_id: classHistory.id,
             entity_name: "ClassHistory",

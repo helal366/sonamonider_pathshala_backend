@@ -8,7 +8,7 @@ import {
   TChangeUserPositionZodSchema,
   TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
-  TUserCreatePayload,
+  TUserCreateZodSchema,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserPasswordZodSchema,
@@ -27,7 +27,7 @@ const createUser = catchAsync(
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    const payload: TUserCreatePayload = req.body;
+    const payload: TUserCreateZodSchema = req.body;
     const result = await userServices.createUser(payload, loggedInUser);
     sendResponse(res, {
       success: true,

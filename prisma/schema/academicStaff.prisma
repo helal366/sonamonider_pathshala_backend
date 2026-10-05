@@ -13,6 +13,7 @@ model AcademicStaff {
   current_role    UserRole? @relation("academic_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   promotion_history PromotionHistory[]
+  students_in_responsibility Student[]
 
   teaching_experience_year    Int?
   teaching_experience_month   Int?

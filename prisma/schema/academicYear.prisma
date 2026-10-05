@@ -1,5 +1,5 @@
 model AcademicYear {
-  id   String @id @default(uuid())
+  id                 String @id @default(uuid())
   academic_year_name String @unique
 
   class_history ClassHistory[]

@@ -12,79 +12,120 @@ import {
 } from "./user.interface.js";
 
 // CREATE USER ZOD SCHEMA
-const userCreateZodSchema = z4.object({
-  full_name: z4
-    .string({
+const userCreateZodSchema = z4
+  .object({
+    full_name: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Full name is required."
+            : "Invalid name format",
+      })
+      .trim()
+      .min(1, "Full name is required."),
+    mobile_number: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Mobile number is required."
+            : "Invalid mobile number format.",
+      })
+      .trim()
+      .length(
+        11,
+        "Mobile number must be 11 digit Bangladeshi number start with 01",
+      )
+      .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
+    gender: z4.enum(Gender, "Invalid gender."),
+    blood_group: z4.enum(BloodGroup, "Invalid blood group.").optional(),
+    date_of_birth: z4
+      .string("Input is expected to be a string but received null")
+      .pipe(z4.coerce.date("Invalid format."))
+      .optional(),
+    height_in_cm: z4.number("Invalid number.").optional(),
+    weight_in_kg: z4.number("Invalid number.").optional(),
+    religion: z4.enum(Religion, "Invalid religion").optional(),
+    nationality: z4.string().optional(),
+    birth_certificate_number: z4
+      .string("Invalid birth certificate number format")
+      .optional(),
+    nid_number: z4.string("Invalid nid number format").optional(),
+    email: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Email is required."
+            : "Invalid email format",
+      })
+      .trim()
+      .toLowerCase()
+      .check(z4.email("Invalid email format")),
+    position_name: z4.string({
       error: (issue) =>
         issue.input === undefined
-          ? "Full name is required."
-          : "Invalid name format",
-    })
-    .trim()
-    .min(1, "Full name is required."),
-  mobile_number: z4
-    .string({
+          ? "User position is required."
+          : "Invalid user position format",
+    }),
+    role_name: z4.enum(VALID_USER_ROLES, {
       error: (issue) =>
         issue.input === undefined
-          ? "Mobile number is required."
-          : "Invalid mobile number format.",
-    })
-    .trim()
-    .length(
-      11,
-      "Mobile number must be 11 digit Bangladeshi number start with 01",
-    )
-    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
-  gender: z4.enum(Gender, "Invalid gender."),
-  blood_group: z4.enum(BloodGroup, "Invalid blood group.").optional(),
-  date_of_birth: z4
-    .string("Input is expected to be a string but received null")
-    .pipe(z4.coerce.date("Invalid format."))
-    .optional(),
-  height_in_cm: z4.number("Invalid number.").optional(),
-  weight_in_kg: z4.number("Invalid number.").optional(),
-  religion: z4.enum(Religion, "Invalid religion").optional(),
-  nationality: z4.string().optional(),
-  birth_certificate_number: z4
-    .string("Invalid birth certificate number format")
-    .optional(),
-  nid_number: z4.string("Invalid nid number format").optional(),
-  email: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Email is required."
-          : "Invalid email format",
-    })
-    .trim()
-    .toLowerCase()
-    .check(z4.email("Invalid email format")),
-  position_name: z4.string({
-    error: (issue) =>
-      issue.input === undefined
-        ? "User position is required."
-        : "Invalid user position format",
-  }),
-  role_name: z4.enum(VALID_USER_ROLES, {
-    error: (issue) =>
-      issue.input === undefined
-        ? "User role is required."
-        : "Invalid user role format",
-  }),
-  joining_date: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Promotion effective date is required."
-          : "Invalid date format. Expected an ISO string.",
-    })
-    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
+          ? "User role is required."
+          : "Invalid user role format",
+    }),
+    joining_date: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Promotion effective date is required."
+            : "Invalid date format. Expected an ISO string.",
+      })
+      .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 
     active_class_id: z4.string().trim().optional(),
     year_name: z4.string().trim().optional(),
-});
+    shift_name: z4.string().trim().optional(),
+    roll_number: z4.coerce
+      .number("Invalid roll number.")
+      .int("Roll number must be an integer.")
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.role_name?.trim().toUpperCase() === "STUDENT") {
+      if (!data.active_class_id || data.active_class_id.trim() === "") {
+        ctx.addIssue({
+          code: "custom",
+          message: "Class is required for students.",
+          path: ["active_class_id"],
+        });
+      }
 
-export type TUserCreatePayload = z4.infer<typeof userCreateZodSchema>;
+      if (!data.year_name || data.year_name.trim() === "") {
+        ctx.addIssue({
+          code: "custom",
+          message: "Academic year name is required for students.",
+          path: ["year_name"],
+        });
+      }
+
+      if (!data.shift_name || data.shift_name.trim() === "") {
+        ctx.addIssue({
+          code: "custom",
+          message: "Shift name is required for students.",
+          path: ["shift_name"],
+        });
+      }
+
+      if (data.roll_number === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Roll number is required for students.",
+          path: ["roll_number"],
+        });
+      }
+    }
+  });
+
+export type TUserCreateZodSchema = z4.infer<typeof userCreateZodSchema>;
 
 // CHANGE PASSWORD ZOD SCHEMA
 const changePasswordZodSchema = z4

@@ -13,17 +13,18 @@ const createClassName = async (
   payload: TCreateClassZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { class_name } = payload;
+  const { class_name} = payload;
+  const cleanClassName = class_name.trim().toUpperCase();
   return await prisma.$transaction(async (tx) => {
     const existingClass = await tx.class.findUnique({
-      where:{class_name}
+      where:{class_name: cleanClassName,}
     });
     if(existingClass){
       throw new AppError(`Provided class ${class_name} already exists `, StatusCodes.CONFLICT)
     }
     const createdNewClass = await tx.class.create({
       data: {
-        class_name,
+        class_name: cleanClassName,
         created_by: {
           connect: { id: loggedInUser.user_id },
         },

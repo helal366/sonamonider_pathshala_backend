@@ -9,6 +9,9 @@ model Student {
 
   class_history ClassHistory[]
 
+  responsible_teacher_id String?
+  responsible_teacher AcademicStaff? @relation(fields: [responsible_teacher_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
+
   user_id           String @unique
   user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

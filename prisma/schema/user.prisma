@@ -54,9 +54,6 @@ model User {
   created_shifts Shift[] @relation("shift_created_by")
   updated_shifts Shift[] @relation("shift_updated_by")
 
-  created_sections Section[] @relation("section_created_by")
-  updated_sections Section[] @relation("section_updated_by")
-
   created_class_history ClassHistory[] @relation("class_history_created_by")
   updated_class_history ClassHistory[] @relation("class_history_updated_by")
 
