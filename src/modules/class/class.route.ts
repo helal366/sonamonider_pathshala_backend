@@ -44,4 +44,13 @@ router.get(
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
   classController.getAllClassNames,
 );
+
+// =============================================
+// ASSIGN GRADE GROUP TEACHER ZOD SCHEMA
+// =============================================
+router.patch(
+  "/assign_grade_group_teacher",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(classZodSchema.assignGradeGroupTeacherZodSchema)
+)
 export const classRouter: Router = router;

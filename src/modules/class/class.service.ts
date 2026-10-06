@@ -3,7 +3,10 @@ import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TCreateClassZodSchema } from "./class.zod.validation";
+import {
+  TAssignGradeGroupTeacherZodSchema,
+  TCreateClassZodSchema,
+} from "./class.zod.validation";
 import { IUpdateClassField } from "./class.interface";
 
 // =============================================
@@ -13,14 +16,17 @@ const createClassName = async (
   payload: TCreateClassZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { class_name} = payload;
+  const { class_name } = payload;
   const cleanClassName = class_name.trim().toUpperCase();
   return await prisma.$transaction(async (tx) => {
     const existingClass = await tx.class.findUnique({
-      where:{class_name: cleanClassName,}
+      where: { class_name: cleanClassName },
     });
-    if(existingClass){
-      throw new AppError(`Provided class ${class_name} already exists `, StatusCodes.CONFLICT)
+    if (existingClass) {
+      throw new AppError(
+        `Provided class ${class_name} already exists `,
+        StatusCodes.CONFLICT,
+      );
     }
     const createdNewClass = await tx.class.create({
       data: {
@@ -78,56 +84,182 @@ const deleteClassName = async (
 // UPDATE CLASS FIELD SERVICE LAYER
 // =============================================
 const updateClassField = async (
-    updatePayload:IUpdateClassField,
-  loggedInUser:TLoggedInUser
+  updatePayload: IUpdateClassField,
+  loggedInUser: TLoggedInUser,
 ) => {
-    const {class_id, field, value} = updatePayload
-    return await prisma.$transaction(async(tx)=>{
-        const existingClass = await tx.class.findUnique({
-          where: { id: class_id },
-        });
-        if (!existingClass) {
-          throw new AppError(`Provided class not found.`, StatusCodes.NOT_FOUND);
-        }
+  const { class_id, field, value } = updatePayload;
+  return await prisma.$transaction(async (tx) => {
+    const existingClass = await tx.class.findUnique({
+      where: { id: class_id },
+    });
+    if (!existingClass) {
+      throw new AppError(`Provided class not found.`, StatusCodes.NOT_FOUND);
+    }
 
-        const updated = await tx.class.update({
-            where:{id: class_id},
-            data: {
-                [field]:value,
-                updated_by: {connect:{id: loggedInUser.user_id}}
-            }
-        });
+    const updated = await tx.class.update({
+      where: { id: class_id },
+      data: {
+        [field]: value,
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
 
-        await tx.auditLog.create({
-            data: {
-                entity_id: class_id,
-                entity_name: "Class",
-                action: "UPDATE",
-                changed_by:{connect:{id: loggedInUser.user_id}},
-                old_value: {
-                    [field]: existingClass[field as keyof typeof existingClass]
-                } as Prisma.InputJsonValue,
-                new_value: { [field]: value } as Prisma.InputJsonValue
-            }
-        })
-        return updated;
-    })
+    await tx.auditLog.create({
+      data: {
+        entity_id: class_id,
+        entity_name: "Class",
+        action: "UPDATE",
+        changed_by: { connect: { id: loggedInUser.user_id } },
+        old_value: {
+          [field]: existingClass[field as keyof typeof existingClass],
+        } as Prisma.InputJsonValue,
+        new_value: { [field]: value } as Prisma.InputJsonValue,
+      },
+    });
+    return updated;
+  });
 };
 
 // =============================================
 // GET ALL CLASS NAME SERVICE LAYER
 // =============================================
-const getAllClassNames=async()=>{
+const getAllClassNames = async () => {
   return await prisma.class.findMany({
-    select:{
-      id:true,
-      class_name: true
+    select: {
+      id: true,
+      class_name: true,
+    },
+  });
+};
+
+// =============================================
+// ASSIGN GRADE GROUP TEACHER ZOD SCHEMA
+// =============================================
+const assignGradeGroupTeacher = async (
+  payload: TAssignGradeGroupTeacherZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const { class_id, academicStaff_id } = payload;
+  return await prisma.$transaction(async (tx) => {
+    const existingClass = await tx.class.findUnique({
+      where: { id: class_id },
+      select: {
+        class_name: true,
+        grade_group_teacher_id: true,
+        grade_group_teacher: true,
+      },
+    });
+
+    if (!existingClass) {
+      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
     }
-  })
-}
+
+    if (existingClass.grade_group_teacher_id) {
+      throw new AppError(
+        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.full_name} (${existingClass.grade_group_teacher?.mobile_number})`,
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    const existingAcademicStaff = await tx.academicStaff.findUnique({
+      where: { id: academicStaff_id },
+      select: {
+        full_name: true,
+        mobile_number: true,
+        grade_group_teacher_class: {
+          select: {
+            id: true,
+          },
+        },
+        current_position: {
+          select: {
+            position_name: true,
+          },
+        },
+        user_primary_data: {
+          select: {
+            active_status: true,
+            is_deleted: true,
+          },
+        },
+      },
+    });
+    const isAcademicStaffActive =
+      existingAcademicStaff?.user_primary_data.active_status === "ACTIVE";
+    const isAcademicStaffDeleted =
+      existingAcademicStaff?.user_primary_data.is_deleted;
+    if (
+      !existingAcademicStaff ||
+      !isAcademicStaffActive ||
+      isAcademicStaffDeleted
+    ) {
+      throw new AppError(
+        `Teacher not available. Check activity.`,
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    if (
+      existingAcademicStaff.current_position?.position_name ===
+      "TEACHER_ASSISTANT"
+    ) {
+      throw new AppError(
+        `TEACHER_ASSISTANT can not assign as Grade or Group teacher.`,
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    if (existingAcademicStaff.grade_group_teacher_class) {
+      throw new AppError(
+        `Teacher is already assigned as Grade/Group Teacher of another class.`,
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    const assigned = await tx.class.update({
+      where: { id: class_id },
+      data: {
+        grade_group_teacher: { connect: { id: academicStaff_id } },
+      },
+    });
+
+    await tx.auditLog.createMany({
+      data: [{
+        entity_id: class_id,
+        entity_name: "Class",
+        changed_by_id: loggedInUser.user_id,
+        action: "UPDATE",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          grade_group_teacher_id: academicStaff_id,
+          grade_group_teacher: {
+            full_name: existingAcademicStaff.full_name,
+            mobile_number: existingAcademicStaff.mobile_number,
+          },
+        },
+      },
+      {
+        entity_id: academicStaff_id,
+        entity_name: "AcademicStaff",
+        changed_by_id: loggedInUser.user_id,
+        action: "UPDATE",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          grade_group_teacher_class: {
+            id: class_id,
+            class_name : existingClass.class_name
+          }
+        }
+      }
+    ],
+    });
+
+    return assigned;
+  });
+};
 export const classServices = {
   createClassName,
   deleteClassName,
   updateClassField,
   getAllClassNames,
+  assignGradeGroupTeacher,
 };

@@ -80,8 +80,30 @@ export type TUpdateClassFieldZodSchema = z4.infer<
 // =============================================
 // GET ALL CLASS NAME ZOD SCHEMA
 // =============================================
+
+// =============================================
+// ASSIGN GRADE GROUP TEACHER ZOD SCHEMA
+// =============================================
+const assignGradeGroupTeacherZodSchema = z4.object({
+    class_id: z4.uuid({
+        error: (issue)=>
+            issue.input === undefined
+        ?"Class ID is required."
+        :"Invalid Class ID format."
+    }),
+    
+    academicStaff_id: z4.uuid({
+        error: (issue)=>
+            issue.input === undefined
+        ?"Academic staff ID is required."
+        :"Invalid Academic staff ID format."
+    }),
+
+})
+export type TAssignGradeGroupTeacherZodSchema = z4.infer<typeof assignGradeGroupTeacherZodSchema>
 export const classZodSchema = {
   createClassZodSchema,
   deleteClassNameZodSchema,
   updateClassFieldZodSchema,
+  assignGradeGroupTeacherZodSchema
 };
