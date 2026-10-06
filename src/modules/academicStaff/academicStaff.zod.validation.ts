@@ -17,6 +17,7 @@ const assignGradeGroupTeacherZodSchema = z4.object({
 
 })
 export type TAssignGradeGroupTeacherZodSchema = z4.infer<typeof assignGradeGroupTeacherZodSchema>
+
 export const academicStaffZodSchema = {
     assignGradeGroupTeacherZodSchema
 }

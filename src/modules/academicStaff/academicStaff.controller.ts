@@ -7,7 +7,7 @@ import { StatusCodes } from "http-status-codes";
 
 
 // ===============================================
-// ASSIGN GRAGE GROUP TEACHER SERVICE LAYER
+// ASSIGN GRAGE GROUP TEACHER CONTROLLER
 // ===============================================
 const assignGradeGroupTeacher= catchAsync(async(req:Request, res: Response)=>{
     const loggedInUser = helperFunctions.requiredUser(req);
@@ -22,6 +22,22 @@ const assignGradeGroupTeacher= catchAsync(async(req:Request, res: Response)=>{
     })
 });
 
+// ===============================================
+// UPDATE GRAGE GROUP TEACHER CONTROLLER
+// ===============================================
+const updateGradeGroupTeacher = catchAsync(async(req:Request, res: Response)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload = req.body;
+    const result = await academicStaffServices.updateGradeGroupTeacher(payload, loggedInUser);
+
+    sendResponse(res, {
+        success: true, 
+        statusCode: StatusCodes.OK,
+        message: ` Grade or Group Teacher updated successfully.`,
+        data: result
+    })
+})
 export const academicStaffController = {
-    assignGradeGroupTeacher
+    assignGradeGroupTeacher,
+    updateGradeGroupTeacher
 }

@@ -14,5 +14,11 @@ router.patch(
     userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
     validateZodSchema(academicStaffZodSchema.assignGradeGroupTeacherZodSchema),
     academicStaffController.assignGradeGroupTeacher
+);
+router.patch(
+    "/update_grade_group_teacher",
+    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+    validateZodSchema(academicStaffZodSchema.assignGradeGroupTeacherZodSchema),
+    academicStaffController.updateGradeGroupTeacher
 )
 export const academicStaffRouter:Router = router
