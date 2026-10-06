@@ -12,12 +12,13 @@ model AcademicStaff {
   current_role_id String?
   current_role    UserRole? @relation("academic_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  promotion_history PromotionHistory[]
+  promotion_history          PromotionHistory[]
+  promotion_requests         PromotionRequest[]
   students_in_responsibility Student[]
-  
+
   subject_as_subject_teacher String?
 
-  grade_group_teacher_class Class? 
+  grade_group_teacher_class Class?
 
   teaching_experience_year    Int?
   teaching_experience_month   Int?

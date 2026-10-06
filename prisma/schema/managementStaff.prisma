@@ -20,7 +20,8 @@ model ManagementStaff {
 
   is_currently_active_staff Boolean @default(true)
 
-  promotion_history PromotionHistory[]
+  promotion_history  PromotionHistory[]
+  promotion_requests PromotionRequest[]
 
   created_by_id String?
   created_by    User?   @relation("management_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

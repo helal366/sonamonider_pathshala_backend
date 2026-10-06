@@ -6,8 +6,8 @@ model Class {
 
   class_history ClassHistory[]
 
-  grade_group_teacher_id String? @unique
-  grade_group_teacher AcademicStaff? @relation(fields: [grade_group_teacher_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  grade_group_teacher_id String?        @unique
+  grade_group_teacher    AcademicStaff? @relation(fields: [grade_group_teacher_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_by_id String?
   created_by    User?   @relation("class_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

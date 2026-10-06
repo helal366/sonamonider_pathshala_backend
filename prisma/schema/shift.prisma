@@ -1,7 +1,7 @@
 model Shift {
   id         String @id @default(uuid())
   shift_name String @unique
-  
+
   class_history ClassHistory[]
   created_by_id String?
   created_by    User?          @relation("shift_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

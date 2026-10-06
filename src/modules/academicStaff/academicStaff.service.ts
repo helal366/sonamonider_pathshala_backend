@@ -24,6 +24,11 @@ const updateSubjectForSubjectTeacher = async (
           select: { active_status: true, is_deleted: true },
         },
         subject_as_subject_teacher: true,
+        current_position: {
+          select: {
+            position_name: true
+          }
+        }
       },
     });
     // CHECK ACADEMIC STAFF EXISTANCE
@@ -39,6 +44,15 @@ const updateSubjectForSubjectTeacher = async (
       throw new AppError(`Teacher is unauthorized.`, StatusCodes.UNAUTHORIZED);
     }
 
+    // PREVENT TEACHER_ASSISTANT TO ASSIGN A SUBJECT AS SUBJECT TEACHER
+    if(teacher.current_position?.position_name === "TEACHER_ASSISTANT"){
+      throw new AppError(`Provided teacher is in position : TEACHER_ASSISTANT`, StatusCodes.BAD_REQUEST)
+    };
+
+    // CHECK THE SUBJECT IS ALREADY ASSIGNED TO ANY OTHER TEACHER 
+    // IT CAN BE CHECKED IF THE RULE ALLOW
+
+    
     // CHECK THE PROVIDED CURRENT SUBJECT IS ASSIGNED TO TEACHER OR NOT
     if (teacher.subject_as_subject_teacher !== current_subject) {
       throw new AppError(

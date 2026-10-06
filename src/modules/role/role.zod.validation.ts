@@ -1,3 +1,4 @@
+import { RoleType } from "#db-client";
 import z4 from "zod/v4";
 
 // CREATE ROLE ZOD SCHEMA
@@ -11,6 +12,8 @@ export const createRoleZodSchema = z4.object({
     })
     .trim()
     .toUpperCase(),
+
+    role_type: z4.enum(RoleType, "Invalid Role type format.")
 });
 
 export type TCreateRoleZodSchema = z4.infer<typeof createRoleZodSchema>;

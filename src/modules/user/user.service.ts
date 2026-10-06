@@ -34,7 +34,6 @@ import {
   sendVerificationResultEmail,
 } from "../email/email.helper.function.js";
 import { TCleanRole } from "./user.interface.js";
-import { connect } from "http2";
 
 // CREATE USER SERVICE LAYER
 const createUser = async (
@@ -98,6 +97,19 @@ const createUser = async (
   const newUser = await prisma
     .$transaction(
       async (transaction) => {
+        // CHECK THE CLASS IS ACTIVE OR NOT
+        const classCheck = await transaction.class.findUnique({
+          where: { id: payload.active_class_id },
+          select: {
+            is_active_class: true
+          }
+        });
+        if (!classCheck) {
+          throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+        };
+        if(!classCheck.is_active_class){
+          throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST)
+        }
         // 💡 CALLING THE HELPER FUNCTION HERE
         const { profileData, targetEntityName } =
           userHelperFunction.buildDynamicProfileData({
@@ -204,9 +216,12 @@ const createUser = async (
               `Provided shift ${cleanShiftName} is not found.`,
               StatusCodes.NOT_FOUND,
             );
-          };
-          if(!payload.roll_number){
-            throw new AppError("Roll number is required." , StatusCodes.NOT_FOUND)
+          }
+          if (!payload.roll_number) {
+            throw new AppError(
+              "Roll number is required.",
+              StatusCodes.NOT_FOUND,
+            );
           }
           const classHistory = await transaction.classHistory.create({
             data: {
@@ -219,7 +234,7 @@ const createUser = async (
               created_by: { connect: { id: loggedInUser.user_id } },
             },
           });
-          
+
           auditRecords.push({
             entity_id: classHistory.id,
             entity_name: "ClassHistory",

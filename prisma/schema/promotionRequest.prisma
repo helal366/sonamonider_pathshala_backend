@@ -1,0 +1,34 @@
+model PromotionRequest {
+  id String @id @default(uuid())
+
+  old_role_id String
+  old_role UserRole @relation("promotion_request_old_role", fields: [old_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  new_role_id String 
+  new_role UserRole @relation("promotion_request_new_role", fields: [new_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  old_position_id String
+  old_position    UserPosition @relation("promotion_request_old_position", fields: [old_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  new_position_id String
+  new_position    UserPosition @relation("promotion_request_new_position", fields: [new_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  management_staff_id String?
+  management_staff    ManagementStaff? @relation(fields: [management_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  academic_staff_id String?
+  academic_staff    AcademicStaff? @relation(fields: [academic_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  isPromoted Boolean @default(false)
+
+  created_by_id String?
+  created_by    User?   @relation("promotion_request_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("promotion_request_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("promotion_requests")
+}

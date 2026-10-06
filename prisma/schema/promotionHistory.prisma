@@ -18,7 +18,16 @@ model PromotionHistory {
   start_date DateTime  @default(now())
   end_date   DateTime?
 
+  created_by_id String?
+  created_by    User?   @relation("promotion_history_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("promotion_history_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
   @@index([management_staff_id])
+  @@index([academic_staff_id])
   @@index([position_id])
   @@index([role_id])
   @@map("promotion_histories")

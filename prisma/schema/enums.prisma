@@ -81,3 +81,17 @@ enum EducationDegree {
   FAZIL
   OTHERS
 }
+
+enum RoleType {
+  ACADEMIC
+  MANAGEMENT
+  STUDENT
+  GOVERNING_BODY
+}
+
+enum PositionType {
+  ACADEMIC
+  MANAGEMENT
+  STUDENT
+  GOVERNING_BODY
+}

@@ -8,6 +8,10 @@ model UserRole {
   user                      User[]            @relation("user_role_relation")
 
   promotion_history PromotionHistory[]
+  promotion_request_old_role PromotionRequest[] @relation("promotion_request_old_role")
+  promotion_request_new_role PromotionRequest[] @relation("promotion_request_new_role")
+
+  role_type RoleType
 
   created_by_id String?
   created_by    User?   @relation("role_created_by", fields: [created_by_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

@@ -14,7 +14,7 @@ const createRole = async (
   payload: TCreateRoleZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { role_name } = payload;
+  const { role_name, role_type } = payload;
   const cleanRole = role_name.trim().toUpperCase();
 
   // 1. Check whether the role name already exists to prevent duplication
@@ -35,6 +35,7 @@ const createRole = async (
     const newRole = await transaction.userRole.create({
       data: {
         role_name: cleanRole,
+        role_type,
         created_by: {
           connect: { id: loggedInUser.user_id },
         },
