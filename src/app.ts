@@ -19,6 +19,7 @@ import { classRouter } from "./modules/class/class.route.js";
 import { studentRouter } from "./modules/student/student.route.js";
 import { academicYearRouter } from "./modules/academicYear/academicYear.route.js";
 import { shiftRouter } from "./modules/shift/shift.route.js";
+import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -41,6 +42,7 @@ app.use("/api/v1/smps/class", classRouter);
 app.use("/api/v1/smps/student", studentRouter);
 app.use("/api/v1/smps/academic_year", academicYearRouter);
 app.use("/api/v1/smps/shift", shiftRouter);
+app.use("/api/v1/smps/academic_staff", academicStaffRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {
