@@ -115,8 +115,8 @@ const disconnectGradeGroupTeacherZodSchema =z4.object({
     academicStaff_id: z4.uuid({
         error: (issue)=>
             issue.input === undefined
-        ?"Academic staff ID is required."
-        :"Invalid Academic staff ID format."
+        ?"Teacher ID is required."
+        :"Invalid Teacher ID format."
     }),
 
 });

@@ -14,6 +14,7 @@ model AcademicStaff {
 
   promotion_history PromotionHistory[]
   students_in_responsibility Student[]
+  
   subject_as_subject_teacher String?
 
   grade_group_teacher_class Class? 
