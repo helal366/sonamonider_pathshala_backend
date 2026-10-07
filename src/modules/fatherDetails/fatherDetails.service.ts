@@ -103,7 +103,7 @@ const createFatherDetails = async (
         data: [
           {
             entity_id: fatherDetails.id,
-            entity_name: "FatherDetails",
+            entity_name: "fatherDetails",
             old_value: Prisma.JsonNull,
             new_value: {
               father_name,
@@ -114,7 +114,7 @@ const createFatherDetails = async (
           },
           {
             entity_id: user_id,
-            entity_name: "User",
+            entity_name: "user",
             old_value: { father_details_id: null },
             new_value: { father_details_id: fatherDetails.id },
             action: "UPDATE",
@@ -226,7 +226,7 @@ const connectFatherDetails = async (
       data: [
         {
           entity_id: user_id,
-          entity_name: "User",
+          entity_name: "user",
           old_value: { father_details_id: null },
           new_value: { father_details_id: father_details_id },
           action: "UPDATE",
@@ -234,7 +234,7 @@ const connectFatherDetails = async (
         },
         {
           entity_id: father_details_id,
-          entity_name: "FatherDetails",
+          entity_name: "fatherDetails",
           old_value: Prisma.JsonNull, // Represents connecting a new child user to this father
           new_value: {
             user_id: user_id,
@@ -306,7 +306,7 @@ const updateFatherDetailsField = async (
     await transaction.auditLog.create({
       data: {
         entity_id: fatherDetailsId,
-        entity_name: "FatherDetails",
+        entity_name: "fatherDetails",
         old_value: { user_id, [field]: fatherDetails[field] },
         new_value: { user_id, [field]: value },
         action: "UPDATE",
@@ -408,7 +408,7 @@ const disconnectFatherDetails = async (
         data: [
           {
             entity_id: fatherDetailsId,
-            entity_name: "FatherDetails",
+            entity_name: "fatherDetails",
             old_value: {
               user_id,
               father_details_id: fatherDetailsId,
@@ -424,7 +424,7 @@ const disconnectFatherDetails = async (
           },
           {
             entity_id: user_id,
-            entity_name: "User",
+            entity_name: "user",
             old_value: { father_details_id: fatherDetailsId },
             new_value: { father_details_id: null },
             action: "UPDATE",

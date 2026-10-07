@@ -132,7 +132,7 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
             create: [
               {
                 entity_id: user.id,
-                entity_name: "User",
+                entity_name: "user",
                 old_value: {
                   is_email_verified: false,
                   password_set: false,
@@ -280,7 +280,7 @@ const verifyEmailForgetPassword = async ({
             create: [
               {
                 entity_id: user.id,
-                entity_name: "User",
+                entity_name: "user",
                 old_value: Prisma.JsonNull,
                 new_value: { password_reset: true },
                 action: "UPDATE",

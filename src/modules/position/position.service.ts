@@ -49,7 +49,7 @@ const createPosition = async (
     await transaction.auditLog.create({
       data: {
         entity_id: newPosition.id,
-        entity_name: "UserPosition",
+        entity_name: "userPosition",
         old_value: Prisma.JsonNull, // Safely satisfies the structural Json column constraint
         new_value: {
           position_name: cleanPosition,
@@ -103,7 +103,7 @@ const updatePosition = async (
       await transaction.auditLog.create({
         data: {
           entity_id: updatedPosition.id,
-          entity_name: "User Position",
+          entity_name: "userPosition",
           old_value: {
             position_name: cleanPresentPositionName,
           },
@@ -173,7 +173,7 @@ const deletePosition=async(
     await transaction.auditLog.create({
       data: {
         entity_id: existingPosition.id,
-        entity_name: "UserPosition",
+        entity_name: "userPosition",
         old_value: {position_name: cleanPositionName},
         new_value: Prisma.JsonNull,
         action: "DELETE",

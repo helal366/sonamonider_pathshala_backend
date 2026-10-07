@@ -45,7 +45,7 @@ const createRole = async (
     await transaction.auditLog.create({
       data: {
         entity_id: newRole.id,
-        entity_name: "UserRole",
+        entity_name: "userRole",
         old_value: Prisma.JsonNull, // Expresses empty state for a new record safely
         new_value: {
           role_name: cleanRole,
@@ -127,7 +127,7 @@ const updateRole = async (
     await transaction.auditLog.create({
       data: {
         entity_id: updatedRole.id,
-        entity_name: "UserRole",
+        entity_name: "userRole",
         old_value: {
           role_name: cleanCurrentRole,
         },
@@ -196,7 +196,7 @@ const deleteRole = async (
     await transaction.auditLog.create({
       data: {
         entity_id: existingRole.id,
-        entity_name: "UserRole",
+        entity_name: "userRole",
         old_value: { role_name: cleanRole },
         new_value: Prisma.JsonNull, // Expresses final status value state removal clearly
         action: "DELETE",

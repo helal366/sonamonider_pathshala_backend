@@ -139,7 +139,7 @@ const deleteAcademicResult = async (
     await tx.auditLog.create({
       data: {
         entity_id: academic_result_id,
-        entity_name: "AcademicResult",
+        entity_name: "academicResult",
         action: "DELETE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: academicResult as unknown as Prisma.InputJsonValue,
@@ -181,7 +181,7 @@ const updateAcademicResultField = async (
     await tx.auditLog.create({
       data: {
         entity_id: academic_result_id,
-        entity_name: "AcademicResult",
+        entity_name: "academicResult",
         action: "UPDATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: {

@@ -41,7 +41,7 @@ const createClassName = async (
     await tx.auditLog.create({
       data: {
         entity_id: createdNewClass.id,
-        entity_name: "Class",
+        entity_name: "class",
         action: "CREATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: Prisma.JsonNull,
@@ -70,7 +70,7 @@ const deleteClassName = async (
     await tx.auditLog.create({
       data: {
         entity_id: class_id,
-        entity_name: "Class",
+        entity_name: "class",
         changed_by: { connect: { id: loggedInUser.user_id } },
         action: "DELETE",
         old_value: existingClass as unknown as Prisma.InputJsonValue,
@@ -108,7 +108,7 @@ const updateClassField = async (
     await tx.auditLog.create({
       data: {
         entity_id: class_id,
-        entity_name: "Class",
+        entity_name: "class",
         action: "UPDATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: {
@@ -228,7 +228,7 @@ const assignGradeGroupTeacher = async (
       data: [
         {
           entity_id: class_id,
-          entity_name: "Class",
+          entity_name: "class",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: Prisma.JsonNull,
@@ -242,7 +242,7 @@ const assignGradeGroupTeacher = async (
         },
         {
           entity_id: academicStaff_id,
-          entity_name: "AcademicStaff",
+          entity_name: "academicStaff",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: Prisma.JsonNull,
@@ -345,7 +345,7 @@ const disconnectGradeGroupTeacher = async (
       data: [
         {
           entity_id: class_id,
-          entity_name: "Class",
+          entity_name: "class",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
@@ -359,7 +359,7 @@ const disconnectGradeGroupTeacher = async (
         },
         {
           entity_id: academicStaff_id,
-          entity_name: "AcademicStaff",
+          entity_name: "academicStaff",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {

@@ -79,7 +79,7 @@ const createMotherDetails = async (
     await transaction.auditLog.create({
       data: {
         entity_id: created.id,
-        entity_name: "MotherDetails",
+        entity_name: "motherDetails",
         old_value: Prisma.JsonNull,
         new_value: {
           user_id,
@@ -152,7 +152,7 @@ const connectMotherDetails = async (
       data: [
         {
           entity_id: user_id,
-          entity_name: "User",
+          entity_name: "user",
           old_value: {
             mother_details_id: null,
           },
@@ -164,7 +164,7 @@ const connectMotherDetails = async (
         },
         {
           entity_id: mother_details_id,
-          entity_name: "MotherDetails",
+          entity_name: "motherDetails",
           old_value: Prisma.JsonNull,
           new_value: {
             user_id,
@@ -210,7 +210,7 @@ const updateMotherDetailsField = async (
     await transaction.auditLog.create({
       data: {
         entity_id: motherDetailsId,
-        entity_name: "MotherDetails",
+        entity_name: "motherDetails",
         old_value: { user_id, [field]: motherDetails[field] },
         new_value: { user_id, [field]: value },
         action: "UPDATE",
@@ -273,7 +273,7 @@ const disconnectMotherDetails = async (
     await transaction.auditLog.create({
       data: {
         entity_id: user_id,
-        entity_name: "User",
+        entity_name: "user",
         old_value: {
           mother_details_id: motherDetailsId,
         },
@@ -299,7 +299,7 @@ const disconnectMotherDetails = async (
       await transaction.auditLog.create({
         data: {
           entity_id: motherDetailsId,
-          entity_name: "MotherDetails",
+          entity_name: "motherDetails",
           old_value: {
             user_id,
             user_full_name: targetUser.full_name,
@@ -314,7 +314,7 @@ const disconnectMotherDetails = async (
       await transaction.auditLog.create({
         data: {
           entity_id: motherDetailsId,
-          entity_name: "MotherDetails",
+          entity_name: "motherDetails",
           old_value: {
             user_id,
             user_full_name: targetUser.full_name,

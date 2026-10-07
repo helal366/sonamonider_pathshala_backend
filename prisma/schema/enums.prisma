@@ -81,3 +81,9 @@ enum EducationDegree {
   FAZIL
   OTHERS
 }
+
+enum PromotionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

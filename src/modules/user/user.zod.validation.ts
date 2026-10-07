@@ -454,9 +454,9 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
 >;
 
 // ================================================
-// CROSS PIPELINE TRANSFER ZOD SCHEMA
+// USER CROSS PIPELINE PROMOTION ZOD SCHEMA
 // ================================================
-export const crossPipelineTransferZodSchema = z4.object({
+export const userCrossPipelinePromotionZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -493,7 +493,7 @@ export const crossPipelineTransferZodSchema = z4.object({
     .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 });
 
-export type TCrossPipelineTransferZodSchema = z4.infer<typeof crossPipelineTransferZodSchema>;
+export type TCrossPipelineTransferZodSchema = z4.infer<typeof userCrossPipelinePromotionZodSchema>;
 
 export const userZodSchema = {
   userCreateZodSchema,
@@ -505,5 +505,5 @@ export const userZodSchema = {
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
-  crossPipelineTransferZodSchema
+  userCrossPipelinePromotionZodSchema
 };

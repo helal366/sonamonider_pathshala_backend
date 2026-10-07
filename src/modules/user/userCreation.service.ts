@@ -213,12 +213,11 @@ const createUser = async (
 
           auditRecords.push({
             entity_id: classHistory.id,
-            entity_name: "ClassHistory",
+            entity_name: "classHistory",
             old_value: Prisma.JsonNull,
             new_value: {
               class_id: payload.active_class_id,
               start_date: new Date().toISOString(),
-              action: "INITIAL_ENROLLMENT",
             },
             action: "CREATE",
             changed_by_id: loggedInUser.user_id,
@@ -227,7 +226,7 @@ const createUser = async (
         // Add additional tracking metadata audit line item
         auditRecords.push({
           entity_id: subProfileId,
-          entity_name: "PromotionHistory",
+          entity_name: "promotionHistory",
           old_value: Prisma.JsonNull,
           new_value: {
             role_id: roleExists.id,

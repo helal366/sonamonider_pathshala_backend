@@ -10,4 +10,8 @@ const createPromotionRequest = async(
     return prisma.$transaction(async(tx)=>{
         
     })
+};
+
+export const promotionRequestServices= {
+    createPromotionRequest
 }

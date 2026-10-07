@@ -40,17 +40,17 @@ router.patch(
 );
 
 // ==========================================
-// CROSS PIPELINE TRANSFER ROUTE
+// USER CROSS PIPELINE PROMOTION ROUTE
 // ==========================================
 router.patch(
   "/transfer_user_cross_pipeline",
   userAuth("SUPER_ADMIN"), // Enforced safety rule for root system operations
-  validateZodSchema(userZodSchema.crossPipelineTransferZodSchema),
-  userController.transferUserCrossPipeline,
+  validateZodSchema(userZodSchema.userCrossPipelinePromotionZodSchema),
+  userController.userCrossPipelinePromotion,
 );
 
 // ==========================================
-// CHANGE POSITION
+// CHANGE POSITION ROUTE
 // ==========================================
 router.patch(
   "/change_position",

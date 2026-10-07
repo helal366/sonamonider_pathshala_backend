@@ -71,7 +71,7 @@ const updateSubjectForSubjectTeacher = async (
     await tx.auditLog.create({
       data: {
         entity_id: academicStaff_id,
-        entity_name: "AcademicStaff",
+        entity_name: "academicStaff",
         changed_by_id: loggedInUser.user_id,
         action: "UPDATE",
         old_value: {
@@ -146,7 +146,7 @@ const updateAcademicStaffField = async (
     await tx.auditLog.create({
       data: {
         entity_id: academicStaff_id,
-        entity_name: "AcademicStaff",
+        entity_name: "academicStaff",
         changed_by: { connect: { id: loggedInUser.user_id } },
         action: "UPDATE",
         old_value: {

@@ -1,5 +1,8 @@
 import z4 from "zod/v4";
 
+// =========================================================
+// CREATE PROMOTION REQUEST ZOD SCHEMA
+// =========================================================
 const createPromotionRequestZodSchema = z4.object({
     required_id: z4.uuid({
         error: (issue) =>

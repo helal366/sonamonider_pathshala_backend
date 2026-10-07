@@ -213,7 +213,7 @@ const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const transferUserCrossPipeline = catchAsync(
+const userCrossPipelinePromotion = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TCrossPipelineTransferZodSchema = req.body;
     const loggedInUser = req.user;
@@ -222,7 +222,7 @@ const transferUserCrossPipeline = catchAsync(
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    const result = await userPromotionServices.transferUserCrossPipeline(
+    const result = await userPromotionServices.userCrossPipelinePromotion(
       payload,
       loggedInUser,
     );
@@ -246,5 +246,5 @@ export const userController = {
   updateSingleUserFieldSuperAdmin,
   updateUserName,
   updateUserPassword,
-  transferUserCrossPipeline
+  userCrossPipelinePromotion
 };

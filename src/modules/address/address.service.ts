@@ -75,8 +75,8 @@ const createAddress = async (
         entity_id: address.id,
         entity_name:
           address_type === AddressType.PRESENT
-            ? "PresentAddress"
-            : "PermanentAddress",
+            ? "presentAddress"
+            : "permanentAddress",
         action: "CREATE",
         old_value: Prisma.JsonNull,
         new_value: address as unknown as Prisma.InputJsonValue,
@@ -132,8 +132,8 @@ const deleteAddress = async (
         entity_id: addressId,
         entity_name:
           address_type === AddressType.PRESENT
-            ? "PresentAddress"
-            : "PermanentAddress",
+            ? "presentAddress"
+            : "permanentAddress",
         action: "DELETE",
         old_value: oldAddress as unknown as Prisma.InputJsonValue,
         new_value: Prisma.JsonNull,
@@ -207,8 +207,8 @@ const updateUserAddressFiled = async (
         entity_id: addressId,
         entity_name:
           address_type === AddressType.PRESENT
-            ? "PresentAddress"
-            : "PermanentAddress",
+            ? "presentAddress"
+            : "permanentAddress",
         action: "UPDATE",
         old_value: {
           [field]: oldAddress[field],

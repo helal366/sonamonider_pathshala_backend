@@ -26,7 +26,7 @@ const createAcademicYear=async(
         await tx.auditLog.create({
             data:{
                 entity_id: academicYear.id,
-                entity_name: "AcademicYear",
+                entity_name: "academicYear",
                 action: "CREATE",
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: Prisma.JsonNull,
@@ -59,7 +59,7 @@ const deleteAcademicYear=async(
         await tx.auditLog.create({
             data: {
                 entity_id: academic_year_id,
-                entity_name: "AcademicYear",
+                entity_name: "academicYear",
                 action: "DELETE",
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: academicYearExistance as unknown as Prisma.InputJsonValue,
@@ -98,7 +98,7 @@ const updateAcademicYearField=async(
         await tx.auditLog.create({
             data:{
                 entity_id: academic_year_id,
-                entity_name: "AcademicYear",
+                entity_name: "academicYear",
                 action: "UPDATE",
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: {

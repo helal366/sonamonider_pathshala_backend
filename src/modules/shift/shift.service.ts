@@ -33,7 +33,7 @@ const createShift = async(
         await tx.auditLog.create({
             data: {
                 entity_id: created.id,
-                entity_name: "Shift",
+                entity_name: "shift",
                 action: "CREATE",
                 changed_by: {connect: {id:loggedInUser.user_id,}},
                 old_value: Prisma.JsonNull,
@@ -66,7 +66,7 @@ const deleteShift = async(
         await tx.auditLog.create({
             data: {
                 entity_id: existingShift.id,
-                entity_name: "Shift",
+                entity_name: "shift",
                 action: "DELETE",
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: existingShift as unknown as Prisma.InputJsonValue,
@@ -104,7 +104,7 @@ const updateShiftField = async(
         await tx.auditLog.create({
             data:{
                 entity_id: existingShift.id,
-                entity_name: "Shift",
+                entity_name: "shift",
                 action: "UPDATE",
                 changed_by: {connect: {id: loggedInUser.user_id}},
                 old_value: {

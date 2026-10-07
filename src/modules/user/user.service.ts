@@ -4,28 +4,23 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import bcrypt from "bcryptjs";
 import { envVars } from "../../config/index.js";
-import { clearCacheRoles, findRoleExistence } from "../../helperFunctions/cachedData/cache_roles.js";
-import {
-  clearCachePositions,
-  findPositionExistence,
-} from "../../helperFunctions/cachedData/cache_positions.js";
+import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions.js";
+import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { emailServices } from "../email/email.service.js";
+import { sendVerificationResultEmail } from "../email/email.helper.function.js";
 import {
   TChangePasswordPayload,
   TChangeUserPositionZodSchema,
-  TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserNameZodSchema,
   TUpdateUserPasswordZodSchema,
 } from "./user.zod.validation.js";
-import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
-import { emailServices } from "../email/email.service.js";
-import {
-  sendVerificationResultEmail,
-} from "../email/email.helper.function.js";
 
+// ==========================================
 // CHANGE PASSWORD SERVICE LAYER
+// ==========================================
 const changePassword = async (
   payload: TChangePasswordPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -96,7 +91,7 @@ const changePassword = async (
             create: [
               {
                 entity_id: user.id,
-                entity_name: "User",
+                entity_name: "user",
                 old_value: Prisma.JsonNull,
                 new_value: { password_changed: true },
                 action: "UPDATE",
@@ -122,14 +117,16 @@ const changePassword = async (
   return { email_sent: true };
 };
 
+// ==========================================
 // FORGET PASSWORD SERVICE LAYER
+// ==========================================
 const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
   await emailServices.sendForgetPasswordOtp({ email });
 };
 
-
-
+// ===========================================
 // CHANGE USER POSITION SERVICE LAYER
+// ===========================================
 const changeUserPosition = async (
   payload: TChangeUserPositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -244,7 +241,7 @@ const changeUserPosition = async (
             },
             {
               entity_id: targetStaff.id,
-              entity_name: "User",
+              entity_name: "user",
               old_value: {
                 position: targetStaff.current_position?.position_name ?? null,
               },
@@ -260,7 +257,9 @@ const changeUserPosition = async (
   });
 };
 
+// ================================================
 // UPDATE SINGLE USER FIELD ADMIN SERVICE LAYER
+// ================================================
 const updateSingleUserFieldAdmin = async (
   payload: TUpdateSingleUserFieldAdminZodSchema,
   loggedInUser: TLoggedInUser,
@@ -371,7 +370,7 @@ const updateSingleUserFieldAdmin = async (
     await transaction.auditLog.create({
       data: {
         entity_id: user_id,
-        entity_name: "User",
+        entity_name: "user",
         action: "UPDATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: { [field]: user[typedField] },
@@ -385,7 +384,9 @@ const updateSingleUserFieldAdmin = async (
   return updatedUser;
 };
 
+// ==========================================================
 // UPDATE SINGLE USER FIELD SUPER ADMIN SERVICE LAYER
+// ==========================================================
 const updateSingleUserFieldSuperAdmin = async (
   payload: TUpdateSingleUserFieldSuperAdminZodSchema,
   loggedInUser: TLoggedInUser,
@@ -425,7 +426,7 @@ const updateSingleUserFieldSuperAdmin = async (
   await prisma.auditLog.create({
     data: {
       entity_id: user_id,
-      entity_name: "User",
+      entity_name: "user",
       action: "UPDATE",
       changed_by: {
         connect: { id: loggedInUser.user_id },
@@ -442,6 +443,9 @@ const updateSingleUserFieldSuperAdmin = async (
   return updatedUser;
 };
 
+// ==========================================================
+// UPDATE USER NAME SERVICE LAYER
+// ==========================================================
 const updateUserName = async (
   payload: TUpdateUserNameZodSchema,
   loggedInUser: TLoggedInUser,
@@ -478,7 +482,7 @@ const updateUserName = async (
       await transaction.auditLog.create({
         data: {
           entity_id: user_id,
-          entity_name: "User",
+          entity_name: "user",
           action: "UPDATE",
           old_value: { user_name: user.user_name },
           new_value: { user_name },
@@ -509,6 +513,9 @@ const updateUserName = async (
   return { ...updatedUser, email_sent: true };
 };
 
+// ==========================================================
+// UPDATE USER PASSWORD SERVICE LAYER
+// ==========================================================
 const updateUserPassword = async (
   payload: TUpdateUserPasswordZodSchema,
   loggedInUser: TLoggedInUser,
@@ -550,7 +557,7 @@ const updateUserPassword = async (
       await transaction.auditLog.create({
         data: {
           entity_id: user_id,
-          entity_name: "User",
+          entity_name: "user",
           action: "UPDATE",
           old_value: { user_password: "[REDACTED]" },
           new_value: { user_password: "[CHANGED]" },
@@ -581,6 +588,8 @@ const updateUserPassword = async (
     email_sent: true,
   };
 };
+
+
 export const userServices = {
   changePassword,
   forgetPassword,

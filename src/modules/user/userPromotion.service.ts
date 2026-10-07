@@ -276,9 +276,9 @@ const promoteUserSamePipeline = async (
 };
 
 // ========================================================
-// CROSS PIPELINE TRACK TRANSFER SERVICE LAYER
+// USER CROSS PIPELINE PROMOTION SERVICE LAYER
 // ========================================================
-const transferUserCrossPipeline = async (
+const userCrossPipelinePromotion = async (
   payload: TCrossPipelineTransferZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
@@ -640,5 +640,5 @@ const transferUserCrossPipeline = async (
 };
 export const userPromotionServices = {
   promoteUserSamePipeline,
-  transferUserCrossPipeline,
+  userCrossPipelinePromotion,
 };

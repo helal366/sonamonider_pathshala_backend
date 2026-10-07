@@ -103,7 +103,7 @@ const createSpouseInformation = async (
     await transaction.auditLog.create({
       data: {
         entity_id: createdSpouseInformation.id,
-        entity_name: "SpouseInformation",
+        entity_name: "spouseInformation",
         old_value: Prisma.JsonNull,
         new_value: {
           user_id,
@@ -129,7 +129,7 @@ const createSpouseInformation = async (
       await transaction.auditLog.create({
         data: {
           entity_id: createdPresentAddress.id,
-          entity_name: "PresentAddress",
+          entity_name: "presentAddress",
           old_value: Prisma.JsonNull,
           new_value: {
             spouse_id: createdSpouseInformation.id,
@@ -157,7 +157,7 @@ const createSpouseInformation = async (
       await transaction.auditLog.create({
         data: {
           entity_id: createdPermanentAddress.id,
-          entity_name: "PermanentAddress",
+          entity_name: "permanentAddress",
           old_value: Prisma.JsonNull,
           new_value: {
             spouse_id: createdSpouseInformation.id,
@@ -225,7 +225,7 @@ const deleteSpouseInformation = async (
     await transaction.auditLog.create({
       data: {
         entity_id: spouseInformation.id,
-        entity_name: "SpouseInformation",
+        entity_name: "spouseInformation",
         old_value: {
           user_id,
           full_name: spouseInformation.full_name,
@@ -250,7 +250,7 @@ const deleteSpouseInformation = async (
       await transaction.auditLog.create({
         data: {
           entity_id: presentAddress.id,
-          entity_name: "PresentAddress",
+          entity_name: "presentAddress",
           old_value: {
             spouse_id: spouseInformation.id,
             house_no: presentAddress.house_no,
@@ -279,7 +279,7 @@ const deleteSpouseInformation = async (
       await transaction.auditLog.create({
         data: {
           entity_id: permanentAddress.id,
-          entity_name: "PermanentAddress",
+          entity_name: "permanentAddress",
           old_value: {
             spouse_id: spouseInformation.id,
             house_no: permanentAddress.house_no,
@@ -368,7 +368,7 @@ const updateSpouseInformationField = async (
     await transaction.auditLog.create({
       data: {
         entity_id: spouseInformation.id,
-        entity_name: "SpouseInformation",
+        entity_name: "spouseInformation",
         old_value: { user_id, [field]: spouseInformation[field] },
         new_value: { user_id, [field]: value },
         action: "UPDATE",

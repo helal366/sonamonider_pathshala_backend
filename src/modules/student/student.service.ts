@@ -96,7 +96,7 @@ const addResponsibleTeacher = async (
     await tx.auditLog.create({
       data: {
         entity_id: student_id,
-        entity_name: "Student",
+        entity_name: "student",
         changed_by: { connect: { id: loggedInUser.user_id } },
         action: "UPDATE",
         old_value: Prisma.JsonNull,

@@ -215,7 +215,7 @@ const buildInitialAuditRecords = (
   return [
     {
       entity_id: userId,
-      entity_name: "User",
+      entity_name: "user",
       old_value: Prisma.JsonNull,
       new_value: {
         full_name,
@@ -230,7 +230,7 @@ const buildInitialAuditRecords = (
     {
       entity_id: subProfileId,
       entity_name:
-        targetEntityName === "ManagementStaff"
+        targetEntityName === "managementStaff"
           ? "managementStaff"
           : targetEntityName,
       old_value: Prisma.JsonNull,
