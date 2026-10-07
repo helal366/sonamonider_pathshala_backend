@@ -10,8 +10,9 @@ import { Prisma } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
 import { redisClient } from "../../lib/redis";
 import crypto from "crypto";
-
+// ======================================
 // CREATE USER SERVICE LAYER
+// ======================================
 const createUser = async (
   payload: TUserCreateZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -70,19 +71,7 @@ const createUser = async (
   const newUser = await prisma
     .$transaction(
       async (transaction) => {
-        // CHECK THE CLASS IS ACTIVE OR NOT
-        const classCheck = await transaction.class.findUnique({
-          where: { id: payload.active_class_id },
-          select: {
-            is_active_class: true
-          }
-        });
-        if (!classCheck) {
-          throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-        };
-        if(!classCheck.is_active_class){
-          throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST)
-        }
+
         // CALLING THE HELPER FUNCTION HERE
         const { profileData, targetEntityName } =
           userHelperFunction.buildDynamicProfileData({
@@ -169,6 +158,19 @@ const createUser = async (
 
         // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
         if (cleanRole === "STUDENT" && subProfileId) {
+                  // CHECK THE CLASS IS ACTIVE OR NOT
+        const classCheck = await transaction.class.findUnique({
+          where: { id: payload.active_class_id },
+          select: {
+            is_active_class: true
+          }
+        });
+        if (!classCheck) {
+          throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+        };
+        if(!classCheck.is_active_class){
+          throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST)
+        }
           const academicYearName = await transaction.academicYear.findUnique({
             where: { academic_year_name: payload.year_name },
             select: { id: true },
@@ -236,12 +238,12 @@ const createUser = async (
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
         });
-        if (!createdUser.management_staff_profile) {
-          throw new AppError(
-            "Failed to initialize management staff profile during onboarding.",
-            StatusCodes.INTERNAL_SERVER_ERROR,
-          );
-        }
+        // if (!createdUser.management_staff_profile) {
+        //   throw new AppError(
+        //     "Failed to initialize management staff profile during onboarding.",
+        //     StatusCodes.INTERNAL_SERVER_ERROR,
+        //   );
+        // }
 
         // Bulk resolve tracking inputs
         await transaction.auditLog.createMany({ data: auditRecords });
@@ -259,7 +261,7 @@ const createUser = async (
             "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
           templateData: {
             name: full_name,
-            user_name: createdUser.user_name ?? user_name,
+            user_name,
             OTP: otpValue,
             year: new Date().getFullYear(),
           },

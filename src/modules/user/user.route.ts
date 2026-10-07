@@ -6,6 +6,9 @@ import { userZodSchema } from "./user.zod.validation.js";
 
 const router = Router();
 
+//================================================
+// CREATE USER ROUTE
+//================================================
 router.post(
   "/create_user",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
@@ -26,6 +29,9 @@ router.post(
   userController.forgetPassword,
 );
 
+// ==========================================
+// PROMOTE USER SAME PIPELINE ROUTE
+// ==========================================
 router.patch(
   "/promote_user_same_pipeline",
   userAuth("SUPER_ADMIN"),
@@ -33,6 +39,19 @@ router.patch(
   userController.promoteUserSamePipeline,
 );
 
+// ==========================================
+// CROSS PIPELINE TRANSFER ROUTE
+// ==========================================
+router.patch(
+  "/transfer_user_cross_pipeline",
+  userAuth("SUPER_ADMIN"), // Enforced safety rule for root system operations
+  validateZodSchema(userZodSchema.crossPipelineTransferZodSchema),
+  userController.transferUserCrossPipeline,
+);
+
+// ==========================================
+// CHANGE POSITION
+// ==========================================
 router.patch(
   "/change_position",
   userAuth("SUPER_ADMIN"),

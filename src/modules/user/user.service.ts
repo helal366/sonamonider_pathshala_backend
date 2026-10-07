@@ -231,7 +231,7 @@ const changeUserPosition = async (
           create: [
             {
               entity_id: targetStaff.management_staff_profile.id,
-              entity_name: "ManagementStaff",
+              entity_name: "managementStaff",
               old_value: {
                 current_position:
                   targetStaff.management_staff_profile.current_position
@@ -358,7 +358,7 @@ const updateSingleUserFieldAdmin = async (
         await transaction.auditLog.create({
           data: {
             entity_id: profileId,
-            entity_name: "ManagementStaff",
+            entity_name: "managementStaff",
             action: "UPDATE",
             changed_by: { connect: { id: loggedInUser.user_id } },
             old_value: { [field]: user[typedField] },

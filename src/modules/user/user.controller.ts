@@ -13,6 +13,7 @@ import {
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserPasswordZodSchema,
   TUpdateUserNameZodSchema,
+  TCrossPipelineTransferZodSchema,
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
@@ -20,7 +21,9 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { createUserServices } from "./userCreation.service.js";
 import { userPromotionServices } from "./userPromotion.service.js";
 
-// CREATE USER
+//=============================================
+// CREATE USER CONTROLLER
+//=============================================
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -42,7 +45,9 @@ const createUser = catchAsync(
   },
 );
 
-// CHANGE PASSWORD
+// ====================================
+// CHANGE PASSWORD CONTROLLER
+// ====================================
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangePasswordPayload = req.body;
@@ -64,7 +69,9 @@ const changePassword = catchAsync(
   },
 );
 
-// FORGET PASSWORD
+// ====================================
+// FORGET PASSWORD CONTROLLER
+// ====================================
 const forgetPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TForgetPasswordPayload = req.body;
@@ -79,7 +86,9 @@ const forgetPassword = catchAsync(
   },
 );
 
-// PROMOTE USER ROLE POSITION
+// =========================================
+// PROMOTE USER SAME PIPELINE CONTROLLER
+// =========================================
 const promoteUserSamePipeline = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TPromoteUserRolePositionZodSchema = req.body;
@@ -103,7 +112,9 @@ const promoteUserSamePipeline = catchAsync(
   },
 );
 
-// CHANGE USER POSITION
+// =====================================
+// CHANGE USER POSITION CONTROLLER
+// =====================================
 const changeUserPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangeUserPositionZodSchema = req.body;
@@ -120,7 +131,9 @@ const changeUserPosition = catchAsync(
   },
 );
 
+// ===============================================
 // UPDATE SINGLE USER FIELD ADMIN CONTROLLER
+// ===============================================
 const updateSingleUserFieldAdmin = catchAsync(
   async (req: Request, res: Response) => {
     const payload: TUpdateSingleUserFieldAdminZodSchema = req.body;
@@ -140,7 +153,9 @@ const updateSingleUserFieldAdmin = catchAsync(
   },
 );
 
+// =================================================
 // UPDATE SINGLE USER FIELD ADMIN CONTROLLER
+// =================================================
 const updateSingleUserFieldSuperAdmin = catchAsync(
   async (req: Request, res: Response) => {
     const payload: TUpdateSingleUserFieldSuperAdminZodSchema = req.body;
@@ -159,7 +174,10 @@ const updateSingleUserFieldSuperAdmin = catchAsync(
     });
   },
 );
+
+// =================================================
 // UPDATE USER NAME CONTROLLER
+// =================================================
 const updateUserName = catchAsync(async (req: Request, res: Response) => {
   const payload: TUpdateUserNameZodSchema = req.body;
   const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
@@ -175,7 +193,10 @@ const updateUserName = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+// =================================================
 // UPDATE USER PASSWORD CONTROLLER
+// =================================================
 const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
   const payload: TUpdateUserPasswordZodSchema = req.body;
   const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
@@ -191,6 +212,30 @@ const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const transferUserCrossPipeline = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const payload: TCrossPipelineTransferZodSchema = req.body;
+    const loggedInUser = req.user;
+
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
+    }
+
+    const result = await userPromotionServices.transferUserCrossPipeline(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Cross-pipeline user track transfer executed successfully.",
+      data: result,
+    });
+  },
+);
+
 export const userController = {
   createUser,
   changePassword,
@@ -201,4 +246,5 @@ export const userController = {
   updateSingleUserFieldSuperAdmin,
   updateUserName,
   updateUserPassword,
+  transferUserCrossPipeline
 };

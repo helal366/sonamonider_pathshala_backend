@@ -100,7 +100,10 @@ const createAcademicResult = async (
     await tx.auditLog.create({
       data: {
         entity_id: academicResult.id,
-        entity_name: auditEntityName,
+        entity_name:
+          auditEntityName === "ManagementStaff"
+            ? "managementStaff"
+            : auditEntityName,
         action: "CREATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: Prisma.JsonNull,

@@ -229,7 +229,10 @@ const buildInitialAuditRecords = (
     },
     {
       entity_id: subProfileId,
-      entity_name: targetEntityName,
+      entity_name:
+        targetEntityName === "ManagementStaff"
+          ? "managementStaff"
+          : targetEntityName,
       old_value: Prisma.JsonNull,
       new_value: {
         full_name,

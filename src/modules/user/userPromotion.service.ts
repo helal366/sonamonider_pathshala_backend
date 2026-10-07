@@ -1,8 +1,17 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { TPromoteUserRolePositionZodSchema } from "./user.zod.validation";
-import { clearCacheRoles, findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
-import { clearCachePositions, findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
+import {
+  TCrossPipelineTransferZodSchema,
+  TPromoteUserRolePositionZodSchema,
+} from "./user.zod.validation";
+import {
+  clearCacheRoles,
+  findRoleExistence,
+} from "../../helperFunctions/cachedData/cache_roles";
+import {
+  clearCachePositions,
+  findPositionExistence,
+} from "../../helperFunctions/cachedData/cache_positions";
 import { prisma } from "../../lib/prisma";
 import { Prisma } from "#db-client";
 //=======================================
@@ -39,7 +48,6 @@ const promoteUserRolePosition = async (
   }
   // 1b. Verify that the requested master role exists
   const existingRole = await findRoleExistence(cleanRole);
- 
 
   // 2. Verify that the role-position pair is valid using your helper function
   const positionExists = await findPositionExistence(cleanPosition);
@@ -112,18 +120,22 @@ const promoteUserRolePosition = async (
           targetStaff.academic_staff_profile.promotion_history[0]?.id || null;
       }
 
-      let updatedPromotedHistory;
-      if (currentActiveHistoryId) {
-        updatedPromotedHistory =await transaction.promotionHistory.update({
-          where: {
-            id: currentActiveHistoryId,
-          },
-          data: {
-            end_date: effectivePromotedDate,
-            updated_by_id: loggedInUser.user_id
-          },
-        });
+      if (!currentActiveHistoryId) {
+        throw new AppError(
+          "No promotion history found with end date null",
+          StatusCodes.NOT_FOUND,
+        );
       }
+
+      const updatedPromotedHistory = await transaction.promotionHistory.update({
+        where: {
+          id: currentActiveHistoryId,
+        },
+        data: {
+          end_date: effectivePromotedDate,
+          updated_by_id: loggedInUser.user_id,
+        },
+      });
 
       // Prepare conditional dynamic query payloads for updating/creating target profiles
       const userUpdateData: Prisma.UserUpdateInput = {
@@ -135,7 +147,7 @@ const promoteUserRolePosition = async (
       const auditRecords: Prisma.AuditLogCreateManyInput[] = [
         {
           entity_id: targetStaff.id,
-          entity_name: "User",
+          entity_name: "user",
           old_value: {
             role: currentRoleName || null,
             position: targetStaff.current_position?.position_name || null,
@@ -145,15 +157,15 @@ const promoteUserRolePosition = async (
           changed_by_id: loggedInUser.user_id,
         },
         {
-          entity_id: currentActiveHistoryId!,
-          entity_name: "PromotionHistory",
+          entity_id: currentActiveHistoryId,
+          entity_name: "promotionHistory",
           old_value: {
             end_date: null,
           },
-          new_value: {end_date: effectivePromotedDate },
+          new_value: { end_date: effectivePromotedDate },
           action: "UPDATE",
           changed_by_id: loggedInUser.user_id,
-        }
+        },
       ];
 
       // Handle Promotion Mapping Target: MANAGEMENT / ADMIN / TEACHER_ADMIN
@@ -214,7 +226,7 @@ const promoteUserRolePosition = async (
         targetProfileId = updatedUser.academic_staff_profile?.id || "";
 
       // C) Create the fresh new Promotion History tracking line item with the new joining date
-      await transaction.promotionHistory.create({
+      const newPromotionHistory = await transaction.promotionHistory.create({
         data: {
           management_staff_id: isManagementTrack ? targetProfileId : undefined,
           academic_staff_id:
@@ -227,8 +239,8 @@ const promoteUserRolePosition = async (
 
       // D) Append history milestones to audit trails
       auditRecords.push({
-        entity_id: targetProfileId,
-        entity_name: "PromotionHistory",
+        entity_id: newPromotionHistory.id,
+        entity_name: "promotionHistory",
         old_value: Prisma.JsonNull,
         new_value: {
           role_id: existingRole.id,
@@ -241,7 +253,7 @@ const promoteUserRolePosition = async (
 
       auditRecords.push({
         entity_id: targetProfileId,
-        entity_name: isManagementTrack ? "ManagementStaff" : "AcademicStaff",
+        entity_name: isManagementTrack ? "managementStaff" : "academicStaff",
         old_value: currentProfileId
           ? { role: currentRoleName }
           : Prisma.JsonNull,
@@ -262,6 +274,371 @@ const promoteUserRolePosition = async (
   clearCachePositions();
   return result;
 };
+
+// ========================================================
+// CROSS PIPELINE TRACK TRANSFER SERVICE LAYER
+// ========================================================
+const transferUserCrossPipeline = async (
+  payload: TCrossPipelineTransferZodSchema,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const {
+    full_name,
+    mobile_number,
+    target_position_name,
+    target_role_name,
+    transfer_effective_date,
+  } = payload;
+
+  const cleanPosition = target_position_name.trim().toUpperCase();
+  const cleanRole = target_role_name.trim().toUpperCase();
+  const effectiveDate = new Date(transfer_effective_date);
+
+  // 1. Structural Restrictions Checklist
+  const managementRoles = ["MANAGEMENT", "ADMIN", "TEACHER_ADMIN"];
+  const academicRoles = ["ACADEMIC"];
+
+  const isTargetManagement = managementRoles.includes(cleanRole);
+  const isTargetAcademic = academicRoles.includes(cleanRole);
+
+  if (!isTargetManagement && !isTargetAcademic) {
+    throw new AppError(
+      `Role ${cleanRole} is out of bounds for the staff cross-transfer pipeline.`,
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  // 2. Fetch Master Record Pointers from Promise-Caches
+  const targetRoleExists = await findRoleExistence(cleanRole);
+  const targetPositionExists = await findPositionExistence(cleanPosition);
+
+  // 3. Extract Root User alongside both Sub-Profile Relational Records
+  const targetUser = await prisma.user.findUnique({
+    where: {
+      user_full_name_mobile_unique: { full_name, mobile_number },
+    },
+    include: {
+      current_role: { select: { id: true, role_name: true } },
+      current_position: { select: { id: true, position_name: true } },
+      management_staff_profile: {
+        include: { promotion_history: { where: { end_date: null }, take: 1 } },
+      },
+      academic_staff_profile: {
+        include: { promotion_history: { where: { end_date: null }, take: 1 } },
+      },
+    },
+  });
+
+  if (!targetUser) {
+    throw new AppError(
+      "The requested user record does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const sourceRoleName = targetUser.current_role?.role_name || "";
+  const isSourceManagement = managementRoles.includes(sourceRoleName);
+  const isSourceAcademic = academicRoles.includes(sourceRoleName);
+
+  // 4. Validate that this is a valid cross-pipeline move
+  if (
+    (isSourceManagement && isTargetManagement) ||
+    (isSourceAcademic && isTargetAcademic)
+  ) {
+    throw new AppError(
+      `User is already in the ${isSourceManagement ? "Management" : "Academic"} track. Use the regular promotion endpoint instead.`,
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  if (!isSourceManagement && !isSourceAcademic) {
+    throw new AppError(
+      "Only existing Management or Academic Staff can switch tracks.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  // 5. Execute Core Cross-Pipeline Changes safely inside an isolated transaction block
+  const result = await prisma.$transaction(
+    async (transaction) => {
+      let sourceProfileId = "";
+      let sourceActiveHistoryId: string | null = null;
+      let targetProfileId = "";
+
+      const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
+
+      // A) TERMINATE SOURCE PIPELINE HISTORY TRACKERS
+      if (isSourceManagement && targetUser.management_staff_profile) {
+        sourceProfileId = targetUser.management_staff_profile.id;
+        sourceActiveHistoryId =
+          targetUser.management_staff_profile.promotion_history[0]?.id || null;
+      } else if (isSourceAcademic && targetUser.academic_staff_profile) {
+        sourceProfileId = targetUser.academic_staff_profile.id;
+        sourceActiveHistoryId =
+          targetUser.academic_staff_profile.promotion_history[0]?.id || null;
+      }
+
+      if (!sourceActiveHistoryId) {
+        throw new AppError(
+          "Active promotion timeline milestone tracking record not found for source profile.",
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      // Close out active source history row
+      await transaction.promotionHistory.update({
+        where: { id: sourceActiveHistoryId },
+        data: {
+          end_date: effectiveDate,
+          updated_by_id: loggedInUser.user_id,
+        },
+      });
+
+      auditRecords.push({
+        entity_id: sourceActiveHistoryId,
+        entity_name: "promotionHistory",
+        old_value: { end_date: null },
+        new_value: { end_date: effectiveDate.toISOString() },
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+
+      // B) PROVISION OR ACTIVATE TARGET SUB-PROFILE
+      const userUpdateData: Prisma.UserUpdateInput = {
+        current_role: { connect: { id: targetRoleExists.id } },
+        current_position: { connect: { id: targetPositionExists.id } },
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      };
+
+      if (isTargetManagement) {
+        // Switching Academic -> Management
+        if (targetUser.management_staff_profile) {
+          // If a management record already existed historically, update and reactive it
+          const updatedMgmt = await transaction.managementStaff.update({
+            where: { id: targetUser.management_staff_profile.id },
+            data: {
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              is_currently_active_staff: true,
+              updated_by_id: loggedInUser.user_id,
+            },
+          });
+          targetProfileId = updatedMgmt.id;
+
+          auditRecords.push({
+            entity_id: targetProfileId,
+            entity_name: "managementStaff",
+            old_value: {
+              current_role_id:
+                targetUser.management_staff_profile.current_role_id,
+              current_position_id:
+                targetUser.management_staff_profile.current_position_id,
+              is_currently_active_staff:
+                targetUser.management_staff_profile.is_currently_active_staff,
+            },
+            new_value: {
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              is_currently_active_staff: updatedMgmt.is_currently_active_staff,
+            },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        } else {
+          // Construct brand-new profile record if they never held this role class before
+          const newMgmt = await transaction.managementStaff.create({
+            data: {
+              full_name,
+              mobile_number,
+              email: targetUser.email!,
+              user_id: targetUser.id,
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              created_by_id: loggedInUser.user_id,
+            },
+          });
+          targetProfileId = newMgmt.id;
+
+          auditRecords.push({
+            entity_id: targetProfileId,
+            entity_name: "managementStaff",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name,
+              mobile_number,
+              email: targetUser.email!,
+              user_id: targetUser.id,
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
+
+        if (targetUser.academic_staff_profile) {
+          const updatedAcad = await transaction.academicStaff.update({
+            where: { id: targetUser.academic_staff_profile.id },
+            data: {
+              is_currently_active_staff: false,
+            },
+          });
+          auditRecords.push({
+            entity_id: updatedAcad.id,
+            entity_name: "academicStaff",
+            old_value: {
+              is_currently_active_staff:
+                targetUser.academic_staff_profile.is_currently_active_staff,
+            },
+            new_value: {
+              is_currently_active_staff: updatedAcad.is_currently_active_staff,
+            },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
+      } else if (isTargetAcademic) {
+        // Switching Management -> Academic
+        if (targetUser.academic_staff_profile) {
+          const updatedAcad = await transaction.academicStaff.update({
+            where: { id: targetUser.academic_staff_profile.id },
+            data: {
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              is_currently_active_staff: true,
+              updated_by_id: loggedInUser.user_id,
+            },
+          });
+          targetProfileId = updatedAcad.id;
+
+          auditRecords.push({
+            entity_id: targetProfileId,
+            entity_name: "academicStaff",
+            old_value: {
+              current_role_id:
+                targetUser.academic_staff_profile.current_role_id,
+              current_position_id:
+                targetUser.academic_staff_profile.current_position_id,
+              is_currently_active_staff:
+                targetUser.academic_staff_profile.is_currently_active_staff,
+            },
+            new_value: {
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              is_currently_active_staff: updatedAcad.is_currently_active_staff,
+            },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        } else {
+          const newAcad = await transaction.academicStaff.create({
+            data: {
+              full_name,
+              mobile_number,
+              email: targetUser.email!,
+              user_id: targetUser.id,
+              current_role_id: targetRoleExists.id,
+              current_position_id: targetPositionExists.id,
+              created_by_id: loggedInUser.user_id,
+            },
+          });
+          targetProfileId = newAcad.id;
+
+          auditRecords.push({
+            entity_id: targetProfileId,
+            entity_name: "academicStaff",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name,
+              mobile_number,
+              email: targetUser.email,
+              role_id: targetRoleExists.id,
+              position_id: targetPositionExists.id,
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
+
+        if (targetUser.management_staff_profile) {
+          const updatedManagement = await transaction.managementStaff.update({
+            where: { id: targetUser.management_staff_profile.id },
+            data: {
+              is_currently_active_staff: false,
+            },
+          });
+          auditRecords.push({
+            entity_id: updatedManagement.id,
+            entity_name: "managementStaff",
+            old_value: {
+              is_currently_active_staff:
+                targetUser.management_staff_profile.is_currently_active_staff,
+            },
+            new_value: {
+              is_currently_active_staff:
+                updatedManagement.is_currently_active_staff,
+            },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
+      }
+
+      // C) COMMIT UPDATED Pointers ON THE ROOT USER RECORD
+      const updatedUser = await transaction.user.update({
+        where: { id: targetUser.id },
+        data: userUpdateData,
+        omit: { user_password: true },
+      });
+
+      auditRecords.push({
+        entity_id: targetUser.id,
+        entity_name: "user",
+        old_value: {
+          current_role: sourceRoleName,
+          current_position: targetUser.current_position?.position_name,
+        },
+        new_value: { current_role: cleanRole, current_position: cleanPosition },
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+
+      // D) START AN INITIAL NEW PIPELINE TIMELINE HISTORY ROW
+      const newHistory = await transaction.promotionHistory.create({
+        data: {
+          management_staff_id: isTargetManagement ? targetProfileId : undefined,
+          academic_staff_id: isTargetAcademic ? targetProfileId : undefined,
+          position_id: targetPositionExists.id,
+          role_id: targetRoleExists.id,
+          start_date: effectiveDate,
+          created_by_id: loggedInUser.user_id,
+        },
+      });
+
+      auditRecords.push({
+        entity_id: newHistory.id,
+        entity_name: "promotionHistory",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          role_id: targetRoleExists.id,
+          position_id: targetPositionExists.id,
+          start_date: effectiveDate.toISOString(),
+        },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+      // E) INSERT ALL AUDIT ENTRIES AT ONCE
+      await transaction.auditLog.createMany({ data: auditRecords });
+      return updatedUser;
+    },
+    { timeout: 25000 },
+  );
+  // 6. Invalidate Global Caches to keep states synchronous
+  clearCacheRoles();
+  clearCachePositions();
+  return result;
+};
 export const userPromotionServices = {
-    promoteUserRolePosition
-}
+  promoteUserRolePosition,
+  transferUserCrossPipeline,
+};

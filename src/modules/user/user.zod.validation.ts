@@ -11,7 +11,9 @@ import {
   VALID_USER_ROLES,
 } from "./user.interface.js";
 
+// ===================================
 // CREATE USER ZOD SCHEMA
+// ===================================
 const userCreateZodSchema = z4
   .object({
     full_name: z4
@@ -124,10 +126,10 @@ const userCreateZodSchema = z4
       }
     }
   });
-
 export type TUserCreateZodSchema = z4.infer<typeof userCreateZodSchema>;
-
+// ========================================
 // CHANGE PASSWORD ZOD SCHEMA
+// ========================================
 const changePasswordZodSchema = z4
   .object({
     current_password: z4
@@ -165,20 +167,22 @@ const changePasswordZodSchema = z4
       });
     }
   });
-
 export type TChangePasswordPayload = z4.infer<typeof changePasswordZodSchema>;
 
+// =========================================
 // FORGET PASSWORD  ZOD SCHEMA
+// =========================================
 const forgetPasswordZodSchema = z4.object({
   email: z4
     .string("Email is required.")
     .trim()
     .check(z4.email("Invalid email format.")),
 });
-
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
 
+// ================================================
 // PROMOTE USER ROLE AND POSITION ZOD SCHEMA
+// ================================================
 const promoteUserSamePipelineZodSchema = z4.object({
   full_name: z4
     .string({
@@ -233,7 +237,9 @@ export type TPromoteUserRolePositionZodSchema = z4.infer<
   typeof promoteUserSamePipelineZodSchema
 >;
 
+// ===========================================
 // UPDATE USER POSITION ZOD SCHEMA
+// ===========================================
 const changeUserPositionZodSchema = z4.object({
   full_name: z4
     .string({
@@ -403,7 +409,7 @@ export type TUpdateSingleUserFieldSuperAdminZodSchema = z4.infer<
 >;
 
 // ============================================================
-// UPDATE USER NAME ROUTE
+// UPDATE USER NAME ZOD SCHEMA
 // ============================================================
 const updateUserNameZodSchema = z4.object({
   user_id: z4
@@ -425,7 +431,7 @@ const updateUserNameZodSchema = z4.object({
 export type TUpdateUserNameZodSchema = z4.infer<typeof updateUserNameZodSchema>;
 
 // ============================================================
-// UPDATE USER PASSWORD
+// UPDATE USER PASSWORD ZOD SCHEMA
 // ============================================================
 const updateUserPasswordZodSchema = z4.object({
   user_id: z4
@@ -447,6 +453,48 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
 
+// ================================================
+// CROSS PIPELINE TRANSFER ZOD SCHEMA
+// ================================================
+export const crossPipelineTransferZodSchema = z4.object({
+  full_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Full name is required." : "Invalid full name format.",
+    })
+    .trim(),
+  mobile_number: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Mobile number is required." : "Invalid mobile number format.",
+    })
+    .trim()
+    .length(11, "Mobile number must be 11 digit Bangladeshi number start with 01")
+    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
+  target_position_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Target position name is required." : "Invalid position format.",
+    })
+    .trim()
+    .toUpperCase(),
+  target_role_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Target role name is required." : "Invalid role format.",
+    })
+    .trim()
+    .toUpperCase(),
+  transfer_effective_date: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Effective date is required." : "Invalid ISO date string format.",
+    })
+    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
+});
+
+export type TCrossPipelineTransferZodSchema = z4.infer<typeof crossPipelineTransferZodSchema>;
+
 export const userZodSchema = {
   userCreateZodSchema,
   changePasswordZodSchema,
@@ -457,4 +505,5 @@ export const userZodSchema = {
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
+  crossPipelineTransferZodSchema
 };
