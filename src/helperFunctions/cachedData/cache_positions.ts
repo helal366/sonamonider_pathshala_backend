@@ -40,28 +40,16 @@ export const clearCachePositions = (): void => {
 };
 
 // find the provided position
-export const findPositionExistence = async (position_name: string) => {
+export const findPositionExistence = async (position_name: string):Promise<ICachePosition> => {
   const validPositions = await getValidPositions();
   const findPosition = validPositions.find(
     (singlePosition) => singlePosition.position_name === position_name,
   );
+  if(!findPosition){ 
+      throw new AppError(`Provided Position: ${position_name} is not a valid position`,
+      StatusCodes.NOT_FOUND)
+  }
   return findPosition;
 };
 
-// check role position pair
-export const checkRolePositionPair = async ({
-  role_name,
-  position_name,
-}: IRolePositionPairPayload) => {
-  const findPosition = await findPositionExistence(position_name);
-  if (!findPosition) {
-    throw new AppError(
-      `Provided Position: ${position_name} is not a valid position`,
-      StatusCodes.NOT_FOUND,
-    );
-  }
-  if (findPosition.role.role_name !== role_name) {
-    throw new AppError(`Role Position pair mismatch`, StatusCodes.CONFLICT);
-  }
-  return findPosition;
-};
+

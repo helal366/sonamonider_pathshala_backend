@@ -19,10 +19,9 @@ const createPosition = async (
   payload: TCreatePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { position_name, role_name } = payload;
+  const { position_name } = payload;
 
   const cleanPosition = position_name.trim().toUpperCase();
-  const cleanRole = role_name.trim().toUpperCase();
 
   // 1. Verify if the position name already exists to prevent duplicates
   const existingPosition = await findPositionExistence(cleanPosition);
@@ -34,16 +33,12 @@ const createPosition = async (
   }
 
   // 2. Verify that the role exists in the master database
-  const existingRole = await findRoleExistence(cleanRole);
 
   // 3. Atomatically create the position record and write the audit trace log
   const createdNewPosition = await prisma.$transaction(async (transaction) => {
     const newPosition = await transaction.userPosition.create({
       data: {
         position_name: cleanPosition,
-        role: {
-          connect: { id: existingRole.id },
-        },
         created_by: {
           connect: { id: loggedInUser.user_id },
         },
@@ -58,7 +53,6 @@ const createPosition = async (
         old_value: Prisma.JsonNull, // Safely satisfies the structural Json column constraint
         new_value: {
           position_name: cleanPosition,
-          role_name: cleanRole,
         },
         action: "CREATE",
         changed_by_id: loggedInUser.user_id, // Satisfies non-null database constraint rule
@@ -92,12 +86,6 @@ const updatePosition = async (
   const existingPosition = await findPositionExistence(
     cleanPresentPositionName,
   );
-  if (!existingPosition) {
-    throw new AppError(
-      `Provided present position ${cleanPresentPositionName} does not exists.`,
-      StatusCodes.NOT_FOUND,
-    );
-  }
 
   //  3. Update position name and create audit log
   const updatedPositionResult = await prisma.$transaction(
@@ -215,7 +203,6 @@ const getSinglePosition=async(id:string)=>{
     select: {
       id: true,
       position_name: true,
-      role_name: true,
       created_at: true,
       updated_at: true,
       // Aggregates structural counts safely

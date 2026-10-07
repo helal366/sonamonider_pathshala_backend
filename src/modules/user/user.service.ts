@@ -12,7 +12,6 @@ import {
   findRoleExistence,
 } from "../../helperFunctions/cachedData/cache_roles.js";
 import {
-  checkRolePositionPair,
   clearCachePositions,
   findPositionExistence,
 } from "../../helperFunctions/cachedData/cache_positions.js";
@@ -63,10 +62,7 @@ const createUser = async (
   const roleExists = await findRoleExistence(cleanRole);
 
   // 3. Validate role-position relationship
-  const positionExists = await checkRolePositionPair({
-    role_name: cleanRole,
-    position_name: cleanPosition,
-  });
+  const positionExists = await findPositionExistence(cleanPosition);
 
   // 4. Check duplicate
   const userExist = await userHelperFunction.userExistence({
@@ -451,10 +447,7 @@ const promoteUserRolePosition = async (
   }
 
   // 2. Verify that the role-position pair is valid using your helper function
-  const positionExists = await checkRolePositionPair({
-    role_name: cleanRole,
-    position_name: cleanPosition,
-  });
+  const positionExists = await findPositionExistence(cleanPosition); 
 
   // 3. Fetch the target user and their management profile to check current values
   const targetStaff = await prisma.user.findUnique({
@@ -722,10 +715,7 @@ const changeUserPosition = async (
 
   const currentRoleName = targetStaff.current_role.role_name;
 
-  await checkRolePositionPair({
-    role_name: currentRoleName,
-    position_name: cleanPosition,
-  });
+  await findPositionExistence(cleanPosition);
 
   return prisma.$transaction(async (transaction) => {
     if (!targetStaff.management_staff_profile) {

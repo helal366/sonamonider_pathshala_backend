@@ -93,6 +93,13 @@ const userCreationRolePostionCheck = (
       `The user with the provided position ${position_name} is not allowed to create.`,
       StatusCodes.UNAUTHORIZED,
     );
+  };
+
+  // CHECK STUDENT AND GOVERNING BODY ROLE AND POSITION
+  if(role_name === "STUDENT" && position_name !== "STUDENT"){
+    throw new AppError(`Role STUDENT has only accessed position is STUDENT`, StatusCodes.BAD_REQUEST)
+  }else if(role_name === "GOVERNING_BODY" && position_name !== "GOVERNING_BODY"){
+    throw new AppError(`Position GOVERNING_BODY has only accessed position is GOVERNING_BODY`, StatusCodes.BAD_REQUEST)
   }
 };
 

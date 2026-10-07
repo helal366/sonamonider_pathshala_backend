@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
-import { checkRolePositionPair } from "../../helperFunctions/cachedData/cache_positions";
+import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import {
@@ -27,16 +27,12 @@ const createAcademicResult = async (
   await findRoleExistence(cleanRole);
 
   // 2. Validate role-position relationship
-  await checkRolePositionPair({
-    role_name: cleanRole,
-    position_name: cleanPosition,
-  });
+  await findPositionExistence(cleanPosition);
 
-  //   3. Prevent unexpected role
+  //   3. Prevent unexpected role "STUDENT"
   if (cleanRole === "STUDENT") {
     throw new AppError(
-      `The provided role ${cleanRole} has no Academic Result record.`,
-      StatusCodes.CONFLICT,
+      `The provided role ${cleanRole} does not require any Academic Result record in this institute.`, StatusCodes.CONFLICT,
     );
   }
   // 4. Check role name to find the target field name
