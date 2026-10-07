@@ -179,7 +179,7 @@ const forgetPasswordZodSchema = z4.object({
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
 
 // PROMOTE USER ROLE AND POSITION ZOD SCHEMA
-const promoteUserRolePositionZodSchema = z4.object({
+const promoteUserSamePipelineZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
@@ -230,7 +230,7 @@ const promoteUserRolePositionZodSchema = z4.object({
     .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 });
 export type TPromoteUserRolePositionZodSchema = z4.infer<
-  typeof promoteUserRolePositionZodSchema
+  typeof promoteUserSamePipelineZodSchema
 >;
 
 // UPDATE USER POSITION ZOD SCHEMA
@@ -451,7 +451,7 @@ export const userZodSchema = {
   userCreateZodSchema,
   changePasswordZodSchema,
   forgetPasswordZodSchema,
-  promoteUserRolePositionZodSchema,
+  promoteUserSamePipelineZodSchema,
   changeUserPositionZodSchema,
   updateSingleUserFieldAdminZodSchema,
   updateSingleUserFieldSuperAdminZodSchema,

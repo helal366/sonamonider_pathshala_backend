@@ -33,7 +33,7 @@ export const clearCacheRoles = (): void => {
 };
 
 // find the provided role
-export const findRoleExistence = async (role_name: string) => {
+export const findRoleExistence = async (role_name: string): Promise<ICacheRole> => {
   const validRoles = await getValidRoles();
   const findRole = validRoles.find(
     (singleRole) => singleRole.role_name === role_name,

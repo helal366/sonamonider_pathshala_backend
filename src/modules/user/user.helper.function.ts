@@ -95,12 +95,17 @@ const userCreationRolePostionCheck = (
     );
   };
 
-  // CHECK STUDENT AND GOVERNING BODY ROLE AND POSITION
+  // CHECK ROLE AND POSITION COMBINATION TO CREATE USER
   if(role_name === "STUDENT" && position_name !== "STUDENT"){
-    throw new AppError(`Role STUDENT has only accessed position is STUDENT`, StatusCodes.BAD_REQUEST)
+    throw new AppError(`User with role STUDENT can create with position STUDENT.`, StatusCodes.BAD_REQUEST)
   }else if(role_name === "GOVERNING_BODY" && position_name !== "GOVERNING_BODY"){
-    throw new AppError(`Position GOVERNING_BODY has only accessed position is GOVERNING_BODY`, StatusCodes.BAD_REQUEST)
-  }
+    throw new AppError(`User with role GOVERNING_BODY can create with position GOVERNING_BODY.`, StatusCodes.BAD_REQUEST)
+  }else if(role_name === "MANAGEMENT" && position_name !== "MANAGEMENT_STAFF"){
+    throw new AppError(`User with role MANAGEMENT can create with position MANAGEMENT_STAFF.`, StatusCodes.BAD_REQUEST)
+  }else if(role_name === "ACADEMIC" && position_name !== "ACADEMIC_STAFF"){
+    throw new AppError(`User with role ACADEMIC can create with position ACADEMIC_STAFF.`, StatusCodes.BAD_REQUEST)
+  };
+  
 };
 
 const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{

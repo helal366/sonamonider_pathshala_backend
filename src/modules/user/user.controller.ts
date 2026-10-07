@@ -17,6 +17,8 @@ import {
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
+import { createUserServices } from "./userCreation.service.js";
+import { userPromotionServices } from "./userPromotion.service.js";
 
 // CREATE USER
 const createUser = catchAsync(
@@ -28,7 +30,7 @@ const createUser = catchAsync(
     }
 
     const payload: TUserCreateZodSchema = req.body;
-    const result = await userServices.createUser(payload, loggedInUser);
+    const result = await createUserServices.createUser(payload, loggedInUser);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.CREATED,
@@ -78,7 +80,7 @@ const forgetPassword = catchAsync(
 );
 
 // PROMOTE USER ROLE POSITION
-const promoteUserRolePosition = catchAsync(
+const promoteUserSamePipeline = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TPromoteUserRolePositionZodSchema = req.body;
     const loggedInUser = req.user;
@@ -87,7 +89,7 @@ const promoteUserRolePosition = catchAsync(
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    const result = await userServices.promoteUserRolePosition(
+    const result = await userPromotionServices.promoteUserRolePosition(
       payload,
       loggedInUser,
     );
@@ -193,7 +195,7 @@ export const userController = {
   createUser,
   changePassword,
   forgetPassword,
-  promoteUserRolePosition,
+  promoteUserSamePipeline,
   changeUserPosition,
   updateSingleUserFieldAdmin,
   updateSingleUserFieldSuperAdmin,

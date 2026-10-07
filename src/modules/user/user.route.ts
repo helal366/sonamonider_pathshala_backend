@@ -27,10 +27,10 @@ router.post(
 );
 
 router.patch(
-  "/promote_user_role_position",
+  "/promote_user_same_pipeline",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(userZodSchema.promoteUserRolePositionZodSchema),
-  userController.promoteUserRolePosition,
+  validateZodSchema(userZodSchema.promoteUserSamePipelineZodSchema),
+  userController.promoteUserSamePipeline,
 );
 
 router.patch(
