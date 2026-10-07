@@ -11,6 +11,11 @@ model PromotionHistory {
   position_id String
   position    UserPosition @relation(fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
+  student_id String
+  student Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  governing_body_id String
+  governing_body GoverningBody @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   role_id String
   role    UserRole @relation(fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 

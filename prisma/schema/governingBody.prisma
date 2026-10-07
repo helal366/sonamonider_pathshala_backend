@@ -8,6 +8,7 @@ model GoverningBody {
   user_id           String @unique
   user_primary_data User   @relation("governing_body_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  promotion_history          PromotionHistory[]
   created_by_id String?
   created_by    User?   @relation("governing_bodies_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 

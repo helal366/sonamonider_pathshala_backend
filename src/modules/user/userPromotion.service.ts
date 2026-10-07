@@ -17,7 +17,7 @@ import { Prisma } from "#db-client";
 //=======================================
 // PROMOTE USER SERVICE LAYER
 //=======================================
-const promoteUserRolePosition = async (
+const promoteUserSamePipeline = async (
   payload: TPromoteUserRolePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
@@ -639,6 +639,6 @@ const transferUserCrossPipeline = async (
   return result;
 };
 export const userPromotionServices = {
-  promoteUserRolePosition,
+  promoteUserSamePipeline,
   transferUserCrossPipeline,
 };

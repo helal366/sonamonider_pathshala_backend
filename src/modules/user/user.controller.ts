@@ -98,7 +98,7 @@ const promoteUserSamePipeline = catchAsync(
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
     }
 
-    const result = await userPromotionServices.promoteUserRolePosition(
+    const result = await userPromotionServices.promoteUserSamePipeline(
       payload,
       loggedInUser,
     );
