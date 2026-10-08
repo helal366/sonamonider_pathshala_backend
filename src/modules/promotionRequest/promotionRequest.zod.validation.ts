@@ -57,6 +57,20 @@ export type TCreatePromotionRequestZodSchema = z4.infer<
   typeof createPromotionRequestZodSchema
 >;
 
+// =========================================================
+// DELETE PROMOTION REQUEST ZOD SCHEMA
+// =========================================================
+const deletePromotionRequestZodSchema = z4.object({
+    promotion_request_id: z4.uuid({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Promotion request ID is required."
+        : "Invalid Promotion request ID format.",
+  }),
+})
+export type TDeletePromotionRequestZodSchema = z4.infer<typeof deletePromotionRequestZodSchema>;
+
 export const promotionRequestsZodSchema = {
   createPromotionRequestZodSchema,
+  deletePromotionRequestZodSchema
 };

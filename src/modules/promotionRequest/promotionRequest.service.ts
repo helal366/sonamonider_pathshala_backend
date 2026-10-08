@@ -4,7 +4,7 @@ import { findPositionExistence } from "../../helperFunctions/cachedData/cache_po
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TCreatePromotionRequestZodSchema } from "./promotionRequests.zod.validation";
+import { TCreatePromotionRequestZodSchema, TDeletePromotionRequestZodSchema } from "./promotionRequest.zod.validation";
 import { Prisma } from "#db-client";
 
 // =========================================================
@@ -51,7 +51,7 @@ const createPromotionRequest = async (
       clean_old_role !== targetUser.current_role?.role_name ||
       clean_old_position !== targetUser.current_position?.position_name
     ) {
-        throw new AppError(
+      throw new AppError(
         "Provided old role or position fields do not match current database values.",
         StatusCodes.BAD_REQUEST,
       );
@@ -96,27 +96,29 @@ const createPromotionRequest = async (
         new_role_id: newRoleExists.id,
         old_position_id: oldPositionExists.id,
         new_position_id: newPositionExists.id,
-        created_by_id: loggedInUser.user_id
+        created_by_id: loggedInUser.user_id,
       },
     });
 
     const newAuditRecords = {
-        user_id,
-        management_staff_id,
-        academic_staff_id,
-        student_id,
-        governing_body_id,
-        promotion_request_status: "PENDING",
-        old_role_id: oldRoleExists.id,
-        new_role_id: newRoleExists.id,
-        old_position_id: oldPositionExists.id,
-        new_position_id: newPositionExists.id,
-        created_by_id: loggedInUser.user_id
+      user_id,
+      management_staff_id,
+      academic_staff_id,
+      student_id,
+      governing_body_id,
+      promotion_request_status: "PENDING",
+      old_role_id: oldRoleExists.id,
+      new_role_id: newRoleExists.id,
+      old_position_id: oldPositionExists.id,
+      new_position_id: newPositionExists.id,
+      created_by_id: loggedInUser.user_id,
     };
 
     const newValidAuditRecords = Object.fromEntries(
-        Object.entries(newAuditRecords).filter(([,value])=> value !== null && value !== undefined)
-    )
+      Object.entries(newAuditRecords).filter(
+        ([, value]) => value !== null && value !== undefined,
+      ),
+    );
 
     // CREATE AUDIT LOG
     await tx.auditLog.create({
@@ -126,13 +128,90 @@ const createPromotionRequest = async (
         changed_by_id: loggedInUser.user_id,
         action: "CREATE",
         old_value: Prisma.JsonNull,
-        new_value: newValidAuditRecords
+        new_value: newValidAuditRecords,
       },
     });
     return created;
   });
 };
 
+// =========================================================
+// DELETE PROMOTION REQUEST SERVICE LAYER
+// =========================================================
+const deletePromotionRequest = async(
+  payload:TDeletePromotionRequestZodSchema,
+  loggedInUser:TLoggedInUser
+)=>{
+  const {promotion_request_id} = payload;
+  return prisma.$transaction(async(tx)=>{
+    // CHECK THE EXISTANCE OF THE PROMOTION REQUEST 
+    const promotionRequest = await tx.promotionRequest.findUnique({
+      where: {id: promotion_request_id},
+      select: {
+        user_id: true,
+        management_staff_id: true,
+        academic_staff_id: true,
+        student_id: true,
+        governing_body_id: true,
+        promotion_request_status: true,
+        old_role_id: true,
+        new_role_id: true,
+        old_position_id: true,
+        new_position_id: true,
+        created_by_id: true,
+      }
+    });
+    if(!promotionRequest){
+      throw new AppError(`The promotion request not found.`, StatusCodes.NOT_FOUND)
+    };
+
+    // CHECK THE PROMOTION STATUS IS PENDING OR NOT
+    const status = promotionRequest.promotion_request_status
+    if(status !== "PENDING"){
+      throw new AppError(`The promotion request is ${status} already. Can not delete.`, StatusCodes.UNAUTHORIZED)
+    };
+
+    // DELETE THE PROMOTION REQUEST
+    const deleted = await tx.promotionRequest.delete({
+      where: {id: promotion_request_id}
+    });
+
+    // CREATE THE AUDIT LOG DATA
+    const oldAuditRecords = {
+      user_id: promotionRequest.user_id,
+      management_staff_id: promotionRequest.management_staff_id,
+      academic_staff_id: promotionRequest.academic_staff_id,
+      student_id: promotionRequest.student_id,
+      governing_body_id: promotionRequest.governing_body_id,
+      promotion_request_status: promotionRequest.promotion_request_status,
+      old_role_id: promotionRequest.old_role_id,
+      new_role_id: promotionRequest.new_role_id,
+      old_position_id: promotionRequest.old_position_id,
+      new_position_id: promotionRequest.new_position_id,
+      created_by_id: promotionRequest.created_by_id,
+    };
+
+    const newValidAuditRecords = Object.fromEntries(
+      Object.entries(oldAuditRecords).filter(
+        ([, value]) => value !== null && value !== undefined,
+      ),
+    );
+
+    // CREATE AUDIT LOG
+    await tx.auditLog.create({
+      data: {
+        entity_id: promotion_request_id,
+        entity_name: "promotionRequest",
+        changed_by_id: loggedInUser.user_id,
+        action: "DELETE",
+        old_value: newValidAuditRecords,
+        new_value: Prisma.JsonNull
+      }
+    })
+    return deleted;
+  })
+}
 export const promotionRequestServices = {
   createPromotionRequest,
+  deletePromotionRequest
 };

@@ -20,7 +20,7 @@ import { studentRouter } from "./modules/student/student.route.js";
 import { academicYearRouter } from "./modules/academicYear/academicYear.route.js";
 import { shiftRouter } from "./modules/shift/shift.route.js";
 import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route.js";
-import { promotionRequestRouter } from "./modules/promotionRequests/promotionRequests.route.js";
+import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
 
 const app: Application = express();
 app.use(cors());
