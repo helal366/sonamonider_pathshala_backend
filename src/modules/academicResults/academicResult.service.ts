@@ -47,27 +47,29 @@ const createAcademicResult = async (
     | "governing_body"
     | undefined;
   let auditEntityName:
-    | "ManagementStaff"
-    | "AcademicStaff"
-    | "GoverningBody"
+    | "managementStaff"
+    | "academicStaff"
+    | "governingBody"
     | undefined;
   if (
     cleanRole === "MANAGEMENT" ||
     cleanRole === "ADMIN" ||
-    cleanRole === "TEACHER_ADMIN" ||
     cleanRole === "SUPER_ADMIN"
   ) {
     targetPrismaModel = "managementStaff";
     targetFieldName = "management_staff";
-    auditEntityName = "ManagementStaff";
-  } else if (cleanRole === "ACADEMIC") {
+    auditEntityName = "managementStaff";
+  } else if (
+    cleanRole === "ACADEMIC" ||
+    cleanRole === "TEACHER_ADMIN" 
+  ) {
     targetPrismaModel = "academicStaff";
     targetFieldName = "academic_staff";
-    auditEntityName = "AcademicStaff";
+    auditEntityName = "academicStaff";
   } else if (cleanRole === "GOVERNING_BODY") {
     targetPrismaModel = "governingBody";
     targetFieldName = "governing_body";
-    auditEntityName = "GoverningBody";
+    auditEntityName = "governingBody";
   }
 
   if (!targetFieldName || !targetPrismaModel || !auditEntityName) {
@@ -101,7 +103,7 @@ const createAcademicResult = async (
       data: {
         entity_id: academicResult.id,
         entity_name:
-          auditEntityName === "ManagementStaff"
+          auditEntityName === "managementStaff"
             ? "managementStaff"
             : auditEntityName,
         action: "CREATE",

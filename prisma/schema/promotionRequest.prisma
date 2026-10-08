@@ -18,14 +18,19 @@ model PromotionRequest {
   new_position    UserPosition @relation("promotion_request_new_position", fields: [new_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_id String?
-  management_staff    ManagementStaff? @relation(fields: [management_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  management_staff    ManagementStaff? @relation(fields: [management_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   academic_staff_id String?
-  academic_staff    AcademicStaff? @relation(fields: [academic_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  academic_staff    AcademicStaff? @relation(fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  student_id String?
+  student Student? @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  governing_body_id String?
+  governing_body GoverningBody? @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   promotion_request_status PromotionRequestStatus @default(PENDING)
   rejection_reason String?
-
 
   created_by_id String?
   created_by    User?   @relation("promotion_request_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

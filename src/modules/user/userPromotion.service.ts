@@ -26,6 +26,7 @@ const promoteUserSamePipeline = async (
   const cleanPosition = position_name.trim().toUpperCase();
   const cleanRole = role_name.trim().toUpperCase();
   const effectivePromotedDate = new Date(promoted_date);
+  
   // NO PROMOTION FOR SUPER ADMIN
   if (cleanRole === "SUPER_ADMIN") {
     throw new AppError(
@@ -104,15 +105,15 @@ const promoteUserSamePipeline = async (
       // Identify the user's CURRENT active profile details to terminate history
       if (
         (currentRoleName === "MANAGEMENT" ||
-          currentRoleName === "ADMIN" ||
-          currentRoleName === "TEACHER_ADMIN") &&
+          currentRoleName === "ADMIN" ) &&
         targetStaff.management_staff_profile
       ) {
         currentProfileId = targetStaff.management_staff_profile.id;
         currentActiveHistoryId =
           targetStaff.management_staff_profile.promotion_history[0]?.id || null;
       } else if (
-        currentRoleName === "ACADEMIC" &&
+        (currentRoleName === "ACADEMIC" ||
+          currentRoleName === "TEACHER_ADMIN") &&
         targetStaff.academic_staff_profile
       ) {
         currentProfileId = targetStaff.academic_staff_profile.id;
@@ -171,8 +172,11 @@ const promoteUserSamePipeline = async (
       // Handle Promotion Mapping Target: MANAGEMENT / ADMIN / TEACHER_ADMIN
       const isManagementTrack =
         cleanRole === "MANAGEMENT" ||
-        cleanRole === "ADMIN" ||
-        cleanRole === "TEACHER_ADMIN";
+        cleanRole === "ADMIN";
+      
+      const isAcademicTrack = 
+      cleanRole === "ACADEMIC" || 
+      cleanRole === "TEACHER_ADMIN";
 
       if (isManagementTrack) {
         if (!targetStaff.management_staff_profile) {
@@ -191,7 +195,7 @@ const promoteUserSamePipeline = async (
       }
 
       // Handle Promotion Mapping Target: ACADEMIC
-      else if (cleanRole === "ACADEMIC") {
+      else if (isAcademicTrack) {
         if (!targetStaff.academic_staff_profile) {
           throw new AppError(
             "Academic staff profile not found.",
@@ -295,8 +299,8 @@ const userCrossPipelinePromotion = async (
   const effectiveDate = new Date(transfer_effective_date);
 
   // 1. Structural Restrictions Checklist
-  const managementRoles = ["MANAGEMENT", "ADMIN", "TEACHER_ADMIN"];
-  const academicRoles = ["ACADEMIC"];
+  const managementRoles = ["MANAGEMENT", "ADMIN", ];
+  const academicRoles = ["ACADEMIC", "TEACHER_ADMIN"];
 
   const isTargetManagement = managementRoles.includes(cleanRole);
   const isTargetAcademic = academicRoles.includes(cleanRole);

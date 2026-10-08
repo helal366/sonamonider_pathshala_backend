@@ -1,8 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import {
-  ICachePosition,
-  IRolePositionPairPayload,
-} from "../../commonInterfaces/interfaces.js";
+import { ICachePosition } from "../../commonInterfaces/interfaces.js";
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../globalError/globalErrorHelperFunction.js";
 
@@ -16,7 +13,6 @@ export const getValidPositions = async (): Promise<ICachePosition[]> => {
           select: {
             id: true,
             position_name: true,
-            role: { select: { role_name: true } },
           },
         });
       } catch (error) {
@@ -40,16 +36,18 @@ export const clearCachePositions = (): void => {
 };
 
 // find the provided position
-export const findPositionExistence = async (position_name: string):Promise<ICachePosition> => {
+export const findPositionExistence = async (
+  position_name: string,
+): Promise<ICachePosition> => {
   const validPositions = await getValidPositions();
   const findPosition = validPositions.find(
     (singlePosition) => singlePosition.position_name === position_name,
   );
-  if(!findPosition){ 
-      throw new AppError(`Provided Position: ${position_name} is not a valid position`,
-      StatusCodes.NOT_FOUND)
+  if (!findPosition) {
+    throw new AppError(
+      `Provided Position: ${position_name} is not a valid position`,
+      StatusCodes.NOT_FOUND,
+    );
   }
   return findPosition;
 };
-
-

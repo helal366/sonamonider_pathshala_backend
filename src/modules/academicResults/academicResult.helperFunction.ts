@@ -50,11 +50,13 @@ const findStaffTable = (role_name: string) => {
   const isManagement =
     role_name === "MANAGEMENT" ||
     role_name === "SUPER_ADMIN" ||
-    role_name === "ADMIN" ||
-    role_name === "TEACHER_ADMIN";
+    role_name === "ADMIN" ;
+  const isAcademic = 
+  role_name === "ACADEMIC" ||
+  role_name === "TEACHER_ADMIN"
   if (isManagement) {
     prismaTableName = "managementStaff";
-  } else if (role_name === "ACADEMIC") {
+  } else if (isAcademic) {
     prismaTableName = "academicStaff";
   } else if (role_name === "GOVERNING_BODY") {
     prismaTableName = "governingBody";
