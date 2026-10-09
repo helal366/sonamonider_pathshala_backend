@@ -61,14 +61,16 @@ export type TCreatePromotionRequestZodSchema = z4.infer<
 // DELETE PROMOTION REQUEST ZOD SCHEMA
 // =========================================================
 const deletePromotionRequestZodSchema = z4.object({
-    promotion_request_id: z4.uuid({
+  promotion_request_id: z4.uuid({
     error: (issue) =>
       issue.input === undefined
         ? "Promotion request ID is required."
         : "Invalid Promotion request ID format.",
   }),
-})
-export type TDeletePromotionRequestZodSchema = z4.infer<typeof deletePromotionRequestZodSchema>;
+});
+export type TDeletePromotionRequestZodSchema = z4.infer<
+  typeof deletePromotionRequestZodSchema
+>;
 
 // =========================================================
 // ACTION PROMOTION REQUEST ZOD SCHEMA
@@ -87,22 +89,57 @@ export const actionPromotionRequestZodSchema = z4
     rejection_reason: z4.string().trim().optional(),
     effective_date: z4
       .string()
-      .check(z4.iso.datetime("Invalid date format. Expected an ISO string."))
+      .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
   })
-  .transform((data)=>{
-    if(data.action_status === "REJECTED" && (!data.rejection_reason || data.rejection_reason.trim() === "")){
+  .transform((data) => {
+    if (
+      data.action_status === "REJECTED" &&
+      (!data.rejection_reason || data.rejection_reason.trim() === "")
+    ) {
       return {
         ...data,
-        rejection_reason: "Super Admin decission."
-      }
+        rejection_reason: "Super Admin decission.",
+      };
     }
-    return data
-  })
-export type TActionPromotionRequestZodSchema = z4.infer<typeof actionPromotionRequestZodSchema>;
+    return data;
+  });
+export type TActionPromotionRequestZodSchema = z4.infer<
+  typeof actionPromotionRequestZodSchema
+>;
 
+// =========================================================
+// GET PROMOTION REQUESTS FILTER ZOD SCHEMA
+// =========================================================
+const getPromotionRequestsZodSchema = z4.object({
+  page: z4.coerce.number().int().min(1).default(1),
+  limit: z4.coerce.number().int().min(1).max(100).default(10),
+  status: z4.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
+  full_name: z4.string("Invalid full name format.").trim().optional(), // Explicit name input
+  mobile_number: z4.string("Invalid mobile number format.").trim().optional(), // Explicit mobile number input
+});
+
+export type TGetPromotionRequestsZodSchema = z4.infer<
+  typeof getPromotionRequestsZodSchema
+>;
+
+// =========================================================
+// GET SINGLE PROMOTION REQUEST ZOD SCHEMA
+// =========================================================
+const getSinglePromotionRequestZodSchema = z4.object({
+  promotion_request_id: z4.uuid({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Promotion request ID parameter is required."
+        : "Invalid promotion request ID parameter format.",
+  }),
+});
+
+export type TGetSinglePromotionRequestZodSchema = z4.infer<typeof getSinglePromotionRequestZodSchema>;
 
 export const promotionRequestsZodSchema = {
   createPromotionRequestZodSchema,
   deletePromotionRequestZodSchema,
-  actionPromotionRequestZodSchema
+  actionPromotionRequestZodSchema,
+  getPromotionRequestsZodSchema,
+  getSinglePromotionRequestZodSchema
 };
