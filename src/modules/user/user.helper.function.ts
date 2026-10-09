@@ -124,7 +124,7 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
   const profileData: Record<string, any> = {};
 
   if(isManagement.includes(cleanRole)){
-    targetEntityName = "ManagementStaff";
+    targetEntityName = "managementStaff";
     profileData.management_staff_profile = {
       create: {
         full_name,
@@ -136,7 +136,7 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
       }
     }
   }else if (cleanRole === "ACADEMIC") {
-    targetEntityName = "AcademicStaff";
+    targetEntityName = "academicStaff";
     profileData.academic_staff_profile = {
       create: {
         full_name,
@@ -151,7 +151,7 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
     if (!active_class_id) {
       throw new AppError("active_class_id is required to onboard a Student profile.", StatusCodes.BAD_REQUEST);
     }
-    targetEntityName = "Student";
+    targetEntityName = "student";
     profileData.student_profile = {
       create: {
         full_name,
@@ -162,7 +162,7 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload)=>{
       },
     };
   }else if (cleanRole === "GOVERNING_BODY") {
-    targetEntityName = "GoverningBody";
+    targetEntityName = "governingBody";
     profileData.governing_body_profile = {
       create: {
         full_name,

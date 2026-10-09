@@ -8,7 +8,7 @@ import {
   GENDER_ENUM,
   RELIGION_ENUM,
   STRING_FIELDS,
-  VALID_USER_ROLES,
+  VALID_USER_ROLES_USER_CREATE,
 } from "./user.interface.js";
 
 // ===================================
@@ -68,7 +68,7 @@ const userCreateZodSchema = z4
           ? "User position is required."
           : "Invalid user position format",
     }),
-    role_name: z4.enum(VALID_USER_ROLES, {
+    role_name: z4.enum(VALID_USER_ROLES_USER_CREATE, {
       error: (issue) =>
         issue.input === undefined
           ? "User role is required."
@@ -460,40 +460,55 @@ export const userCrossPipelinePromotionZodSchema = z4.object({
   full_name: z4
     .string({
       error: (issue) =>
-        issue.input === undefined ? "Full name is required." : "Invalid full name format.",
+        issue.input === undefined
+          ? "Full name is required."
+          : "Invalid full name format.",
     })
     .trim(),
   mobile_number: z4
     .string({
       error: (issue) =>
-        issue.input === undefined ? "Mobile number is required." : "Invalid mobile number format.",
+        issue.input === undefined
+          ? "Mobile number is required."
+          : "Invalid mobile number format.",
     })
     .trim()
-    .length(11, "Mobile number must be 11 digit Bangladeshi number start with 01")
+    .length(
+      11,
+      "Mobile number must be 11 digit Bangladeshi number start with 01",
+    )
     .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
   target_position_name: z4
     .string({
       error: (issue) =>
-        issue.input === undefined ? "Target position name is required." : "Invalid position format.",
+        issue.input === undefined
+          ? "Target position name is required."
+          : "Invalid position format.",
     })
     .trim()
     .toUpperCase(),
   target_role_name: z4
     .string({
       error: (issue) =>
-        issue.input === undefined ? "Target role name is required." : "Invalid role format.",
+        issue.input === undefined
+          ? "Target role name is required."
+          : "Invalid role format.",
     })
     .trim()
     .toUpperCase(),
   transfer_effective_date: z4
     .string({
       error: (issue) =>
-        issue.input === undefined ? "Effective date is required." : "Invalid ISO date string format.",
+        issue.input === undefined
+          ? "Effective date is required."
+          : "Invalid ISO date string format.",
     })
     .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 });
 
-export type TCrossPipelineTransferZodSchema = z4.infer<typeof userCrossPipelinePromotionZodSchema>;
+export type TCrossPipelineTransferZodSchema = z4.infer<
+  typeof userCrossPipelinePromotionZodSchema
+>;
 
 export const userZodSchema = {
   userCreateZodSchema,
@@ -505,5 +520,5 @@ export const userZodSchema = {
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
-  userCrossPipelinePromotionZodSchema
+  userCrossPipelinePromotionZodSchema,
 };

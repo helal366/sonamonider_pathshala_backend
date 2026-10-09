@@ -23,5 +23,16 @@ router.delete(
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(promotionRequestsZodSchema.deletePromotionRequestZodSchema),
   promotionRequestController.deletePromotionRequest
-)
+);
+
+// =========================================================
+// ACTION PROMOTION REQUEST ZOD SCHEMA
+// =========================================================
+router.patch(
+  "/action_promotion_request",
+  userAuth("SUPER_ADMIN"), 
+  validateZodSchema(promotionRequestsZodSchema.actionPromotionRequestZodSchema),
+  promotionRequestController.actionPromotionRequest
+);
+
 export const promotionRequestRouter: Router = router;

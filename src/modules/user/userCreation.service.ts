@@ -3,7 +3,7 @@ import { findPositionExistence } from "../../helperFunctions/cachedData/cache_po
 import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { userHelperFunction } from "./user.helper.function";
-import { TCleanRole } from "./user.interface";
+import { TCleanRolesUserCreation } from "./user.interface";
 import { TUserCreateZodSchema } from "./user.zod.validation";
 import { prisma } from "../../lib/prisma";
 import { Prisma } from "#db-client";
@@ -28,7 +28,7 @@ const createUser = async (
     ...rest
   } = payload;
 
-  const cleanRole = role_name.trim().toUpperCase() as TCleanRole;
+  const cleanRole = role_name.trim().toUpperCase() as TCleanRolesUserCreation;
   const cleanPosition = position_name.trim().toUpperCase();
   const effectiveJoiningDate = new Date(joining_date);
 
@@ -71,7 +71,6 @@ const createUser = async (
   const newUser = await prisma
     .$transaction(
       async (transaction) => {
-
         // CALLING THE HELPER FUNCTION HERE
         const { profileData, targetEntityName } =
           userHelperFunction.buildDynamicProfileData({
@@ -151,26 +150,29 @@ const createUser = async (
               position_id: positionExists.id,
               role_id: roleExists.id,
               start_date: effectiveJoiningDate,
-              created_by_id: loggedInUser.user_id
+              created_by_id: loggedInUser.user_id,
             },
           });
         }
 
         // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
         if (cleanRole === "STUDENT" && subProfileId) {
-                  // CHECK THE CLASS IS ACTIVE OR NOT
-        const classCheck = await transaction.class.findUnique({
-          where: { id: payload.active_class_id },
-          select: {
-            is_active_class: true
+          // CHECK THE CLASS IS ACTIVE OR NOT
+          const classCheck = await transaction.class.findUnique({
+            where: { id: payload.active_class_id },
+            select: {
+              is_active_class: true,
+            },
+          });
+          if (!classCheck) {
+            throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
           }
-        });
-        if (!classCheck) {
-          throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-        };
-        if(!classCheck.is_active_class){
-          throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST)
-        }
+          if (!classCheck.is_active_class) {
+            throw new AppError(
+              `The class is not active.`,
+              StatusCodes.BAD_REQUEST,
+            );
+          }
           const academicYearName = await transaction.academicYear.findUnique({
             where: { academic_year_name: payload.year_name },
             select: { id: true },
@@ -282,5 +284,5 @@ const createUser = async (
 };
 
 export const createUserServices = {
-    createUser
-}
+  createUser,
+};

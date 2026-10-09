@@ -70,7 +70,39 @@ const deletePromotionRequestZodSchema = z4.object({
 })
 export type TDeletePromotionRequestZodSchema = z4.infer<typeof deletePromotionRequestZodSchema>;
 
+// =========================================================
+// ACTION PROMOTION REQUEST ZOD SCHEMA
+// =========================================================
+export const actionPromotionRequestZodSchema = z4
+  .object({
+    promotion_request_id: z4.uuid({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Promotion request ID is required."
+          : "Invalid promotion request ID format.",
+    }),
+    action_status: z4.enum(["APPROVED", "REJECTED"], {
+      error: (issue) => "Action status must be either APPROVED or REJECTED.",
+    }),
+    rejection_reason: z4.string().trim().optional(),
+    effective_date: z4
+      .string()
+      .check(z4.iso.datetime("Invalid date format. Expected an ISO string."))
+  })
+  .transform((data)=>{
+    if(data.action_status === "REJECTED" && (!data.rejection_reason || data.rejection_reason.trim() === "")){
+      return {
+        ...data,
+        rejection_reason: "Super Admin decission."
+      }
+    }
+    return data
+  })
+export type TActionPromotionRequestZodSchema = z4.infer<typeof actionPromotionRequestZodSchema>;
+
+
 export const promotionRequestsZodSchema = {
   createPromotionRequestZodSchema,
-  deletePromotionRequestZodSchema
+  deletePromotionRequestZodSchema,
+  actionPromotionRequestZodSchema
 };

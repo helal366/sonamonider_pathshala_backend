@@ -1,5 +1,4 @@
 import { ActiveStatus, BloodGroup, Gender, Religion } from "#db-client";
-import { prisma } from "../../lib/prisma";
 
 // ==========================================
 // CREATE USER
@@ -25,26 +24,27 @@ export interface IDynamicProfilePayload {
   active_class_id?: string;
 }
 
-export const VALID_USER_ROLES = [
+export const VALID_USER_ROLES_USER_CREATE = [
   "MANAGEMENT",
   "ACADEMIC",
   "STUDENT",
-  "GOVERNING_BODY"
+  "GOVERNING_BODY",
 ] as const;
 
-export type TCleanRole = typeof VALID_USER_ROLES[number];
+export type TCleanRolesUserCreation =
+  (typeof VALID_USER_ROLES_USER_CREATE)[number];
 
-export interface ICreatedUserWithProfiles{
-  management_staff_profile?: {id:string} | null;
-  academic_staff_profile?: {id:string} | null;
-  student_profile?: {id:string} | null;
-  governing_body_profile: {id:string} | null;
+export interface ICreatedUserWithProfiles {
+  management_staff_profile?: { id: string } | null;
+  academic_staff_profile?: { id: string } | null;
+  student_profile?: { id: string } | null;
+  governing_body_profile: { id: string } | null;
 }
 
-export interface IFindSubProfilePayload{
-  cleanRole: TCleanRole,
-  createdUser: ICreatedUserWithProfiles,
-  targetEntityName: string
+export interface IFindSubProfilePayload {
+  cleanRole: TCleanRolesUserCreation;
+  createdUser: ICreatedUserWithProfiles;
+  targetEntityName: string;
 }
 
 export interface IBuildInitialAuditRecordsPayload {
@@ -61,7 +61,7 @@ export interface IBuildInitialAuditRecordsPayload {
   loggedInUserId: string;
 }
 // ==========================================
-// UPDATE SINGLE USER FIELD ADMIN 
+// UPDATE SINGLE USER FIELD ADMIN
 // ==========================================
 
 // Use Object.values() combined with 'as const' typing to create strict tuple arrays
@@ -74,7 +74,6 @@ export const RELIGION_ENUM = Object.values(Religion) as [
   Religion,
   ...Religion[],
 ];
-
 
 // Keep your base structural groupings clean
 export const STRING_FIELDS = [
