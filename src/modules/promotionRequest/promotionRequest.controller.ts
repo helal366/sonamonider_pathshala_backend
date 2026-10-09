@@ -6,6 +6,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { promotionRequestServices } from "./promotionRequest.service";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
+import { promotionRequestActionServices } from "./promotionRequest.actionService";
 
 // =========================================================
 // CREATE PROMOTION REQUEST CONTROLLER
@@ -56,7 +57,7 @@ const actionPromotionRequest=catchAsync(async(req: Request, res: Response)=>{
   }
   const loggedInUser = helperFunctions.requiredUser(req);
   
-  const result = await promotionRequestServices.actionPromotionRequest(payload, loggedInUser);
+  const result = await promotionRequestActionServices.actionPromotionRequest(payload, loggedInUser);
 
   sendResponse(res, {
     success: true,

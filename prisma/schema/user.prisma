@@ -16,7 +16,7 @@ model User {
   mobile_number      String
   is_mobile_verified Boolean @default(false)
 
-  email             String? @unique
+  email             String @unique
   is_email_verified Boolean @default(false)
 
   user_name     String? @unique
