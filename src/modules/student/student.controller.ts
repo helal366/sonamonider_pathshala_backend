@@ -4,12 +4,23 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { studentServices } from "./student.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import { TStudentReadmissionZodSchema } from "./student.zod.validation";
 
 // =============================================
 // STUDENT READMISSION CONTROLLER
 // =============================================
 const studentReadmission = catchAsync(async(req:Request, res:Response)=>{
-    
+    const payload: TStudentReadmissionZodSchema = req.body;
+  const loggedInUser = helperFunctions.requiredUser(req);
+
+  const result = await studentServices.studentReadmission(payload, loggedInUser);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Student readmitted and promoted successfully for the new academic year.",
+    data: result,
+  });
 });
 
 // =============================================

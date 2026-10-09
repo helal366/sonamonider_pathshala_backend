@@ -1,8 +1,12 @@
 model QuranicClassPeriod {
   id                        String  @id @default(uuid())
+
   quranic_class_period_name String
-  start_time                String
-  end_time                  String
+  start_time                String   //example: 6:00 AM
+  end_time                  String   //example: 8:00 AM
+
+  class_history ClassHistory[]
+
   created_by_id             String?
   created_by                User?   @relation("quranic_class_period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 

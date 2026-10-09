@@ -8,10 +8,16 @@ import { studentZodSchema } from "./student.zod.validation";
 // STUDENT READMISSION ROUTE
 // =============================================
 const router = Router();
-router.patch(
-    "/readmission",
-    userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+// =========================================================
+// STUDENT READMISSION ROUTE
+// =========================================================
+router.post(
+  "/student_readmission",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodSchema(studentZodSchema.studentReadmissionZodSchema),
+  studentController.studentReadmission,
 );
+
 
 // =============================================
 // ADD RESPONSIBLE TEACHER ROUTE

@@ -172,9 +172,17 @@ const createUser = async (
               `The class is not active.`,
               StatusCodes.BAD_REQUEST,
             );
+          };
+
+          if(!payload.year_name){
+            throw new AppError(`Academic year is required for student entry.`, StatusCodes.NOT_FOUND);
           }
+          const cleanYearName = payload.year_name.trim();
+          const academicStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
+          const academicEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
+
           const academicYearName = await transaction.academicYear.findUnique({
-            where: { academic_year_name: payload.year_name },
+            where: { academic_year_name: cleanYearName },
             select: { id: true },
           });
 
@@ -208,7 +216,8 @@ const createUser = async (
               academic_year: { connect: { id: academicYearName.id } },
               shift: { connect: { id: existingShift?.id } },
               roll_number: payload.roll_number,
-              start_date: new Date(),
+              start_date: academicStartDate,
+              end_date: academicEndDate,
               created_by: { connect: { id: loggedInUser.user_id } },
             },
           });
@@ -219,7 +228,8 @@ const createUser = async (
             old_value: Prisma.JsonNull,
             new_value: {
               class_id: payload.active_class_id,
-              start_date: new Date().toISOString(),
+              start_date: academicStartDate.toISOString(),
+              end_date: academicEndDate.toISOString(),
             },
             action: "CREATE",
             changed_by_id: loggedInUser.user_id,
@@ -239,12 +249,6 @@ const createUser = async (
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
         });
-        // if (!createdUser.management_staff_profile) {
-        //   throw new AppError(
-        //     "Failed to initialize management staff profile during onboarding.",
-        //     StatusCodes.INTERNAL_SERVER_ERROR,
-        //   );
-        // }
 
         // Bulk resolve tracking inputs
         await transaction.auditLog.createMany({ data: auditRecords });

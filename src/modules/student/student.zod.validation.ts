@@ -3,18 +3,38 @@ import z4 from "zod/v4";
 // ============================================================
 // STUDENT READMISSION ZOD SCHEMA
 // ============================================================
-const studentReadmissionZodSchema = z4.object({
+// =========================================================
+// STUDENT READMISSION VALIDATION SCHEMA
+// =========================================================
+export const studentReadmissionZodSchema = z4.object({
   student_id: z4.uuid({
-    error: (issue) => {
-      issue.input === undefined
-        ? "Student ID is required."
-        : "Invalid student ID format.";
-    },
+    error: (issue) =>
+      issue.input === undefined ? "Student ID is required." : "Invalid Student ID format.",
   }),
+  target_class_id: z4.uuid({
+    error: (issue) =>
+      issue.input === undefined ? "Target Class ID is required." : "Invalid Class ID format.",
+  }),
+  target_shift_name: z4.string({
+    error: (issue) =>
+      issue.input === undefined ? "Shift name is required." : "Invalid Shift format.",
+  }).trim().toUpperCase(),
+  target_year_name: z4.string({
+    error: (issue) =>
+      issue.input === undefined ? "Target Academic Year name is required." : "Invalid Academic Year format.",
+  }).trim(),
+  roll_number: z4.coerce
+    .number({ error: (issue) => "Roll number must be an integer." })
+    .int()
+    .min(1, "Roll number must be greater than 0"),
+  
+  // Optional Specialized Quranic Parameters
+  quranic_class_id: z4.uuid().optional(),
+  quranic_class_period_id: z4.uuid().optional(),
 });
-export type TStudentReadmissionZodSchema = z4.infer<
-  typeof studentReadmissionZodSchema
->;
+
+export type TStudentReadmissionZodSchema = z4.infer<typeof studentReadmissionZodSchema>;
+
 
 // =============================================
 // ADD RESPONSIBLE TEACHER ZOD SCHEMA
