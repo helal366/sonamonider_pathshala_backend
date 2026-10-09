@@ -170,6 +170,7 @@ const actionPromotionRequest = async (
     let activeHistoryId: string | undefined = "";
 
     // Build common execution payload;
+    // SAME PIPELINE PROMOTION
     if (isSamePipeline) {
       if (management_staff_id) {
         subProfileId = management_staff_id;
@@ -191,6 +192,7 @@ const actionPromotionRequest = async (
           where: { id: activeHistoryId },
           data: {
             end_date: effectiveDate,
+            updated_by_id: loggedInUser.user_id
           },
         });
 
@@ -239,6 +241,7 @@ const actionPromotionRequest = async (
           data: {
             current_position_id: new_position_id,
             current_role_id: new_role_id,
+            updated_by_id: loggedInUser.user_id
           },
         });
         // Push to audit record
@@ -263,6 +266,7 @@ const actionPromotionRequest = async (
           data: {
             role_id: new_role_id,
             position_id: new_position_id,
+            updated_by_id: loggedInUser.user_id
           },
         });
 
@@ -302,7 +306,10 @@ const actionPromotionRequest = async (
         // Update active history
         const updatedHistory = await tx.promotionHistory.update({
           where: { id: activeHistoryId },
-          data: { end_date: effectiveDate },
+          data: { 
+            end_date: effectiveDate,
+            updated_by_id: loggedInUser.user_id
+          },
         });
         // Push to audit record
         auditRecords.push({
@@ -346,6 +353,7 @@ const actionPromotionRequest = async (
           data: {
             current_position_id: new_position_id,
             current_role_id: new_role_id,
+            updated_by_id: loggedInUser.user_id
           },
         });
 
@@ -371,6 +379,7 @@ const actionPromotionRequest = async (
           data: {
             role_id: new_role_id,
             position_id: new_position_id,
+            updated_by_id: loggedInUser.user_id
           },
         });
 
@@ -387,7 +396,10 @@ const actionPromotionRequest = async (
 
       // Create audit log
       await tx.auditLog.createMany({ data: auditRecords });
-    } else if (isCrossPipeline) {
+    } 
+
+    // CROSS PIPELINE PROMOTION
+     if (isCrossPipeline) {
       // Source management and target academic
       if (isSourceManagement && isTargetAcademic) {
         if (!management_staff_id) {
@@ -409,6 +421,7 @@ const actionPromotionRequest = async (
           where: { id: management_staff_id },
           data: {
             is_currently_active_staff: false,
+            updated_by_id: loggedInUser.user_id
           },
         });
 
@@ -436,7 +449,10 @@ const actionPromotionRequest = async (
         if (existPromotionHistory) {
           const updatedPrmtHistory = await tx.promotionHistory.update({
             where: { id: existPromotionHistory.id },
-            data: { end_date: effectiveDate },
+            data: { 
+              end_date: effectiveDate,
+              updated_by_id: loggedInUser.user_id
+            },
           });
           // Audit log
           auditRecords.push({
@@ -445,65 +461,330 @@ const actionPromotionRequest = async (
             changed_by_id: loggedInUser.user_id,
             action: "UPDATE",
             old_value: {
-              end_date: existPromotionHistory.end_date,
+              end_date: null,
             },
             new_value: {
-              end_date: updatedPrmtHistory.end_date,
+              end_date: updatedPrmtHistory.end_date?.toISOString(),
             },
           });
-          // Check academic staff existance
-          if (targetUser.academic_staff_profile) {
-            const academicStaffId = targetUser.academic_staff_profile.id;
-            // Find existing academic staff profile
-            const existingAcademicStaff = await tx.academicStaff.findUnique({
-              where: {id: academicStaffId},
-              select: {
-                is_currently_active_staff: true,
-                current_role_id: true,
-                current_position_id: true,
-              }
-            })
-            // Update academic staff profile
-            const updatedAcadStaff = await tx.academicStaff.update({
-              where: { id: academicStaffId },
-              data: {
-                is_currently_active_staff: true,
-                current_role_id: new_role_id,
-                current_position_id: new_position_id,
-              },
-            });
-            // Audit log
-            auditRecords.push({
-              entity_id: academicStaffId,
-              entity_name: "academicStaff",
-              changed_by_id: loggedInUser.user_id,
-              action: "UPDATE",
-              old_value: {
-                is_currently_active_staff: existingAcademicStaff?.is_currently_active_staff,
-                current_role_id: existingAcademicStaff?.current_role_id,
-                current_position_id: existingAcademicStaff?.current_position_id,
-              },
-              new_value: {
-                is_currently_active_staff: updatedAcadStaff?.is_currently_active_staff,
-                current_role_id: updatedAcadStaff?.current_role_id,
-                current_position_id: updatedAcadStaff?.current_position_id,
-              },
-            });
-          }else{
-            const createdAcadStaff = await tx.academicStaff.create({
-              data: {
-                full_name: targetUser.full_name,
-                mobile_number: targetUser.mobile_number,
-                email: targetUser.email,
-                is_currently_active_staff: true,
-                user_id,
-                current_role_id: new_role_id,
-                current_position_id: new_position_id
-              }
-            })
-          }
         }
+        // Check academic staff existance
+        let targetAcademicStaffId;
+        if (targetUser.academic_staff_profile) {
+           targetAcademicStaffId = targetUser.academic_staff_profile.id;
+          // Find existing academic staff profile
+          const existingAcademicStaff = await tx.academicStaff.findUnique({
+            where: {id: targetAcademicStaffId},
+            select: {
+              is_currently_active_staff: true,
+              current_role_id: true,
+              current_position_id: true,
+            }
+          })
+          // Update academic staff profile
+          const updatedAcadStaff = await tx.academicStaff.update({
+            where: { id: targetAcademicStaffId },
+            data: {
+              is_currently_active_staff: true,
+              current_role_id: new_role_id,
+              current_position_id: new_position_id,
+              updated_by_id: loggedInUser.user_id
+            },
+          });
+          // Audit log
+          auditRecords.push({
+            entity_id: targetAcademicStaffId,
+            entity_name: "academicStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: {
+              is_currently_active_staff: existingAcademicStaff?.is_currently_active_staff,
+              current_role_id: existingAcademicStaff?.current_role_id,
+              current_position_id: existingAcademicStaff?.current_position_id,
+            },
+            new_value: {
+              is_currently_active_staff: updatedAcadStaff?.is_currently_active_staff,
+              current_role_id: updatedAcadStaff?.current_role_id,
+              current_position_id: updatedAcadStaff?.current_position_id,
+            },
+          });
+        }else{
+          // Create academic staff
+          const createdAcadStaff = await tx.academicStaff.create({
+            data: {
+              full_name: targetUser.full_name,
+              mobile_number: targetUser.mobile_number,
+              email: targetUser.email,
+              is_currently_active_staff: true,
+              user_id,
+              current_role_id: new_role_id,
+              current_position_id: new_position_id,
+              created_by_id: loggedInUser.user_id
+            }
+          });
+          // Assign target academic staff id
+          targetAcademicStaffId = createdAcadStaff.id
+          // Audit logg
+          auditRecords.push({
+            entity_id: createdAcadStaff.id,
+            entity_name: "academicStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "CREATE",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name: createdAcadStaff.full_name,
+              mobile_number: createdAcadStaff.mobile_number,
+              email: createdAcadStaff.email,
+              is_currently_active_staff: createdAcadStaff.is_currently_active_staff,
+              user_id: createdAcadStaff.user_id,
+              current_role_id: createdAcadStaff.current_role_id,
+              current_position_id: createdAcadStaff.current_position_id
+            },
+          });
+        };
+
+        // Update root user 
+         await tx.user.update({
+          where: { id: user_id },
+          data: {
+            role_id: new_role_id,
+            position_id: new_position_id,
+            updated_by_id:loggedInUser.user_id
+          },
+        });
+
+        auditRecords.push({
+          entity_id: user_id,
+          entity_name: "user",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: { role_id: old_role_id, position_id: old_position_id },
+          new_value: { role_id: new_role_id, position_id: new_position_id },
+        });
+
+        // Create new promotion history 
+        const newPromotionHistory = await tx.promotionHistory.create({
+          data: {
+            academic_staff_id: targetAcademicStaffId,
+            role_id: new_role_id,
+            position_id: new_position_id,
+            start_date: effectiveDate,
+            created_by_id: loggedInUser.user_id
+          }
+        });
+
+        auditRecords.push({
+          entity_id: newPromotionHistory.id,
+            entity_name: "promotionHistory",
+            changed_by_id: loggedInUser.user_id,
+            action: "CREATE",
+            old_value: Prisma.JsonNull,
+            new_value:{
+              academic_staff_id: newPromotionHistory.academic_staff_id,
+            role_id: newPromotionHistory.role_id,
+            position_id: newPromotionHistory.position_id,
+            start_date: newPromotionHistory.start_date.toISOString(),
+            }
+        })
       }
+           // Source academic and target management
+      if (isSourceAcademic && isTargetManagement) {
+        if (!academic_staff_id) {
+          throw new AppError(
+            `Source academic profile should have an academic staff ID`,
+            StatusCodes.CONFLICT,
+          );
+        }
+
+        // 1. Find the current active academic staff profile snapshot
+        const acadStaff = await tx.academicStaff.findUnique({
+          where: { id: academic_staff_id },
+          select: {
+            is_currently_active_staff: true,
+          },
+        });
+
+        // 2. Soft-deactivate the source academic staff profile record
+        const updatedAcadStaff = await tx.academicStaff.update({
+          where: { id: academic_staff_id },
+          data: {
+            is_currently_active_staff: false,
+            updated_by_id: loggedInUser.user_id,
+          },
+        });
+
+        // 3. Track the academic staff deactivation state modification
+        auditRecords.push({
+          entity_id: academic_staff_id,
+          entity_name: "academicStaff",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: {
+            is_currently_active_staff: acadStaff?.is_currently_active_staff,
+          },
+          new_value: {
+            is_currently_active_staff: updatedAcadStaff?.is_currently_active_staff,
+          },
+        });
+
+        // 4. Find the current open promotion timeline history log row
+        const existPromotionHistory = await tx.promotionHistory.findFirst({
+          where: { academic_staff_id, end_date: null },
+        });
+
+        // 5. Terminate the active history timeline record if it exists
+        if (existPromotionHistory) {
+          const updatedPrmtHistory = await tx.promotionHistory.update({
+            where: { id: existPromotionHistory.id },
+            data: { 
+              end_date: effectiveDate,
+              updated_by_id: loggedInUser.user_id,
+            },
+          });
+
+          // Audit log the timeline closure statement
+          auditRecords.push({
+            entity_id: updatedPrmtHistory.id,
+            entity_name: "promotionHistory",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: {
+              end_date: null,
+            },
+            new_value: {
+              end_date: updatedPrmtHistory.end_date?.toISOString(),
+            },
+          });
+        }
+
+        // 6. Check for destination management profile table historical presence
+        let targetManagementStaffId;
+        if (targetUser.management_staff_profile) {
+          targetManagementStaffId = targetUser.management_staff_profile.id;
+
+          // Find the existing historical management staff data configuration
+          const existingManagementStaff = await tx.managementStaff.findUnique({
+            where: { id: targetManagementStaffId },
+            select: {
+              is_currently_active_staff: true,
+              current_role_id: true,
+              current_position_id: true,
+            },
+          });
+
+          // Reactivate and update the historical management profile record
+          const updatedMngStaff = await tx.managementStaff.update({
+            where: { id: targetManagementStaffId },
+            data: {
+              is_currently_active_staff: true,
+              current_role_id: new_role_id,
+              current_position_id: new_position_id,
+              updated_by_id: loggedInUser.user_id,
+            },
+          });
+
+          // Push the update change matrix to the audit log array
+          auditRecords.push({
+            entity_id: targetManagementStaffId,
+            entity_name: "managementStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: {
+              is_currently_active_staff: existingManagementStaff?.is_currently_active_staff,
+              current_role_id: existingManagementStaff?.current_role_id,
+              current_position_id: existingManagementStaff?.current_position_id,
+            },
+            new_value: {
+              is_currently_active_staff: updatedMngStaff?.is_currently_active_staff,
+              current_role_id: updatedMngStaff?.current_role_id,
+              current_position_id: updatedMngStaff?.current_position_id,
+            },
+          });
+        } else {
+          // Instantiate a brand-new management staff record since none exists historically
+          const createdMngStaff = await tx.managementStaff.create({
+            data: {
+              full_name: targetUser.full_name,
+              mobile_number: targetUser.mobile_number,
+              email: targetUser.email, // Safe as email is now strictly required in your schema
+              is_currently_active_staff: true,
+              user_id,
+              current_role_id: new_role_id,
+              current_position_id: new_position_id,
+              created_by_id: loggedInUser.user_id,
+            },
+          });
+
+          // Assign the generated unique profile ID
+          targetManagementStaffId = createdMngStaff.id;
+
+          // Audit log the profile creation step
+          auditRecords.push({
+            entity_id: createdMngStaff.id,
+            entity_name: "managementStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "CREATE",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              full_name: createdMngStaff.full_name,
+              mobile_number: createdMngStaff.mobile_number,
+              email: createdMngStaff.email,
+              is_currently_active_staff: createdMngStaff.is_currently_active_staff,
+              user_id: createdMngStaff.user_id,
+              current_role_id: createdMngStaff.current_role_id,
+              current_position_id: createdMngStaff.current_position_id,
+            },
+          });
+        }
+
+        // 7. Update the root user document record pointers to mirror current track shifts
+        await tx.user.update({
+          where: { id: user_id },
+          data: {
+            role_id: new_role_id,
+            position_id: new_position_id,
+            updated_by_id: loggedInUser.user_id,
+          },
+        });
+
+        auditRecords.push({
+          entity_id: user_id,
+          entity_name: "user",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: { role_id: old_role_id, position_id: old_position_id },
+          new_value: { role_id: new_role_id, position_id: new_position_id },
+        });
+
+        // 8. Create a fresh new open baseline promotion timeline tracking log row
+        const newPromotionHistory = await tx.promotionHistory.create({
+          data: {
+            management_staff_id: targetManagementStaffId,
+            role_id: new_role_id,
+            position_id: new_position_id,
+            start_date: effectiveDate,
+            created_by_id: loggedInUser.user_id,
+          },
+        });
+
+        // Push the clean, string-serialized milestone statement to audit log array
+        auditRecords.push({
+          entity_id: newPromotionHistory.id,
+          entity_name: "promotionHistory",
+          changed_by_id: loggedInUser.user_id,
+          action: "CREATE",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            management_staff_id: newPromotionHistory.management_staff_id,
+            role_id: newPromotionHistory.role_id,
+            position_id: newPromotionHistory.position_id,
+            start_date: newPromotionHistory.start_date.toISOString(), // Perfectly string-serialized
+          },
+        });
+      }
+
+      // Create audit log
+      await tx.auditLog.createMany({ data: auditRecords });
     }
   });
 };
