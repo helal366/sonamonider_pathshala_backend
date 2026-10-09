@@ -16,6 +16,9 @@ router.post(
   userController.createUser,
 );
 
+//================================================
+// CHANGE USER PASSWORD ROUTE
+//================================================
 router.patch(
   "/change_password",
   userAuth(),
@@ -23,30 +26,13 @@ router.patch(
   userController.changePassword,
 );
 
+//================================================
+// FORGET PASSWORD ROUTE
+//================================================
 router.post(
   "/forget_password",
   validateZodSchema(userZodSchema.forgetPasswordZodSchema),
   userController.forgetPassword,
-);
-
-// ==========================================
-// PROMOTE USER SAME PIPELINE ROUTE
-// ==========================================
-router.patch(
-  "/promote_user_same_pipeline",
-  userAuth("SUPER_ADMIN"),
-  validateZodSchema(userZodSchema.promoteUserSamePipelineZodSchema),
-  userController.promoteUserSamePipeline,
-);
-
-// ==========================================
-// USER CROSS PIPELINE PROMOTION ROUTE
-// ==========================================
-router.patch(
-  "/transfer_user_cross_pipeline",
-  userAuth("SUPER_ADMIN"), // Enforced safety rule for root system operations
-  validateZodSchema(userZodSchema.userCrossPipelinePromotionZodSchema),
-  userController.userCrossPipelinePromotion,
 );
 
 // ==========================================

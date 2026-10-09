@@ -4,12 +4,11 @@ model PromotionRequest {
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-
   old_role_id String
-  old_role UserRole @relation("promotion_request_old_role", fields: [old_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  old_role    UserRole @relation("promotion_request_old_role", fields: [old_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  new_role_id String 
-  new_role UserRole @relation("promotion_request_new_role", fields: [new_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  new_role_id String
+  new_role    UserRole @relation("promotion_request_new_role", fields: [new_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   old_position_id String
   old_position    UserPosition @relation("promotion_request_old_position", fields: [old_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -24,13 +23,13 @@ model PromotionRequest {
   academic_staff    AcademicStaff? @relation(fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   student_id String?
-  student Student? @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  student    Student? @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   governing_body_id String?
-  governing_body GoverningBody? @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  governing_body    GoverningBody? @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   promotion_request_status PromotionRequestStatus @default(PENDING)
-  rejection_reason String?
+  rejection_reason         String?
 
   created_by_id String?
   created_by    User?   @relation("promotion_request_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

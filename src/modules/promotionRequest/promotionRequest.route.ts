@@ -40,7 +40,7 @@ router.patch(
 // =========================================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN"),
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(promotionRequestsZodSchema.getPromotionRequestsZodSchema),
   promotionRequestController.getAllPromotionRequests
 );

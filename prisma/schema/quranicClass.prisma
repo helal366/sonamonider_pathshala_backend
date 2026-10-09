@@ -1,0 +1,17 @@
+model QuranicClass {
+  id                 String @id @default(uuid())
+  quranic_class_name String
+
+  class_history ClassHistory[]
+
+  created_by_id String?
+  created_by    User?   @relation("quranic_class_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("quranic_class_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("quranic_classes")
+}

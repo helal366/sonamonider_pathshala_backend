@@ -7,9 +7,9 @@ model Student {
   active_class_id String
   active_class    Class  @relation("student_active_classes", fields: [active_class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  class_history ClassHistory[]
-  promotion_requests         PromotionRequest[]
-  promotion_history PromotionHistory[]
+  class_history      ClassHistory[]
+  promotion_requests PromotionRequest[]
+  promotion_history  PromotionHistory[]
 
   responsible_teacher_id String?
   responsible_teacher    AcademicStaff? @relation(fields: [responsible_teacher_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

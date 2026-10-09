@@ -6,20 +6,17 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import {
   TChangePasswordPayload,
   TChangeUserPositionZodSchema,
-  TPromoteUserRolePositionZodSchema,
   TForgetPasswordPayload,
   TUserCreateZodSchema,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserPasswordZodSchema,
   TUpdateUserNameZodSchema,
-  TCrossPipelineTransferZodSchema,
 } from "./user.zod.validation.js";
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { createUserServices } from "./userCreation.service.js";
-import { userPromotionServices } from "./userPromotion.service.js";
 
 //=============================================
 // CREATE USER CONTROLLER
@@ -86,31 +83,6 @@ const forgetPassword = catchAsync(
   },
 );
 
-// =========================================
-// PROMOTE USER SAME PIPELINE CONTROLLER
-// =========================================
-const promoteUserSamePipeline = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TPromoteUserRolePositionZodSchema = req.body;
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
-
-    const result = await userPromotionServices.promoteUserSamePipeline(
-      payload,
-      loggedInUser,
-    );
-
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Management staff role change successful.",
-      data: result,
-    });
-  },
-);
 
 // =====================================
 // CHANGE USER POSITION CONTROLLER
@@ -213,38 +185,15 @@ const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const userCrossPipelinePromotion = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TCrossPipelineTransferZodSchema = req.body;
-    const loggedInUser = req.user;
 
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
-
-    const result = await userPromotionServices.userCrossPipelinePromotion(
-      payload,
-      loggedInUser,
-    );
-
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Cross-pipeline user track transfer executed successfully.",
-      data: result,
-    });
-  },
-);
 
 export const userController = {
   createUser,
   changePassword,
   forgetPassword,
-  promoteUserSamePipeline,
   changeUserPosition,
   updateSingleUserFieldAdmin,
   updateSingleUserFieldSuperAdmin,
   updateUserName,
   updateUserPassword,
-  userCrossPipelinePromotion
 };

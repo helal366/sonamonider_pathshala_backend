@@ -1,0 +1,16 @@
+model QuranicClassPeriod {
+  id                        String  @id @default(uuid())
+  quranic_class_period_name String
+  start_time                String
+  end_time                  String
+  created_by_id             String?
+  created_by                User?   @relation("quranic_class_period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("quranic_class_period_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("quranic_class_periods")
+}

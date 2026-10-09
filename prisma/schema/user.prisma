@@ -16,7 +16,7 @@ model User {
   mobile_number      String
   is_mobile_verified Boolean @default(false)
 
-  email             String @unique
+  email             String  @unique
   is_email_verified Boolean @default(false)
 
   user_name     String? @unique
@@ -25,7 +25,7 @@ model User {
   active_status ActiveStatus @default(ACTIVE)
   is_deleted    Boolean      @default(false)
 
-  promotion_requests         PromotionRequest[]
+  promotion_requests PromotionRequest[]
 
   role_id      String?
   current_role UserRole? @relation("user_role_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -53,6 +53,12 @@ model User {
   created_classes Class[] @relation("class_created_by")
   updated_classes Class[] @relation("class_updated_by")
 
+  created_quranic_classes QuranicClass[] @relation("quranic_class_created_by")
+  updated_quranic_classes QuranicClass[] @relation("quranic_class_updated_by")
+
+  created_quranic_class_periods QuranicClassPeriod[] @relation("quranic_class_period_created_by")
+  updated_quranic_class_periods QuranicClassPeriod[] @relation("quranic_class_period_updated_by")
+
   created_shifts Shift[] @relation("shift_created_by")
   updated_shifts Shift[] @relation("shift_updated_by")
 
@@ -61,7 +67,7 @@ model User {
 
   created_promotion_requests PromotionRequest[] @relation("promotion_request_created_by")
   updated_promotion_requests PromotionRequest[] @relation("promotion_request_updated_by")
-  
+
   created_promotion_history PromotionHistory[] @relation("promotion_history_created_by")
   updated_promotion_history PromotionHistory[] @relation("promotion_history_updated_by")
 

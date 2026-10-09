@@ -180,62 +180,6 @@ const forgetPasswordZodSchema = z4.object({
 });
 export type TForgetPasswordPayload = z4.infer<typeof forgetPasswordZodSchema>;
 
-// ================================================
-// PROMOTE USER ROLE AND POSITION ZOD SCHEMA
-// ================================================
-const promoteUserSamePipelineZodSchema = z4.object({
-  full_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Full name is required."
-          : "Invalid full name format.",
-    })
-    .trim(),
-  mobile_number: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Mobile number is required."
-          : "Invalid mobile number format.",
-    })
-    .trim()
-    .length(
-      11,
-      "Mobile number must be 11 digit Bangladeshi number start with 01",
-    )
-    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
-  position_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Position name is required."
-          : "Invalid position name format.",
-    })
-    .trim()
-    .toUpperCase(),
-  role_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Role name is required."
-          : "Invalid role name format.",
-    })
-    .trim()
-    .toUpperCase(),
-
-  promoted_date: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Promotion effective date is required."
-          : "Invalid date format. Expected an ISO string.",
-    })
-    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
-});
-export type TPromoteUserRolePositionZodSchema = z4.infer<
-  typeof promoteUserSamePipelineZodSchema
->;
 
 // ===========================================
 // UPDATE USER POSITION ZOD SCHEMA
@@ -453,72 +397,13 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
 
-// ================================================
-// USER CROSS PIPELINE PROMOTION ZOD SCHEMA
-// ================================================
-export const userCrossPipelinePromotionZodSchema = z4.object({
-  full_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Full name is required."
-          : "Invalid full name format.",
-    })
-    .trim(),
-  mobile_number: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Mobile number is required."
-          : "Invalid mobile number format.",
-    })
-    .trim()
-    .length(
-      11,
-      "Mobile number must be 11 digit Bangladeshi number start with 01",
-    )
-    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
-  target_position_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Target position name is required."
-          : "Invalid position format.",
-    })
-    .trim()
-    .toUpperCase(),
-  target_role_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Target role name is required."
-          : "Invalid role format.",
-    })
-    .trim()
-    .toUpperCase(),
-  transfer_effective_date: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Effective date is required."
-          : "Invalid ISO date string format.",
-    })
-    .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
-});
-
-export type TCrossPipelineTransferZodSchema = z4.infer<
-  typeof userCrossPipelinePromotionZodSchema
->;
-
 export const userZodSchema = {
   userCreateZodSchema,
   changePasswordZodSchema,
   forgetPasswordZodSchema,
-  promoteUserSamePipelineZodSchema,
   changeUserPositionZodSchema,
   updateSingleUserFieldAdminZodSchema,
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
-  userCrossPipelinePromotionZodSchema,
 };
