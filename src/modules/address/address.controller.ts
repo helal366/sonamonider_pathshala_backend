@@ -5,7 +5,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { userAddressServices } from "./address.service.js";
-import { TDeleteAddressZodSchema } from "./address.zod.validation.js";
+import { TDeleteAddressZodSchema } from "./address.zodValidation.js";
 
 // ============================================================
 // UPDATE ADDRESS CONTROLLER

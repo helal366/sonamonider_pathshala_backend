@@ -6,7 +6,7 @@ import {
   deleteRoleZodSchema,
   getSingleRoleZodSchema,
   updateRoleZodSchema,
-} from "./role.zod.validation.js";
+} from "./role.zodValidation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();

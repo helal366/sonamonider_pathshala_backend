@@ -5,7 +5,7 @@ import { prisma } from "../../lib/prisma.js";
 import {
   TCreateSpouseInformationZodSchema,
   TUpdateSpouseInformationFieldPayload,
-} from "./spouseInformation.zod.validation.js";
+} from "./spouseInformation.zodValidation.js";
 import { Prisma } from "#db-client";
 
 // ============================================================

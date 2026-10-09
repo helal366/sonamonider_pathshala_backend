@@ -9,7 +9,7 @@ import {
   TCreateMotherDetailsZodSchema,
   TDisconnectMotherDetailsZodSchema,
   TUpdateMotherDetailsFieldPayload,
-} from "./motherDetails.zod.validation.js";
+} from "./motherDetails.zodValidation.js";
 
 // ============================================================
 // CREATE MOTHER DETAILS CONTROLLER

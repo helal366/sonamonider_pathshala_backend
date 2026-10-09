@@ -8,7 +8,7 @@ import {
   TDeleteAcademicResultZodSchema,
   TGetSingleAcademicResultZodSchema,
   TUpdateAcademicResultField,
-} from "./academicResult.zod.validation";
+} from "./academicResult.zodValidation";
 import { prisma } from "../../lib/prisma";
 import { academicResultHelper } from "./academicResult.helperFunction";
 import { Prisma } from "#db-client";
@@ -32,7 +32,8 @@ const createAcademicResult = async (
   //   3. Prevent unexpected role "STUDENT"
   if (cleanRole === "STUDENT") {
     throw new AppError(
-      `The provided role ${cleanRole} does not require any Academic Result record in this institute.`, StatusCodes.CONFLICT,
+      `The provided role ${cleanRole} does not require any Academic Result record in this institute.`,
+      StatusCodes.CONFLICT,
     );
   }
   // 4. Check role name to find the target field name
@@ -59,10 +60,7 @@ const createAcademicResult = async (
     targetPrismaModel = "managementStaff";
     targetFieldName = "management_staff";
     auditEntityName = "managementStaff";
-  } else if (
-    cleanRole === "ACADEMIC" ||
-    cleanRole === "TEACHER_ADMIN" 
-  ) {
+  } else if (cleanRole === "ACADEMIC" || cleanRole === "TEACHER_ADMIN") {
     targetPrismaModel = "academicStaff";
     targetFieldName = "academic_staff";
     auditEntityName = "academicStaff";
@@ -308,8 +306,8 @@ const getAcademicResultByStaffId = async (
       `Staff or Governing Body data not found`,
       StatusCodes.NOT_FOUND,
     );
-  };
-  return staffData
+  }
+  return staffData;
 };
 export const academicResultServices = {
   createAcademicResult,

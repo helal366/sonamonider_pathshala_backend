@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { TCreateAcademicResultZodSchema } from "./academicResult.zod.validation";
+import { TCreateAcademicResultZodSchema } from "./academicResult.zodValidation";
 
 const createPayload = (payload: TCreateAcademicResultZodSchema) => {
   const {
@@ -50,10 +50,8 @@ const findStaffTable = (role_name: string) => {
   const isManagement =
     role_name === "MANAGEMENT" ||
     role_name === "SUPER_ADMIN" ||
-    role_name === "ADMIN" ;
-  const isAcademic = 
-  role_name === "ACADEMIC" ||
-  role_name === "TEACHER_ADMIN"
+    role_name === "ADMIN";
+  const isAcademic = role_name === "ACADEMIC" || role_name === "TEACHER_ADMIN";
   if (isManagement) {
     prismaTableName = "managementStaff";
   } else if (isAcademic) {

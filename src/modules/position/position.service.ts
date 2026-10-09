@@ -12,7 +12,7 @@ import {
   TCreatePositionZodSchema,
   TDeletePositionZodSchema,
   TUpdatePositionZodSchema,
-} from "./position.zod.validation.js";
+} from "./position.zodValidation.js";
 
 // CREATE POSITION SERVICE LAYER
 const createPosition = async (
@@ -122,13 +122,12 @@ const updatePosition = async (
   return updatedPositionResult;
 };
 
-
 // DELETE POSITION SERVICE LAYER
-const deletePosition=async(
+const deletePosition = async (
   payload: TDeletePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
-)=>{
-  const {position_name} = payload;
+) => {
+  const { position_name } = payload;
   const cleanPositionName = position_name.trim().toUpperCase();
 
   // 1. Verify if the position exists and count current active structural occupants
@@ -138,66 +137,67 @@ const deletePosition=async(
       _count: {
         select: {
           user: { where: { is_deleted: false } }, // Counts active, non-soft-deleted users
-          current_management_staffs: { where: { is_currently_active_staff: true } },
-          management_promoted_history: true // Counts historical tracking dependencies
-        }
-      }
-    }
+          current_management_staffs: {
+            where: { is_currently_active_staff: true },
+          },
+          management_promoted_history: true, // Counts historical tracking dependencies
+        },
+      },
+    },
   });
 
   if (!existingPosition) {
     throw new AppError(
       `Provided position name: ${cleanPositionName} does not exist.`, // Fixed typo "exists"
-      StatusCodes.NOT_FOUND
+      StatusCodes.NOT_FOUND,
     );
   }
 
-   // 🚀 2. CRITICAL SAFETY GUARD: Prevent cascading relationship database crashes
-   if (
-    existingPosition._count.user > 0 || 
+  // 🚀 2. CRITICAL SAFETY GUARD: Prevent cascading relationship database crashes
+  if (
+    existingPosition._count.user > 0 ||
     existingPosition._count.current_management_staffs > 0 ||
     existingPosition._count.management_promoted_history > 0
   ) {
     throw new AppError(
       `Cannot hard delete Position: ${cleanPositionName}. It is currently assigned to active employees or referenced in past promotion histories.`,
-      StatusCodes.CONFLICT
+      StatusCodes.CONFLICT,
     );
   }
 
-   // 3. Perform the secure direct hard delete and write log trace atomically
-  const hardDeletePositionResult = await prisma.$transaction(async(transaction)=>{
-    const hardDeletePosition = await transaction.userPosition.delete({
-      where: {id: existingPosition.id},
-    });
+  // 3. Perform the secure direct hard delete and write log trace atomically
+  const hardDeletePositionResult = await prisma.$transaction(
+    async (transaction) => {
+      const hardDeletePosition = await transaction.userPosition.delete({
+        where: { id: existingPosition.id },
+      });
 
-    await transaction.auditLog.create({
-      data: {
-        entity_id: existingPosition.id,
-        entity_name: "userPosition",
-        old_value: {position_name: cleanPositionName},
-        new_value: Prisma.JsonNull,
-        action: "DELETE",
-        changed_by_id: loggedInUser.user_id
-      }
-    })
-    return hardDeletePosition
-  });
+      await transaction.auditLog.create({
+        data: {
+          entity_id: existingPosition.id,
+          entity_name: "userPosition",
+          old_value: { position_name: cleanPositionName },
+          new_value: Prisma.JsonNull,
+          action: "DELETE",
+          changed_by_id: loggedInUser.user_id,
+        },
+      });
+      return hardDeletePosition;
+    },
+  );
   // 4. Invalidate structural performance caches immediately
   clearCachePositions();
   return hardDeletePositionResult;
 };
 
-
 // GET ALL POSITIONS SERVICE LAYER
-const getAllPositions=async(
-)=>{
+const getAllPositions = async () => {
   const allPositionsArray = await getValidPositionNames();
   return allPositionsArray;
 };
 
-
 // GET SINGLE POSITION SERVICE LAYER
-const getSinglePosition=async(id:string)=>{
+const getSinglePosition = async (id: string) => {
   const position = await prisma.userPosition.findUnique({
     where: { id },
     select: {
@@ -209,7 +209,9 @@ const getSinglePosition=async(id:string)=>{
       _count: {
         select: {
           user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
-          current_management_staffs: { where: { is_currently_active_staff: true } },
+          current_management_staffs: {
+            where: { is_currently_active_staff: true },
+          },
         },
       },
     },
@@ -220,14 +222,14 @@ const getSinglePosition=async(id:string)=>{
       `Requested Position with ID: ${id} does not exist inside the database system.`,
       StatusCodes.NOT_FOUND,
     );
-  };
+  }
 
-  return position
-}
+  return position;
+};
 export const positionServices = {
   createPosition,
   updatePosition,
   deletePosition,
   getAllPositions,
-  getSinglePosition
+  getSinglePosition,
 };

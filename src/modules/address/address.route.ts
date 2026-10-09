@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
-import { addressZodSchema } from "./address.zod.validation.js";
+import { addressZodSchema } from "./address.zodValidation.js";
 import { userAddressController } from "./address.controller.js";
 
 const router: Router = express.Router();

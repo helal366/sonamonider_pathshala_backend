@@ -4,7 +4,10 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { academicResultServices } from "./academicResult.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TGetAcademicResultByStaffIdZodSchema, TGetSingleAcademicResultZodSchema } from "./academicResult.zod.validation";
+import {
+  TGetAcademicResultByStaffIdZodSchema,
+  TGetSingleAcademicResultZodSchema,
+} from "./academicResult.zodValidation";
 
 // ==========================================
 // CREATE ACADEMIC RESULT CONTROLLER
@@ -69,64 +72,65 @@ const updateAcademicResultField = catchAsync(
 // GET ALL ACADEMIC RESULTS CONTROLLER
 // ==========================================
 const getAllAcademicResults = catchAsync(
-   async (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
-    const result = await academicResultServices.getAllAcademicResults()
+    const result = await academicResultServices.getAllAcademicResults();
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: `Academic results retrieved successfully.`,
       data: result,
     });
-   } 
+  },
 );
 
 // =============================================
 // GET SINGLE ACADEMIC RESULT BY ID CONTROLLER
 // =============================================
 const getSingleAcademicResult = catchAsync(
-   async (req: Request, res: Response) => {
-
+  async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
 
-    const payload:TGetSingleAcademicResultZodSchema= {
-        params: req.params as TGetSingleAcademicResultZodSchema["params"]
-    }
+    const payload: TGetSingleAcademicResultZodSchema = {
+      params: req.params as TGetSingleAcademicResultZodSchema["params"],
+    };
 
     const { academic_result_id } = payload.params;
 
-    const result = await academicResultServices.getSingleAcademicResult(academic_result_id)
+    const result =
+      await academicResultServices.getSingleAcademicResult(academic_result_id);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: `Academic result retrieved successfully.`,
       data: result,
     });
-   } 
+  },
 );
 
 // ===============================================
 // GET ACADEMIC RESULT BY STAFF ID CONTROLLER
 // ===============================================
-const getAcademicResultByStaffId= catchAsync(
-    async (req: Request, res: Response) => {
-
+const getAcademicResultByStaffId = catchAsync(
+  async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
-    const payload:TGetAcademicResultByStaffIdZodSchema = {
-        params: req.params as TGetAcademicResultByStaffIdZodSchema["params"]
+    const payload: TGetAcademicResultByStaffIdZodSchema = {
+      params: req.params as TGetAcademicResultByStaffIdZodSchema["params"],
     };
-    const {staff_id, staff_role_name} = payload.params;
+    const { staff_id, staff_role_name } = payload.params;
 
-    const result = await academicResultServices.getAcademicResultByStaffId(staff_id, staff_role_name)
+    const result = await academicResultServices.getAcademicResultByStaffId(
+      staff_id,
+      staff_role_name,
+    );
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: `Academic result retrieved successfully.`,
       data: result,
     });
-    }
+  },
 );
-
 
 export const academicResultController = {
   createAcademicResult,
@@ -134,5 +138,5 @@ export const academicResultController = {
   updateAcademicResultField,
   getAllAcademicResults,
   getSingleAcademicResult,
-  getAcademicResultByStaffId
+  getAcademicResultByStaffId,
 };

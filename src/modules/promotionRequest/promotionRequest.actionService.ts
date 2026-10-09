@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TActionPromotionRequestZodSchema } from "./promotionRequest.zod.validation";
+import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
 import { Prisma } from "#db-client";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
@@ -73,16 +73,15 @@ const actionPromotionRequest = async (
       where: { id: user_id },
       select: {
         academic_staff_profile: { select: { id: true } },
-        management_staff_profile: {select: {id: true}},
+        management_staff_profile: { select: { id: true } },
         full_name: true,
         mobile_number: true,
-        email: true
+        email: true,
       },
     });
     if (!targetUser) {
       throw new AppError(`User not found.`, StatusCodes.NOT_FOUND);
-    };
-
+    }
 
     const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
     // Handle Rejection
@@ -192,7 +191,7 @@ const actionPromotionRequest = async (
           where: { id: activeHistoryId },
           data: {
             end_date: effectiveDate,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -241,7 +240,7 @@ const actionPromotionRequest = async (
           data: {
             current_position_id: new_position_id,
             current_role_id: new_role_id,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
         // Push to audit record
@@ -266,7 +265,7 @@ const actionPromotionRequest = async (
           data: {
             role_id: new_role_id,
             position_id: new_position_id,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -306,9 +305,9 @@ const actionPromotionRequest = async (
         // Update active history
         const updatedHistory = await tx.promotionHistory.update({
           where: { id: activeHistoryId },
-          data: { 
+          data: {
             end_date: effectiveDate,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
         // Push to audit record
@@ -353,7 +352,7 @@ const actionPromotionRequest = async (
           data: {
             current_position_id: new_position_id,
             current_role_id: new_role_id,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -379,7 +378,7 @@ const actionPromotionRequest = async (
           data: {
             role_id: new_role_id,
             position_id: new_position_id,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -396,10 +395,10 @@ const actionPromotionRequest = async (
 
       // Create audit log
       await tx.auditLog.createMany({ data: auditRecords });
-    } 
+    }
 
     // CROSS PIPELINE PROMOTION
-     if (isCrossPipeline) {
+    if (isCrossPipeline) {
       // Source management and target academic
       if (isSourceManagement && isTargetAcademic) {
         if (!management_staff_id) {
@@ -421,7 +420,7 @@ const actionPromotionRequest = async (
           where: { id: management_staff_id },
           data: {
             is_currently_active_staff: false,
-            updated_by_id: loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -449,9 +448,9 @@ const actionPromotionRequest = async (
         if (existPromotionHistory) {
           const updatedPrmtHistory = await tx.promotionHistory.update({
             where: { id: existPromotionHistory.id },
-            data: { 
+            data: {
               end_date: effectiveDate,
-              updated_by_id: loggedInUser.user_id
+              updated_by_id: loggedInUser.user_id,
             },
           });
           // Audit log
@@ -471,16 +470,16 @@ const actionPromotionRequest = async (
         // Check academic staff existance
         let targetAcademicStaffId;
         if (targetUser.academic_staff_profile) {
-           targetAcademicStaffId = targetUser.academic_staff_profile.id;
+          targetAcademicStaffId = targetUser.academic_staff_profile.id;
           // Find existing academic staff profile
           const existingAcademicStaff = await tx.academicStaff.findUnique({
-            where: {id: targetAcademicStaffId},
+            where: { id: targetAcademicStaffId },
             select: {
               is_currently_active_staff: true,
               current_role_id: true,
               current_position_id: true,
-            }
-          })
+            },
+          });
           // Update academic staff profile
           const updatedAcadStaff = await tx.academicStaff.update({
             where: { id: targetAcademicStaffId },
@@ -488,7 +487,7 @@ const actionPromotionRequest = async (
               is_currently_active_staff: true,
               current_role_id: new_role_id,
               current_position_id: new_position_id,
-              updated_by_id: loggedInUser.user_id
+              updated_by_id: loggedInUser.user_id,
             },
           });
           // Audit log
@@ -498,17 +497,19 @@ const actionPromotionRequest = async (
             changed_by_id: loggedInUser.user_id,
             action: "UPDATE",
             old_value: {
-              is_currently_active_staff: existingAcademicStaff?.is_currently_active_staff,
+              is_currently_active_staff:
+                existingAcademicStaff?.is_currently_active_staff,
               current_role_id: existingAcademicStaff?.current_role_id,
               current_position_id: existingAcademicStaff?.current_position_id,
             },
             new_value: {
-              is_currently_active_staff: updatedAcadStaff?.is_currently_active_staff,
+              is_currently_active_staff:
+                updatedAcadStaff?.is_currently_active_staff,
               current_role_id: updatedAcadStaff?.current_role_id,
               current_position_id: updatedAcadStaff?.current_position_id,
             },
           });
-        }else{
+        } else {
           // Create academic staff
           const createdAcadStaff = await tx.academicStaff.create({
             data: {
@@ -519,11 +520,11 @@ const actionPromotionRequest = async (
               user_id,
               current_role_id: new_role_id,
               current_position_id: new_position_id,
-              created_by_id: loggedInUser.user_id
-            }
+              created_by_id: loggedInUser.user_id,
+            },
           });
           // Assign target academic staff id
-          targetAcademicStaffId = createdAcadStaff.id
+          targetAcademicStaffId = createdAcadStaff.id;
           // Audit logg
           auditRecords.push({
             entity_id: createdAcadStaff.id,
@@ -535,21 +536,22 @@ const actionPromotionRequest = async (
               full_name: createdAcadStaff.full_name,
               mobile_number: createdAcadStaff.mobile_number,
               email: createdAcadStaff.email,
-              is_currently_active_staff: createdAcadStaff.is_currently_active_staff,
+              is_currently_active_staff:
+                createdAcadStaff.is_currently_active_staff,
               user_id: createdAcadStaff.user_id,
               current_role_id: createdAcadStaff.current_role_id,
-              current_position_id: createdAcadStaff.current_position_id
+              current_position_id: createdAcadStaff.current_position_id,
             },
           });
-        };
+        }
 
-        // Update root user 
-         await tx.user.update({
+        // Update root user
+        await tx.user.update({
           where: { id: user_id },
           data: {
             role_id: new_role_id,
             position_id: new_position_id,
-            updated_by_id:loggedInUser.user_id
+            updated_by_id: loggedInUser.user_id,
           },
         });
 
@@ -562,32 +564,32 @@ const actionPromotionRequest = async (
           new_value: { role_id: new_role_id, position_id: new_position_id },
         });
 
-        // Create new promotion history 
+        // Create new promotion history
         const newPromotionHistory = await tx.promotionHistory.create({
           data: {
             academic_staff_id: targetAcademicStaffId,
             role_id: new_role_id,
             position_id: new_position_id,
             start_date: effectiveDate,
-            created_by_id: loggedInUser.user_id
-          }
+            created_by_id: loggedInUser.user_id,
+          },
         });
 
         auditRecords.push({
           entity_id: newPromotionHistory.id,
-            entity_name: "promotionHistory",
-            changed_by_id: loggedInUser.user_id,
-            action: "CREATE",
-            old_value: Prisma.JsonNull,
-            new_value:{
-              academic_staff_id: newPromotionHistory.academic_staff_id,
+          entity_name: "promotionHistory",
+          changed_by_id: loggedInUser.user_id,
+          action: "CREATE",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            academic_staff_id: newPromotionHistory.academic_staff_id,
             role_id: newPromotionHistory.role_id,
             position_id: newPromotionHistory.position_id,
             start_date: newPromotionHistory.start_date.toISOString(),
-            }
-        })
+          },
+        });
       }
-           // Source academic and target management
+      // Source academic and target management
       if (isSourceAcademic && isTargetManagement) {
         if (!academic_staff_id) {
           throw new AppError(
@@ -623,7 +625,8 @@ const actionPromotionRequest = async (
             is_currently_active_staff: acadStaff?.is_currently_active_staff,
           },
           new_value: {
-            is_currently_active_staff: updatedAcadStaff?.is_currently_active_staff,
+            is_currently_active_staff:
+              updatedAcadStaff?.is_currently_active_staff,
           },
         });
 
@@ -636,7 +639,7 @@ const actionPromotionRequest = async (
         if (existPromotionHistory) {
           const updatedPrmtHistory = await tx.promotionHistory.update({
             where: { id: existPromotionHistory.id },
-            data: { 
+            data: {
               end_date: effectiveDate,
               updated_by_id: loggedInUser.user_id,
             },
@@ -690,12 +693,14 @@ const actionPromotionRequest = async (
             changed_by_id: loggedInUser.user_id,
             action: "UPDATE",
             old_value: {
-              is_currently_active_staff: existingManagementStaff?.is_currently_active_staff,
+              is_currently_active_staff:
+                existingManagementStaff?.is_currently_active_staff,
               current_role_id: existingManagementStaff?.current_role_id,
               current_position_id: existingManagementStaff?.current_position_id,
             },
             new_value: {
-              is_currently_active_staff: updatedMngStaff?.is_currently_active_staff,
+              is_currently_active_staff:
+                updatedMngStaff?.is_currently_active_staff,
               current_role_id: updatedMngStaff?.current_role_id,
               current_position_id: updatedMngStaff?.current_position_id,
             },
@@ -729,7 +734,8 @@ const actionPromotionRequest = async (
               full_name: createdMngStaff.full_name,
               mobile_number: createdMngStaff.mobile_number,
               email: createdMngStaff.email,
-              is_currently_active_staff: createdMngStaff.is_currently_active_staff,
+              is_currently_active_staff:
+                createdMngStaff.is_currently_active_staff,
               user_id: createdMngStaff.user_id,
               current_role_id: createdMngStaff.current_role_id,
               current_position_id: createdMngStaff.current_position_id,

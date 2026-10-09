@@ -6,7 +6,7 @@ import {
   TCreateAddressZodSchema,
   TDeleteAddressZodSchema,
   TUpdateAddressFieldZodSchema,
-} from "./address.zod.validation.js";
+} from "./address.zodValidation.js";
 import { Prisma } from "#db-client";
 import { AddressOwnerType, AddressType } from "./address.interface.js";
 import { addressHelperFunctions } from "./address.helperFunction.js";

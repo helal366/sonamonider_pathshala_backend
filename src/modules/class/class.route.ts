@@ -2,7 +2,7 @@ import { Router } from "express";
 import { classController } from "./class.controller";
 import { userAuth } from "../../middlewares/userAuth";
 import { validateZodSchema } from "../../middlewares/validateZodSchema";
-import { classZodSchema } from "./class.zod.validation";
+import { classZodSchema } from "./class.zodValidation";
 
 const router = Router();
 
@@ -52,16 +52,16 @@ router.patch(
   "/assign_grade_group_teacher",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
   validateZodSchema(classZodSchema.assignGradeGroupTeacherZodSchema),
-  classController.assignGradeGroupTeacher
+  classController.assignGradeGroupTeacher,
 );
 
 // =============================================
 // DISCONNECT GRADE GROUP TEACHER ROUTE
 // =============================================
 router.patch(
-    "disconnect_grade_group_teacher",
-    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-    validateZodSchema(classZodSchema.disconnectGradeGroupTeacherZodSchema),
-    classController.disconnectGradeGroupTeacher
-)
+  "disconnect_grade_group_teacher",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodSchema(classZodSchema.disconnectGradeGroupTeacherZodSchema),
+  classController.disconnectGradeGroupTeacher,
+);
 export const classRouter: Router = router;

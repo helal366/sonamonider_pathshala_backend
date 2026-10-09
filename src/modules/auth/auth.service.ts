@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import { TLoginZodSchema } from "./auth.zod.schema.js";
+import { TLoginZodSchema } from "./auth.zodValidation.js";
 import bcrypt from "bcryptjs";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
 import { jwtTokens } from "../../utils/jwtTokens.js";

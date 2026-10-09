@@ -4,7 +4,7 @@ import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles"
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { userHelperFunction } from "./user.helper.function";
 import { TCleanRolesUserCreation } from "./user.interface";
-import { TUserCreateZodSchema } from "./user.zod.validation";
+import { TUserCreateZodSchema } from "./user.zodValidation";
 import { prisma } from "../../lib/prisma";
 import { Prisma } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
@@ -172,14 +172,21 @@ const createUser = async (
               `The class is not active.`,
               StatusCodes.BAD_REQUEST,
             );
-          };
+          }
 
-          if(!payload.year_name){
-            throw new AppError(`Academic year is required for student entry.`, StatusCodes.NOT_FOUND);
+          if (!payload.year_name) {
+            throw new AppError(
+              `Academic year is required for student entry.`,
+              StatusCodes.NOT_FOUND,
+            );
           }
           const cleanYearName = payload.year_name.trim();
-          const academicStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
-          const academicEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
+          const academicStartDate = new Date(
+            `${cleanYearName}-01-01T00:00:00.000Z`,
+          );
+          const academicEndDate = new Date(
+            `${cleanYearName}-12-31T23:59:59.999Z`,
+          );
 
           const academicYearName = await transaction.academicYear.findUnique({
             where: { academic_year_name: cleanYearName },

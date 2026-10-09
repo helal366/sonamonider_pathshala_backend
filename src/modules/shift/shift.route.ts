@@ -5,7 +5,7 @@ import {
   validateZodParams,
   validateZodSchema,
 } from "../../middlewares/validateZodSchema";
-import { shiftZodSchema } from "./shift.zod.validation";
+import { shiftZodSchema } from "./shift.zodValidation";
 
 const router = Router();
 
@@ -38,9 +38,9 @@ router.patch(
 // GET SHIFT NAMES ROUTE
 // =============================================
 router.get(
-    "/",
-    userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-    shiftController.getShiftNames,
-)
+  "/",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  shiftController.getShiftNames,
+);
 
 export const shiftRouter: Router = router;

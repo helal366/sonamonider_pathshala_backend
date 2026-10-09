@@ -5,7 +5,7 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TGetPromotionRequestsZodSchema } from "./promotionRequest.zod.validation";
+import { TGetPromotionRequestsZodSchema } from "./promotionRequest.zodValidation";
 
 // ========================================================
 const getPromotionRequests = async (query: TGetPromotionRequestsZodSchema) => {
@@ -103,7 +103,10 @@ const getPromotionRequestById = async (promotion_request_id: string) => {
   });
 
   if (!request) {
-    throw new AppError("The requested promotion request was not found.", StatusCodes.NOT_FOUND);
+    throw new AppError(
+      "The requested promotion request was not found.",
+      StatusCodes.NOT_FOUND,
+    );
   }
 
   return request;

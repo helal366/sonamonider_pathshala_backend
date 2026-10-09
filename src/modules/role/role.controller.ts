@@ -4,7 +4,11 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { roleServices } from "./role.service.js";
-import { TCreateRoleZodSchema, TDeleteRoleZodSchema, TUpdateRoleZodSchema } from "./role.zod.validation.js";
+import {
+  TCreateRoleZodSchema,
+  TDeleteRoleZodSchema,
+  TUpdateRoleZodSchema,
+} from "./role.zodValidation.js";
 
 // CREATE ROLE CONTROLLER
 const createRole = catchAsync(
@@ -27,10 +31,10 @@ const createRole = catchAsync(
   },
 );
 
-
 // UPDATE ROLE CONTROLLER
-const updateRole= catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
-  const loggedInUser = req.user;
+const updateRole = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUser = req.user;
 
     if (!loggedInUser) {
       throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
@@ -38,18 +42,15 @@ const updateRole= catchAsync(async(req: Request, res: Response, next: NextFuncti
 
     const payload: TUpdateRoleZodSchema = req.body;
 
-    const result = await roleServices.updateRole(
-      payload,
-      loggedInUser,
-    );
+    const result = await roleServices.updateRole(payload, loggedInUser);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: `Role updated successfully.`,
-      data: result
-    })
-});
-
+      data: result,
+    });
+  },
+);
 
 // DELETE ROLE CONTROLLER
 const deleteRole = catchAsync(
@@ -72,7 +73,6 @@ const deleteRole = catchAsync(
   },
 );
 
-
 // GET ALL ROLE NAMES CONTROLLER
 const getAllRoleNames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -87,11 +87,10 @@ const getAllRoleNames = catchAsync(
   },
 );
 
-
 // GET SINGLE ROLE CONTROLLER
 const getSingleRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const id  = req.params.id as string;
+    const id = req.params.id as string;
 
     const result = await roleServices.getSingleRole(id);
 
@@ -104,11 +103,10 @@ const getSingleRole = catchAsync(
   },
 );
 
-
 export const roleController = {
   createRole,
   updateRole,
   deleteRole,
   getAllRoleNames,
-  getSingleRole
+  getSingleRole,
 };

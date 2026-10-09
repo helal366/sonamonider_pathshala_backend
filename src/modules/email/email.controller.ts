@@ -8,7 +8,7 @@ import type {
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
-} from "./email.zod.validation.js";
+} from "./email.zodValidation.js";
 
 const resendOtpEmailVerify = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

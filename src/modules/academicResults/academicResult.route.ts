@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
 import { validateZodSchema } from "../../middlewares/validateZodSchema";
-import { academicResultZodSchema } from "./academicResult.zod.validation";
+import { academicResultZodSchema } from "./academicResult.zodValidation";
 import { academicResultController } from "./academicResult.controller";
 
 const router = Router();

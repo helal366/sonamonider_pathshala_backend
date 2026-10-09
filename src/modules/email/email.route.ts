@@ -6,7 +6,7 @@ import {
   resendOtpForgetPasswordZodSchema,
   verifyForgetPasswordZodSchema,
   verifyEmailZodSchema,
-} from "./email.zod.validation.js";
+} from "./email.zodValidation.js";
 
 const router = Router();
 router.post(

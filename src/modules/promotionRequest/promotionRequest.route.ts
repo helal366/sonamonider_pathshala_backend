@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema";
-import { promotionRequestsZodSchema } from "./promotionRequest.zod.validation";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema";
+import { promotionRequestsZodSchema } from "./promotionRequest.zodValidation";
 import { promotionRequestController } from "./promotionRequest.controller";
 
 // =========================================================
@@ -22,7 +25,7 @@ router.delete(
   "/delete_promotion_request",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(promotionRequestsZodSchema.deletePromotionRequestZodSchema),
-  promotionRequestController.deletePromotionRequest
+  promotionRequestController.deletePromotionRequest,
 );
 
 // =========================================================
@@ -30,9 +33,9 @@ router.delete(
 // =========================================================
 router.patch(
   "/action_promotion_request",
-  userAuth("SUPER_ADMIN"), 
+  userAuth("SUPER_ADMIN"),
   validateZodSchema(promotionRequestsZodSchema.actionPromotionRequestZodSchema),
-  promotionRequestController.actionPromotionRequest
+  promotionRequestController.actionPromotionRequest,
 );
 
 // =========================================================
@@ -42,7 +45,7 @@ router.get(
   "/",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(promotionRequestsZodSchema.getPromotionRequestsZodSchema),
-  promotionRequestController.getAllPromotionRequests
+  promotionRequestController.getAllPromotionRequests,
 );
 
 // =========================================================
@@ -51,8 +54,10 @@ router.get(
 router.get(
   "/get_promotion_request/:promotion_request_id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodParams(promotionRequestsZodSchema.getSinglePromotionRequestZodSchema), // Parses req.params
-  promotionRequestController.getSinglePromotionRequest
+  validateZodParams(
+    promotionRequestsZodSchema.getSinglePromotionRequestZodSchema,
+  ), // Parses req.params
+  promotionRequestController.getSinglePromotionRequest,
 );
 
 export const promotionRequestRouter: Router = router;

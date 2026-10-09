@@ -16,7 +16,7 @@ import {
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserNameZodSchema,
   TUpdateUserPasswordZodSchema,
-} from "./user.zod.validation.js";
+} from "./user.zodValidation.js";
 
 // ==========================================
 // CHANGE PASSWORD SERVICE LAYER
@@ -588,7 +588,6 @@ const updateUserPassword = async (
     email_sent: true,
   };
 };
-
 
 export const userServices = {
   changePassword,

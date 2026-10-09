@@ -7,7 +7,7 @@ import {
   TAssignGradeGroupTeacherZodSchema,
   TCreateClassZodSchema,
   TDisconnectGradeGroupTeacherZodSchema,
-} from "./class.zod.validation";
+} from "./class.zodValidation";
 import { IUpdateClassField } from "./class.interface";
 
 // =============================================
@@ -311,7 +311,7 @@ const disconnectGradeGroupTeacher = async (
         full_name: true,
         mobile_number: true,
         user_primary_data: {
-          select: {active_status: true, is_deleted: true}
+          select: { active_status: true, is_deleted: true },
         },
         grade_group_teacher_class: {
           select: { id: true, class_name: true },
@@ -326,11 +326,16 @@ const disconnectGradeGroupTeacher = async (
     }
 
     // CHECK ACTIVITY
-    const teacherActivity = currentGradeGroupTeacher.user_primary_data.active_status === "ACTIVE";
-    const teacherIsDeleted = currentGradeGroupTeacher.user_primary_data.is_deleted
-    if(!teacherActivity || teacherIsDeleted){
-      throw new AppError(`The teacher is unauthorized. Check activity.`, StatusCodes.UNAUTHORIZED)
-    };
+    const teacherActivity =
+      currentGradeGroupTeacher.user_primary_data.active_status === "ACTIVE";
+    const teacherIsDeleted =
+      currentGradeGroupTeacher.user_primary_data.is_deleted;
+    if (!teacherActivity || teacherIsDeleted) {
+      throw new AppError(
+        `The teacher is unauthorized. Check activity.`,
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
     // UPDATE CLASS
     const updated = await tx.class.update({
       where: { id: class_id },

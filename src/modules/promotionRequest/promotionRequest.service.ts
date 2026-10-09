@@ -8,7 +8,7 @@ import {
   TActionPromotionRequestZodSchema,
   TCreatePromotionRequestZodSchema,
   TDeletePromotionRequestZodSchema,
-} from "./promotionRequest.zod.validation";
+} from "./promotionRequest.zodValidation";
 import { Prisma } from "#db-client";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
@@ -37,11 +37,14 @@ const createPromotionRequest = async (
       "Proposed role and position are identical to current records. Not promotable.",
       StatusCodes.BAD_REQUEST,
     );
-  };
+  }
 
   // PREVENT STUDENT AND GOVERNING BODY ROLE TO PROMOTE;
-  if(clean_old_role === "STUDENT" ||  clean_old_role === "GOVERNING_BODY"){
-    throw new AppError(`STUDENT and GOVERNING_BODY are not promotable.`, StatusCodes.UNAUTHORIZED)
+  if (clean_old_role === "STUDENT" || clean_old_role === "GOVERNING_BODY") {
+    throw new AppError(
+      `STUDENT and GOVERNING_BODY are not promotable.`,
+      StatusCodes.UNAUTHORIZED,
+    );
   }
 
   // CHECK STUDENT AND GOVERNING_BODY ROLES
@@ -255,7 +258,6 @@ const deletePromotionRequest = async (
     return deleted;
   });
 };
-
 
 export const promotionRequestServices = {
   createPromotionRequest,

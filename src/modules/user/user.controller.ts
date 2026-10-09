@@ -12,7 +12,7 @@ import {
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserPasswordZodSchema,
   TUpdateUserNameZodSchema,
-} from "./user.zod.validation.js";
+} from "./user.zodValidation.js";
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
@@ -82,7 +82,6 @@ const forgetPassword = catchAsync(
     });
   },
 );
-
 
 // =====================================
 // CHANGE USER POSITION CONTROLLER
@@ -184,8 +183,6 @@ const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
-
 
 export const userController = {
   createUser,

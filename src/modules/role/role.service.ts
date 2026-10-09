@@ -1,20 +1,24 @@
 import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
-import { clearCacheRoles, getValidRoleNames } from "../../helperFunctions/cachedData/cache_roles.js";
+import {
+  clearCacheRoles,
+  getValidRoleNames,
+} from "../../helperFunctions/cachedData/cache_roles.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateRoleZodSchema,
   TDeleteRoleZodSchema,
   TUpdateRoleZodSchema,
-} from "./role.zod.validation.js";
-
+} from "./role.zodValidation.js";
+// ===============================================
 // CREATE ROLE POST ROUTE
+// ===============================================
 const createRole = async (
   payload: TCreateRoleZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { role_name} = payload;
+  const { role_name } = payload;
   const cleanRole = role_name.trim().toUpperCase();
 
   // 1. Check whether the role name already exists to prevent duplication
@@ -29,9 +33,9 @@ const createRole = async (
     );
   }
 
-   // 2. Execute record creation inside an atomic transaction block
+  // 2. Execute record creation inside an atomic transaction block
   const createdNewRole = await prisma.$transaction(async (transaction) => {
-     // A) Insert the new role directly into the master table
+    // A) Insert the new role directly into the master table
     const newRole = await transaction.userRole.create({
       data: {
         role_name: cleanRole,
@@ -40,8 +44,8 @@ const createRole = async (
         },
       },
     });
-    
-   // 🚀 B) FIXED: Direct high-performance Audit Log write passing mandatory changed_by_id and Prisma.JsonNull
+
+    // 🚀 B) FIXED: Direct high-performance Audit Log write passing mandatory changed_by_id and Prisma.JsonNull
     await transaction.auditLog.create({
       data: {
         entity_id: newRole.id,
@@ -61,8 +65,9 @@ const createRole = async (
   clearCacheRoles();
   return createdNewRole;
 };
-
+// ===============================================
 // UPDATE ROLE PATCH ROUTE
+// ===============================================
 const updateRole = async (
   payload: TUpdateRoleZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -148,8 +153,9 @@ const updateRole = async (
   return updatedRole;
 };
 
-
+// ===============================================
 // DELETE ROLE NAME
+// ===============================================
 const deleteRole = async (
   payload: TDeleteRoleZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -164,10 +170,15 @@ const deleteRole = async (
       _count: {
         select: {
           user: { where: { is_deleted: false } }, // Counts only active non-deleted users
-          current_management_staffs: { where: { is_currently_active_staff: true } }
-        }
-      }
-    }
+          current_management_staffs: {
+            where: { is_currently_active_staff: true },
+          },
+          current_academic_staffs: {
+            where: { is_currently_active_staff: true },
+          },
+        },
+      },
+    },
   });
 
   if (!existingRole) {
@@ -178,7 +189,10 @@ const deleteRole = async (
   }
 
   // 2. Block deletion if active personnel are assigned to this role
-  if (existingRole._count.user > 0 || existingRole._count.current_management_staffs > 0) {
+  if (
+    existingRole._count.user > 0 ||
+    existingRole._count.current_management_staffs > 0
+  ) {
     throw new AppError(
       `Cannot delete Role: ${cleanRole}. There are active employees currently occupying this role.`,
       StatusCodes.CONFLICT,
@@ -187,7 +201,6 @@ const deleteRole = async (
 
   // 3. Atomically execute soft-delete update and write audit trace logs
   const deletionResult = await prisma.$transaction(async (transaction) => {
-    
     const hardDeletedRole = await transaction.userRole.delete({
       where: { id: existingRole.id },
     });
@@ -201,7 +214,7 @@ const deleteRole = async (
         new_value: Prisma.JsonNull, // Expresses final status value state removal clearly
         action: "DELETE",
         changed_by_id: loggedInUser.user_id, // Satisfies non-null database constraint rule
-      }
+      },
     });
 
     return hardDeletedRole;
@@ -213,15 +226,13 @@ const deleteRole = async (
   return deletionResult;
 };
 
-
 // GET ALL ROLE NAMES SERVICE
 const getAllRoleNames = async (): Promise<string[]> => {
   // Invokes your custom caching promise mechanism cleanly
   const roleNamesArray = await getValidRoleNames();
-  
+
   return roleNamesArray;
 };
-
 
 // GET SINGLE ROLE SERVICE
 const getSingleRole = async (id: string) => {
@@ -236,7 +247,9 @@ const getSingleRole = async (id: string) => {
       _count: {
         select: {
           user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
-          current_management_staffs: { where: { is_currently_active_staff: true } },
+          current_management_staffs: {
+            where: { is_currently_active_staff: true },
+          },
         },
       },
     },
@@ -256,5 +269,5 @@ export const roleServices = {
   updateRole,
   deleteRole,
   getAllRoleNames,
-  getSingleRole
+  getSingleRole,
 };

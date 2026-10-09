@@ -5,7 +5,7 @@ import { prisma } from "../../lib/prisma";
 import {
   TAddResponsibleTeacherZodSchema,
   TStudentReadmissionZodSchema,
-} from "./student.zod.validation";
+} from "./student.zodValidation";
 import { Prisma } from "#db-client";
 
 // =============================================

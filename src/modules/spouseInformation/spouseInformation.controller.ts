@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { spouseInformationServices } from "./spouseInformation.service.js";
-import type { TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zod.validation.js";
+import type { TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zodValidation.js";
 
 // ============================================================
 // CREATE SPOUSE INFORMATION CONTROLLER

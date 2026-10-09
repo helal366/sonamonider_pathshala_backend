@@ -6,7 +6,7 @@ import {
   deletePositionZodSchema,
   getSinglePositionZodSchema,
   updatePositionZodSchema,
-} from "./position.zod.validation.js";
+} from "./position.zodValidation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();

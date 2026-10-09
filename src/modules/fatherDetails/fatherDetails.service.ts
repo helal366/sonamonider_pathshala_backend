@@ -8,7 +8,7 @@ import {
   TCreateFatherDetailsZodSchema,
   TDisconnectFatherDetailsZodSchema,
   TUpdateFatherDetailsFieldPayload,
-} from "./fatherDetails.zod.validation.js";
+} from "./fatherDetails.zodValidation.js";
 
 // ======================================================
 // CREATE FATHER DETAILS

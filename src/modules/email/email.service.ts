@@ -10,7 +10,7 @@ import type {
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
-} from "./email.zod.validation.js";
+} from "./email.zodValidation.js";
 import {
   createTemporaryPassword,
   issueOtpAndSendEmail,
