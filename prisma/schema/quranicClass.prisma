@@ -1,6 +1,6 @@
 model QuranicClass {
   id                 String @id @default(uuid())
-  quranic_class_name String
+  quranic_class_name String @unique
 
   class_history ClassHistory[]
 

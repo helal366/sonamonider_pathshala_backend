@@ -90,6 +90,12 @@ const userCreateZodSchema = z4
       .number("Invalid roll number.")
       .int("Roll number must be an integer.")
       .optional(),
+    quranic_class_name: z4.string().trim().optional(),
+    quranic_class_period_ids: z4
+      .array(
+        z4.uuid({ error: "Each period ID must be a valid UUID string format." })
+      )
+      .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -122,6 +128,22 @@ const userCreateZodSchema = z4
           code: "custom",
           message: "Roll number is required for students.",
           path: ["roll_number"],
+        });
+      }
+
+      if(!data.quranic_class_name ||data.quranic_class_name.trim() === ""){
+        ctx.addIssue({
+          code: "custom",
+          message: "Quranic class name is required for students.",
+          path: ["quranic_class_name"]
+        })
+      }
+
+      if (!data.quranic_class_period_ids || data.quranic_class_period_ids.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "At least one Quranic class period is required for students.",
+          path: ["quranic_class_period_ids"],
         });
       }
     }

@@ -154,77 +154,50 @@ const createUser = async (
             },
           });
         }
-
-        // 🌟 ADD THIS: SEED CLASS TIMELINE HISTORY FOR NEW STUDENTS
+        // ======================
+        // STUDENT CREATION
+        // ======================
         if (cleanRole === "STUDENT" && subProfileId) {
-          // CHECK THE CLASS IS ACTIVE OR NOT
-          const classCheck = await transaction.class.findUnique({
-            where: { id: payload.active_class_id },
-            select: {
-              is_active_class: true,
-            },
-          });
-          if (!classCheck) {
-            throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-          }
-          if (!classCheck.is_active_class) {
-            throw new AppError(
-              `The class is not active.`,
-              StatusCodes.BAD_REQUEST,
-            );
-          }
-
-          if (!payload.year_name) {
-            throw new AppError(
-              `Academic year is required for student entry.`,
-              StatusCodes.NOT_FOUND,
-            );
-          }
-          const cleanYearName = payload.year_name.trim();
-          const academicStartDate = new Date(
-            `${cleanYearName}-01-01T00:00:00.000Z`,
-          );
-          const academicEndDate = new Date(
-            `${cleanYearName}-12-31T23:59:59.999Z`,
+          // MAKE STUDENT REQUIREMENTS PAYLOAD
+          const studentsRequirementPayload = {
+            transaction,
+            active_class_id: payload.active_class_id,
+            year_name: payload.year_name,
+            shift_name: payload.shift_name,
+            roll_number: payload.roll_number,
+            quranic_class_name: payload.quranic_class_name,
+            quranic_class_period_ids: payload.quranic_class_period_ids,
+          };
+          // CHECK ALL REQUIREMENTS
+          const {
+            activeClassID,
+            academicStartDate,
+            academicEndDate,
+            academicYear,
+            existingShift,
+            rollNumber,
+            existingQuranicClass,
+            quranicClassPeriodIDs,
+          } = await userHelperFunction.checkStudentCreationRequirements(
+            studentsRequirementPayload,
           );
 
-          const academicYearName = await transaction.academicYear.findUnique({
-            where: { academic_year_name: cleanYearName },
-            select: { id: true },
-          });
-
-          if (!academicYearName) {
-            throw new AppError(
-              `Provided Academic Year ${payload.year_name} not found`,
-              StatusCodes.NOT_FOUND,
-            );
-          }
-          const cleanShiftName = payload.shift_name?.trim().toUpperCase();
-          const existingShift = await transaction.shift.findUnique({
-            where: { shift_name: cleanShiftName },
-            select: { id: true, shift_name: true },
-          });
-          if (!existingShift) {
-            throw new AppError(
-              `Provided shift ${cleanShiftName} is not found.`,
-              StatusCodes.NOT_FOUND,
-            );
-          }
-          if (!payload.roll_number) {
-            throw new AppError(
-              "Roll number is required.",
-              StatusCodes.NOT_FOUND,
-            );
-          }
           const classHistory = await transaction.classHistory.create({
             data: {
               student: { connect: { id: subProfileId } },
-              class: { connect: { id: payload.active_class_id! } },
-              academic_year: { connect: { id: academicYearName.id } },
+              class: { connect: { id: activeClassID } },
+              academic_year: { connect: { id: academicYear.id } },
               shift: { connect: { id: existingShift?.id } },
-              roll_number: payload.roll_number,
+              roll_number: rollNumber,
               start_date: academicStartDate,
               end_date: academicEndDate,
+              quranic_class: { connect: { id: existingQuranicClass.id } },
+              class_history_quranic_periods: {
+                create: 
+                  quranicClassPeriodIDs.map((id:string)=>({
+                    quranic_class_period: {connect: {id}}
+                  }))                
+              },
               created_by: { connect: { id: loggedInUser.user_id } },
             },
           });
@@ -234,9 +207,11 @@ const createUser = async (
             entity_name: "classHistory",
             old_value: Prisma.JsonNull,
             new_value: {
-              class_id: payload.active_class_id,
+              class_id: activeClassID,
               start_date: academicStartDate.toISOString(),
               end_date: academicEndDate.toISOString(),
+              quranic_class_id: existingQuranicClass.id,
+              quranic_class_period_ids: quranicClassPeriodIDs
             },
             action: "CREATE",
             changed_by_id: loggedInUser.user_id,

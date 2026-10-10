@@ -14,7 +14,7 @@ import { fatherDetailsServices } from "./fatherDetails.service.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 
 // ======================================================
-// CREATE FATHER DETAILS
+// CREATE FATHER DETAILS CONTROLLER
 // ======================================================
 
 const createFatherDetails = catchAsync(
@@ -42,7 +42,7 @@ const createFatherDetails = catchAsync(
 );
 
 // ======================================================
-// CONNECT FATHER DETAILS
+// CONNECT FATHER DETAILS CONTROLLER
 // ======================================================
 
 const connectFatherDetails = catchAsync(
@@ -69,6 +69,9 @@ const connectFatherDetails = catchAsync(
   },
 );
 
+// ======================================================
+// UPDATE FATHER DETAILS SINGLE FIELD CONTROLLER
+// ======================================================
 const updateFatherDetailsField = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = req.user;
@@ -92,7 +95,7 @@ const updateFatherDetailsField = catchAsync(
 );
 
 // ======================================================
-// DISCONNECT FATHER DETAILS
+// DISCONNECT FATHER DETAILS CONTROLLER
 // ======================================================
 const disconnectFatherDetails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

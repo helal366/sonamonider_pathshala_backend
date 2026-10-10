@@ -8,6 +8,7 @@ import {
   TCreateQuranicClassPeriodZodSchema, 
   TDeleteQuranicClassPeriodZodSchema, 
   TGetSingleQuranicClassPeriodZodSchema, 
+  TUpdateQuranicClassPeriodSingleFieldPayload, 
   TUpdateQuranicClassPeriodZodSchema 
 } from "./quranicClassPeriod.zodValidation.js";
 
@@ -32,7 +33,9 @@ const createQuranicClassPeriod = catchAsync(
   },
 );
 
+// ========================================================
 // UPDATE QURANIC CLASS PERIOD CONTROLLER
+// ========================================================
 const updateQuranicClassPeriod = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -53,7 +56,34 @@ const updateQuranicClassPeriod = catchAsync(
   },
 );
 
+// =========================================================
+// UPDATE QURANIC CLASS SINGLE FIELD CONTROLLER
+// =========================================================
+const updateQuranicClassPeriodSingleField = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = req.user;
+    if (!loggedInUser) {
+      throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
+    }
+
+    const payload: TUpdateQuranicClassPeriodSingleFieldPayload = req.body;
+    const result = await quranicClassPeriodServices.updateQuranicClassPeriodSingleField(
+      payload,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Quranic class period field updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// =========================================================
 // DELETE QURANIC CLASS PERIOD CONTROLLER
+// =========================================================
 const deleteQuranicClassPeriod = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -111,4 +141,5 @@ export const quranicClassPeriodController = {
   deleteQuranicClassPeriod,
   getAllQuranicClassPeriods,
   getSingleQuranicClassPeriod,
+  updateQuranicClassPeriodSingleField
 };

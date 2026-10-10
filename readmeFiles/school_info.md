@@ -26,17 +26,9 @@ AAYA
 GUARD
 CLEANER
 
-## Internal relations between Roles and Positions:
-* SUPER_ADMIN: PRINCIPAL
-* TEACHER_ADMIN: VICE_PRINCIPAL, ADMINISTRATIVE_INCHARGE, ACADEMIC_INCHARGE
-* ADMIN: LOGISTIC_OFFICER, CO_ORDINATOR, ACCOUNTANT
-* ACADEMIC: ACADEMIC_STAFF, TEACHER, ASSISTANT_TEACHER, TEACHER_ASSISTANT,
-* MANAGEMENT: AAYA, GUARD, SISTER, MANAGEMENT_STAFF 
-* STUDENT: STUDENT
-* GOVERNING_BODY: GOVERNING_BODY
 
-<!-- academic staff role : ACADEMIC -->
-<!-- administrative staff role: MANAGEMENT, ADMIN, TEACHER_ADMIN, SUPER_ADMIN -->
+<!-- academic staff role : ACADEMIC, TEACHER_ADMIN -->
+<!-- administrative staff role: MANAGEMENT, ADMIN,  SUPER_ADMIN -->
 <!-- student role : STUDENT -->
 <!-- governing body role: GOVERNING_BODY -->
 
@@ -81,7 +73,16 @@ NURANI_PRELIMINARY: কায়েদা শুরু থেকে মাদ্দ
 NURANI_ADVANCE: হরকত অধ্যায় থেকে শেষ পর্যন্ত
 NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 
-## Class scheduling/timimg:
+## Quranic classes
+- NURANI_PLAYGROUP
+- NURANI_NURSERY
+- NURANI_PRELIMINARY
+- NURANI_ADVANCE
+- NURANI_AMPARA
+- NAZERA
+- HIFZ
+
+## Quranic Class scheduling/timimg:
 **QURANIC PERIODS: **
 - NURANI_MORNING: 07:00 to 08:0
 - NAZERA_MORINING: 06:00 to 08:00

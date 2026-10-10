@@ -11,7 +11,7 @@ import {
 } from "./fatherDetails.zodValidation.js";
 
 // ======================================================
-// CREATE FATHER DETAILS
+// CREATE FATHER DETAILS SERVICE LAYER
 // ======================================================
 
 const createFatherDetails = async (
@@ -134,7 +134,7 @@ const createFatherDetails = async (
 };
 
 // ======================================================
-// CONNECT FATHER DETAILS
+// CONNECT FATHER DETAILS SERVICE LAYER
 // ======================================================
 
 const connectFatherDetails = async (
@@ -252,6 +252,9 @@ const connectFatherDetails = async (
   return result;
 };
 
+// ======================================================
+// UPDATE FATHER DETAILS SINGLE FIELD SERVICE LAYER
+// ======================================================
 const updateFatherDetailsField = async (
   payload: TUpdateFatherDetailsFieldPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -319,7 +322,7 @@ const updateFatherDetailsField = async (
 };
 
 // ======================================================
-// DISCONNECT FATHER DETAILS
+// DISCONNECT FATHER DETAILS SERVICE LAYER
 // ======================================================
 const disconnectFatherDetails = async (
   payload: TDisconnectFatherDetailsZodSchema,

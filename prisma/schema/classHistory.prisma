@@ -9,11 +9,10 @@ model ClassHistory {
 
   roll_number Int
 
-  quranic_class_id String?
-  quranic_class    QuranicClass? @relation(fields: [quranic_class_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  quranic_class_id String
+  quranic_class    QuranicClass @relation(fields: [quranic_class_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  quranic_class_period_id String?
-  quranic_class_period QuranicClassPeriod? @relation(fields: [quranic_class_period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  class_history_quranic_periods ClassHistoryQuranicPeriod[]
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -33,7 +32,7 @@ model ClassHistory {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
- @@unique([roll_number, class_id, shift_id, academic_year_id], name: "roll_class_shift_year_unique")
+  @@unique([roll_number, class_id, shift_id, academic_year_id], name: "roll_class_shift_year_unique")
   @@index([start_date])
   @@index([end_date])
   @@index([student_id, end_date])

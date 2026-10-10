@@ -7,6 +7,7 @@ import {
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
 import { Prisma } from "#db-client";
+import { userHelperFunction } from "../user/user.helper.function";
 
 // =============================================
 // STUDENT READMISSION SERVICE LAYER
@@ -21,8 +22,8 @@ const studentReadmission = async (
     target_shift_name,
     target_year_name,
     roll_number,
-    quranic_class_id,
-    quranic_class_period_id,
+    quranic_class_name,
+    quranic_class_period_ids,
   } = payload;
   const cleanShiftName = target_shift_name.trim().toUpperCase();
   const cleanYearName = target_year_name.trim();
@@ -61,11 +62,11 @@ const studentReadmission = async (
   const targetStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
   const targetEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
   return prisma.$transaction(
-    async (tx) => {
+    async (transaction) => {
       const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
 
       // Prevent duplicate enrolled
-      const alreadyEnrolled = await tx.classHistory.findFirst({
+      const alreadyEnrolled = await transaction.classHistory.findFirst({
         where: {
           student_id,
           academic_year_id: targetYear.id,
@@ -82,7 +83,7 @@ const studentReadmission = async (
       // 2. Fetch the target Student Profile with their current active timeline block
       const lastYear = (Number(target_year_name) - 1).toString();
       const lastYearEndDate = new Date(`${lastYear}-12-31T23:59:59.999Z`);
-      const studentProfile = await tx.student.findUnique({
+      const studentProfile = await transaction.student.findUnique({
         where: { id: student_id },
         include: {
           class_history: {
@@ -105,7 +106,7 @@ const studentReadmission = async (
       }
 
       // 3. Enforce bulletproof multi-admission database guardrails
-      const rollConflictCheck = await tx.classHistory.findFirst({
+      const rollConflictCheck = await transaction.classHistory.findFirst({
         where: {
           roll_number,
           class_id: target_class_id,
@@ -122,7 +123,7 @@ const studentReadmission = async (
       }
 
       // 4. STEP A: UPDATE TARGET CLASS POINTER ON THE ROOT STUDENT PROFILE
-      const updatedStudent = await tx.student.update({
+      const updatedStudent = await transaction.student.update({
         where: { id: student_id },
         data: {
           active_class_id: target_class_id,
@@ -140,51 +141,65 @@ const studentReadmission = async (
       });
 
       // 5. STEP B: SPAWN FRESH NEW YEAR CLASS HISTORY TRACKING ROW
-      const freshClassHistory = await tx.classHistory.create({
+      const studentsRequirementPayload = {
+        transaction,
+        active_class_id: payload.target_class_id,
+        year_name: payload.target_year_name,
+        shift_name: payload.target_shift_name,
+        roll_number: payload.roll_number,
+        quranic_class_name: payload.quranic_class_name,
+        quranic_class_period_ids: payload.quranic_class_period_ids,
+      };
+      const {
+        activeClassID,
+        academicStartDate,
+        academicEndDate,
+        academicYear,
+        existingShift,
+        rollNumber,
+        existingQuranicClass,
+        quranicClassPeriodIDs,
+      } = await userHelperFunction.checkStudentCreationRequirements(
+        studentsRequirementPayload,
+      );
+
+      const freshClassHistory = await transaction.classHistory.create({
         data: {
-          student_id,
-          class_id: target_class_id,
-          shift_id: targetShift.id,
-          academic_year_id: targetYear.id,
-          roll_number,
-          start_date: targetStartDate, // Set cleanly to 1st January
-          end_date: targetEndDate, // Set cleanly to 31st December
-          quranic_class_id: quranic_class_id || undefined,
-          quranic_class_period_id: quranic_class_period_id || undefined,
-          created_by_id: loggedInUser.user_id,
+          student: {connect: {id: student_id}},
+          class: { connect: { id: activeClassID } },
+          academic_year: { connect: { id: academicYear.id } },
+          shift: { connect: { id: existingShift?.id } },
+          roll_number: rollNumber,
+          start_date: academicStartDate,
+          end_date: academicEndDate,
+          quranic_class: { connect: { id: existingQuranicClass.id } },
+          class_history_quranic_periods: {
+            create: quranicClassPeriodIDs.map((id: string) => ({
+              quranic_class_period: { connect: { id } },
+            })),
+          },
+          created_by: { connect: { id: loggedInUser.user_id } },
         },
       });
 
       // Construct clean, filtered audit payload using camelCase structure rules
-      const rawNewValue = {
-        id: freshClassHistory.id,
-        student_id,
-        class_id: target_class_id,
-        shift_id: targetShift.id,
-        academic_year_id: targetYear.id,
-        roll_number,
-        start_date: targetStartDate.toISOString(),
-        end_date: targetEndDate.toISOString(),
-        quranic_class_id: quranic_class_id || null,
-        quranic_class_period_id: quranic_class_period_id || null,
-      };
-
-      const cleanNewValue = Object.fromEntries(
-        Object.entries(rawNewValue).filter(
-          ([_, v]) => v !== null && v !== undefined,
-        ),
-      );
       auditRecords.push({
-        entity_id: freshClassHistory.id,
-        entity_name: "classHistory",
-        action: "CREATE",
-        changed_by_id: loggedInUser.user_id,
-        old_value: Prisma.JsonNull,
-        new_value: cleanNewValue,
-      });
+            entity_id: freshClassHistory.id,
+            entity_name: "classHistory",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              class_id: activeClassID,
+              start_date: academicStartDate.toISOString(),
+              end_date: academicEndDate.toISOString(),
+              quranic_class_id: existingQuranicClass.id,
+              quranic_class_period_ids: quranicClassPeriodIDs
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          });
 
       // 7. STEP D: BULK ATOMIC COMMIT OF TRACKED AUDIT ENTRIES
-      await tx.auditLog.createMany({ data: auditRecords });
+      await transaction.auditLog.createMany({ data: auditRecords });
 
       return updatedStudent;
     },
@@ -199,8 +214,8 @@ const addResponsibleTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { student_id, teacher_full_name, teacher_mobile_number } = payload;
-  return await prisma.$transaction(async (tx) => {
-    const existingTeacher = await tx.academicStaff.findUnique({
+  return await prisma.$transaction(async (transaction) => {
+    const existingTeacher = await transaction.academicStaff.findUnique({
       where: {
         academic_full_name_mobile_unique: {
           full_name: teacher_full_name,
@@ -229,7 +244,7 @@ const addResponsibleTeacher = async (
       );
     }
 
-    const existingStudent = await tx.student.findUnique({
+    const existingStudent = await transaction.student.findUnique({
       where: { id: student_id },
       select: {
         id: true,
@@ -267,14 +282,14 @@ const addResponsibleTeacher = async (
       );
     }
 
-    const assignedResponsibleTeacher = await tx.student.update({
+    const assignedResponsibleTeacher = await transaction.student.update({
       where: { id: student_id },
       data: {
         responsible_teacher: { connect: { id: existingTeacher.id } },
       },
     });
 
-    await tx.auditLog.create({
+    await transaction.auditLog.create({
       data: {
         entity_id: student_id,
         entity_name: "student",
