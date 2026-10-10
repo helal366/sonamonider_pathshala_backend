@@ -40,12 +40,12 @@ export const studentReadmissionZodSchema = z4.object({
     .number({ error: (issue) => "Roll number must be an integer." })
     .int()
     .min(1, "Roll number must be greater than 0"),
+  arabic_literature: z4.boolean().optional(),
   quranic_class_name: z4.string().trim(),
   quranic_class_period_ids: z4
     .array(
       z4.uuid({ error: "Each period ID must be a valid UUID string format." }),
-    ),
-    
+    ),    
 });
 
 export type TStudentReadmissionZodSchema = z4.infer<

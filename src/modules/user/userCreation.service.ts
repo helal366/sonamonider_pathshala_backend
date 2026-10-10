@@ -10,6 +10,7 @@ import { Prisma } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
 import { redisClient } from "../../lib/redis";
 import crypto from "crypto";
+
 // ======================================
 // CREATE USER SERVICE LAYER
 // ======================================
@@ -192,6 +193,7 @@ const createUser = async (
               start_date: academicStartDate,
               end_date: academicEndDate,
               quranic_class: { connect: { id: existingQuranicClass.id } },
+              arabic_literature: payload.arabic_literature ?? false,
               class_history_quranic_periods: {
                 create: 
                   quranicClassPeriodIDs.map((id:string)=>({
@@ -210,6 +212,7 @@ const createUser = async (
               class_id: activeClassID,
               start_date: academicStartDate.toISOString(),
               end_date: academicEndDate.toISOString(),
+              arabic_literature: payload.arabic_literature ?? false,
               quranic_class_id: existingQuranicClass.id,
               quranic_class_period_ids: quranicClassPeriodIDs
             },

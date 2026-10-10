@@ -96,6 +96,7 @@ const userCreateZodSchema = z4
         z4.uuid({ error: "Each period ID must be a valid UUID string format." })
       )
       .optional(),
+    arabic_literature: z4.boolean().optional()
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {

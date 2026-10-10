@@ -172,6 +172,7 @@ const studentReadmission = async (
           roll_number: rollNumber,
           start_date: academicStartDate,
           end_date: academicEndDate,
+          arabic_literature: payload.arabic_literature ?? false,
           quranic_class: { connect: { id: existingQuranicClass.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
@@ -191,6 +192,7 @@ const studentReadmission = async (
               class_id: activeClassID,
               start_date: academicStartDate.toISOString(),
               end_date: academicEndDate.toISOString(),
+              arabic_literature: payload.arabic_literature ?? false,
               quranic_class_id: existingQuranicClass.id,
               quranic_class_period_ids: quranicClassPeriodIDs
             },
