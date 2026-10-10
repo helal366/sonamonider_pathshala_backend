@@ -6,7 +6,9 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import { quranicClassServices } from "./quranicClass.service.js";
 import { TCreateQuranicClassZodSchema, TDeleteQuranicClassZodSchema, TGetSingleQuranicClassZodSchema, TUpdateQuranicClassZodSchema } from "./quranicClass.zodValidation.js";
 
+// ===============================================
 // CREATE QURANIC CLASS CONTROLLER
+// ===============================================
 const createQuranicClass = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -27,7 +29,9 @@ const createQuranicClass = catchAsync(
   },
 );
 
+// ====================================================
 // UPDATE QURANIC CLASS CONTROLLER
+// ====================================================
 const updateQuranicClass = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -48,7 +52,9 @@ const updateQuranicClass = catchAsync(
   },
 );
 
+// ====================================================
 // DELETE QURANIC CLASS CONTROLLER
+// ====================================================
 const deleteQuranicClass = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -69,7 +75,9 @@ const deleteQuranicClass = catchAsync(
   },
 );
 
+// =====================================================
 // GET ALL QURANIC CLASSES CONTROLLER
+// =====================================================
 const getAllQuranicClasses = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await quranicClassServices.getAllQuranicClasses();
@@ -83,7 +91,9 @@ const getAllQuranicClasses = catchAsync(
   },
 );
 
+// ======================================================
 // GET SINGLE QURANIC CLASS CONTROLLER
+// ======================================================
 const getSingleQuranicClass = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     // Safely parse from your validated path params middleware mapping block

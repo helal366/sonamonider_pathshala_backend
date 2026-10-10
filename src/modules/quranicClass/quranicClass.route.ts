@@ -9,7 +9,7 @@ const router = Router();
 // CREATE QURANIC CLASS
 router.post(
   "/create_quranic_class",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN"),
   validateZodSchema(quranicClassZodSchema.createQuranicClassZodSchema),
   quranicClassController.createQuranicClass,
 );
@@ -17,7 +17,7 @@ router.post(
 // UPDATE QURANIC CLASS
 router.patch(
   "/update_quranic_class",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN"),
   validateZodSchema(quranicClassZodSchema.updateQuranicClassZodSchema),
   quranicClassController.updateQuranicClass,
 );
@@ -25,7 +25,7 @@ router.patch(
 // DELETE QURANIC CLASS
 router.delete(
   "/delete_quranic_class",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN"),
   validateZodSchema(quranicClassZodSchema.deleteQuranicClassZodSchema),
   quranicClassController.deleteQuranicClass,
 );

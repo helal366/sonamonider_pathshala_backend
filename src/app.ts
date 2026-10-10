@@ -22,6 +22,7 @@ import { shiftRouter } from "./modules/shift/shift.route.js";
 import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route.js";
 import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
 import { quranicClassRouter } from "./modules/quranicClass/quranicClass.route.js";
+import { quranicClassPeriodRouter } from "./modules/quranicClassPeriod/quranicClassPeriod.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -47,6 +48,7 @@ app.use("/api/v1/smps/shift", shiftRouter);
 app.use("/api/v1/smps/academic_staff", academicStaffRouter);
 app.use("/api/v1/smps/promotion_request", promotionRequestRouter);
 app.use("/api/v1/smps/quranic_class", quranicClassRouter);
+app.use("/api/v1/smps/quranic_class_period", quranicClassPeriodRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

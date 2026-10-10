@@ -53,7 +53,6 @@ const createQuranicClass = async (
         old_value: Prisma.JsonNull,
         new_value: {
           quranic_class_name: cleanClassName,
-          created_by_id: loggedInUser.user_id,
         },
       },
     });
@@ -118,7 +117,7 @@ const updateQuranicClass = async (
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
         old_value: { quranic_class_name: currentClass.quranic_class_name },
-        new_value: { quranic_class_name: cleanClassName, updated_by_id: loggedInUser.user_id },
+        new_value: { quranic_class_name: cleanClassName },
       },
     });
 
