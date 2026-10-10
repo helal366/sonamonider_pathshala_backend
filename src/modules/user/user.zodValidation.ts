@@ -420,6 +420,17 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
   typeof updateUserPasswordZodSchema
 >;
 
+// ============================================================
+// GET SINGLE USER ZOD SCHEMA
+// ============================================================
+const getSingleUserZodSchema = z4.object({
+  id: z4.uuid({
+    error: (issue)=>
+      issue.input === undefined? "User ID is required.":"Invalid user id format."
+  })
+});
+export type TGetSingleUserZodSchema = z4.infer<typeof getSingleUserZodSchema>;
+
 export const userZodSchema = {
   userCreateZodSchema,
   changePasswordZodSchema,
@@ -429,4 +440,5 @@ export const userZodSchema = {
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
+  getSingleUserZodSchema
 };

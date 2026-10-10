@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userController } from "./user.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { userZodSchema } from "./user.zodValidation.js";
 
@@ -83,4 +83,49 @@ router.patch(
   userController.updateUserPassword,
 );
 
+// ============================================================
+// GET ALL USERS ROUTE
+// ============================================================
+router.get(
+  "/",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userController.getAllUsers
+)
+
+// ============================================================
+// GET ACTIVE USERS ROUTE
+// ============================================================
+router.get(
+  "/active_users",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userController.getActiveUsers
+);
+
+// ============================================================
+// GET INACTIVE USERS ROUTE
+// ============================================================
+router.get(
+  "/inactive_users",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userController.getInactiveUsers
+);
+
+// ============================================================
+// GET SOFT DELETED USERS ROUTE
+// ============================================================
+router.get(
+  "/soft_deleted_users",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userController.getSoftDeletedUsers
+);
+
+// ============================================================
+// GET SINGLE USER ROUTE
+// ============================================================
+router.get(
+  "/:id",
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodParams(userZodSchema.getSingleUserZodSchema),
+  userController.getSingleUser
+)
 export const userRouter: Router = router;

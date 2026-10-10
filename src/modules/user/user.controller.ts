@@ -12,11 +12,13 @@ import {
   TUpdateSingleUserFieldSuperAdminZodSchema,
   TUpdateUserPasswordZodSchema,
   TUpdateUserNameZodSchema,
+  TGetSingleUserZodSchema,
 } from "./user.zodValidation.js";
 import { userServices } from "./user.service.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { createUserServices } from "./userCreation.service.js";
+import { userGetServices } from "./user.getService.js";
 
 //=============================================
 // CREATE USER CONTROLLER
@@ -165,9 +167,9 @@ const updateUserName = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// =================================================
+// =============================================================
 // UPDATE USER PASSWORD CONTROLLER
-// =================================================
+// =============================================================
 const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
   const payload: TUpdateUserPasswordZodSchema = req.body;
   const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
@@ -184,6 +186,76 @@ const updateUserPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// ===============================================================
+// GET ALL USERS CONTROLLER
+// ===============================================================
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  helperFunctions.requiredUser(req);
+  const result = await userGetServices.getAllUsers();
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Users retrieved successfully.`,
+    data: result,
+  });
+});
+
+// ===============================================================
+// GET ACTIVE USERS CONTROLLER
+// ===============================================================
+const getActiveUsers = catchAsync(async (req: Request, res: Response) => {
+  helperFunctions.requiredUser(req);
+  const result = await userGetServices.getActiveUsers();
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Users retrieved successfully.`,
+    data: result,
+  });
+});
+
+// ===============================================================
+// GET INACTIVE USERS CONTROLLER
+// ===============================================================
+const getInactiveUsers = catchAsync(async (req: Request, res: Response) => {
+  helperFunctions.requiredUser(req);
+  const result = await userGetServices.getInactiveUsers();
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Users retrieved successfully.`,
+    data: result,
+  });
+});
+
+// ============================================================
+// GET SOFT DELETED USERS CONTROLLER
+// ============================================================
+const getSoftDeletedUsers=catchAsync(async(req: Request, res: Response)=>{
+  helperFunctions.requiredUser(req);
+  const result = await userGetServices.getSoftDeletedUsers();
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Users retrieved successfully.`,
+    data: result,
+  });
+})
+
+// ============================================================
+// GET SINGLE USER CONTROLLER
+// ============================================================
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+  helperFunctions.requiredUser(req);
+  const { id } = req.params as unknown as TGetSingleUserZodSchema;
+  const result = await userGetServices.getSingleUser(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `User retrieved successfully.`,
+    data: result,
+  });
+});
 export const userController = {
   createUser,
   changePassword,
@@ -193,4 +265,9 @@ export const userController = {
   updateSingleUserFieldSuperAdmin,
   updateUserName,
   updateUserPassword,
+  getAllUsers,
+  getActiveUsers,
+  getInactiveUsers,
+  getSoftDeletedUsers,
+  getSingleUser,
 };
