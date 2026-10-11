@@ -14,7 +14,9 @@ import {
   TUpdatePositionZodSchema,
 } from "./position.zodValidation.js";
 
+// ========================================================
 // CREATE POSITION SERVICE LAYER
+// ========================================================
 const createPosition = async (
   payload: TCreatePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -82,15 +84,15 @@ const updatePosition = async (
     );
   }
 
-  //  2. Verify if the position name already exists or not.
-  const existingPosition = await findPositionExistence(
-    cleanPresentPositionName,
-  );
-
-  //  3. Update position name and create audit log
+  
+  //  2. Update position name and create audit log
   const updatedPositionResult = await prisma.$transaction(
     async (transaction) => {
-      // 3a. Update the position
+      // Verify if the position name already exists or not.
+      const existingPosition = await findPositionExistence(
+        cleanPresentPositionName,
+      );
+      //  Update the position
       const updatedPosition = await transaction.userPosition.update({
         where: { id: existingPosition.id },
         data: {
@@ -99,7 +101,7 @@ const updatePosition = async (
         },
       });
 
-      // 3b. Create audit log
+      // Create audit log
       await transaction.auditLog.create({
         data: {
           entity_id: updatedPosition.id,
@@ -117,7 +119,7 @@ const updatePosition = async (
       return updatedPosition;
     },
   );
-  // 🚀 🆕 4. Invalidate memory cache values upon safe transaction complete execution
+  // 3. Invalidate memory cache values upon safe transaction complete execution
   clearCachePositions();
   return updatedPositionResult;
 };

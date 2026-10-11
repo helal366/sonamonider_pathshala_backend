@@ -1,7 +1,8 @@
 import z4 from "zod/v4";
 
-
+// ============================================
 // CREATE POSITION ZOD SCHEMA
+// ============================================
 export const createPositionZodSchema = z4.object({
   position_name: z4
     .string({
@@ -11,6 +12,7 @@ export const createPositionZodSchema = z4.object({
           : "Invalid position name format.",
     })
     .trim()
+    .min(1, "Position name is required.")
     .toUpperCase(),
 
 });

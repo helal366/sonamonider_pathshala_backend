@@ -10,6 +10,10 @@ import {
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();
+
+// ============================================
+// CREATE POSITION ROUTE
+// ============================================
 router.post(
   "/create_position",
   userAuth("SUPER_ADMIN"),

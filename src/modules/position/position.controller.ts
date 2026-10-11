@@ -9,15 +9,13 @@ import { positionServices } from "./position.service.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+// ==================================================
 // CREATE POSITION CONTROLLER
+// ==================================================
 const createPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+    const loggedInUser =  helperFunctions.requiredUser(req);
     const payload: TCreatePositionZodSchema = req.body;
     const result = await positionServices.createPosition(payload, loggedInUser);
     sendResponse(res, {
