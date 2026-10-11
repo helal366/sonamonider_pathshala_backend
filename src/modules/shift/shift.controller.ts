@@ -5,11 +5,10 @@ import { shiftServices } from "./shift.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
-  shiftZodSchema,
   TDeleteShiftZodSchema,
+  TGetSingleShiftZodSchema,
   TUpdateShiftFieldParamsZodSchema,
 } from "./shift.zodValidation";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 
 // =============================================
 // CREATE SHIFT CONTROLLER
@@ -91,6 +90,22 @@ const getShiftNames = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// =============================================
+// GET SINGLE SHIFT CONTROLLER
+// =============================================
+const getSingleShift = catchAsync(async(req: Request, res: Response)=>{
+     helperFunctions.requiredUser(req);
+     const {id} = req.params as unknown as TGetSingleShiftZodSchema
+     const result = await shiftServices.getSingleShift(id);
+     sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Shift details retrieved successfully.`,
+    data: result,
+  });
+});
+
+
 type ShiftController = {
   createShift: (req: Request, res: Response, next: NextFunction) => void;
   deleteShift: (req: Request, res: Response, next: NextFunction) => void;
@@ -100,6 +115,7 @@ type ShiftController = {
     next: NextFunction,
   ) => void;
   getShiftNames: (req: Request, res: Response, next: NextFunction) => void;
+  getSingleShift: (req: Request, res: Response, next: NextFunction) => void;
 };
 
 export const shiftController: ShiftController = {
@@ -107,4 +123,5 @@ export const shiftController: ShiftController = {
   deleteShift,
   updateShiftField,
   getShiftNames,
+  getSingleShift
 };

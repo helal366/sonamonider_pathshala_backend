@@ -12,7 +12,9 @@ import {
   TUpdateQuranicClassPeriodZodSchema 
 } from "./quranicClassPeriod.zodValidation.js";
 
+// =============================================================
 // CREATE QURANIC CLASS PERIOD CONTROLLER
+// =============================================================
 const createQuranicClassPeriod = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;

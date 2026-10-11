@@ -160,9 +160,55 @@ const getShiftNames = async () => {
   });
   return shiftNames;
 };
+
+// =============================================
+// GET SINGLE SHIFT SERVICE LAYER
+// =============================================
+const getSingleShift = async(shift_id:string)=>{
+  // CHECK EXISTANCE
+  const shiftExistance = await prisma.shift.findUnique({
+    where: {id: shift_id},
+    include: {
+      class_history: {
+        include: {
+          academic_year: {
+            select: {academic_year_name: true}
+          },
+          quranic_class: {
+            select: { quranic_class_name: true }
+          },
+          class: {
+            select: {
+              class_name: true,
+              is_active_class: true
+            }
+          },
+          class_history_quranic_periods: {
+            select: {
+              quranic_class_period: {
+                select: {
+                  quranic_class_period_name: true,
+                  start_time: true,
+                  end_time: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+  if(!shiftExistance){
+    throw new AppError(`Provided shift not found.`, StatusCodes.NOT_FOUND)
+  };
+  return shiftExistance
+};
+
+
 export const shiftServices = {
   createShift,
   deleteShift,
   updateShiftField,
   getShiftNames,
+  getSingleShift
 };

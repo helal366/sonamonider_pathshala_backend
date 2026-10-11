@@ -17,6 +17,11 @@
     { "key": "fatherDetailsId", "value": "00000000-0000-4000-8000-000000000006" },
     { "key": "motherDetailsId", "value": "00000000-0000-4000-8000-000000000007" },
     { "key": "shiftId", "value": "00000000-0000-4000-8000-000000000008" },
+    { "key": "studentId", "value": "00000000-0000-4000-8000-000000000009" },
+    { "key": "academicStaffId", "value": "00000000-0000-4000-8000-000000000010" },
+    { "key": "quranicClassId", "value": "00000000-0000-4000-8000-000000000011" },
+    { "key": "quranicClassPeriodId", "value": "00000000-0000-4000-8000-000000000012" },
+    { "key": "promotionRequestId", "value": "00000000-0000-4000-8000-000000000013" },
     { "key": "email", "value": "user@example.com" }
   ],
   "item": [
@@ -200,20 +205,6 @@
           "response": []
         },
         {
-          "name": "Promote User Role and Position",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\",\n  \"promoted_date\": \"2026-01-01T00:00:00.000Z\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/promote_user_role_position"
-          },
-          "response": []
-        },
-        {
           "name": "Change User Position",
           "request": {
             "method": "PATCH",
@@ -281,6 +272,51 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/api/v1/smps/user/update_user_password"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/user/active_users"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Inactive Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/user/inactive_users"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Soft Deleted Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/user/soft_deleted_users"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/user/{{userId}}"
           },
           "response": []
         }
@@ -642,13 +678,8 @@
           "name": "Delete Spouse Information",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/spouse_information/delete"
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/delete/{{userId}}"
           },
           "response": []
         },
@@ -727,6 +758,34 @@
             "url": "{{baseUrl}}/api/v1/smps/class"
           },
           "response": []
+        },
+        {
+          "name": "Assign Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"academicStaff_id\": \"{{academicStaffId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/class/assign_grade_group_teacher"
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"academicStaff_id\": \"{{academicStaffId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/class/disconnect_grade_group_teacher"
+          },
+          "response": []
         }
       ]
     },
@@ -782,6 +841,15 @@
             "url": "{{baseUrl}}/api/v1/smps/shift"
           },
           "response": []
+        },
+        {
+          "name": "Get Shift by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/shift/{{shiftId}}"
+          },
+          "response": []
         }
       ]
     },
@@ -794,16 +862,29 @@
       "item": [
         {
           "name": "Readmission",
-          "description": "This route is registered but currently has no controller or response handler.",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"target_class_id\": \"{{classId}}\",\n  \"target_shift_name\": \"MORNING\",\n  \"target_year_name\": \"2026-2027\",\n  \"roll_number\": 1,\n  \"arabic_literature\": false,\n  \"quranic_class_name\": \"BEGINNER\",\n  \"quranic_class_period_ids\": [\"{{quranicClassPeriodId}}\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student/student_readmission"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Responsible Teacher",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"{{userId}}\"\n}",
+              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"teacher_full_name\": \"TEACHER_FULL_NAME\",\n  \"teacher_mobile_number\": \"01712345678\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/student/readmission"
+            "url": "{{baseUrl}}/api/v1/smps/student/add_responsible_teacher"
           },
           "response": []
         }
@@ -965,6 +1046,250 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/api/v1/smps/academic_result/{{staffId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Academic Staff",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Update Subject for Subject Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academicStaff_id\": \"{{academicStaffId}}\",\n  \"current_subject\": \"MATHEMATICS\",\n  \"new_subject\": \"SCIENCE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Promotion Requests",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Promotion Request",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"old_position\": \"TEACHER\",\n  \"new_position\": \"SENIOR_TEACHER\",\n  \"old_role\": \"ACADEMIC\",\n  \"new_role\": \"ACADEMIC\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/create_promotion_request"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Promotion Request",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promotion_request_id\": \"{{promotionRequestId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/delete_promotion_request"
+          },
+          "response": []
+        },
+        {
+          "name": "Approve or Reject Promotion Request",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promotion_request_id\": \"{{promotionRequestId}}\",\n  \"action_status\": \"APPROVED\",\n  \"effective_date\": \"2026-01-01T00:00:00.000Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/action_promotion_request"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request?page=1&limit=10&status=PENDING"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion Request by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/get_promotion_request/{{promotionRequestId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quranic Classes",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Quranic Class",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_name\": \"BEGINNER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class/create_quranic_class"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quranic Class",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_id\": \"{{quranicClassId}}\",\n  \"quranic_class_name\": \"INTERMEDIATE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class/update_quranic_class"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Quranic Class",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_id\": \"{{quranicClassId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class/delete_quranic_class"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Quranic Classes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class/get_quranic_classes"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quranic Class by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class/get_quranic_class/{{quranicClassId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quranic Class Periods",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Quranic Class Period",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_period_name\": \"MORNING\",\n  \"start_time\": \"6:00 AM\",\n  \"end_time\": \"8:00 AM\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/create_quranic_class_period"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quranic Class Period",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\",\n  \"quranic_class_period_name\": \"MORNING\",\n  \"start_time\": \"6:00 AM\",\n  \"end_time\": \"8:00 AM\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_class_period"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quranic Class Period Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\",\n  \"field\": \"start_time\",\n  \"value\": \"6:30 AM\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_class_single_period_field"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Quranic Class Period",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/delete_quranic_class_period"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Quranic Class Periods",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_class_periods"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quranic Class Period by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_class_period/{{quranicClassPeriodId}}"
           },
           "response": []
         }

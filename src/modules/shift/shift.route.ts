@@ -44,4 +44,13 @@ router.get(
   shiftController.getShiftNames,
 );
 
+// =============================================
+// GET SINGLE SHIFT ROUTE
+// =============================================
+router.get(
+  "/:id",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodParams(shiftZodSchema.getSingleShiftZodSchema),
+  shiftController.getSingleShift
+)
 export const shiftRouter: Router = router;
