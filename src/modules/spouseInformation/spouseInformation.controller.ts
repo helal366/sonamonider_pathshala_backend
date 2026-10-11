@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { spouseInformationServices } from "./spouseInformation.service.js";
-import type { TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zodValidation.js";
+import type { TDeleteSpouseInformationZodSchema, TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zodValidation.js";
 
 // ============================================================
 // CREATE SPOUSE INFORMATION CONTROLLER
@@ -31,8 +31,9 @@ const createSpouseInformation = catchAsync(
 const deleteSpouseInformation = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
+    const {user_id} = req.params as unknown as TDeleteSpouseInformationZodSchema
     const result = await spouseInformationServices.deleteSpouseInformation(
-      req.body,
+      user_id,
       loggedInUser,
     );
     sendResponse(res, {

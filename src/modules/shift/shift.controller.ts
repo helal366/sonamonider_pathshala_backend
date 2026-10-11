@@ -6,6 +6,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
   shiftZodSchema,
+  TDeleteShiftZodSchema,
   TUpdateShiftFieldParamsZodSchema,
 } from "./shift.zodValidation";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
@@ -31,18 +32,19 @@ const createShift = catchAsync(async (req: Request, res: Response) => {
 // =============================================
 const deleteShift = catchAsync(async (req: Request, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const { id } = req.params;
-  const safeParse_shift_id = shiftZodSchema.deleteShiftZodSchema.safeParse({
-    id,
-  });
-  if (!safeParse_shift_id.success) {
-    throw new AppError(
-      safeParse_shift_id.error.issues[0]?.message ?? "Invalid Shift ID format.",
-      StatusCodes.BAD_REQUEST,
-    );
-  }
+  const { id } = req.params as unknown as TDeleteShiftZodSchema;
+  // const safeParse_shift_id = shiftZodSchema.deleteShiftZodSchema.safeParse({
+  //   id,
+  // });
+  // if (!safeParse_shift_id.success) {
+  //   throw new AppError(
+  //     safeParse_shift_id.error.issues[0]?.message ?? "Invalid Shift ID format.",
+  //     StatusCodes.BAD_REQUEST,
+  //   );
+  // }
   const result = await shiftServices.deleteShift(
-    safeParse_shift_id.data.id,
+    // safeParse_shift_id.data.id,
+    id,
     loggedInUser,
   );
   sendResponse(res, {

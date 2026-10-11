@@ -192,10 +192,10 @@ const createSpouseInformation = async (
 // DELETE SPOUSE INFORMATION SERVICE
 // ============================================================
 const deleteSpouseInformation = async (
-  payload: { user_id: string },
+  user_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { user_id } = payload;
+  
   return prisma.$transaction(async (transaction) => {
     // CHECK TARGET USER
     const targetUser = await transaction.user.findUnique({

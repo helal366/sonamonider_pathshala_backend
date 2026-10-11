@@ -35,11 +35,6 @@ const seedSuperAdminRolePrincipalPosition = async () => {
     principalPosition = await prisma.userPosition.create({
       data: {
         position_name: "PRINCIPAL",
-        role: {
-          connect: {
-            id: superAdminRole.id,
-          },
-        },
       },
     });
 

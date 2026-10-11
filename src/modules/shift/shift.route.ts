@@ -20,6 +20,7 @@ router.post("/create", userAuth("SUPER_ADMIN"), shiftController.createShift);
 router.delete(
   "/delete/:id",
   userAuth("SUPER_ADMIN"),
+  validateZodParams(shiftZodSchema.deleteShiftZodSchema),
   shiftController.deleteShift,
 );
 

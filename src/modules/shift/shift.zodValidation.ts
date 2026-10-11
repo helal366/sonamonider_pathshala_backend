@@ -5,12 +5,12 @@ import z4 from "zod/v4";
 // =============================================
 const createShiftZodSchema = z4.object({
   shift_name: z4.string({
-    error: (issue) => {
+    error: (issue) => 
       issue.input === undefined
         ? "Shift name is required."
-        : "Invalid Shift name format.";
-    },
-  }),
+        : "Invalid Shift name format."
+    
+  }).trim().min(1, "Shift name is required."),
 });
 export type TCreateShiftZodSchema = z4.infer<typeof createShiftZodSchema>;
 

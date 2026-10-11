@@ -91,12 +91,38 @@ const updateShiftField = async (
   const { field, value } = payload;
   const cleanValue = value.trim().toUpperCase();
   return await prisma.$transaction(async (tx) => {
+    // CHECK DUPLICATE
+    if (field === "shift_name") {
+      const duplicateShift = await tx.shift.findUnique({
+        where: { shift_name: cleanValue },
+      });
+
+      if (duplicateShift && duplicateShift.id !== shift_id) {
+        throw new AppError(
+          `The shift name ${cleanValue} already exists.`,
+          StatusCodes.CONFLICT,
+        );
+      }
+    }
+
+    // CHECK EXISTING
     const existingShift = await tx.shift.findUnique({
       where: { id: shift_id },
     });
+    // REJECT FOR NOT FOUND
     if (!existingShift) {
       throw new AppError(`Shift not found`, StatusCodes.NOT_FOUND);
     }
+
+    // REJECT FOR SAME VALUE PROVIDED
+    if (existingShift.shift_name === cleanValue) {
+      throw new AppError(
+        "The provided shift name is the same as the existing shift name.",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    // UPDATE
     const updated = await tx.shift.update({
       where: { id: shift_id },
       data: {
@@ -104,6 +130,8 @@ const updateShiftField = async (
         updated_by: { connect: { id: loggedInUser.user_id } },
       },
     });
+
+    // CHECK AUDIT LOG
     await tx.auditLog.create({
       data: {
         entity_id: existingShift.id,

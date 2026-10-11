@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
 import { spouseInformationZodSchema } from "./spouseInformation.zodValidation.js";
 import { spouseInformationController } from "./spouseInformation.controller.js";
 
@@ -22,9 +22,9 @@ router.post(
 // DELETE SPOUSE INFORMATION ROUTE
 // ============================================================
 router.delete(
-  "/delete",
+  "/delete/:user_id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(
+  validateZodParams(
     spouseInformationZodSchema.deleteSpouseInformationZodSchema,
   ),
   spouseInformationController.deleteSpouseInformation,

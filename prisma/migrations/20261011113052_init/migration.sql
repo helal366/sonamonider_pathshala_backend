@@ -25,6 +25,9 @@ CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 -- CreateEnum
 CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', 'MSC', 'M_COM', 'M_ARTS', 'PHD', 'ALIM', 'DAKHIL', 'KAMIL', 'FAZIL', 'OTHERS');
 
+-- CreateEnum
+CREATE TYPE "PromotionRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
 -- CreateTable
 CREATE TABLE "academic_result" (
     "id" TEXT NOT NULL,
@@ -55,6 +58,8 @@ CREATE TABLE "academic_staffs" (
     "email" TEXT NOT NULL,
     "current_position_id" TEXT,
     "current_role_id" TEXT,
+    "is_currently_active_staff" BOOLEAN NOT NULL DEFAULT true,
+    "subject_as_subject_teacher" TEXT,
     "teaching_experience_year" INTEGER,
     "teaching_experience_month" INTEGER,
     "alternative_contact_no" TEXT[],
@@ -99,6 +104,7 @@ CREATE TABLE "classes" (
     "id" TEXT NOT NULL,
     "class_name" TEXT NOT NULL,
     "is_active_class" BOOLEAN NOT NULL DEFAULT true,
+    "grade_group_teacher_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -113,7 +119,11 @@ CREATE TABLE "class_history" (
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3),
     "academic_year_id" TEXT NOT NULL,
+    "roll_number" INTEGER NOT NULL,
+    "quranic_class_id" TEXT NOT NULL,
+    "arabic_literature" BOOLEAN NOT NULL DEFAULT false,
     "class_id" TEXT NOT NULL,
+    "shift_id" TEXT NOT NULL,
     "student_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -121,6 +131,16 @@ CREATE TABLE "class_history" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "class_history_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "class_history_quranic_periods" (
+    "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
+    "quranic_class_period_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "class_history_quranic_periods_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -257,11 +277,77 @@ CREATE TABLE "promotion_histories" (
     "management_staff_id" TEXT,
     "academic_staff_id" TEXT,
     "position_id" TEXT NOT NULL,
+    "student_id" TEXT,
+    "governing_body_id" TEXT,
     "role_id" TEXT NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "end_date" TIMESTAMP(3),
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "promotion_histories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "promotion_requests" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "old_role_id" TEXT NOT NULL,
+    "new_role_id" TEXT NOT NULL,
+    "old_position_id" TEXT NOT NULL,
+    "new_position_id" TEXT NOT NULL,
+    "management_staff_id" TEXT,
+    "academic_staff_id" TEXT,
+    "student_id" TEXT,
+    "governing_body_id" TEXT,
+    "promotion_request_status" "PromotionRequestStatus" NOT NULL DEFAULT 'PENDING',
+    "rejection_reason" TEXT,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "promotion_requests_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "quranic_classes" (
+    "id" TEXT NOT NULL,
+    "quranic_class_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "quranic_classes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "quranic_class_periods" (
+    "id" TEXT NOT NULL,
+    "quranic_class_period_name" TEXT NOT NULL,
+    "start_time" TEXT NOT NULL,
+    "end_time" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "quranic_class_periods_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "shifts" (
+    "id" TEXT NOT NULL,
+    "shift_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "shifts_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -292,6 +378,7 @@ CREATE TABLE "students" (
     "mobile_number" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "active_class_id" TEXT NOT NULL,
+    "responsible_teacher_id" TEXT,
     "user_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -317,7 +404,7 @@ CREATE TABLE "users" (
     "photo_url" TEXT,
     "mobile_number" TEXT NOT NULL,
     "is_mobile_verified" BOOLEAN NOT NULL DEFAULT false,
-    "email" TEXT,
+    "email" TEXT NOT NULL,
     "is_email_verified" BOOLEAN NOT NULL DEFAULT false,
     "user_name" TEXT,
     "user_password" TEXT,
@@ -339,7 +426,6 @@ CREATE TABLE "users" (
 CREATE TABLE "user_positions" (
     "id" TEXT NOT NULL,
     "position_name" TEXT NOT NULL,
-    "role_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -394,6 +480,9 @@ CREATE INDEX "audit_logs_entity_name_entity_id_created_at_idx" ON "audit_logs"("
 CREATE UNIQUE INDEX "classes_class_name_key" ON "classes"("class_name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "classes_grade_group_teacher_id_key" ON "classes"("grade_group_teacher_id");
+
+-- CreateIndex
 CREATE INDEX "class_history_start_date_idx" ON "class_history"("start_date");
 
 -- CreateIndex
@@ -401,6 +490,18 @@ CREATE INDEX "class_history_end_date_idx" ON "class_history"("end_date");
 
 -- CreateIndex
 CREATE INDEX "class_history_student_id_end_date_idx" ON "class_history"("student_id", "end_date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "class_history_roll_number_class_id_shift_id_academic_year_i_key" ON "class_history"("roll_number", "class_id", "shift_id", "academic_year_id");
+
+-- CreateIndex
+CREATE INDEX "class_history_quranic_periods_class_history_id_idx" ON "class_history_quranic_periods"("class_history_id");
+
+-- CreateIndex
+CREATE INDEX "class_history_quranic_periods_quranic_class_period_id_idx" ON "class_history_quranic_periods"("quranic_class_period_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_clas_key" ON "class_history_quranic_periods"("class_history_id", "quranic_class_period_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "governing_bodies_email_key" ON "governing_bodies"("email");
@@ -436,10 +537,19 @@ CREATE UNIQUE INDEX "present_addresses_spouse_id_key" ON "present_addresses"("sp
 CREATE INDEX "promotion_histories_management_staff_id_idx" ON "promotion_histories"("management_staff_id");
 
 -- CreateIndex
+CREATE INDEX "promotion_histories_academic_staff_id_idx" ON "promotion_histories"("academic_staff_id");
+
+-- CreateIndex
 CREATE INDEX "promotion_histories_position_id_idx" ON "promotion_histories"("position_id");
 
 -- CreateIndex
 CREATE INDEX "promotion_histories_role_id_idx" ON "promotion_histories"("role_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "quranic_classes_quranic_class_name_key" ON "quranic_classes"("quranic_class_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "shifts_shift_name_key" ON "shifts"("shift_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "spouse_infromation_user_id_key" ON "spouse_infromation"("user_id");
@@ -520,6 +630,9 @@ ALTER TABLE "AcademicYear" ADD CONSTRAINT "AcademicYear_updated_by_id_fkey" FORE
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "classes" ADD CONSTRAINT "classes_grade_group_teacher_id_fkey" FOREIGN KEY ("grade_group_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -529,7 +642,13 @@ ALTER TABLE "classes" ADD CONSTRAINT "classes_updated_by_id_fkey" FOREIGN KEY ("
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "AcademicYear"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_quranic_class_id_fkey" FOREIGN KEY ("quranic_class_id") REFERENCES "quranic_classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_shift_id_fkey" FOREIGN KEY ("shift_id") REFERENCES "shifts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -539,6 +658,12 @@ ALTER TABLE "class_history" ADD CONSTRAINT "class_history_created_by_id_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_quranic_class_period_id_fkey" FOREIGN KEY ("quranic_class_period_id") REFERENCES "quranic_class_periods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -610,7 +735,70 @@ ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_academic_s
 ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_governing_body_id_fkey" FOREIGN KEY ("governing_body_id") REFERENCES "governing_bodies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_old_role_id_fkey" FOREIGN KEY ("old_role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_new_role_id_fkey" FOREIGN KEY ("new_role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_old_position_id_fkey" FOREIGN KEY ("old_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_new_position_id_fkey" FOREIGN KEY ("new_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_management_staff_id_fkey" FOREIGN KEY ("management_staff_id") REFERENCES "management_staffs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_academic_staff_id_fkey" FOREIGN KEY ("academic_staff_id") REFERENCES "academic_staffs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_governing_body_id_fkey" FOREIGN KEY ("governing_body_id") REFERENCES "governing_bodies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "quranic_classes" ADD CONSTRAINT "quranic_classes_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "quranic_classes" ADD CONSTRAINT "quranic_classes_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "quranic_class_periods" ADD CONSTRAINT "quranic_class_periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "quranic_class_periods" ADD CONSTRAINT "quranic_class_periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "shifts" ADD CONSTRAINT "shifts_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "shifts" ADD CONSTRAINT "shifts_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -623,6 +811,9 @@ ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_updated_by_i
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_active_class_id_fkey" FOREIGN KEY ("active_class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_responsible_teacher_id_fkey" FOREIGN KEY ("responsible_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -650,9 +841,6 @@ ALTER TABLE "users" ADD CONSTRAINT "users_created_by_id_fkey" FOREIGN KEY ("crea
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "user_positions" ADD CONSTRAINT "user_positions_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_positions" ADD CONSTRAINT "user_positions_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
