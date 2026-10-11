@@ -13,19 +13,19 @@ const toMinutes = (time: string): number => {
   return hours24 * 60 + minutes!;
 };
 // ==========================================================
-// CREATE QURANIC CLASS PERIOD ZOD SCHEMA
+// CREATE QURANIC PERIOD ZOD SCHEMA
 // ==========================================================
-const createQuranicClassPeriodZodSchema = z4
+const createQuranicPeriodZodSchema = z4
   .object({
-    quranic_class_period_name: z4
+    quranic_period_name: z4
       .string({
         error: (issue) =>
           issue.input === undefined
-            ? "Quranic class period name is required."
+            ? "Quranic period name is required."
             : "Invalid period name format.",
       })
       .trim()
-      .min(1, "Quranic class period name cannot be empty."),
+      .min(1, "Quranic period name cannot be empty."),
 
     start_time: z4
       .string({
@@ -51,7 +51,7 @@ const createQuranicClassPeriodZodSchema = z4
       ),
   })
   .superRefine((data, ctx) => {
-  const periodName = data.quranic_class_period_name.trim().toUpperCase();
+  const periodName = data.quranic_period_name.trim().toUpperCase();
 
   if (periodName === "HIFZ_NIGHT") {
     if (data.start_time.trim().toUpperCase() !== "AFTER_MAGRIB") {
@@ -88,25 +88,28 @@ const createQuranicClassPeriodZodSchema = z4
   }
 });
 
-export type TCreateQuranicClassPeriodZodSchema = z4.infer<typeof createQuranicClassPeriodZodSchema>;
+export type TCreateQuranicPeriodZodSchema = z4.infer<typeof createQuranicPeriodZodSchema>;
 
 // =========================================================
-// UPDATE QURANIC CLASS PERIODS ZOD SCHEMA
+// UPDATE QURANIC PERIODS ZOD SCHEMA
 // =========================================================
-const updateQuranicClassPeriodZodSchema = z4.object({
-  quranic_class_period_id: z4.uuid({
-    message: "Invalid Quranic class period ID format. Must be a valid UUID.",
+const updateQuranicPeriodParamsZodSchema = z4.object({
+    id: z4.uuid({
+    message: "Invalid Quranic period ID format. Must be a valid UUID.",
   }),
-  
-  quranic_class_period_name: z4
+})
+export type TUpdateQuranicPeriodParamsZodSchema = z4.infer<typeof updateQuranicPeriodParamsZodSchema>;
+
+const updateQuranicPeriodZodSchema = z4.object({
+  quranic_period_name: z4
     .string({
       error: (issue) =>
         issue.input === undefined
-          ? "Quranic class period name is required."
+          ? "Quranic period name is required."
           : "Invalid period name format.",
     })
     .trim()
-    .min(1, "Quranic class period name cannot be empty."),
+    .min(1, "Quranic period name cannot be empty."),
 
   start_time: z4
     .string({
@@ -125,60 +128,67 @@ const updateQuranicClassPeriodZodSchema = z4.object({
     .regex(timeStringRegex, "Invalid time format. Expected format like '8:00 AM'."),
 });
 
-export type TUpdateQuranicClassPeriodZodSchema = z4.infer<typeof updateQuranicClassPeriodZodSchema>;
+export type TUpdateQuranicPeriodZodSchema = z4.infer<typeof updateQuranicPeriodZodSchema>;
 
 
 // ===================================================
-// UPDATE QURANIC CLASS SINGLE FIELD ZOD SCHEMA
+// UPDATE QURANIC SINGLE FIELD ZOD SCHEMA
 // ===================================================
-const updateQuranicClassPeriodSingleFieldZodSchema = z4.discriminatedUnion("field", [
+const updateQuranicPeriodSingleFieldParamsZodSchema = z4.object({
+  id: z4.uuid({ message: "Invalid ID format. Must be a valid UUID." }),
+});
+export type TUpdateQuranicPeriodSingleFieldParamsZodSchema = z4.infer<typeof updateQuranicPeriodSingleFieldParamsZodSchema>;
+
+const updateQuranicPeriodSingleFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    quranic_class_period_id: z4.uuid({ message: "Invalid ID format. Must be a valid UUID." }),
-    field: z4.literal("quranic_class_period_name"),
+    field: z4.literal("quranic_period_name"),
     value: z4.string({ error: (issue) => "Period name is required." }).trim().min(1, "Period name cannot be empty."),
   }),
   ...(["start_time", "end_time"] as const).map((timeField) =>
     z4.object({
-      quranic_class_period_id: z4.uuid({ message: "Invalid ID format. Must be a valid UUID." }),
       field: z4.literal(timeField),
       value: z4
-        .string({ error: (issue) => `${timeField.replace("_", " ")} is required.` })
+        .string({ error: () => `${timeField.replace("_", " ")} is required.` })
         .trim()
         .regex(timeStringRegex, "Invalid time format. Expected format like '6:00 AM' or '12:30 PM'."),
     })
   ),
 ]);
-
-export type TUpdateQuranicClassPeriodSingleFieldPayload = z4.infer<
-  typeof updateQuranicClassPeriodSingleFieldZodSchema
+export type TUpdateQuranicPeriodSingleFieldPayload = z4.infer<
+  typeof updateQuranicPeriodSingleFieldZodSchema
 >;
 // ===================================================
-// DELETE QURANIC CLASS PERIOD ZOD SCHEMA
+// DELETE QURANIC PERIOD ZOD SCHEMA
 // ===================================================
-const deleteQuranicClassPeriodZodSchema = z4.object({
-  quranic_class_period_id: z4.uuid({
-    message: "Invalid Quranic class period ID format. Must be a valid UUID.",
+const deleteQuranicPeriodParamsZodSchema = z4.object({
+  id: z4.uuid({
+    message: "Invalid Quranic period ID format. Must be a valid UUID.",
   }),
 });
 
-export type TDeleteQuranicClassPeriodZodSchema = z4.infer<typeof deleteQuranicClassPeriodZodSchema>;
+export type TDeleteQuranicPeriodParamsZodSchema = z4.infer<typeof deleteQuranicPeriodParamsZodSchema>;
 
 // ====================================================================
-// GET SINGLE QURANIC CLASS PERIOD BY ID ZOD SCHEMA
+// GET SINGLE QURANIC PERIOD BY ID ZOD SCHEMA
 // ====================================================================
-const getSingleQuranicClassPeriodZodSchema = z4.object({
-  quranic_class_period_id: z4.uuid({ 
+const getSingleQuranicPeriodParamsZodSchema = z4.object({
+  id: z4.uuid({ 
     message: "Invalid ID format. Must be a valid UUID." 
   }),
 });
 
-export type TGetSingleQuranicClassPeriodZodSchema = z4.infer<typeof getSingleQuranicClassPeriodZodSchema>;
+export type TGetSingleQuranicPeriodParamsZodSchema = z4.infer<typeof getSingleQuranicPeriodParamsZodSchema>;
 
 
-export const quranicClassPeriodZodSchema = {
-  createQuranicClassPeriodZodSchema,
-  updateQuranicClassPeriodZodSchema,
-  updateQuranicClassPeriodSingleFieldZodSchema,
-  deleteQuranicClassPeriodZodSchema,
-  getSingleQuranicClassPeriodZodSchema
+export const quranicPeriodZodSchema = {
+  createQuranicPeriodZodSchema,
+
+  updateQuranicPeriodParamsZodSchema,
+  updateQuranicPeriodZodSchema,
+
+  updateQuranicPeriodSingleFieldParamsZodSchema,
+  updateQuranicPeriodSingleFieldZodSchema,
+
+  deleteQuranicPeriodParamsZodSchema,
+  getSingleQuranicPeriodParamsZodSchema
 }

@@ -9,8 +9,8 @@ model ClassHistory {
 
   roll_number Int
 
-  quranic_class_id String
-  quranic_class    QuranicClass @relation(fields: [quranic_class_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  quranic_subject_id String
+  quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
   arabic_literature Boolean @default(false)

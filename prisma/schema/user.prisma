@@ -53,11 +53,11 @@ model User {
   created_classes Class[] @relation("class_created_by")
   updated_classes Class[] @relation("class_updated_by")
 
-  created_quranic_classes QuranicClass[] @relation("quranic_class_created_by")
-  updated_quranic_classes QuranicClass[] @relation("quranic_class_updated_by")
+  created_quranic_subjects QuranicSubject[] @relation("quranic_subject_created_by")
+  updated_quranic_subjects QuranicSubject[] @relation("quranic_subject_updated_by")
 
-  created_quranic_class_periods QuranicClassPeriod[] @relation("quranic_class_period_created_by")
-  updated_quranic_class_periods QuranicClassPeriod[] @relation("quranic_class_period_updated_by")
+  created_quranic_periods QuranicPeriod[] @relation("quranic_period_created_by")
+  updated_quranic_periods QuranicPeriod[] @relation("quranic_period_updated_by")
 
   created_shifts Shift[] @relation("shift_created_by")
   updated_shifts Shift[] @relation("shift_updated_by")
