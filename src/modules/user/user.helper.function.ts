@@ -353,8 +353,8 @@ const checkStudentCreationRequirements = async (
     );
   }
   const cleanQuranicClassName = quranic_class_name.trim().toUpperCase();
-  const existingQuranicClass = await transaction.quranicClass.findUnique({
-    where: { quranic_class_name: cleanQuranicClassName },
+  const existingQuranicClass = await transaction.quranicSubject.findUnique({
+    where: { quranic_subject_name: cleanQuranicClassName },
     select: { id: true },
   });
   if (!existingQuranicClass) {
@@ -379,7 +379,7 @@ const checkStudentCreationRequirements = async (
   }
   await Promise.all(
     quranic_class_period_ids.map(async (id) => {
-      const checkExisting = await transaction.quranicClassPeriod.findUnique({
+      const checkExisting = await transaction.quranicPeriod.findUnique({
         where: { id },
         select: { id: true },
       });

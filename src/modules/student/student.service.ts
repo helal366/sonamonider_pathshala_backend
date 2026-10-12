@@ -173,10 +173,10 @@ const studentReadmission = async (
           start_date: academicStartDate,
           end_date: academicEndDate,
           arabic_literature: payload.arabic_literature ?? false,
-          quranic_class: { connect: { id: existingQuranicClass.id } },
+          quranic_subject: { connect: { id: existingQuranicClass.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
-              quranic_class_period: { connect: { id } },
+              quranic_period: { connect: { id } },
             })),
           },
           created_by: { connect: { id: loggedInUser.user_id } },

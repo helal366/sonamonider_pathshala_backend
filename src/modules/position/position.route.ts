@@ -21,6 +21,9 @@ router.post(
   positionController.createPosition,
 );
 
+// ============================================
+// UPDATE POSITION ROUTE
+// ============================================
 router.patch(
   "/update_position",
   userAuth("SUPER_ADMIN"),
@@ -28,6 +31,9 @@ router.patch(
   positionController.updatePosition,
 );
 
+// =============================================
+// DELETE POSITION ROUTE
+// =============================================
 router.delete(
   "/delete_position",
   userAuth("SUPER_ADMIN"),

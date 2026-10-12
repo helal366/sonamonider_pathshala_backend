@@ -192,12 +192,12 @@ const createUser = async (
               roll_number: rollNumber,
               start_date: academicStartDate,
               end_date: academicEndDate,
-              quranic_class: { connect: { id: existingQuranicClass.id } },
+              quranic_subject: { connect: { id: existingQuranicClass.id } },
               arabic_literature: payload.arabic_literature ?? false,
               class_history_quranic_periods: {
                 create: 
                   quranicClassPeriodIDs.map((id:string)=>({
-                    quranic_class_period: {connect: {id}}
+                    quranic_period: {connect: {id}}
                   }))                
               },
               created_by: { connect: { id: loggedInUser.user_id } },

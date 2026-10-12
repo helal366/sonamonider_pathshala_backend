@@ -120,7 +120,7 @@ CREATE TABLE "class_history" (
     "end_date" TIMESTAMP(3),
     "academic_year_id" TEXT NOT NULL,
     "roll_number" INTEGER NOT NULL,
-    "quranic_class_id" TEXT NOT NULL,
+    "quranic_subject_id" TEXT NOT NULL,
     "arabic_literature" BOOLEAN NOT NULL DEFAULT false,
     "class_id" TEXT NOT NULL,
     "shift_id" TEXT NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE "class_history" (
 CREATE TABLE "class_history_quranic_periods" (
     "id" TEXT NOT NULL,
     "class_history_id" TEXT NOT NULL,
-    "quranic_class_period_id" TEXT NOT NULL,
+    "quranic_period_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "class_history_quranic_periods_pkey" PRIMARY KEY ("id")
@@ -313,21 +313,9 @@ CREATE TABLE "promotion_requests" (
 );
 
 -- CreateTable
-CREATE TABLE "quranic_classes" (
+CREATE TABLE "quranic_periods" (
     "id" TEXT NOT NULL,
-    "quranic_class_name" TEXT NOT NULL,
-    "created_by_id" TEXT,
-    "updated_by_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3),
-
-    CONSTRAINT "quranic_classes_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "quranic_class_periods" (
-    "id" TEXT NOT NULL,
-    "quranic_class_period_name" TEXT NOT NULL,
+    "quranic_period_name" TEXT NOT NULL,
     "start_time" TEXT NOT NULL,
     "end_time" TEXT NOT NULL,
     "created_by_id" TEXT,
@@ -335,7 +323,19 @@ CREATE TABLE "quranic_class_periods" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
-    CONSTRAINT "quranic_class_periods_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "quranic_periods_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "quranic_subjects" (
+    "id" TEXT NOT NULL,
+    "quranic_subject_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "quranic_subjects_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -498,10 +498,10 @@ CREATE UNIQUE INDEX "class_history_roll_number_class_id_shift_id_academic_year_i
 CREATE INDEX "class_history_quranic_periods_class_history_id_idx" ON "class_history_quranic_periods"("class_history_id");
 
 -- CreateIndex
-CREATE INDEX "class_history_quranic_periods_quranic_class_period_id_idx" ON "class_history_quranic_periods"("quranic_class_period_id");
+CREATE INDEX "class_history_quranic_periods_quranic_period_id_idx" ON "class_history_quranic_periods"("quranic_period_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_clas_key" ON "class_history_quranic_periods"("class_history_id", "quranic_class_period_id");
+CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_peri_key" ON "class_history_quranic_periods"("class_history_id", "quranic_period_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "governing_bodies_email_key" ON "governing_bodies"("email");
@@ -546,7 +546,10 @@ CREATE INDEX "promotion_histories_position_id_idx" ON "promotion_histories"("pos
 CREATE INDEX "promotion_histories_role_id_idx" ON "promotion_histories"("role_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "quranic_classes_quranic_class_name_key" ON "quranic_classes"("quranic_class_name");
+CREATE UNIQUE INDEX "quranic_periods_quranic_period_name_key" ON "quranic_periods"("quranic_period_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "quranic_subjects_quranic_subject_name_key" ON "quranic_subjects"("quranic_subject_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "shifts_shift_name_key" ON "shifts"("shift_name");
@@ -642,7 +645,7 @@ ALTER TABLE "classes" ADD CONSTRAINT "classes_updated_by_id_fkey" FOREIGN KEY ("
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "AcademicYear"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "class_history" ADD CONSTRAINT "class_history_quranic_class_id_fkey" FOREIGN KEY ("quranic_class_id") REFERENCES "quranic_classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_quranic_subject_id_fkey" FOREIGN KEY ("quranic_subject_id") REFERENCES "quranic_subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -663,7 +666,7 @@ ALTER TABLE "class_history" ADD CONSTRAINT "class_history_updated_by_id_fkey" FO
 ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_quranic_class_period_id_fkey" FOREIGN KEY ("quranic_class_period_id") REFERENCES "quranic_class_periods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_quranic_period_id_fkey" FOREIGN KEY ("quranic_period_id") REFERENCES "quranic_periods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -783,16 +786,16 @@ ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_created_by_i
 ALTER TABLE "promotion_requests" ADD CONSTRAINT "promotion_requests_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "quranic_classes" ADD CONSTRAINT "quranic_classes_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "quranic_periods" ADD CONSTRAINT "quranic_periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "quranic_classes" ADD CONSTRAINT "quranic_classes_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "quranic_periods" ADD CONSTRAINT "quranic_periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "quranic_class_periods" ADD CONSTRAINT "quranic_class_periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "quranic_subjects" ADD CONSTRAINT "quranic_subjects_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "quranic_class_periods" ADD CONSTRAINT "quranic_class_periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "quranic_subjects" ADD CONSTRAINT "quranic_subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "shifts" ADD CONSTRAINT "shifts_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

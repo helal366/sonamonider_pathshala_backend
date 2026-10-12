@@ -31,7 +31,20 @@
 3. Push to your repository (e.g., GitHub, GitLab)
 * git push origin main
 
-
+## DROP FULL DATABASE TABLES AND SCHEMAS AND THE VSCODE COMMANDS:
+* Commands
+```
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+```
+* After dropping the tables , the next vscodes:
+```
+rm -rf prisma/migrations
+pnpm exec prisma migrate dev --name init
+pnpm exec build
+pnpm exec prisma generate
+pnpm seed
+```
 
 ## Total time check for transaction:
 ```

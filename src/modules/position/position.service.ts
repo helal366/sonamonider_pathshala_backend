@@ -67,7 +67,9 @@ const createPosition = async (
   return createdNewPosition;
 };
 
+// ========================================================
 // UPATE POSITION SERVICE LAYER
+// ========================================================
 const updatePosition = async (
   payload: TUpdatePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -83,15 +85,28 @@ const updatePosition = async (
       StatusCodes.CONFLICT,
     );
   }
+  // 2. Verify if the position name already exists or not.
+  const existingPosition = await findPositionExistence(
+    cleanPresentPositionName,
+  );
 
-  
-  //  2. Update position name and create audit log
+  //  3. Update position name and create audit log
   const updatedPositionResult = await prisma.$transaction(
     async (transaction) => {
-      // Verify if the position name already exists or not.
-      const existingPosition = await findPositionExistence(
-        cleanPresentPositionName,
-      );
+
+      // Check whether the new name already exists in database.
+      const duplicatePosition = await transaction.userPosition.findUnique({
+        where: {
+          position_name: cleanUpdatePositionName,
+        },
+      });
+
+      if (duplicatePosition) {
+        throw new AppError(
+          `Position '${cleanUpdatePositionName}' already exists.`,
+          StatusCodes.CONFLICT,
+        );
+      }
       //  Update the position
       const updatedPosition = await transaction.userPosition.update({
         where: { id: existingPosition.id },
@@ -124,7 +139,9 @@ const updatePosition = async (
   return updatedPositionResult;
 };
 
+// ========================================================
 // DELETE POSITION SERVICE LAYER
+// ========================================================
 const deletePosition = async (
   payload: TDeletePositionZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,

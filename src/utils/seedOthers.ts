@@ -158,33 +158,35 @@ const seedClasses = async () => {
 // =========================================================
 // SEED QURANIC CLASS NAMES
 // =========================================================
-const seedQuranicClasses = async () => {
-  const quranicClasses = [
+const seedquranicSubjectes = async () => {
+  const quranicSubjectes = [
     "NURANI_PLAYGROUP",
     "NURANI_NURSERY",
     "NURANI_PRELIMINARY",
     "NURANI_ADVANCE",
     "NURANI_AMPARA",
-    "NAZERA",
+    "NAZERA_PRELIMINARY",
+    "NAZERA_ADVANCE",
+    "PRE_HIFZ",
     "HIFZ",
     "ARABIC_LITERATURE"
   ];
 
   await prisma.$transaction(
     async (tx) => {
-      for (const quranicClassName of quranicClasses) {
-        const existingQuranicClass = await tx.quranicClass.findUnique({
-          where: { quranic_class_name: quranicClassName },
+      for (const quranicSubjectName of quranicSubjectes) {
+        const existingquranicSubject = await tx.quranicSubject.findUnique({
+          where: { quranic_subject_name: quranicSubjectName },
         });
 
-        if (!existingQuranicClass) {
-          await tx.quranicClass.create({
-            data: { quranic_class_name: quranicClassName },
+        if (!existingquranicSubject) {
+          await tx.quranicSubject.create({
+            data: { quranic_subject_name: quranicSubjectName },
           });
 
-          console.log(`${quranicClassName} Quranic class created.`);
+          console.log(`${quranicSubjectName} Quranic class created.`);
         } else {
-          console.log(`${quranicClassName} Quranic class already exists.`);
+          console.log(`${quranicSubjectName} Quranic class already exists.`);
         }
       }
     },
@@ -197,113 +199,80 @@ const seedQuranicClasses = async () => {
 // ========================================================
 const quranicPeriods = [
   {
-    quranic_class_period_name: "NURANI_MORNING",
+    quranic_period_name: "NURANI_MORNING",
     start_time: "7:01 AM",
     end_time: "7:50 AM",
   },
   {
-    quranic_class_period_name: "NAZERA_MORINING",
+    quranic_period_name: "HIFZ_MORNING",
     start_time: "6:01 AM",
     end_time: "7:50 AM",
   },
   {
-    quranic_class_period_name: "HIFZ_MORNING",
-    start_time: "6:01 AM",
-    end_time: "7:50 AM",
-  },
-  {
-    quranic_class_period_name: "ASSEMBLY",
+    quranic_period_name: "ASSEMBLY",
     start_time: "7:51 AM",
     end_time: "8:00 AM",
   },
   {
-    quranic_class_period_name: "NURANI_EVENING",
+    quranic_period_name: "QURANIC_EVENING",
     start_time: "3:01 PM",
     end_time: "5:00 PM",
   },
+
   {
-    quranic_class_period_name: "NAZERA_EVENING",
-    start_time: "3:01 PM",
-    end_time: "5:00 PM",
-  },
-  {
-    quranic_class_period_name: "HIFZ_EVENING",
-    start_time: "3:01 PM",
-    end_time: "5:00 PM",
-  },
-  {
-    quranic_class_period_name: "HIFZ_NIGHT",
+    quranic_period_name: "HIFZ_NIGHT",
     start_time: "AFTER MAGRIB",
     end_time: "8:00 PM",
   },
   {
-    quranic_class_period_name: "NURANI_GIRLS",
-    start_time: "9:16 AM",
-    end_time: "10:15 AM",
+    quranic_period_name: "NURANI_NAZERA_GIRLS",
+    start_time: "9:46 AM",
+    end_time: "10:30 AM",
   },
   {
-    quranic_class_period_name: "NAZERA_GIRLS_ONE",
-    start_time: "7:01 AM",
-    end_time: "8:30 AM",
+    quranic_period_name: "HIFZ_GIRLS",
+    start_time: "08:01 AM",
+    end_time: "09:00 AM",
   },
   {
-    quranic_class_period_name: "NAZERA_GIRLS_TWO",
-    start_time: "9:16 AM",
-    end_time: "10:15 AM",
+    quranic_period_name: "ARABIC_LITERATURE_GIRLS",
+    start_time: "09:01 AM",
+    end_time: "09:45 AM",
   },
   {
-    quranic_class_period_name: "HIFZ_GIRLS_ONE",
-    start_time: "7:01 AM",
-    end_time: "8:30 AM",
-  },
-  {
-    quranic_class_period_name: "HIFZ_GIRLS_TWO",
-    start_time: "9:16 AM",
-    end_time: "10:15 AM",
-  },
-  {
-    quranic_class_period_name: "ARABIC_LITERATURE_MORNING",
-    start_time: "10:16 AM",
-    end_time: "11:30 AM",
-  },
-  {
-    quranic_class_period_name: "ARABIC_LITERATURE_BOYS_IV_V",
+    quranic_period_name: "ARABIC_LITERATURE_BOYS",
     start_time: "11:16 AM",
     end_time: "12:00 AM",
   },
   {
-    quranic_class_period_name: "ARABIC_LITERATURE_BOYS_VI",
-    start_time: "11:46 AM",
-    end_time: "12:15 AM",
+    quranic_period_name: "ARABIC_LITERATURE",
+    start_time: "10:16 AM",
+    end_time: "11:15 AM",
   },
-  {
-    quranic_class_period_name: "ARABIC_LITERATURE_GIRLS",
-    start_time: "08:31 AM",
-    end_time: "09:15 AM",
-  },
+
 ];
 
 const seedQuranicPeriods = async () => {
   await prisma.$transaction(
     async (tx) => {
       for (const period of quranicPeriods) {
-        const existingPeriod = await tx.quranicClassPeriod.findUnique({
+        const existingPeriod = await tx.quranicPeriod.findUnique({
           where: {
-            quranic_class_period_name: period.quranic_class_period_name,
+            quranic_period_name: period.quranic_period_name,
           },
         });
 
         if (!existingPeriod) {
-          await tx.quranicClassPeriod.create({
+          await tx.quranicPeriod.create({
             data: period,
           });
 
           console.log(
-            `${period.quranic_class_period_name} Quranic class period created.`,
+            `${period.quranic_period_name} Quranic period created.`,
           );
         } else {
           console.log(
-            `${period.quranic_class_period_name} Quranic class period already exists.`,
+            `${period.quranic_period_name} Quranic period already exists.`,
           );
         }
       }
@@ -316,19 +285,8 @@ export const runInitialOthers = async () => {
   await seedPositions();
   await seedShifts();
   await seedClasses();
-  await seedQuranicClasses();
+  await seedquranicSubjectes();
   await seedQuranicPeriods();
 };
 
-/**
-NURANI_MORNING
-NAZERA_MORINING
-HIFZ_MORNING
-NURANI_EVENING
-NAZERA_EVENING
-HIFZ_EVENING
-HIFZ_NIGHT
-NURANI_GIRLS
-NAZERA_GIRLS
-HIFZ_GIRLS
-   **/
+

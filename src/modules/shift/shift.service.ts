@@ -174,8 +174,8 @@ const getSingleShift = async(shift_id:string)=>{
           academic_year: {
             select: {academic_year_name: true}
           },
-          quranic_class: {
-            select: { quranic_class_name: true }
+          quranic_subject: {
+            select: { quranic_subject_name: true }
           },
           class: {
             select: {
@@ -185,9 +185,9 @@ const getSingleShift = async(shift_id:string)=>{
           },
           class_history_quranic_periods: {
             select: {
-              quranic_class_period: {
+              quranic_period: {
                 select: {
-                  quranic_class_period_name: true,
+                  quranic_period_name: true,
                   start_time: true,
                   end_time: true
                 }
