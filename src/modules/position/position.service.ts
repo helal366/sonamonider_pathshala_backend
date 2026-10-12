@@ -200,13 +200,16 @@ const deletePosition = async (
   return hardDeletePositionResult;
 };
 
+// ========================================================
 // GET ALL POSITIONS SERVICE LAYER
+// ========================================================
 const getAllPositions = async () => {
-  const allPositionsArray = await getValidPositionNames();
-  return allPositionsArray;
+  return await getValidPositionNames();
 };
 
+// ========================================================
 // GET SINGLE POSITION SERVICE LAYER
+// ========================================================
 const getSinglePosition = async (id: string) => {
   const position = await prisma.userPosition.findUnique({
     where: { id },
@@ -245,6 +248,7 @@ const getSinglePosition = async (id: string) => {
 
   return position;
 };
+
 export const positionServices = {
   createPosition,
   updatePosition,

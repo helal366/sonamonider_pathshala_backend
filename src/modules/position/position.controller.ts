@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import {
   TCreatePositionZodSchema,
   TDeletePositionZodSchema,
+  TGetSinglePositionParamsZodSchema,
   TUpdatePositionZodSchema,
 } from "./position.zodValidation.js";
 import { positionServices } from "./position.service.js";
@@ -14,7 +15,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.j
 // CREATE POSITION CONTROLLER
 // ==================================================
 const createPosition = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser =  helperFunctions.requiredUser(req);
     const payload: TCreatePositionZodSchema = req.body;
     const result = await positionServices.createPosition(payload, loggedInUser);
@@ -31,7 +32,7 @@ const createPosition = catchAsync(
 // UPDATE POSITION CONTROLLER
 // ===================================================
 const updatePosition = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
@@ -52,7 +53,7 @@ const updatePosition = catchAsync(
 // DELETE POSITION CONTROLLER
 // ===================================================
 const deletePosition = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
@@ -69,14 +70,12 @@ const deletePosition = catchAsync(
   },
 );
 
-// GET ALL POSITIONS
+// ===================================================
+// GET ALL POSITIONS CONTROLLER
+// ===================================================
 const getAllPositions = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+  async (req: Request, res: Response) => {
+    helperFunctions.requiredUser(req)
     const result = await positionServices.getAllPositions();
     sendResponse(res, {
       success: true,
@@ -87,10 +86,12 @@ const getAllPositions = catchAsync(
   },
 );
 
-// GET SINGLE POSITION
+// ===================================================
+// GET SINGLE POSITION CONTROLLER
+// ===================================================
 const getSinglePosition = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id as string;
+  async (req: Request, res: Response) => {
+    const {id} = req.params as unknown as TGetSinglePositionParamsZodSchema;
 
     const result = await positionServices.getSinglePosition(id);
     sendResponse(res, {

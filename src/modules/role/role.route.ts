@@ -1,11 +1,8 @@
 import { Router } from "express";
 import { roleController } from "./role.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
 import {
-  createRoleZodSchema,
-  deleteRoleZodSchema,
-  getSingleRoleZodSchema,
-  updateRoleZodSchema,
+  roleZodSchema,
 } from "./role.zodValidation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
@@ -13,14 +10,14 @@ const router = Router();
 router.post(
   "/create_role",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(createRoleZodSchema),
+  validateZodSchema(roleZodSchema.createRoleZodSchema),
   roleController.createRole,
 );
 
 router.patch(
   "/update_role",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updateRoleZodSchema),
+  validateZodSchema(roleZodSchema.updateRoleZodSchema),
   roleController.updateRole,
 );
 
@@ -28,7 +25,7 @@ router.patch(
 router.delete(
   "/delete_role",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(deleteRoleZodSchema),
+  validateZodSchema(roleZodSchema.deleteRoleZodSchema),
   roleController.deleteRole,
 );
 
@@ -41,9 +38,9 @@ router.get(
 
 // GET SINGLE ROLE BY ID
 router.get(
-  "/get_role/:id",
+  "/:id",
   userAuth("SUPER_ADMIN"), // Enforce Super Admin security block
-  validateZodSchema(getSingleRoleZodSchema),
+  validateZodParams(roleZodSchema.getSingleRoleParamsZodSchema),
   roleController.getSingleRole,
 );
 export const roleRouter: Router = router;

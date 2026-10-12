@@ -1,12 +1,7 @@
 import { Router } from "express";
 import { positionController } from "./position.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
-import {
-  createPositionZodSchema,
-  deletePositionZodSchema,
-  getSinglePositionZodSchema,
-  updatePositionZodSchema,
-} from "./position.zodValidation.js";
+import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import { positionZodSchema } from "./position.zodValidation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();
@@ -17,7 +12,7 @@ const router = Router();
 router.post(
   "/create_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(createPositionZodSchema),
+  validateZodSchema(positionZodSchema.createPositionZodSchema),
   positionController.createPosition,
 );
 
@@ -27,7 +22,7 @@ router.post(
 router.patch(
   "/update_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(updatePositionZodSchema),
+  validateZodSchema(positionZodSchema.updatePositionZodSchema),
   positionController.updatePosition,
 );
 
@@ -37,20 +32,26 @@ router.patch(
 router.delete(
   "/delete_position",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(deletePositionZodSchema),
+  validateZodSchema(positionZodSchema.deletePositionZodSchema),
   positionController.deletePosition,
 );
 
+// =============================================
+// GET ALL POSITIONS ROUTE
+// =============================================
 router.get(
   "/get_positions",
   userAuth("SUPER_ADMIN"),
   positionController.getAllPositions,
 );
 
+// =============================================
+// GET SINGLE POSITION ROUTE
+// =============================================
 router.get(
-  "/get_position/:id",
+  "/:id",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(getSinglePositionZodSchema),
+  validateZodParams(positionZodSchema.getSinglePositionParamsZodSchema),
   positionController.getSinglePosition,
 );
 

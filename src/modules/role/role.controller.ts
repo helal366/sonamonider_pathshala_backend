@@ -7,10 +7,13 @@ import { roleServices } from "./role.service.js";
 import {
   TCreateRoleZodSchema,
   TDeleteRoleZodSchema,
+  TGetSingleRoleParamsZodSchema,
   TUpdateRoleZodSchema,
 } from "./role.zodValidation.js";
 
+// ==========================================
 // CREATE ROLE CONTROLLER
+// ==========================================
 const createRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -31,7 +34,9 @@ const createRole = catchAsync(
   },
 );
 
+// ==========================================
 // UPDATE ROLE CONTROLLER
+// ==========================================
 const updateRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -52,7 +57,9 @@ const updateRole = catchAsync(
   },
 );
 
+// ==========================================
 // DELETE ROLE CONTROLLER
+// ==========================================
 const deleteRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TDeleteRoleZodSchema = req.body;
@@ -73,7 +80,9 @@ const deleteRole = catchAsync(
   },
 );
 
+// ==========================================
 // GET ALL ROLE NAMES CONTROLLER
+// ==========================================
 const getAllRoleNames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await roleServices.getAllRoleNames();
@@ -87,10 +96,12 @@ const getAllRoleNames = catchAsync(
   },
 );
 
+// ==========================================
 // GET SINGLE ROLE CONTROLLER
+// ==========================================
 const getSingleRole = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id as string;
+    const {id} = req.params as unknown as TGetSingleRoleParamsZodSchema;
 
     const result = await roleServices.getSingleRole(id);
 
