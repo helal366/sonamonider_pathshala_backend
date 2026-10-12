@@ -93,7 +93,6 @@ const updatePosition = async (
   //  3. Update position name and create audit log
   const updatedPositionResult = await prisma.$transaction(
     async (transaction) => {
-
       // Check whether the new name already exists in database.
       const duplicatePosition = await transaction.userPosition.findUnique({
         where: {
@@ -155,11 +154,7 @@ const deletePosition = async (
     include: {
       _count: {
         select: {
-          user: { where: { is_deleted: false } }, // Counts active, non-soft-deleted users
-          current_management_staffs: {
-            where: { is_currently_active_staff: true },
-          },
-          management_promoted_history: true, // Counts historical tracking dependencies
+          user: { where: { is_deleted: false, active_status: "ACTIVE" } },
         },
       },
     },
@@ -173,11 +168,7 @@ const deletePosition = async (
   }
 
   // 🚀 2. CRITICAL SAFETY GUARD: Prevent cascading relationship database crashes
-  if (
-    existingPosition._count.user > 0 ||
-    existingPosition._count.current_management_staffs > 0 ||
-    existingPosition._count.management_promoted_history > 0
-  ) {
+  if (existingPosition._count.user > 0) {
     throw new AppError(
       `Cannot hard delete Position: ${cleanPositionName}. It is currently assigned to active employees or referenced in past promotion histories.`,
       StatusCodes.CONFLICT,
@@ -227,9 +218,18 @@ const getSinglePosition = async (id: string) => {
       // Aggregates structural counts safely
       _count: {
         select: {
-          user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
+          user: { where: { is_deleted: false, active_status: "ACTIVE" } },
           current_management_staffs: {
-            where: { is_currently_active_staff: true },
+            where: { user_primary_data: { active_status: "ACTIVE" } },
+          },
+          current_academic_staffs: {
+            where: { user_primary_data: { active_status: "ACTIVE" } },
+          },
+          current_students: {
+            where: { user_primary_data: { active_status: "ACTIVE" } },
+          },
+          current_governing_bodies: {
+            where: { user_primary_data: { active_status: "ACTIVE" } },
           },
         },
       },

@@ -52,12 +52,13 @@ export type TUpdatePositionZodSchema = z4.infer<typeof updatePositionZodSchema>;
 // ======================================================
 export const deletePositionZodSchema = z4.object({
   position_name: z4.string({
-    error: (issue)=>{
+    error: (issue)=>
       issue.input === undefined 
       ? "Position name is required"
       : "Invalid position name format"
-    }
-  })
+  }).trim()
+    .min(1, "Position name is required.")
+    .toUpperCase(),
 });
 export type TDeletePositionZodSchema =z4.infer<typeof deletePositionZodSchema>;
 

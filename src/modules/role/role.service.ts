@@ -171,11 +171,25 @@ const deleteRole = async (
         select: {
           user: { where: { is_deleted: false } }, // Counts only active non-deleted users
           current_management_staffs: {
-            where: { is_currently_active_staff: true },
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
           },
           current_academic_staffs: {
-            where: { is_currently_active_staff: true },
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
           },
+          current_students: {
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
+          },
+          current_governing_bodies: {
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            }
+          }
         },
       },
     },
@@ -248,8 +262,25 @@ const getSingleRole = async (id: string) => {
         select: {
           user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
           current_management_staffs: {
-            where: { is_currently_active_staff: true },
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
           },
+          current_academic_staffs: {
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
+          },
+          current_students: {
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            },
+          },
+          current_governing_bodies: {
+            where: {
+              user_primary_data: {active_status: "ACTIVE"}
+            }
+          }
         },
       },
     },

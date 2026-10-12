@@ -27,7 +27,9 @@ const createPosition = catchAsync(
   },
 );
 
+// ===================================================
 // UPDATE POSITION CONTROLLER
+// ===================================================
 const updatePosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;
@@ -46,7 +48,9 @@ const updatePosition = catchAsync(
   },
 );
 
+// ===================================================
 // DELETE POSITION CONTROLLER
+// ===================================================
 const deletePosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = req.user;

@@ -3,7 +3,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
-import { Prisma } from "#db-client";
+import { ActiveStatus, Prisma } from "#db-client";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
@@ -412,16 +412,38 @@ const actionPromotionRequest = async (
         const mngStaff = await tx.managementStaff.findUnique({
           where: { id: management_staff_id },
           select: {
-            is_currently_active_staff: true,
+            user_primary_data: {
+              select: { active_status: true },
+            },
           },
         });
+
+        if (!mngStaff) {
+          throw new AppError(`Staff not found `, StatusCodes.BAD_REQUEST);
+        }
+        if (
+          mngStaff.user_primary_data.active_status === ActiveStatus.INACTIVE
+        ) {
+          throw new AppError(
+            "Management staff is already inactive.",
+            StatusCodes.NOT_FOUND,
+          );
+        }
         // Update management staff profile
         const updatedMngStaff = await tx.managementStaff.update({
           where: { id: management_staff_id },
           data: {
-            is_currently_active_staff: false,
-            updated_by_id: loggedInUser.user_id,
+            user_primary_data: {
+              update: {
+                active_status: ActiveStatus.INACTIVE,
+                updated_by: {connect: {id: loggedInUser.user_id}},
+              },
+            },
+            updated_by: {connect: {id: loggedInUser.user_id}},
           },
+          include: {
+            user_primary_data: {select: {active_status: true}}
+          }
         });
 
         // Push to audit log
@@ -431,11 +453,14 @@ const actionPromotionRequest = async (
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
-            is_currently_active_staff: mngStaff?.is_currently_active_staff,
+            user_primary_data: {
+              active_status: mngStaff.user_primary_data.active_status
+            }
           },
           new_value: {
-            is_currently_active_staff:
-              updatedMngStaff?.is_currently_active_staff,
+            user_primary_data: {
+              active_status: updatedMngStaff.user_primary_data?.active_status
+            }
           },
         });
 

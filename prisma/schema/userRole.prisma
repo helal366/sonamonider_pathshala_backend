@@ -4,6 +4,8 @@ model UserRole {
 
   current_management_staffs ManagementStaff[] @relation("management_current_role")
   current_academic_staffs   AcademicStaff[]   @relation("academic_current_role")
+  current_students Student[] @relation("student_current_role")
+  current_governing_bodies GoverningBody[] @relation("governing_bodies_current_role")
 
   user User[] @relation("user_role_relation")
 

@@ -11,6 +11,12 @@ model GoverningBody {
   promotion_history  PromotionHistory[]
   promotion_requests PromotionRequest[]
 
+  current_position_id String?
+  current_position UserPosition? @relation("governing_bodies_current_position", fields: [current_position_id], references: [id])
+
+  current_role_id String?
+  current_role UserRole? @relation("governing_bodies_current_role", fields: [current_role_id], references: [id])
+
   created_by_id String?
   created_by    User?   @relation("governing_bodies_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
