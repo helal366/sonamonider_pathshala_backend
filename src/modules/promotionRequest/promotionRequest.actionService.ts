@@ -436,14 +436,14 @@ const actionPromotionRequest = async (
             user_primary_data: {
               update: {
                 active_status: ActiveStatus.INACTIVE,
-                updated_by: {connect: {id: loggedInUser.user_id}},
+                updated_by: { connect: { id: loggedInUser.user_id } },
               },
             },
-            updated_by: {connect: {id: loggedInUser.user_id}},
+            updated_by: { connect: { id: loggedInUser.user_id } },
           },
           include: {
-            user_primary_data: {select: {active_status: true}}
-          }
+            user_primary_data: { select: { active_status: true } },
+          },
         });
 
         // Push to audit log
@@ -454,13 +454,13 @@ const actionPromotionRequest = async (
           action: "UPDATE",
           old_value: {
             user_primary_data: {
-              active_status: mngStaff.user_primary_data.active_status
-            }
+              active_status: mngStaff.user_primary_data.active_status,
+            },
           },
           new_value: {
             user_primary_data: {
-              active_status: updatedMngStaff.user_primary_data?.active_status
-            }
+              active_status: updatedMngStaff.user_primary_data?.active_status,
+            },
           },
         });
 
@@ -500,19 +500,41 @@ const actionPromotionRequest = async (
           const existingAcademicStaff = await tx.academicStaff.findUnique({
             where: { id: targetAcademicStaffId },
             select: {
-              is_currently_active_staff: true,
+              user_primary_data: {
+                select: { active_status: true },
+              },
               current_role_id: true,
               current_position_id: true,
             },
           });
+          if (!existingAcademicStaff) {
+            throw new AppError(
+              `Academic staff not found.`,
+              StatusCodes.NOT_FOUND,
+            );
+          }
           // Update academic staff profile
           const updatedAcadStaff = await tx.academicStaff.update({
             where: { id: targetAcademicStaffId },
             data: {
-              is_currently_active_staff: true,
-              current_role_id: new_role_id,
-              current_position_id: new_position_id,
-              updated_by_id: loggedInUser.user_id,
+              user_primary_data: {
+                update: {
+                  active_status: ActiveStatus.INACTIVE,
+                  updated_by: {
+                    connect: { id: loggedInUser.user_id },
+                  },
+                },
+              },
+              current_role: { connect: { id: new_role_id } },
+              current_position: { connect: { id: new_position_id } },
+              updated_by: {
+                connect: { id: loggedInUser.user_id },
+              },
+            },
+            include: {
+              user_primary_data: {
+                select: { active_status: true },
+              },
             },
           });
           // Audit log
@@ -522,16 +544,19 @@ const actionPromotionRequest = async (
             changed_by_id: loggedInUser.user_id,
             action: "UPDATE",
             old_value: {
-              is_currently_active_staff:
-                existingAcademicStaff?.is_currently_active_staff,
-              current_role_id: existingAcademicStaff?.current_role_id,
-              current_position_id: existingAcademicStaff?.current_position_id,
+              user_primary_data: {
+                active_status:
+                  existingAcademicStaff.user_primary_data.active_status,
+              },
+              current_role_id: existingAcademicStaff.current_role_id,
+              current_position_id: existingAcademicStaff.current_position_id,
             },
             new_value: {
-              is_currently_active_staff:
-                updatedAcadStaff?.is_currently_active_staff,
-              current_role_id: updatedAcadStaff?.current_role_id,
-              current_position_id: updatedAcadStaff?.current_position_id,
+              user_primary_data: {
+                active_status: updatedAcadStaff.user_primary_data.active_status,
+              },
+              current_role_id: updatedAcadStaff.current_role_id,
+              current_position_id: updatedAcadStaff.current_position_id,
             },
           });
         } else {
@@ -541,7 +566,6 @@ const actionPromotionRequest = async (
               full_name: targetUser.full_name,
               mobile_number: targetUser.mobile_number,
               email: targetUser.email,
-              is_currently_active_staff: true,
               user_id,
               current_role_id: new_role_id,
               current_position_id: new_position_id,
@@ -561,8 +585,6 @@ const actionPromotionRequest = async (
               full_name: createdAcadStaff.full_name,
               mobile_number: createdAcadStaff.mobile_number,
               email: createdAcadStaff.email,
-              is_currently_active_staff:
-                createdAcadStaff.is_currently_active_staff,
               user_id: createdAcadStaff.user_id,
               current_role_id: createdAcadStaff.current_role_id,
               current_position_id: createdAcadStaff.current_position_id,
@@ -627,7 +649,11 @@ const actionPromotionRequest = async (
         const acadStaff = await tx.academicStaff.findUnique({
           where: { id: academic_staff_id },
           select: {
-            is_currently_active_staff: true,
+            user_primary_data: {
+              select: {
+                active_status: true,
+              },
+            },
           },
         });
 
@@ -635,8 +661,16 @@ const actionPromotionRequest = async (
         const updatedAcadStaff = await tx.academicStaff.update({
           where: { id: academic_staff_id },
           data: {
-            is_currently_active_staff: false,
-            updated_by_id: loggedInUser.user_id,
+            user_primary_data: {
+              update: {
+                active_status: ActiveStatus.INACTIVE,
+                updated_by: { connect: { id: loggedInUser.user_id } },
+              },
+            },
+            updated_by: { connect: { id: loggedInUser.user_id } },
+          },
+          include: {
+            user_primary_data: { select: { active_status: true } },
           },
         });
 
@@ -647,11 +681,11 @@ const actionPromotionRequest = async (
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
-            is_currently_active_staff: acadStaff?.is_currently_active_staff,
+            user_primary_data: acadStaff?.user_primary_data.active_status,
           },
           new_value: {
-            is_currently_active_staff:
-              updatedAcadStaff?.is_currently_active_staff,
+            user_primary_data:
+              updatedAcadStaff?.user_primary_data.active_status,
           },
         });
 
@@ -694,20 +728,29 @@ const actionPromotionRequest = async (
           const existingManagementStaff = await tx.managementStaff.findUnique({
             where: { id: targetManagementStaffId },
             select: {
-              is_currently_active_staff: true,
+              user_primary_data: {
+                select: { active_status: true },
+              },
               current_role_id: true,
               current_position_id: true,
             },
-          });
+          },
+            );
 
           // Reactivate and update the historical management profile record
           const updatedMngStaff = await tx.managementStaff.update({
             where: { id: targetManagementStaffId },
             data: {
-              is_currently_active_staff: true,
-              current_role_id: new_role_id,
-              current_position_id: new_position_id,
-              updated_by_id: loggedInUser.user_id,
+              user_primary_data: {
+                update: {
+                  active_status: ActiveStatus.INACTIVE,
+                  updated_by: { connect: { id: loggedInUser.user_id } },
+                },
+              },
+              updated_by: { connect: { id: loggedInUser.user_id } },
+            },
+            include: {
+              user_primary_data: { select: { active_status: true } },
             },
           });
 
@@ -718,16 +761,15 @@ const actionPromotionRequest = async (
             changed_by_id: loggedInUser.user_id,
             action: "UPDATE",
             old_value: {
-              is_currently_active_staff:
-                existingManagementStaff?.is_currently_active_staff,
-              current_role_id: existingManagementStaff?.current_role_id,
-              current_position_id: existingManagementStaff?.current_position_id,
+              user_primary_data: {
+                active_status:
+                  existingManagementStaff?.user_primary_data?.active_status,
+              },
             },
             new_value: {
-              is_currently_active_staff:
-                updatedMngStaff?.is_currently_active_staff,
-              current_role_id: updatedMngStaff?.current_role_id,
-              current_position_id: updatedMngStaff?.current_position_id,
+              user_primary_data: {
+                active_status: updatedMngStaff.user_primary_data?.active_status,
+              },
             },
           });
         } else {
@@ -736,8 +778,7 @@ const actionPromotionRequest = async (
             data: {
               full_name: targetUser.full_name,
               mobile_number: targetUser.mobile_number,
-              email: targetUser.email, // Safe as email is now strictly required in your schema
-              is_currently_active_staff: true,
+              email: targetUser.email, 
               user_id,
               current_role_id: new_role_id,
               current_position_id: new_position_id,
@@ -759,8 +800,6 @@ const actionPromotionRequest = async (
               full_name: createdMngStaff.full_name,
               mobile_number: createdMngStaff.mobile_number,
               email: createdMngStaff.email,
-              is_currently_active_staff:
-                createdMngStaff.is_currently_active_staff,
               user_id: createdMngStaff.user_id,
               current_role_id: createdMngStaff.current_role_id,
               current_position_id: createdMngStaff.current_position_id,
