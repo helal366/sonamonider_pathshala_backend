@@ -19,7 +19,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.j
 // CREATE QURANIC PERIOD CONTROLLER
 // =============================================================
 const createQuranicPeriod = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
 
     const payload: TCreateQuranicPeriodZodSchema = req.body;
@@ -41,7 +41,7 @@ const createQuranicPeriod = catchAsync(
 // UPDATE QURANIC PERIOD CONTROLLER
 // ========================================================
 const updateQuranicPeriod = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const {id} = req.params as unknown as TUpdateQuranicPeriodParamsZodSchema
     const payload: TUpdateQuranicPeriodZodSchema = req.body;
@@ -88,7 +88,7 @@ const updateQuranicPeriodSingleField = catchAsync(
 // DELETE QURANIC PERIOD CONTROLLER
 // =========================================================
 const deleteQuranicPeriod = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const {id}= req.params as unknown as TDeleteQuranicPeriodParamsZodSchema;
     const result = await quranicPeriodServices.deleteQuranicPeriod(
@@ -126,7 +126,7 @@ const getAllQuranicPeriods = catchAsync(
 // GET SINGLE QURANIC PERIOD CONTROLLER
 // ===========================================================
 const getSingleQuranicPeriod = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     // Safely parse from your validated path params middleware mapping block
     const { id } =
       req.params as unknown as TGetSingleQuranicPeriodParamsZodSchema;

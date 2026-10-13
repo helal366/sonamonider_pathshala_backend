@@ -15,7 +15,7 @@ const router = Router();
 // =======================================================
 router.post(
   "/create_quranic_period",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodSchema(
     quranicPeriodZodSchema
 .createQuranicPeriodZodSchema
@@ -28,7 +28,7 @@ router.post(
 // =========================================================
 router.patch(
   "/update_quranic_period/:id",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodParams(quranicPeriodZodSchema
 .updateQuranicPeriodParamsZodSchema),
   validateZodSchema(
@@ -43,7 +43,7 @@ router.patch(
 // =========================================================
 router.patch(
   "/update_quranic_single_period_field/:id",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodParams(quranicPeriodZodSchema.updateQuranicPeriodSingleFieldParamsZodSchema),
   validateZodSchema(
     quranicPeriodZodSchema.updateQuranicPeriodSingleFieldZodSchema,
@@ -56,14 +56,14 @@ router.patch(
 // =========================================================
 router.delete(
   "/:id",
-  userAuth("SUPER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodParams(
     quranicPeriodZodSchema.deleteQuranicPeriodParamsZodSchema),
   quranicPeriodController.deleteQuranicPeriod,
 );
 
 // ==========================================================
-// GET ALL QURANIC  PERIODS ROUTE
+// GET ALL QURANIC PERIODS ROUTE
 // ==========================================================
 router.get(
   "/get_quranic_periods",

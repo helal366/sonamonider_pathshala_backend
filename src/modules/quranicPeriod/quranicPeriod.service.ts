@@ -4,38 +4,34 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateQuranicPeriodZodSchema,
+  toMinutes,
   TUpdateQuranicPeriodSingleFieldPayload,
   TUpdateQuranicPeriodZodSchema,
 } from "./quranicPeriod.zodValidation.js";
 
 // ========================================================
-// CREATE QURANIC PERIOD SERVICE
+// CREATE QURANIC PERIOD SERVICE LAYER
 // ========================================================
 const createQuranicPeriod = async (
   payload: TCreateQuranicPeriodZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
   const { quranic_period_name, start_time, end_time } = payload;
-  const cleanPeriodName = quranic_period_name.trim();
+  const cleanPeriodName = quranic_period_name.trim().toUpperCase();
   const cleanStartTime = start_time.trim().toUpperCase();
   const cleanEndTime = end_time.trim().toUpperCase();
 
   // 1. Prevent duplicate period slot configurations to ensure clean schedules
   const existingPeriod = await prisma.quranicPeriod.findFirst({
     where: {
-      quranic_period_name: {
-        equals: cleanPeriodName,
-        mode: "insensitive",
-      },
-      start_time: cleanStartTime,
-      end_time: cleanEndTime,
+      quranic_period_name: cleanPeriodName,
     },
-    select: { id: true },
+    select: { id: true},
   });
 
   if (existingPeriod) {
     throw new AppError(
-      `Quranic Class Period '${cleanPeriodName}' with this exact time slot already exists.`,
+      `Quranic period "${cleanPeriodName}" already exists.`,
       StatusCodes.CONFLICT,
     );
   }
@@ -74,7 +70,9 @@ const createQuranicPeriod = async (
   return result;
 };
 
-// UPDATE QURANIC CLASS PERIOD SERVICE
+// ========================================================
+// UPDATE QURANIC PERIOD SERVICE LAYER
+// ========================================================
 const updateQuranicPeriod = async (
   payload: TUpdateQuranicPeriodZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -108,8 +106,6 @@ const updateQuranicPeriod = async (
   const scheduleConflict = await prisma.quranicPeriod.findFirst({
     where: {
       quranic_period_name: cleanPeriodName,
-      start_time: cleanStartTime,
-      end_time: cleanEndTime,
       id: { not: quranic_period_id },
     },
     select: { id: true },
@@ -117,7 +113,7 @@ const updateQuranicPeriod = async (
 
   if (scheduleConflict) {
     throw new AppError(
-      `Another Quranic Period configuration clashes with this specific time schedule.`,
+      `Quranic period "${cleanPeriodName}" already exists.`,
       StatusCodes.CONFLICT,
     );
   }
@@ -160,7 +156,7 @@ const updateQuranicPeriod = async (
 };
 
 // =========================================================
-// UPDATE QURANIC CLASS SINGLE FIELD CONTROLLER
+// UPDATE QURANIC PERIOD SINGLE FIELD CONTROLLER
 // =========================================================
 const updateQuranicPeriodSingleField = async (
   payload: TUpdateQuranicPeriodSingleFieldPayload,
@@ -168,7 +164,7 @@ const updateQuranicPeriodSingleField = async (
   quranic_period_id: string
 ) => {
   const {  field, value } = payload;
-
+  const cleanValue = value.trim().toUpperCase();
   // 1. Fetch the targeted period instance alongside explicit column values
   const currentPeriod = await prisma.quranicPeriod.findUnique({
     where: { id: quranic_period_id },
@@ -188,7 +184,7 @@ const updateQuranicPeriodSingleField = async (
   }
 
   // 2. Prevent unneeded database execution updates if incoming parameter matches database state
-  if (currentPeriod[field] === value) {
+  if (currentPeriod[field] === cleanValue) {
     throw new AppError(
       `The provided value for '${field.replace(/_/g, " ")}' is identical to the current record.`,
       StatusCodes.BAD_REQUEST,
@@ -196,41 +192,43 @@ const updateQuranicPeriodSingleField = async (
   }
 
   // 3. Build a dynamic configuration check to ensure the new value doesn't cause a schedule conflict
-  const conflictFilter: Record<string, any> = {
-    quranic_period_name: currentPeriod.quranic_period_name,
-    start_time: currentPeriod.start_time,
-    end_time: currentPeriod.end_time,
-  };
-
-  // Overwrite the specific target parameter being evaluated with the new value input
-  conflictFilter[field] = value;
-
-  const scheduleConflict = await prisma.quranicPeriod.findFirst({
+  if (field === "quranic_period_name") {
+  const existingPeriod = await prisma.quranicPeriod.findFirst({
     where: {
-      quranic_period_name: {
-        equals: conflictFilter.quranic_period_name,
-        mode: "insensitive",
-      },
-      start_time: conflictFilter.start_time,
-      end_time: conflictFilter.end_time,
-      id: { not: quranic_period_id }, // Ignore self instance row
+      quranic_period_name: cleanValue,
+      id: { not: quranic_period_id },
     },
     select: { id: true },
   });
 
-  if (scheduleConflict) {
+  if (existingPeriod) {
     throw new AppError(
-      "Cannot update field. This change introduces a duplicate schedule configuration clash with another period.",
+      `Quranic period "${cleanValue}" already exists.`,
       StatusCodes.CONFLICT,
     );
   }
+}
 
+if (field === "start_time" || field === "end_time") {
+  const nextStartTime =
+    field === "start_time" ? cleanValue : currentPeriod.start_time;
+
+  const nextEndTime =
+    field === "end_time" ? cleanValue : currentPeriod.end_time;
+
+  if (toMinutes(nextEndTime) <= toMinutes(nextStartTime)) {
+    throw new AppError(
+      "End time must be after start time.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+}
   // 4. Atomically commit individual field updates and write structural audit log tracking records
   return prisma.$transaction(async (transaction) => {
     const updated = await transaction.quranicPeriod.update({
       where: { id: quranic_period_id },
       data: {
-        [field]: value,
+        [field]: cleanValue,
         updated_by: { connect: { id: loggedInUser.user_id } },
       },
     });
@@ -240,7 +238,7 @@ const updateQuranicPeriodSingleField = async (
         entity_id: quranic_period_id,
         entity_name: "quranicPeriod",
         old_value: { [field]: currentPeriod[field] },
-        new_value: { [field]: value },
+        new_value: { [field]: cleanValue },
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
       },
@@ -312,7 +310,7 @@ const deleteQuranicPeriod = async (
 };
 
 // =========================================================
-// GET ALL QURANIC PERIODS SERVICE
+// GET ALL QURANIC PERIODS SERVICE LAYER
 // =========================================================
 const getAllQuranicPeriods = async () => {
   const periods = await prisma.quranicPeriod.findMany({
