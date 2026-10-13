@@ -12,6 +12,7 @@ const createRoleZodSchema = z4.object({
           : "Invalid role name format.",
     })
     .trim()
+    .min(1, "Role name is required.")
     .toUpperCase(),
 });
 
@@ -29,6 +30,7 @@ const updateRoleZodSchema = z4.object({
           : "Invalid current role name format.",
     })
     .trim()
+    .min(1, "Current role name is required.")
     .toUpperCase(),
 
   new_role_name: z4
@@ -39,6 +41,7 @@ const updateRoleZodSchema = z4.object({
           : "Invalid new role name format.",
     })
     .trim()
+    .min(1, "New role name is required.")
     .toUpperCase(),
 });
 
@@ -47,18 +50,17 @@ export type TUpdateRoleZodSchema = z4.infer<typeof updateRoleZodSchema>;
 // =======================================================
 // DELETE ROLE ZOD SCHEMA
 // =======================================================
-const deleteRoleZodSchema = z4.object({
-  role_name: z4
-    .string({
+const deleteRoleParamsZodSchema = z4.object({
+  id: z4
+    .uuid({
       error: (issue) =>
         issue.input === undefined
           ? "Role name is required to execute deletion."
           : "Invalid role name format.",
     })
-    .trim()
-    .toUpperCase(),
+    .trim(),
 });
-export type TDeleteRoleZodSchema = z4.infer<typeof deleteRoleZodSchema>;
+export type TDeleteRoleParamsZodSchema = z4.infer<typeof deleteRoleParamsZodSchema>;
 
 // =======================================================
 // GET SINGLE ROLE BY ID ZOD SCHEMA
@@ -73,6 +75,6 @@ export type TGetSingleRoleParamsZodSchema = z4.infer<typeof getSingleRoleParamsZ
 export const roleZodSchema = {
   createRoleZodSchema,
   updateRoleZodSchema,
-  deleteRoleZodSchema,
+  deleteRoleParamsZodSchema,
   getSingleRoleParamsZodSchema
 }

@@ -4,6 +4,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
 import { ActiveStatus, Prisma } from "#db-client";
+import { connect } from "node:http2";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
@@ -350,9 +351,9 @@ const actionPromotionRequest = async (
         await tx.academicStaff.update({
           where: { id: academic_staff_id },
           data: {
-            current_position_id: new_position_id,
-            current_role_id: new_role_id,
-            updated_by_id: loggedInUser.user_id,
+            current_position: { connect: { id: new_position_id } },
+            current_role: { connect: { id: new_role_id } },
+            updated_by: { connect: { id: loggedInUser.user_id } },
           },
         });
 
@@ -734,8 +735,7 @@ const actionPromotionRequest = async (
               current_role_id: true,
               current_position_id: true,
             },
-          },
-            );
+          });
 
           // Reactivate and update the historical management profile record
           const updatedMngStaff = await tx.managementStaff.update({
@@ -778,7 +778,7 @@ const actionPromotionRequest = async (
             data: {
               full_name: targetUser.full_name,
               mobile_number: targetUser.mobile_number,
-              email: targetUser.email, 
+              email: targetUser.email,
               user_id,
               current_role_id: new_role_id,
               current_position_id: new_position_id,

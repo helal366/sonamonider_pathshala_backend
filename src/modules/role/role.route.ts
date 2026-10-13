@@ -7,6 +7,9 @@ import {
 import { userAuth } from "../../middlewares/userAuth.js";
 
 const router = Router();
+// =====================================================
+// CREATE ROLE ROUTE
+// =====================================================
 router.post(
   "/create_role",
   userAuth("SUPER_ADMIN"),
@@ -14,6 +17,9 @@ router.post(
   roleController.createRole,
 );
 
+// =====================================================
+// UPDATE ROLE ROUTE
+// =====================================================
 router.patch(
   "/update_role",
   userAuth("SUPER_ADMIN"),
@@ -21,26 +27,33 @@ router.patch(
   roleController.updateRole,
 );
 
-// REGISTER ROUTE
+// ====================================================
+// DELETE ROLE ROUTE
+// ====================================================
 router.delete(
-  "/delete_role",
+  "/delete_role/:id",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(roleZodSchema.deleteRoleZodSchema),
+  validateZodParams(roleZodSchema.deleteRoleParamsZodSchema),
   roleController.deleteRole,
 );
 
+// ====================================================
 // GET ALL ROLE NAMES
+// ====================================================
 router.get(
-  "/get_roles",
+  "/",
   userAuth("SUPER_ADMIN"), // Enforce Super Admin security layer
   roleController.getAllRoleNames,
 );
 
+// ====================================================
 // GET SINGLE ROLE BY ID
+// ====================================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN"), // Enforce Super Admin security block
+  userAuth("SUPER_ADMIN"), 
   validateZodParams(roleZodSchema.getSingleRoleParamsZodSchema),
   roleController.getSingleRole,
 );
+
 export const roleRouter: Router = router;

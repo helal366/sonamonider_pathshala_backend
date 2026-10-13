@@ -8,11 +8,11 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateRoleZodSchema,
-  TDeleteRoleZodSchema,
+  TDeleteRoleParamsZodSchema,
   TUpdateRoleZodSchema,
 } from "./role.zodValidation.js";
 // ===============================================
-// CREATE ROLE POST ROUTE
+// CREATE ROLE SERVICE LAYER
 // ===============================================
 const createRole = async (
   payload: TCreateRoleZodSchema,
@@ -28,7 +28,7 @@ const createRole = async (
   });
   if (checkExistence) {
     throw new AppError(
-      `Your provided role : ${cleanRole} already exixts.`,
+      `The role "${cleanRole}" already exists.`,
       StatusCodes.CONFLICT,
     );
   }
@@ -65,8 +65,9 @@ const createRole = async (
   clearCacheRoles();
   return createdNewRole;
 };
+
 // ===============================================
-// UPDATE ROLE PATCH ROUTE
+// UPDATE ROLE SERVICE LAYER
 // ===============================================
 const updateRole = async (
   payload: TUpdateRoleZodSchema,
@@ -76,6 +77,14 @@ const updateRole = async (
 
   const cleanCurrentRole = current_role_name.trim().toUpperCase();
   const cleanNewRole = new_role_name.trim().toUpperCase();
+
+  // Check the similarity of new and old roles
+  if (cleanCurrentRole === cleanNewRole) {
+    throw new AppError(
+      "The new role name must be different from the current role name.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
 
   // Check whether current role exists
   const currentRole = await prisma.userRole.findUnique({
@@ -154,61 +163,34 @@ const updateRole = async (
 };
 
 // ===============================================
-// DELETE ROLE NAME
+// DELETE ROLE SERVICE LAYER
 // ===============================================
 const deleteRole = async (
-  payload: TDeleteRoleZodSchema,
+  role_id: string,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { role_name } = payload;
-  const cleanRole = role_name.trim().toUpperCase();
+  const cleanRoleId = role_id.trim();
 
   // 1. Verify target role exists and check if any active users occupy it
   const existingRole = await prisma.userRole.findUnique({
-    where: { role_name: cleanRole },
+    where: { id: cleanRoleId },
     include: {
       _count: {
         select: {
-          user: { where: { is_deleted: false } }, // Counts only active non-deleted users
-          current_management_staffs: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_academic_staffs: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_students: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_governing_bodies: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            }
-          }
+          user: true,
         },
       },
     },
   });
 
   if (!existingRole) {
-    throw new AppError(
-      `Role: ${cleanRole} does not exist inside the database system.`,
-      StatusCodes.NOT_FOUND,
-    );
+    throw new AppError(`Proviced role does not exists`, StatusCodes.NOT_FOUND);
   }
 
   // 2. Block deletion if active personnel are assigned to this role
-  if (
-    existingRole._count.user > 0 ||
-    existingRole._count.current_management_staffs > 0
-  ) {
+  if (existingRole._count.user > 0) {
     throw new AppError(
-      `Cannot delete Role: ${cleanRole}. There are active employees currently occupying this role.`,
+      `Cannot delete role "${existingRole.role_name}" because users are still assigned to it.`,
       StatusCodes.CONFLICT,
     );
   }
@@ -224,7 +206,7 @@ const deleteRole = async (
       data: {
         entity_id: existingRole.id,
         entity_name: "userRole",
-        old_value: { role_name: cleanRole },
+        old_value: { role_name: existingRole.role_name },
         new_value: Prisma.JsonNull, // Expresses final status value state removal clearly
         action: "DELETE",
         changed_by_id: loggedInUser.user_id, // Satisfies non-null database constraint rule
@@ -240,7 +222,9 @@ const deleteRole = async (
   return deletionResult;
 };
 
-// GET ALL ROLE NAMES SERVICE
+// ===========================================
+// GET ALL ROLE NAMES SERVICE LAYER
+// ===========================================
 const getAllRoleNames = async (): Promise<string[]> => {
   // Invokes your custom caching promise mechanism cleanly
   const roleNamesArray = await getValidRoleNames();
@@ -248,7 +232,9 @@ const getAllRoleNames = async (): Promise<string[]> => {
   return roleNamesArray;
 };
 
-// GET SINGLE ROLE SERVICE
+// =================================================
+// GET SINGLE ROLE SERVICE LAYER
+// =================================================
 const getSingleRole = async (id: string) => {
   const role = await prisma.userRole.findUnique({
     where: { id },
@@ -260,27 +246,11 @@ const getSingleRole = async (id: string) => {
       // Aggregates structural counts safely
       _count: {
         select: {
-          user: { where: { is_deleted: false } }, // Active, non-soft-deleted users
-          current_management_staffs: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_academic_staffs: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_students: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            },
-          },
-          current_governing_bodies: {
-            where: {
-              user_primary_data: {active_status: "ACTIVE"}
-            }
-          }
+          user: true, 
+          current_management_staffs: true,
+          current_academic_staffs: true,
+          current_students: true,
+          current_governing_bodies: true,
         },
       },
     },
@@ -295,6 +265,8 @@ const getSingleRole = async (id: string) => {
 
   return role;
 };
+
+
 export const roleServices = {
   createRole,
   updateRole,

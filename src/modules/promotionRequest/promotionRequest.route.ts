@@ -52,7 +52,7 @@ router.get(
 // GET SINGLE PROMOTION REQUEST ROUTE
 // =========================================================
 router.get(
-  "/get_promotion_request/:promotion_request_id",
+  "/:promotion_request_id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodParams(
     promotionRequestsZodSchema.getSinglePromotionRequestZodSchema,

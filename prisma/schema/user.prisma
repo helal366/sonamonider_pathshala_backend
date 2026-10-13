@@ -27,11 +27,11 @@ model User {
 
   promotion_requests PromotionRequest[]
 
-  role_id      String?
-  current_role UserRole? @relation("user_role_relation", fields: [role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_role_id      String?
+  current_role UserRole? @relation("user_role_relation", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  position_id      String?
-  current_position UserPosition? @relation("user_position_relation", fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_position_id      String?
+  current_position UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_profile ManagementStaff? @relation("management_staff_profile")
   academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")

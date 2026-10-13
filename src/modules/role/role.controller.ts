@@ -6,21 +6,18 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import { roleServices } from "./role.service.js";
 import {
   TCreateRoleZodSchema,
-  TDeleteRoleZodSchema,
+  TDeleteRoleParamsZodSchema,
   TGetSingleRoleParamsZodSchema,
   TUpdateRoleZodSchema,
 } from "./role.zodValidation.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 
 // ==========================================
 // CREATE ROLE CONTROLLER
 // ==========================================
 const createRole = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
 
     const payload: TCreateRoleZodSchema = req.body;
     const result = await roleServices.createRole(payload, loggedInUser);
@@ -38,13 +35,8 @@ const createRole = catchAsync(
 // UPDATE ROLE CONTROLLER
 // ==========================================
 const updateRole = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
-
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TUpdateRoleZodSchema = req.body;
 
     const result = await roleServices.updateRole(payload, loggedInUser);
@@ -61,15 +53,10 @@ const updateRole = catchAsync(
 // DELETE ROLE CONTROLLER
 // ==========================================
 const deleteRole = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TDeleteRoleZodSchema = req.body;
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please log in.", StatusCodes.UNAUTHORIZED);
-    }
-
-    const result = await roleServices.deleteRole(payload, loggedInUser);
+  async (req: Request, res: Response) => {
+    const {id} = req.params as unknown as TDeleteRoleParamsZodSchema;
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await roleServices.deleteRole(id, loggedInUser);
 
     sendResponse(res, {
       success: true,
@@ -84,7 +71,8 @@ const deleteRole = catchAsync(
 // GET ALL ROLE NAMES CONTROLLER
 // ==========================================
 const getAllRoleNames = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
+    helperFunctions.requiredUser(req)
     const result = await roleServices.getAllRoleNames();
 
     sendResponse(res, {
@@ -100,7 +88,7 @@ const getAllRoleNames = catchAsync(
 // GET SINGLE ROLE CONTROLLER
 // ==========================================
 const getSingleRole = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const {id} = req.params as unknown as TGetSingleRoleParamsZodSchema;
 
     const result = await roleServices.getSingleRole(id);
