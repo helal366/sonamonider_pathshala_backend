@@ -214,6 +214,16 @@ const quranicPeriods = [
     end_time: "8:00 AM",
   },
   {
+    quranic_period_name: "ARABIC_LITERATURE_BOYS",
+    start_time: "11:16 AM",
+    end_time: "12:00 AM",
+  },
+  {
+    quranic_period_name: "ARABIC_LITERATURE",
+    start_time: "10:16 AM",
+    end_time: "11:15 AM",
+  },
+  {
     quranic_period_name: "QURANIC_EVENING",
     start_time: "3:01 PM",
     end_time: "5:00 PM",
@@ -221,7 +231,7 @@ const quranicPeriods = [
 
   {
     quranic_period_name: "HIFZ_NIGHT",
-    start_time: "AFTER MAGRIB",
+    start_time: "5:00 PM",
     end_time: "8:00 PM",
   },
   {
@@ -239,17 +249,6 @@ const quranicPeriods = [
     start_time: "09:01 AM",
     end_time: "09:45 AM",
   },
-  {
-    quranic_period_name: "ARABIC_LITERATURE_BOYS",
-    start_time: "11:16 AM",
-    end_time: "12:00 AM",
-  },
-  {
-    quranic_period_name: "ARABIC_LITERATURE",
-    start_time: "10:16 AM",
-    end_time: "11:15 AM",
-  },
-
 ];
 
 const seedQuranicPeriods = async () => {

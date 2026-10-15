@@ -23,6 +23,9 @@ import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route
 import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
 import { quranicSubjectRouter } from "./modules/quranicSubject/quranicSubject.route.js";
 import { quranicPeriodRouter } from "./modules/quranicPeriod/quranicPeriod.route.js";
+import { subjectRouter } from "./modules/subject/subject.route.js";
+import { periodRouter } from "./modules/period/period.route.js";
+import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -49,6 +52,9 @@ app.use("/api/v1/smps/academic_staff", academicStaffRouter);
 app.use("/api/v1/smps/promotion_request", promotionRequestRouter);
 app.use("/api/v1/smps/quranic_subject", quranicSubjectRouter);
 app.use("/api/v1/smps/quranic_class_period", quranicPeriodRouter);
+app.use("/api/v1/smps/subject", subjectRouter);
+app.use("/api/v1/smps/period", periodRouter);
+app.use("/api/v1/smps/class_routine", classRoutineRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

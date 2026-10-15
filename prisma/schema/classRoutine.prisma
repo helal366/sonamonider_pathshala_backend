@@ -1,0 +1,28 @@
+model ClassRoutine {
+  id String @id @default(uuid())
+
+  class_id String
+  class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  period_id String?
+  period    Period? @relation(fields: [period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  quranic_period_id String?
+  quranic_period    QuranicPeriod? @relation(fields: [quranic_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  teacher_id String
+  teacher    AcademicStaff @relation(fields: [teacher_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  subjects Subject[] @relation("class_routine_subjects")
+
+  created_by_id String?
+  created_by    User?   @relation("class_routine_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("class_routine_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("class_rotine")
+}

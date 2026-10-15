@@ -143,6 +143,21 @@ CREATE TABLE "class_history_quranic_periods" (
 );
 
 -- CreateTable
+CREATE TABLE "class_rotine" (
+    "id" TEXT NOT NULL,
+    "class_id" TEXT NOT NULL,
+    "period_id" TEXT,
+    "quranic_period_id" TEXT,
+    "teacher_id" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "class_rotine_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "father_details" (
     "id" TEXT NOT NULL,
     "father_name" TEXT NOT NULL,
@@ -169,6 +184,8 @@ CREATE TABLE "governing_bodies" (
     "mobile_number" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "current_position_id" TEXT,
+    "current_role_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -215,6 +232,20 @@ CREATE TABLE "mother_details" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "mother_details_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "periods" (
+    "id" TEXT NOT NULL,
+    "period_name" TEXT NOT NULL,
+    "start_time" TEXT NOT NULL,
+    "end_time" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "periods_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -376,6 +407,8 @@ CREATE TABLE "students" (
     "mobile_number" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "active_class_id" TEXT NOT NULL,
+    "current_position_id" TEXT,
+    "current_role_id" TEXT,
     "responsible_teacher_id" TEXT,
     "user_id" TEXT NOT NULL,
     "created_by_id" TEXT,
@@ -384,6 +417,18 @@ CREATE TABLE "students" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "students_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "subjects" (
+    "id" TEXT NOT NULL,
+    "subject_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -408,8 +453,8 @@ CREATE TABLE "users" (
     "user_password" TEXT,
     "active_status" "ActiveStatus" NOT NULL DEFAULT 'ACTIVE',
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
-    "role_id" TEXT,
-    "position_id" TEXT,
+    "current_role_id" TEXT,
+    "current_position_id" TEXT,
     "father_details_id" TEXT,
     "mother_details_id" TEXT,
     "created_by_id" TEXT,
@@ -442,6 +487,14 @@ CREATE TABLE "user_roles" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "user_roles_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_class_routine_subjects" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_class_routine_subjects_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -520,6 +573,9 @@ CREATE UNIQUE INDEX "management_staffs_user_id_key" ON "management_staffs"("user
 CREATE UNIQUE INDEX "management_staffs_full_name_mobile_number_key" ON "management_staffs"("full_name", "mobile_number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "periods_period_name_key" ON "periods"("period_name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "permanent_addresses_user_id_key" ON "permanent_addresses"("user_id");
 
 -- CreateIndex
@@ -577,6 +633,9 @@ CREATE UNIQUE INDEX "students_user_id_key" ON "students"("user_id");
 CREATE UNIQUE INDEX "students_full_name_mobile_number_key" ON "students"("full_name", "mobile_number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "subjects_subject_name_key" ON "subjects"("subject_name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
@@ -590,6 +649,9 @@ CREATE UNIQUE INDEX "user_positions_position_name_key" ON "user_positions"("posi
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_roles_role_name_key" ON "user_roles"("role_name");
+
+-- CreateIndex
+CREATE INDEX "_class_routine_subjects_B_index" ON "_class_routine_subjects"("B");
 
 -- AddForeignKey
 ALTER TABLE "academic_result" ADD CONSTRAINT "academic_result_management_staff_id_fkey" FOREIGN KEY ("management_staff_id") REFERENCES "management_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -667,6 +729,24 @@ ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_qurani
 ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_quranic_periods_quranic_period_id_fkey" FOREIGN KEY ("quranic_period_id") REFERENCES "quranic_periods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_period_id_fkey" FOREIGN KEY ("period_id") REFERENCES "periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_quranic_period_id_fkey" FOREIGN KEY ("quranic_period_id") REFERENCES "quranic_periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "academic_staffs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -674,6 +754,12 @@ ALTER TABLE "father_details" ADD CONSTRAINT "father_details_updated_by_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "governing_bodies" ADD CONSTRAINT "governing_bodies_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "governing_bodies" ADD CONSTRAINT "governing_bodies_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "governing_bodies" ADD CONSTRAINT "governing_bodies_current_role_id_fkey" FOREIGN KEY ("current_role_id") REFERENCES "user_roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "governing_bodies" ADD CONSTRAINT "governing_bodies_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -701,6 +787,12 @@ ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_created_by_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "periods" ADD CONSTRAINT "periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "periods" ADD CONSTRAINT "periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -814,6 +906,12 @@ ALTER TABLE "spouse_infromation" ADD CONSTRAINT "spouse_infromation_updated_by_i
 ALTER TABLE "students" ADD CONSTRAINT "students_active_class_id_fkey" FOREIGN KEY ("active_class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_current_role_id_fkey" FOREIGN KEY ("current_role_id") REFERENCES "user_roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_responsible_teacher_id_fkey" FOREIGN KEY ("responsible_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -826,10 +924,16 @@ ALTER TABLE "students" ADD CONSTRAINT "students_created_by_id_fkey" FOREIGN KEY 
 ALTER TABLE "students" ADD CONSTRAINT "students_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "subjects" ADD CONSTRAINT "subjects_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "subjects" ADD CONSTRAINT "subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_current_role_id_fkey" FOREIGN KEY ("current_role_id") REFERENCES "user_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_father_details_id_fkey" FOREIGN KEY ("father_details_id") REFERENCES "father_details"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -854,3 +958,9 @@ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_created_by_id_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_class_routine_subjects" ADD CONSTRAINT "_class_routine_subjects_A_fkey" FOREIGN KEY ("A") REFERENCES "class_rotine"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_class_routine_subjects" ADD CONSTRAINT "_class_routine_subjects_B_fkey" FOREIGN KEY ("B") REFERENCES "subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;

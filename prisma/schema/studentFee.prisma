@@ -1,0 +1,37 @@
+model StudentFeeRate {
+  id                String            @id @default(uuid())
+  student_id        String
+  fee_type          StudentFeeType
+  billing_frequency BillingFrequency
+  amount            Decimal           @db.Decimal(10, 2)
+  effective_from    DateTime          @default(now())
+  effective_to      DateTime?
+
+  student Student @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([student_id, fee_type, billing_frequency, effective_from])
+  @@index([student_id, fee_type, effective_from])
+  @@map("student_fee_rates")
+}
+
+model StudentFeePayment {
+  id                 String            @id @default(uuid())
+  student_id         String
+  fee_type           StudentFeeType
+  billing_frequency  BillingFrequency
+  billing_period_key String
+  amount             Decimal           @db.Decimal(10, 2)
+  paid_at            DateTime          @default(now())
+  receipt_number     String?           @unique
+
+  student Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@unique([student_id, fee_type, billing_frequency, billing_period_key])
+  @@index([student_id, paid_at])
+  @@map("student_fee_payments")
+}

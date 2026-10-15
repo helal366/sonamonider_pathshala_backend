@@ -4,10 +4,13 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateQuranicSubjectZodSchema,
+  TUpdateQuranicSubjectSingleFieldPayload,
   TUpdateQuranicSubjectZodSchema,
 } from "./quranicSubject.zodValidation.js";
 
-// CREATE QURANIC SUBJECT SERVICE
+// ============================================================
+// CREATE QURANIC SUBJECT SERVICE LAYER
+// ============================================================
 const createQuranicSubject = async (
   payload: TCreateQuranicSubjectZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -18,10 +21,7 @@ const createQuranicSubject = async (
   // 1. Prevent duplicate subject names (case-insensitive check)
   const existingSubject = await prisma.quranicSubject.findFirst({
     where: {
-      quranic_subject_name: {
-        equals: cleanSubjectName,
-        mode: "insensitive",
-      },
+      quranic_subject_name: cleanSubjectName,
     },
     select: { id: true },
   });
@@ -62,14 +62,16 @@ const createQuranicSubject = async (
   return result;
 };
 
-// UPDATE QURANIC SUBJECT SERVICE
+// ============================================================
+// UPDATE QURANIC SUBJECT SERVICE LAYER
+// ============================================================
 const updateQuranicSubject = async (
   payload: TUpdateQuranicSubjectZodSchema,
   loggedInUser: NonNullable<Express.Request["user"]>,
   quranic_subject_id: string,
 ) => {
   const { quranic_subject_name } = payload;
-  const cleanSubjectName = quranic_subject_name.trim();
+  const cleanSubjectName = quranic_subject_name.trim().toUpperCase();
 
   // 1. Verify target record exists
   const currentSubject = await prisma.quranicSubject.findUnique({
@@ -84,10 +86,7 @@ const updateQuranicSubject = async (
   // 2. Prevent naming conflicts with other subjects
   const nameConflict = await prisma.quranicSubject.findFirst({
     where: {
-      quranic_subject_name: {
-        equals: cleanSubjectName,
-        mode: "insensitive",
-      },
+      quranic_subject_name: cleanSubjectName,
       id: { not: quranic_subject_id },
     },
     select: { id: true },
@@ -102,7 +101,7 @@ const updateQuranicSubject = async (
     );
   }
 
-  // 3. Commit mutations and audit trails atomically
+  // 3. Update quranic subject
   const result = await prisma.$transaction(async (tx) => {
     const updated = await tx.quranicSubject.update({
       where: { id: quranic_subject_id },
@@ -131,7 +130,72 @@ const updateQuranicSubject = async (
   return result;
 };
 
-// DELETE QURANIC SUBJECT SERVICE
+const updateQuranicSubjectSingleField = async (
+  payload: TUpdateQuranicSubjectSingleFieldPayload,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+  quranic_subject_id: string,
+) => {
+  const cleanSubjectName = payload.value.trim().toUpperCase();
+  const currentSubject = await prisma.quranicSubject.findUnique({
+    where: { id: quranic_subject_id },
+    select: { id: true, quranic_subject_name: true },
+  });
+
+  if (!currentSubject) {
+    throw new AppError("Quranic subject not found.", StatusCodes.NOT_FOUND);
+  }
+
+  if (currentSubject.quranic_subject_name === cleanSubjectName) {
+    throw new AppError(
+      "The provided subject name is identical to the current record.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  const nameConflict = await prisma.quranicSubject.findFirst({
+    where: {
+      quranic_subject_name: cleanSubjectName,
+      id: { not: quranic_subject_id },
+    },
+    select: { id: true },
+  });
+
+  if (nameConflict) {
+    throw new AppError(
+      `Another quranic subject with the name '${cleanSubjectName}' already exists.`,
+      StatusCodes.CONFLICT,
+    );
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.quranicSubject.update({
+      where: { id: quranic_subject_id },
+      data: {
+        quranic_subject_name: cleanSubjectName,
+        updated_by_id: loggedInUser.user_id,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        entity_id: quranic_subject_id,
+        entity_name: "quranicSubject",
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+        old_value: {
+          quranic_subject_name: currentSubject.quranic_subject_name,
+        },
+        new_value: { quranic_subject_name: cleanSubjectName },
+      },
+    });
+
+    return updated;
+  });
+};
+
+// ============================================================
+// DELETE QURANIC SUBJECT SERVICE LAYER
+// ============================================================
 const deleteQuranicSubject = async (
   quranic_subject_id: string,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -185,7 +249,9 @@ const deleteQuranicSubject = async (
   return result;
 };
 
-// GET ALL QURANIC SUBJECTS SERVICE
+// ============================================================
+// GET ALL QURANIC SUBJECTS SERVICE LAYER
+// ============================================================
 const getAllQuranicSubjects = async () => {
   const quranicSubjects = await prisma.quranicSubject.findMany({
     orderBy: { quranic_subject_name: "asc" },
@@ -199,7 +265,9 @@ const getAllQuranicSubjects = async () => {
   return quranicSubjects;
 };
 
-// GET SINGLE QURANIC SUBJECT BY ID SERVICE
+// ============================================================
+// GET SINGLE QURANIC SUBJECT BY ID SERVICE LAYER
+// ============================================================
 const getSingleQuranicSubject = async (id: string) => {
   const quranicSubject = await prisma.quranicSubject.findUnique({
     where: { id },
@@ -223,6 +291,7 @@ const getSingleQuranicSubject = async (id: string) => {
 export const quranicSubjectServices = {
   createQuranicSubject,
   updateQuranicSubject,
+  updateQuranicSubjectSingleField,
   deleteQuranicSubject,
   getAllQuranicSubjects,
   getSingleQuranicSubject,

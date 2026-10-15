@@ -10,6 +10,8 @@ model Student {
   class_history      ClassHistory[]
   promotion_requests PromotionRequest[]
   promotion_history  PromotionHistory[]
+  fee_rates          StudentFeeRate[]
+  fee_payments       StudentFeePayment[]
 
   current_position_id String?
   current_position  UserPosition? @relation("student_current_position", fields: [current_position_id], references: [id])

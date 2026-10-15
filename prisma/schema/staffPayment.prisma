@@ -1,0 +1,34 @@
+model StaffSalaryRate {
+  id             String           @id @default(uuid())
+  user_id        String
+  monthly_salary Decimal          @db.Decimal(10, 2)
+  change_type    SalaryChangeType @default(INITIAL)
+  effective_from DateTime         @default(now())
+  note           String?
+
+  staff User @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@unique([user_id, effective_from])
+  @@index([user_id, effective_from])
+  @@map("staff_salary_rates")
+}
+
+model StaffPayment {
+  id                 String           @id @default(uuid())
+  user_id            String
+  payment_type       StaffPaymentType
+  payment_period_key String
+  amount             Decimal          @db.Decimal(10, 2)
+  paid_at            DateTime         @default(now())
+  receipt_number     String?          @unique
+
+  staff User @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@unique([user_id, payment_type, payment_period_key])
+  @@index([user_id, paid_at])
+  @@map("staff_payments")
+}

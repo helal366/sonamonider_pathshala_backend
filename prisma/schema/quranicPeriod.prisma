@@ -6,6 +6,7 @@ model QuranicPeriod {
   end_time                  String   //example: 8:00 AM
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
+  class_routines               ClassRoutine[]
 
   created_by_id             String?
   created_by                User?   @relation("quranic_period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

@@ -37,6 +37,8 @@ model User {
   academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")
   student_profile          Student?         @relation("student_profile")
   governing_body_profile   GoverningBody?   @relation("governing_body_profile")
+  salary_rates             StaffSalaryRate[]
+  staff_payments           StaffPayment[]
 
   created_management_staffs ManagementStaff[] @relation("management_staff_created_by")
   updated_management_staffs ManagementStaff[] @relation("management_staff_updated_by")
@@ -58,6 +60,15 @@ model User {
 
   created_quranic_periods QuranicPeriod[] @relation("quranic_period_created_by")
   updated_quranic_periods QuranicPeriod[] @relation("quranic_period_updated_by")
+
+  created_subjects Subject[] @relation("subject_created_by")
+  updated_subjects Subject[] @relation("subject_updated_by")
+
+  created_periods Period[] @relation("period_created_by")
+  updated_periods Period[] @relation("period_updated_by")
+
+  created_class_routines ClassRoutine[] @relation("class_routine_created_by")
+  updated_class_routines ClassRoutine[] @relation("class_routine_updated_by")
 
   created_shifts Shift[] @relation("shift_created_by")
   updated_shifts Shift[] @relation("shift_updated_by")

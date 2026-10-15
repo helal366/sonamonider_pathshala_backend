@@ -9,6 +9,8 @@ import {
   TDeleteQuranicSubjectParamsZodSchema,
   TGetSingleQuranicSubjectZodSchema,
   TUpdateQuranicSubjectParamsZodSchema,
+  TUpdateQuranicSubjectSingleFieldParamsZodSchema,
+  TUpdateQuranicSubjectSingleFieldPayload,
   TUpdateQuranicSubjectZodSchema,
 } from "./quranicSubject.zodValidation.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
@@ -18,11 +20,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.j
 // ===============================================
 const createQuranicSubject = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+    const loggedInUser = helperFunctions.requiredUser(req);
 
     const payload: TCreateQuranicSubjectZodSchema = req.body;
     const result = await quranicSubjectServices.createQuranicSubject(
@@ -63,16 +61,33 @@ const updateQuranicSubject = catchAsync(
   },
 );
 
+const updateQuranicSubjectSingleField = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const { id } =
+      req.params as unknown as TUpdateQuranicSubjectSingleFieldParamsZodSchema;
+    const payload: TUpdateQuranicSubjectSingleFieldPayload = req.body;
+    const result = await quranicSubjectServices.updateQuranicSubjectSingleField(
+      payload,
+      loggedInUser,
+      id,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Quranic subject field updated successfully.",
+      data: result,
+    });
+  },
+);
+
 // ====================================================
 // DELETE QURANIC SUBJECT CONTROLLER
 // ====================================================
 const deleteQuranicSubject = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
-    }
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req)
 
     const {id} = req.params as unknown as TDeleteQuranicSubjectParamsZodSchema;
     const result = await quranicSubjectServices.deleteQuranicSubject(
@@ -109,7 +124,7 @@ const getAllQuranicSubjects = catchAsync(
 // GET SINGLE QURANIC SUBJECT CONTROLLER
 // ======================================================
 const getSingleQuranicSubject = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     // Safely parse from your validated path params middleware mapping block
     const { id } =
       req.params as unknown as TGetSingleQuranicSubjectZodSchema;
@@ -129,6 +144,7 @@ const getSingleQuranicSubject = catchAsync(
 export const quranicSubjectController = {
   createQuranicSubject,
   updateQuranicSubject,
+  updateQuranicSubjectSingleField,
   deleteQuranicSubject,
   getAllQuranicSubjects,
   getSingleQuranicSubject,

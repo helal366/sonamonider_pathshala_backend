@@ -15,6 +15,7 @@ model AcademicStaff {
   promotion_history          PromotionHistory[]
   promotion_requests         PromotionRequest[]
   students_in_responsibility Student[]
+  class_routines_as_teacher  ClassRoutine[]
 
   subject_as_subject_teacher String?
 

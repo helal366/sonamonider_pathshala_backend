@@ -9,6 +9,66 @@ import {
   TUpdateQuranicPeriodZodSchema,
 } from "./quranicPeriod.zodValidation.js";
 
+const ensureNoTeacherScheduleConflict = async (
+  transaction: Prisma.TransactionClient,
+  quranicPeriodId: string,
+  startTime: string,
+  endTime: string,
+) => {
+  const affectedRoutines = await transaction.classRoutine.findMany({
+    where: { quranic_period_id: quranicPeriodId },
+    select: { id: true, teacher_id: true },
+  });
+
+  if (affectedRoutines.length === 0) return;
+
+  const teacherIds = [
+    ...new Set(affectedRoutines.map(({ teacher_id }) => teacher_id)),
+  ];
+  const otherRoutines = await transaction.classRoutine.findMany({
+    where: { teacher_id: { in: teacherIds } },
+    select: {
+      id: true,
+      teacher_id: true,
+      period: { select: { start_time: true, end_time: true } },
+      quranic_period: { select: { start_time: true, end_time: true } },
+    },
+  });
+
+  const proposedStart = toMinutes(startTime);
+  const proposedEnd = toMinutes(endTime);
+
+  for (const routine of affectedRoutines) {
+    for (const otherRoutine of otherRoutines) {
+      if (
+        routine.id === otherRoutine.id ||
+        routine.teacher_id !== otherRoutine.teacher_id
+      ) {
+        continue;
+      }
+
+      const otherStart =
+        otherRoutine.period?.start_time ??
+        otherRoutine.quranic_period?.start_time;
+      const otherEnd =
+        otherRoutine.period?.end_time ??
+        otherRoutine.quranic_period?.end_time;
+
+      if (
+        otherStart &&
+        otherEnd &&
+        proposedStart < toMinutes(otherEnd) &&
+        toMinutes(otherStart) < proposedEnd
+      ) {
+        throw new AppError(
+          "This time change would overlap another class routine assigned to the same teacher.",
+          StatusCodes.CONFLICT,
+        );
+      }
+    }
+  }
+};
+
 // ========================================================
 // CREATE QURANIC PERIOD SERVICE LAYER
 // ========================================================
@@ -119,38 +179,53 @@ const updateQuranicPeriod = async (
   }
 
   // 3. Execute updates inside transaction block
-  const result = await prisma.$transaction(async (transaction) => {
-    const updated = await transaction.quranicPeriod.update({
-      where: { id: quranic_period_id },
-      data: {
-        quranic_period_name: cleanPeriodName,
-        start_time: cleanStartTime,
-        end_time: cleanEndTime,
-        updated_by_id: loggedInUser.user_id,
-      },
-    });
+  const result = await prisma.$transaction(
+    async (transaction) => {
+      if (
+        currentPeriod.start_time !== cleanStartTime ||
+        currentPeriod.end_time !== cleanEndTime
+      ) {
+        await ensureNoTeacherScheduleConflict(
+          transaction,
+          quranic_period_id,
+          cleanStartTime,
+          cleanEndTime,
+        );
+      }
 
-    await transaction.auditLog.create({
-      data: {
-        entity_id: quranic_period_id,
-        entity_name: "quranicPeriod",
-        action: "UPDATE",
-        changed_by_id: loggedInUser.user_id,
-        old_value: {
-          quranic_period_name: currentPeriod.quranic_period_name,
-          start_time: currentPeriod.start_time,
-          end_time: currentPeriod.end_time,
-        },
-        new_value: {
+      const updated = await transaction.quranicPeriod.update({
+        where: { id: quranic_period_id },
+        data: {
           quranic_period_name: cleanPeriodName,
           start_time: cleanStartTime,
           end_time: cleanEndTime,
+          updated_by_id: loggedInUser.user_id,
         },
-      },
-    });
+      });
 
-    return updated;
-  });
+      await transaction.auditLog.create({
+        data: {
+          entity_id: quranic_period_id,
+          entity_name: "quranicPeriod",
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
+          old_value: {
+            quranic_period_name: currentPeriod.quranic_period_name,
+            start_time: currentPeriod.start_time,
+            end_time: currentPeriod.end_time,
+          },
+          new_value: {
+            quranic_period_name: cleanPeriodName,
+            start_time: cleanStartTime,
+            end_time: cleanEndTime,
+          },
+        },
+      });
+
+      return updated;
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+  );
 
   return result;
 };
@@ -225,6 +300,15 @@ if (field === "start_time" || field === "end_time") {
 }
   // 4. Atomically commit individual field updates and write structural audit log tracking records
   return prisma.$transaction(async (transaction) => {
+    if (field === "start_time" || field === "end_time") {
+      await ensureNoTeacherScheduleConflict(
+        transaction,
+        quranic_period_id,
+        field === "start_time" ? cleanValue : currentPeriod.start_time,
+        field === "end_time" ? cleanValue : currentPeriod.end_time,
+      );
+    }
+
     const updated = await transaction.quranicPeriod.update({
       where: { id: quranic_period_id },
       data: {
@@ -245,7 +329,7 @@ if (field === "start_time" || field === "end_time") {
     });
 
     return updated;
-  });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 };
 
 // =========================================================
@@ -260,7 +344,10 @@ const deleteQuranicPeriod = async (
     where: { id: quranic_period_id },
     include: {
       _count: {
-        select: { class_history_quranic_periods: true }, // Checks dependency links in active student histories
+        select: {
+          class_history_quranic_periods: true,
+          class_routines: true,
+        },
       },
     },
   });
@@ -278,6 +365,13 @@ const deleteQuranicPeriod = async (
       `Cannot delete Period '${
         targetPeriod.quranic_period_name
       }'. There are student academic timelines linked to it.`,
+      StatusCodes.CONFLICT,
+    );
+  }
+
+  if (targetPeriod._count.class_routines > 0) {
+    throw new AppError(
+      `Cannot delete period "${targetPeriod.quranic_period_name}". It is used by ${targetPeriod._count.class_routines} class routine(s).`,
       StatusCodes.CONFLICT,
     );
   }

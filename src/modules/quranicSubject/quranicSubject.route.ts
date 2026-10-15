@@ -30,6 +30,21 @@ router.patch(
   quranicSubjectController.updateQuranicSubject,
 );
 
+// ====================================================
+// UPDATE QURANIC SUBJECT SINGLE FIELD ROUTE
+// ====================================================
+router.patch(
+  "/update_quranic_single_subject_field/:id",
+  userAuth("SUPER_ADMIN"),
+  validateZodParams(
+    quranicSubjectZodSchema.updateQuranicSubjectSingleFieldParamsZodSchema,
+  ),
+  validateZodSchema(
+    quranicSubjectZodSchema.updateQuranicSubjectSingleFieldZodSchema,
+  ),
+  quranicSubjectController.updateQuranicSubjectSingleField,
+);
+
 // =====================================================
 // DELETE QURANIC SUBJECT ROUTE
 // =====================================================

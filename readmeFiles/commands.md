@@ -41,8 +41,8 @@ CREATE SCHEMA public;
 ```
 rm -rf prisma/migrations
 pnpm exec prisma migrate dev --name init
-pnpm exec build
 pnpm exec prisma generate
+pnpm build
 pnpm seed
 ```
 

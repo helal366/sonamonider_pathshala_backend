@@ -1,0 +1,19 @@
+model Period {
+  id          String @id @default(uuid())
+  period_name String @unique
+  start_time                String   //example: 6:00 AM
+  end_time                  String   //example: 8:00 AM
+
+  class_routines ClassRoutine[]
+
+  created_by_id String?
+  created_by    User?   @relation("period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("period_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("periods")
+}

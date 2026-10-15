@@ -5,6 +5,7 @@ model Class {
   active_students Student[] @relation("student_active_classes")
 
   class_history ClassHistory[]
+  class_routines ClassRoutine[]
 
   grade_group_teacher_id String?        @unique
   grade_group_teacher    AcademicStaff? @relation(fields: [grade_group_teacher_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

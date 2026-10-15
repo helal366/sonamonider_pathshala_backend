@@ -35,15 +35,17 @@ const createQuranicPeriodZodSchema = z4
             : "Invalid start time format.",
       })
       .trim()
-      .min(1, "Start time is required."),
-
+      .regex(
+        timeStringRegex,
+        "Invalid start time format. Expected format like '8:00 AM' or '2:30 PM'.",
+      ),
     end_time: z4
       .string({
         error: (issue) =>
           issue.input === undefined
             ? "End time is required."
             : "Invalid end time format.",
-      })
+      }      )
       .trim()
       .regex(
         timeStringRegex,
@@ -51,38 +53,7 @@ const createQuranicPeriodZodSchema = z4
       ),
   })
   .superRefine((data, ctx) => {
-    const periodName = data.quranic_period_name.trim().toUpperCase();
-
-    if (periodName === "HIFZ_NIGHT") {
-      if (data.start_time.trim().toUpperCase() !== "AFTER_MAGRIB") {
-        ctx.addIssue({
-          code: "custom",
-          path: ["start_time"],
-          message: 'Start time for HIFZ_NIGHT must be "AFTER_MAGRIB".',
-        });
-      }
-
-      // Skip clock-time comparison for HIFZ_NIGHT.
-      return;
-    }
-
-    // For every other period, start_time must be a standard clock time.
-    if (!timeStringRegex.test(data.start_time.trim())) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["start_time"],
-        message:
-          "Invalid start time format. Expected format like '6:00 AM' or '12:30 PM'.",
-      });
-
-      return;
-    }
-
-    // For every other period, end_time must be later than start_time.
-    if (
-      timeStringRegex.test(data.end_time.trim()) &&
-      toMinutes(data.end_time) <= toMinutes(data.start_time)
-    ) {
+    if (toMinutes(data.end_time) <= toMinutes(data.start_time)) {
       ctx.addIssue({
         code: "custom",
         path: ["end_time"],
