@@ -6,19 +6,14 @@ const AcademicStaffFields = [
   "extra_curricular_activities",
 ] as const;
 
-const academicStaffIdSchema = z4.object({
-  academicStaff_id: z4.uuid({
-    error: (issue) =>
-      issue.input === undefined
-        ? "Teacher ID is required."
-        : "Invalid Teacher ID format.",
-  }),
+const academicStaffParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid academic staff ID format."),
 });
 // ================================================
 // UPDATE SUBJECT FOR SUBJECT TEAHER ZOD SCHEMA
 // ================================================
 const updateSubjectForSubjectTeacherZodSchema = z4.union([
-  academicStaffIdSchema.extend({
+  z4.object({
     current_subject: z4
       .string({
         error: (issue) =>
@@ -47,15 +42,15 @@ export type TUpdateSubjectForSubjectTeacherZodSchema = z4.infer<
 // UPDATE ACADEMIC STAFF FIELD ZOD SCHEMA
 // ================================================
 const updateAcademicStaffFieldZodSchema = z4.union([
-  academicStaffIdSchema.extend({
+  z4.object({
     field: z4.literal("teaching_experience_year"),
     value: z4.number().int().min(0),
   }),
-  academicStaffIdSchema.extend({
+  z4.object({
     field: z4.literal("teaching_experience_month"),
     value: z4.number().int().min(0).max(11)
   }),
-  academicStaffIdSchema.extend({
+  z4.object({
     field: z4.literal("alternative_contact_no"),
     value: z4
           .string({
@@ -71,7 +66,7 @@ const updateAcademicStaffFieldZodSchema = z4.union([
           )
           .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number."),
   }),
-  academicStaffIdSchema.extend({
+  z4.object({
     field: z4.literal("extra_curricular_activities"),
     value: z4.string("Invalid format.").trim()
   })
@@ -79,6 +74,7 @@ const updateAcademicStaffFieldZodSchema = z4.union([
 export type TUpdateAcademicStaffFieldZodSchema = z4.infer<typeof updateAcademicStaffFieldZodSchema>
 
 export const academicStaffZodSchema = {
+  academicStaffParamsZodSchema,
   updateSubjectForSubjectTeacherZodSchema,
   updateAcademicStaffFieldZodSchema,
 };

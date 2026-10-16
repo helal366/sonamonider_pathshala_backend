@@ -40,27 +40,22 @@ export type TCreateStudentFeePaymentZodSchema = z4.infer<
 // ======================================================
 const updateStudentFeeRateFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    id: z4.uuid("Invalid student fee rate ID."),
     field: z4.literal("fee_type"),
     value: z4.enum(StudentFeeType, "Invalid student fee type."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee rate ID."),
     field: z4.literal("billing_frequency"),
     value: z4.enum(BillingFrequency, "Invalid billing frequency."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee rate ID."),
     field: z4.literal("amount"),
     value: z4.number().nonnegative("Amount cannot be negative."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee rate ID."),
     field: z4.literal("effective_from"),
     value: z4.coerce.date(),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee rate ID."),
     field: z4.literal("effective_to"),
     value: z4.coerce.date().nullable(),
   }),
@@ -75,32 +70,26 @@ export type TUpdateStudentFeeRateFieldZodSchema = z4.infer<
 // ======================================================
 const updateStudentFeePaymentFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("fee_type"),
     value: z4.enum(StudentFeeType, "Invalid student fee type."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("billing_frequency"),
     value: z4.enum(BillingFrequency, "Invalid billing frequency."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("billing_period_key"),
     value: z4.string().trim().min(1, "Billing period is required."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("amount"),
     value: z4.number().nonnegative("Amount cannot be negative."),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("paid_at"),
     value: z4.coerce.date(),
   }),
   z4.object({
-    id: z4.uuid("Invalid student fee payment ID."),
     field: z4.literal("receipt_number"),
     value: z4.string().trim().nullable(),
   }),
@@ -113,23 +102,23 @@ export type TUpdateStudentFeePaymentFieldZodSchema = z4.infer<
 // ======================================================
 // DELETE STUDENT FEE RATE ZOD SCHEMA
 // ======================================================
-const deleteStudentFeeRateZodSchema = z4.object({
+const studentFeeRateIdParamsZodSchema = z4.object({
   id: z4.uuid("Invalid student fee rate ID."),
 });
 
-export type TDeleteStudentFeeRateZodSchema = z4.infer<
-  typeof deleteStudentFeeRateZodSchema
+export type TStudentFeeRateIdParamsZodSchema = z4.infer<
+  typeof studentFeeRateIdParamsZodSchema
 >;
 
 // ======================================================
 // DELETE STUDENT FEE PAYMENT ZOD SCHEMA
 // ======================================================
-const deleteStudentFeePaymentZodSchema = z4.object({
+const studentFeePaymentIdParamsZodSchema = z4.object({
   id: z4.uuid("Invalid student fee payment ID."),
 });
 
-export type TDeleteStudentFeePaymentZodSchema = z4.infer<
-  typeof deleteStudentFeePaymentZodSchema
+export type TStudentFeePaymentIdParamsZodSchema = z4.infer<
+  typeof studentFeePaymentIdParamsZodSchema
 >;
 
 export const studentFeeZodSchema = {
@@ -137,6 +126,6 @@ export const studentFeeZodSchema = {
   createStudentFeePaymentZodSchema,
   updateStudentFeeRateFieldZodSchema,
   updateStudentFeePaymentFieldZodSchema,
-  deleteStudentFeeRateZodSchema,
-  deleteStudentFeePaymentZodSchema,
+  studentFeeRateIdParamsZodSchema,
+  studentFeePaymentIdParamsZodSchema,
 };

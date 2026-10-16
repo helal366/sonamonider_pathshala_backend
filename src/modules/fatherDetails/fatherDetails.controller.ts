@@ -6,7 +6,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
-  TDisconnectFatherDetailsZodSchema,
+  TFatherDetailsUserIdParamsZodSchema,
   TUpdateFatherDetailsFieldPayload,
 } from "./fatherDetails.zodValidation.js";
 
@@ -73,16 +73,18 @@ const connectFatherDetails = catchAsync(
 // UPDATE FATHER DETAILS SINGLE FIELD CONTROLLER
 // ======================================================
 const updateFatherDetailsField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TFatherDetailsUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = req.user;
     if (!loggedInUser) {
       throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
     }
 
     const payload: TUpdateFatherDetailsFieldPayload = req.body;
+    const { id } = req.params;
     const result = await fatherDetailsServices.updateFatherDetailsField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -98,17 +100,17 @@ const updateFatherDetailsField = catchAsync(
 // DISCONNECT FATHER DETAILS CONTROLLER
 // ======================================================
 const disconnectFatherDetails = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request<TFatherDetailsUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
       throw new AppError("Please login.", StatusCodes.UNAUTHORIZED);
     }
 
-    const payload: TDisconnectFatherDetailsZodSchema = req.body;
+    const { id } = req.params;
 
     const result = await fatherDetailsServices.disconnectFatherDetails(
-      payload,
+      id,
       loggedInUser,
     );
 

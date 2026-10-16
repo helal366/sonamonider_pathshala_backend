@@ -9,7 +9,6 @@ import { ITargetUser } from "./motherDetails.interface.js";
 import {
   TConnectMotherDetailsZodSchema,
   TCreateMotherDetailsZodSchema,
-  TDisconnectMotherDetailsZodSchema,
   TUpdateMotherDetailsFieldPayload,
 } from "./motherDetails.zodValidation.js";
 
@@ -187,8 +186,9 @@ const connectMotherDetails = async (
 const updateMotherDetailsField = async (
   payload: TUpdateMotherDetailsFieldPayload,
   loggedInUser: TLoggedInUser,
+  user_id: string,
 ) => {
-  const { user_id, field, value } = payload;
+  const { field, value } = payload;
   const targetUser = await motherDetailsHelperFunctions.getTargetUser(user_id);
   const motherDetailsId = targetUser.mother_details_id;
   const motherDetails = targetUser.mother_details;
@@ -228,10 +228,9 @@ const updateMotherDetailsField = async (
 // DISCONNECT MOTHER DETAILS CONTROLLER SERVICE LAYER
 // ============================================================
 const disconnectMotherDetails = async (
-  payload: TDisconnectMotherDetailsZodSchema,
+  user_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { user_id } = payload;
 
   const targetUser: ITargetUser =
     await motherDetailsHelperFunctions.getTargetUser(user_id);

@@ -7,8 +7,8 @@ import { studentFeeServices } from "./studentFee.service.js";
 import {
   TCreateStudentFeePaymentZodSchema,
   TCreateStudentFeeRateZodSchema,
-  TDeleteStudentFeePaymentZodSchema,
-  TDeleteStudentFeeRateZodSchema,
+  TStudentFeePaymentIdParamsZodSchema,
+  TStudentFeeRateIdParamsZodSchema,
   TUpdateStudentFeePaymentFieldZodSchema,
   TUpdateStudentFeeRateFieldZodSchema,
 } from "./studentFee.zodValidation.js";
@@ -38,12 +38,17 @@ const createStudentFeeRate = catchAsync(
 // UPDATE A SINGLE STUDENT FEE RATE FIELD CONTROLLER
 // ======================================================
 const updateStudentFeeRateField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStudentFeeRateIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStudentFeeRateFieldZodSchema;
+    const { id } = req.params;
     const result = await studentFeeServices.updateStudentFeeRateField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -59,11 +64,14 @@ const updateStudentFeeRateField = catchAsync(
 // DELETE STUDENT FEE RATE CONTROLLER
 // ======================================================
 const deleteStudentFeeRate = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStudentFeeRateIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TDeleteStudentFeeRateZodSchema;
+    const { id } = req.params;
     const result = await studentFeeServices.deleteStudentFeeRate(
-      payload,
+      id,
       loggedInUser,
     );
 
@@ -101,12 +109,17 @@ const createStudentFeePayment = catchAsync(
 // UPDATE A SINGLE STUDENT FEE PAYMENT FIELD CONTROLLER
 // ======================================================
 const updateStudentFeePaymentField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStudentFeePaymentIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStudentFeePaymentFieldZodSchema;
+    const { id } = req.params;
     const result = await studentFeeServices.updateStudentFeePaymentField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -122,11 +135,14 @@ const updateStudentFeePaymentField = catchAsync(
 // DELETE STUDENT FEE PAYMENT CONTROLLER
 // ======================================================
 const deleteStudentFeePayment = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStudentFeePaymentIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TDeleteStudentFeePaymentZodSchema;
+    const { id } = req.params;
     const result = await studentFeeServices.deleteStudentFeePayment(
-      payload,
+      id,
       loggedInUser,
     );
 

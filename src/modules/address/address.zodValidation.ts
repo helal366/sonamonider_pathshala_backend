@@ -60,16 +60,6 @@ export type TCreateAddressZodSchema = z4.infer<typeof createAddressZodSchema>;
 // DELETE COMPLETE ADDRESS ZOD SCHEMA
 // ============================================================
 export const deleteAddressZodSchema = z4.object({
-  required_id: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Required ID is required."
-          : "Invalid required ID.",
-    })
-    .trim()
-    .min(1, "Required ID is required."),
-
   owner_type: z4.enum(AddressOwnerType, "Invalid address owner type."),
   address_type: z4.enum(AddressType, "Invalid address type."),
 });
@@ -81,16 +71,6 @@ export type TDeleteAddressZodSchema = z4.infer<typeof deleteAddressZodSchema>;
 // ============================================================
 
 export const updateAddressFieldZodSchema = z4.object({
-  required_id: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Required ID is required."
-          : "Invalid required ID.",
-    })
-    .trim()
-    .min(1, "Required ID is required."),
-
   field: z4.enum(ADDRESS_UPDATE_FIELDS, "Invalid field name"),
   value: z4
     .string({
@@ -114,8 +94,19 @@ export type TUpdateAddressFieldZodSchema = z4.infer<
   typeof updateAddressFieldZodSchema
 >;
 
+// ============================================================
+// ADDRESS OWNER ID PARAMS ZOD SCHEMA
+// ============================================================
+export const addressOwnerIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid address owner ID."),
+});
+export type TAddressOwnerIdParamsZodSchema = z4.infer<
+  typeof addressOwnerIdParamsZodSchema
+>;
+
 export const addressZodSchema = {
   createAddressZodSchema,
   deleteAddressZodSchema,
   updateAddressFieldZodSchema,
+  addressOwnerIdParamsZodSchema,
 };

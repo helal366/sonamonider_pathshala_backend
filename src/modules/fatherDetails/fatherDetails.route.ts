@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { fatherDetailsController } from "./fatherDetails.controller.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { fatherDetailsZodSchema } from "./fatherDetails.zodValidation.js";
 
@@ -30,9 +33,9 @@ router.post(
 // DISCONNECT FATHER DETAILS ROUTE
 // ====================================================
 router.patch(
-  "/disconnect_father_details",
+  "/disconnect_father_details/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(fatherDetailsZodSchema.disconnectFatherDetailsZodSchema),
+  validateZodParams(fatherDetailsZodSchema.fatherDetailsUserIdParamsZodSchema),
   fatherDetailsController.disconnectFatherDetails,
 );
 
@@ -40,8 +43,9 @@ router.patch(
 // UPDATE A SINGLE FATHER DETAILS FIELD ROUTE
 // ====================================================
 router.patch(
-  "/update_father_details_field",
+  "/update_father_details_field/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodParams(fatherDetailsZodSchema.fatherDetailsUserIdParamsZodSchema),
   validateZodSchema(fatherDetailsZodSchema.updateFatherDetailsFieldZodSchema),
   fatherDetailsController.updateFatherDetailsField,
 );

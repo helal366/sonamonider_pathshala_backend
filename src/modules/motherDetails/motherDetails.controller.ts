@@ -7,7 +7,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.j
 import {
   TConnectMotherDetailsZodSchema,
   TCreateMotherDetailsZodSchema,
-  TDisconnectMotherDetailsZodSchema,
+  TMotherDetailsUserIdParamsZodSchema,
   TUpdateMotherDetailsFieldPayload,
 } from "./motherDetails.zodValidation.js";
 
@@ -50,12 +50,14 @@ const connectMotherDetails = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateMotherDetailsField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TMotherDetailsUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateMotherDetailsFieldPayload;
+    const { id } = req.params;
     const result = await motherDetailsServices.updateMotherDetailsField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -68,11 +70,11 @@ const updateMotherDetailsField = catchAsync(
 );
 
 const disconnectMotherDetails = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TMotherDetailsUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TDisconnectMotherDetailsZodSchema;
+    const { id } = req.params;
     const result = await motherDetailsServices.disconnectMotherDetails(
-      payload,
+      id,
       loggedInUser,
     );
 

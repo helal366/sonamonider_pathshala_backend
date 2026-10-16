@@ -52,27 +52,22 @@ export type TCreateStaffPaymentZodSchema = z4.infer<
 // ======================================================
 const updateStaffSalaryRateFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    id: z4.uuid("Invalid staff salary rate ID."),
     field: z4.literal("monthly_salary"),
     value: z4.number().nonnegative("Monthly salary cannot be negative."),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff salary rate ID."),
     field: z4.literal("eid_bonus"),
     value: z4.number().nonnegative("Eid bonus cannot be negative."),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff salary rate ID."),
     field: z4.literal("change_type"),
     value: z4.enum(SalaryChangeType),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff salary rate ID."),
     field: z4.literal("effective_from"),
     value: z4.coerce.date(),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff salary rate ID."),
     field: z4.literal("note"),
     value: z4.string().trim().nullable(),
   }),
@@ -87,27 +82,22 @@ export type TUpdateStaffSalaryRateFieldZodSchema = z4.infer<
 // ======================================================
 const updateStaffPaymentFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    id: z4.uuid("Invalid staff payment ID."),
     field: z4.literal("payment_type"),
     value: z4.enum(StaffPaymentType),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff payment ID."),
     field: z4.literal("payment_period_key"),
     value: z4.string().trim().min(1, "Payment period is required."),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff payment ID."),
     field: z4.literal("amount"),
     value: z4.number().nonnegative("Payment amount cannot be negative."),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff payment ID."),
     field: z4.literal("paid_at"),
     value: z4.coerce.date(),
   }),
   z4.object({
-    id: z4.uuid("Invalid staff payment ID."),
     field: z4.literal("receipt_number"),
     value: z4.string().trim().nullable(),
   }),
@@ -120,23 +110,23 @@ export type TUpdateStaffPaymentFieldZodSchema = z4.infer<
 // ======================================================
 // DELETE STAFF SALARY RATE ZOD SCHEMA
 // ======================================================
-const deleteStaffSalaryRateZodSchema = z4.object({
+const staffSalaryRateIdParamsZodSchema = z4.object({
   id: z4.uuid("Invalid staff salary rate ID."),
 });
 
-export type TDeleteStaffSalaryRateZodSchema = z4.infer<
-  typeof deleteStaffSalaryRateZodSchema
+export type TStaffSalaryRateIdParamsZodSchema = z4.infer<
+  typeof staffSalaryRateIdParamsZodSchema
 >;
 
 // ======================================================
 // DELETE STAFF PAYMENT ZOD SCHEMA
 // ======================================================
-const deleteStaffPaymentZodSchema = z4.object({
+const staffPaymentIdParamsZodSchema = z4.object({
   id: z4.uuid("Invalid staff payment ID."),
 });
 
-export type TDeleteStaffPaymentZodSchema = z4.infer<
-  typeof deleteStaffPaymentZodSchema
+export type TStaffPaymentIdParamsZodSchema = z4.infer<
+  typeof staffPaymentIdParamsZodSchema
 >;
 
 export const staffPaymentZodSchema = {
@@ -144,6 +134,6 @@ export const staffPaymentZodSchema = {
   createStaffPaymentZodSchema,
   updateStaffSalaryRateFieldZodSchema,
   updateStaffPaymentFieldZodSchema,
-  deleteStaffSalaryRateZodSchema,
-  deleteStaffPaymentZodSchema,
+  staffSalaryRateIdParamsZodSchema,
+  staffPaymentIdParamsZodSchema,
 };

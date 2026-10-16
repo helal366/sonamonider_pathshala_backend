@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validateZodSchema";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema";
 import { academicResultZodSchema } from "./academicResult.zodValidation";
 import { academicResultController } from "./academicResult.controller";
 
@@ -19,10 +22,10 @@ router.post(
 // ==========================================
 // DELETE ACADEMIC RESULT ROUTE
 // ==========================================
-router.post(
-  "/delete",
+router.delete(
+  "/delete/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(academicResultZodSchema.deleteAcademicResultZodSchema),
+  validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
   academicResultController.deleteAcademicResult,
 );
 
@@ -30,8 +33,9 @@ router.post(
 // UPDATE ACADEMIC RESULT FIELD ROUTE
 // ==========================================
 router.patch(
-  "/update_field",
+  "/update_field/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
   validateZodSchema(academicResultZodSchema.updateAcademicResultFieldZodSchema),
   academicResultController.updateAcademicResultField,
 );
@@ -49,9 +53,9 @@ router.get(
 // GET SINGLE ACADEMIC RESULT BY ID ROUTE
 // ==========================================
 router.get(
-  "/:academic_result_id",
+  "/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(academicResultZodSchema.getSingleAcademicResultZodSchema),
+  validateZodParams(academicResultZodSchema.getSingleAcademicResultZodSchema),
   academicResultController.getSingleAcademicResult,
 );
 
@@ -59,9 +63,9 @@ router.get(
 // GET ACADEMIC RESULT BY STAFF ID ROUTE
 // ===============================================
 router.get(
-  "/:staff_id",
+  "/by_staff/:staff_id/:staff_role_name",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(
+  validateZodParams(
     academicResultZodSchema.getAcademicResultByStaffIdZodSchema,
   ),
   academicResultController.getAcademicResultByStaffId,

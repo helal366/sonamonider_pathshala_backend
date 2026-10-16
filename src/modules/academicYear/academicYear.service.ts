@@ -5,7 +5,6 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import {
   TCreateAcademicYearZodSchema,
-  TdeleteAcademicYearZodSchema,
   TUpdateAcademicYearFieldZodSchema,
 } from "./academicYear.zodValidation";
 import { academicYearCache } from "../../helperFunctions/cachedData/cache_academic_year";
@@ -45,10 +44,9 @@ const createAcademicYear = async (
 // DELETE ACADEMIC YEAR SERVICE LAYER
 // ==========================================
 const deleteAcademicYear = async (
-  payload: TdeleteAcademicYearZodSchema,
+  academic_year_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { academic_year_id } = payload;
   return await prisma.$transaction(async (tx) => {
     const academicYearExistance = await tx.academicYear.findUnique({
       where: { id: academic_year_id },
@@ -81,8 +79,9 @@ const deleteAcademicYear = async (
 const updateAcademicYearField = async (
   payload: TUpdateAcademicYearFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  academic_year_id: string,
 ) => {
-  const { academic_year_id, field, value } = payload;
+  const { field, value } = payload;
   await academicYearCache.checkAcademicYearAvailability(value);
   return prisma.$transaction(async (tx) => {
     const academicYearExistance = await tx.academicYear.findUnique({

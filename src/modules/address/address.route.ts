@@ -1,6 +1,9 @@
 import express, { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { addressZodSchema } from "./address.zodValidation.js";
 import { userAddressController } from "./address.controller.js";
 
@@ -17,14 +20,16 @@ router.post(
 );
 
 router.delete(
-  "/address/delete_address",
+  "/address/delete_address/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodParams(addressZodSchema.addressOwnerIdParamsZodSchema),
   validateZodSchema(addressZodSchema.deleteAddressZodSchema),
   userAddressController.deleteAddress,
 );
 router.patch(
-  "/address/update_address_field",
+  "/address/update_address_field/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodParams(addressZodSchema.addressOwnerIdParamsZodSchema),
   validateZodSchema(addressZodSchema.updateAddressFieldZodSchema),
   userAddressController.updateUserAddressField,
 );

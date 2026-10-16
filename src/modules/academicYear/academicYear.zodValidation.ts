@@ -23,30 +23,17 @@ export type TCreateAcademicYearZodSchema = z4.infer<
 // ==========================================
 // DELETE ACADEMIC YEAR ZOD SCHEMA
 // ==========================================
-const deleteAcademicYearZodSchema = z4.object({
-  academic_year_id: z4.uuid({
-    error: (issue) => {
-      issue.input === undefined
-        ? "Academic year ID is required."
-        : "Invalid Academic year ID format.";
-    },
-  }),
+const academicYearIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid academic year ID."),
 });
-export type TdeleteAcademicYearZodSchema = z4.infer<
-  typeof deleteAcademicYearZodSchema
+export type TAcademicYearIdParamsZodSchema = z4.infer<
+  typeof academicYearIdParamsZodSchema
 >;
 
 // ==========================================
 // UPDATE ACADEMIC YEAR FIELD ZOD SCHEMA
 // ==========================================
 const updateAcademicYearFieldZodSchema = z4.object({
-  academic_year_id: z4.uuid({
-    error: (issue) => {
-      issue.input === undefined
-        ? "Academic year ID is required."
-        : "Invalid Academic year ID format.";
-    },
-  }),
   field: z4.enum(AcademicYearField, "Invalid Academic year format."),
   value: z4.string().trim().min(1, "Academic year value is required.")
 });
@@ -58,15 +45,13 @@ export type TUpdateAcademicYearFieldZodSchema = z4.infer<
 // GET SINGLE ACADEMIC YEAR ZOD SCHEMA
 // ==========================================
 const getSingleAcademicYearZodSchema = z4.object({
-  params: z4.object({
-    academic_year_id: z4.uuid("Invalid ID format.")
-  })
+  id: z4.uuid("Invalid ID format."),
 });
 export type TGetSingleAcademicYearZodSchema = z4.infer<typeof getSingleAcademicYearZodSchema>;
 
 export const academicYearZodSchema = {
   createAcademicYearZodSchema,
-  deleteAcademicYearZodSchema,
+  academicYearIdParamsZodSchema,
   updateAcademicYearFieldZodSchema,
   getSingleAcademicYearZodSchema
 };

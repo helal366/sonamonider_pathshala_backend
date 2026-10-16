@@ -56,12 +56,7 @@ export type TCreateSpouseInformationZodSchema = z4.infer<
 // DELETE SPOUSE INFORMATION ZOD SCHEMA
 // ============================================================
 const deleteSpouseInformationZodSchema = z4.object({
-  user_id: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
-    })
-    .trim(),
+  id: z4.uuid("Invalid user ID."),
 });
 export type TDeleteSpouseInformationZodSchema = z4.infer<
   typeof deleteSpouseInformationZodSchema
@@ -72,7 +67,6 @@ export type TDeleteSpouseInformationZodSchema = z4.infer<
 // ============================================================
 const updateSpouseInformationFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("full_name"),
     value: z4.string().trim().min(2, "Spouse name is required."),
   }),
@@ -89,7 +83,6 @@ const updateSpouseInformationFieldZodSchema = z4.discriminatedUnion("field", [
     ] as const
   ).map((field) =>
     z4.object({
-      user_id: z4.string().trim().min(1, "User ID is required."),
       field: z4.literal(field),
       value: z4.string().trim().nullable(),
     }),
@@ -100,8 +93,19 @@ export type TUpdateSpouseInformationFieldPayload = z4.infer<
   typeof updateSpouseInformationFieldZodSchema
 >;
 
+// ============================================================
+// SPOUSE INFORMATION USER ID PARAMS ZOD SCHEMA
+// ============================================================
+const spouseInformationUserIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid user ID."),
+});
+export type TSpouseInformationUserIdParamsZodSchema = z4.infer<
+  typeof spouseInformationUserIdParamsZodSchema
+>;
+
 export const spouseInformationZodSchema = {
   createSpouseInformationZodSchema,
   deleteSpouseInformationZodSchema,
   updateSpouseInformationFieldZodSchema,
+  spouseInformationUserIdParamsZodSchema,
 };

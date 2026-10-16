@@ -22,10 +22,10 @@ router.post(
 // DELETE SPOUSE INFORMATION ROUTE
 // ============================================================
 router.delete(
-  "/delete/:user_id",
+  "/delete/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
   validateZodParams(
-    spouseInformationZodSchema.deleteSpouseInformationZodSchema,
+    spouseInformationZodSchema.spouseInformationUserIdParamsZodSchema,
   ),
   spouseInformationController.deleteSpouseInformation,
 );
@@ -34,8 +34,11 @@ router.delete(
 // UPDATE SPOUSE INFORMATION FIELD ROUTE
 // ============================================================
 router.patch(
-  "/update_spouse_information_field",
+  "/update_spouse_information_field/:id",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  validateZodParams(
+    spouseInformationZodSchema.spouseInformationUserIdParamsZodSchema,
+  ),
   validateZodSchema(
     spouseInformationZodSchema.updateSpouseInformationFieldZodSchema,
   ),

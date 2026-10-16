@@ -98,8 +98,9 @@ const createAddress = async (
 const deleteAddress = async (
   loggedInUser: TLoggedInUser,
   payload: TDeleteAddressZodSchema,
+  required_id: string,
 ) => {
-  const { owner_type, address_type, required_id } = payload;
+  const { owner_type, address_type } = payload;
 
   // FIND USER ADDRESS ID
   const addressId = await addressHelperFunctions.findAddressIdHelperFunction(
@@ -155,8 +156,9 @@ const deleteAddress = async (
 const updateUserAddressFiled = async (
   loggedInUser: TLoggedInUser,
   payload: TUpdateAddressFieldZodSchema,
+  required_id: string,
 ) => {
-  const { required_id, field, value, owner_type, address_type } = payload;
+  const { field, value, owner_type, address_type } = payload;
 
   // FIND USER ADDRESS ID
   const addressId = await addressHelperFunctions.findAddressIdHelperFunction(

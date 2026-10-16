@@ -321,8 +321,9 @@ const deleteSpouseInformation = async (
 const updateSpouseInformationField = async (
   payload: TUpdateSpouseInformationFieldPayload,
   loggedInUser: TLoggedInUser,
+  user_id: string,
 ) => {
-  const { user_id, field, value } = payload;
+  const { field, value } = payload;
   const targetUser = await prisma.user.findUnique({
     where: { id: user_id },
     select: {

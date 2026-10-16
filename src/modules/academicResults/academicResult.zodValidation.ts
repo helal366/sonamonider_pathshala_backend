@@ -52,16 +52,7 @@ export type TCreateAcademicResultZodSchema = z4.infer<
 // DELETE ACADEMIC RESULT ZOD SCHEMA
 // ==========================================
 const deleteAcademicResultZodSchema = z4.object({
-  academic_result_id: z4
-    .uuid({
-      error: (issue) => {
-        issue.input === undefined
-          ? "Academic result ID  is required"
-          : "Invalid user ID format.";
-      },
-    })
-    .trim()
-    .min(1, "Academic result ID  is required"),
+  id: z4.uuid("Invalid academic result ID."),
 });
 export type TDeleteAcademicResultZodSchema = z4.infer<
   typeof deleteAcademicResultZodSchema
@@ -71,17 +62,6 @@ export type TDeleteAcademicResultZodSchema = z4.infer<
 // UPDATE ACADEMIC RESULT FIELD ZOD SCHEMA
 // ==========================================
 const updateAcademicResultFieldZodSchema = z4.object({
-  academic_result_id: z4
-    .uuid({
-      error: (issue) => {
-        issue.input === undefined
-          ? "Academic result ID  is required"
-          : "Invalid user ID format.";
-      },
-    })
-    .trim()
-    .min(1, "Academic result ID  is required"),
-
   field: z4.enum(AcademicResult_Update_Fields, "Invalid field name"),
   value: z4
     .string({
@@ -102,17 +82,7 @@ export type TUpdateAcademicResultField = z4.infer<
 // GET SINGLE ACADEMIC RESULT BY ID ZOD SCHEMA
 // ===============================================
 const getSingleAcademicResultZodSchema = z4.object({
-  params: z4.object({
-    academic_result_id: z4
-      .uuid({
-        error: (issue) => {
-          issue.input === undefined
-            ? "Academic result ID required"
-            : "Invalid academic result ID format.";
-        },
-      })
-      .trim(),
-  }),
+  id: z4.uuid("Invalid academic result ID format."),
 });
 export type TGetSingleAcademicResultZodSchema = z4.infer<
   typeof getSingleAcademicResultZodSchema
@@ -122,17 +92,8 @@ export type TGetSingleAcademicResultZodSchema = z4.infer<
 // GET ACADEMIC RESULT BY STAFF ID ZOD SCHEMA
 // ===============================================
 const getAcademicResultByStaffIdZodSchema = z4.object({
-  params: z4.object({
-    staff_id: z4.uuid({
-      error: (issue) => {
-        issue.input === undefined
-          ? "Staff ID or Governing Body ID is required."
-          : "Invalid ID format";
-      },
-    }),
-
-    staff_role_name: z4.enum(Staff_Role_Name, "Invalid Role Name Format")
-  }),
+  staff_id: z4.uuid("Invalid staff or governing body ID."),
+  staff_role_name: z4.enum(Staff_Role_Name, "Invalid Role Name Format"),
 });
 export type TGetAcademicResultByStaffIdZodSchema = z4.infer<typeof getAcademicResultByStaffIdZodSchema>;
 

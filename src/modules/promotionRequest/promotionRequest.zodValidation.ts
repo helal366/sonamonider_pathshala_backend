@@ -60,16 +60,11 @@ export type TCreatePromotionRequestZodSchema = z4.infer<
 // =========================================================
 // DELETE PROMOTION REQUEST ZOD SCHEMA
 // =========================================================
-const deletePromotionRequestZodSchema = z4.object({
-  promotion_request_id: z4.uuid({
-    error: (issue) =>
-      issue.input === undefined
-        ? "Promotion request ID is required."
-        : "Invalid Promotion request ID format.",
-  }),
+const promotionRequestIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid promotion request ID format."),
 });
-export type TDeletePromotionRequestZodSchema = z4.infer<
-  typeof deletePromotionRequestZodSchema
+export type TPromotionRequestIdParamsZodSchema = z4.infer<
+  typeof promotionRequestIdParamsZodSchema
 >;
 
 // =========================================================
@@ -77,12 +72,6 @@ export type TDeletePromotionRequestZodSchema = z4.infer<
 // =========================================================
 export const actionPromotionRequestZodSchema = z4
   .object({
-    promotion_request_id: z4.uuid({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Promotion request ID is required."
-          : "Invalid promotion request ID format.",
-    }),
     action_status: z4.enum(["APPROVED", "REJECTED"], {
       error: (issue) => "Action status must be either APPROVED or REJECTED.",
     }),
@@ -126,19 +115,14 @@ export type TGetPromotionRequestsZodSchema = z4.infer<
 // GET SINGLE PROMOTION REQUEST ZOD SCHEMA
 // =========================================================
 const getSinglePromotionRequestZodSchema = z4.object({
-  promotion_request_id: z4.uuid({
-    error: (issue) =>
-      issue.input === undefined
-        ? "Promotion request ID parameter is required."
-        : "Invalid promotion request ID parameter format.",
-  }),
+  id: z4.uuid("Invalid promotion request ID parameter format."),
 });
 
 export type TGetSinglePromotionRequestZodSchema = z4.infer<typeof getSinglePromotionRequestZodSchema>;
 
 export const promotionRequestsZodSchema = {
   createPromotionRequestZodSchema,
-  deletePromotionRequestZodSchema,
+  promotionRequestIdParamsZodSchema,
   actionPromotionRequestZodSchema,
   getPromotionRequestsZodSchema,
   getSinglePromotionRequestZodSchema

@@ -6,11 +6,21 @@ import { prisma } from "../../lib/prisma.js";
 import {
   TCreateStaffPaymentZodSchema,
   TCreateStaffSalaryRateZodSchema,
-  TDeleteStaffPaymentZodSchema,
-  TDeleteStaffSalaryRateZodSchema,
   TUpdateStaffPaymentFieldZodSchema,
   TUpdateStaffSalaryRateFieldZodSchema,
 } from "./staffPayment.zodValidation.js";
+
+const assertManagementAccountant = (loggedInUser: TLoggedInUser) => {
+  if (
+    loggedInUser.role_name === "MANAGEMENT" &&
+    loggedInUser.position_name !== "ACCOUNTANT"
+  ) {
+    throw new AppError(
+      "Only management users with the ACCOUNTANT position can manage staff payments.",
+      StatusCodes.FORBIDDEN,
+    );
+  }
+};
 
 const toAuditValue = (
   value: unknown,
@@ -80,6 +90,7 @@ const createStaffSalaryRate = async (
   payload: TCreateStaffSalaryRateZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
+  assertManagementAccountant(loggedInUser);
   return prisma.$transaction(async (tx) => {
     if (payload.academic_staff_id) {
       const academicStaff = await tx.academicStaff.findUnique({
@@ -132,8 +143,10 @@ const createStaffSalaryRate = async (
 const updateStaffSalaryRateField = async (
   payload: TUpdateStaffSalaryRateFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  id: string,
 ) => {
-  const { id, field, value } = payload;
+  assertManagementAccountant(loggedInUser);
+  const { field, value } = payload;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.staffSalaryRate.findUnique({ where: { id } });
@@ -168,10 +181,10 @@ const updateStaffSalaryRateField = async (
 // DELETE STAFF SALARY RATE SERVICE LAYER
 // ======================================================
 const deleteStaffSalaryRate = async (
-  payload: TDeleteStaffSalaryRateZodSchema,
+  id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { id } = payload;
+  assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.staffSalaryRate.findUnique({ where: { id } });
@@ -203,6 +216,7 @@ const createStaffPayment = async (
   payload: TCreateStaffPaymentZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
+  assertManagementAccountant(loggedInUser);
   return prisma.$transaction(async (tx) => {
     if (payload.academic_staff_id) {
       const academicStaff = await tx.academicStaff.findUnique({
@@ -255,8 +269,10 @@ const createStaffPayment = async (
 const updateStaffPaymentField = async (
   payload: TUpdateStaffPaymentFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  id: string,
 ) => {
-  const { id, field, value } = payload;
+  assertManagementAccountant(loggedInUser);
+  const { field, value } = payload;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.staffPayment.findUnique({ where: { id } });
@@ -291,10 +307,10 @@ const updateStaffPaymentField = async (
 // DELETE STAFF PAYMENT SERVICE LAYER
 // ======================================================
 const deleteStaffPayment = async (
-  payload: TDeleteStaffPaymentZodSchema,
+  id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { id } = payload;
+  assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.staffPayment.findUnique({ where: { id } });

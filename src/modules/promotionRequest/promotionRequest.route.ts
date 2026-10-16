@@ -22,9 +22,11 @@ router.post(
 // DELETE PROMOTION REQUEST ROUTE
 // =========================================================
 router.delete(
-  "/delete_promotion_request",
+  "/delete_promotion_request/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  validateZodSchema(promotionRequestsZodSchema.deletePromotionRequestZodSchema),
+  validateZodParams(
+    promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
+  ),
   promotionRequestController.deletePromotionRequest,
 );
 
@@ -32,8 +34,11 @@ router.delete(
 // ACTION PROMOTION REQUEST ROUTE
 // =========================================================
 router.patch(
-  "/action_promotion_request",
+  "/action_promotion_request/:id",
   userAuth("SUPER_ADMIN"),
+  validateZodParams(
+    promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
+  ),
   validateZodSchema(promotionRequestsZodSchema.actionPromotionRequestZodSchema),
   promotionRequestController.actionPromotionRequest,
 );
@@ -52,7 +57,7 @@ router.get(
 // GET SINGLE PROMOTION REQUEST ROUTE
 // =========================================================
 router.get(
-  "/:promotion_request_id",
+  "/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
   validateZodParams(
     promotionRequestsZodSchema.getSinglePromotionRequestZodSchema,

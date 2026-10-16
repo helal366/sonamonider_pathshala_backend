@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
-import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { staffPaymentController } from "./staffPayment.controller.js";
 import { staffPaymentZodSchema } from "./staffPayment.zodValidation.js";
 
@@ -11,7 +14,7 @@ const router = Router();
 // ======================================================
 router.post(
   "/salary-rate",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
   validateZodSchema(staffPaymentZodSchema.createStaffSalaryRateZodSchema),
   staffPaymentController.createStaffSalaryRate,
 );
@@ -20,8 +23,9 @@ router.post(
 // UPDATE A SINGLE STAFF SALARY RATE FIELD ROUTE
 // ======================================================
 router.patch(
-  "/update_salary_rate_field",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  "/update_salary_rate_field/:id",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  validateZodParams(staffPaymentZodSchema.staffSalaryRateIdParamsZodSchema),
   validateZodSchema(staffPaymentZodSchema.updateStaffSalaryRateFieldZodSchema),
   staffPaymentController.updateStaffSalaryRateField,
 );
@@ -30,9 +34,9 @@ router.patch(
 // DELETE STAFF SALARY RATE ROUTE
 // ======================================================
 router.delete(
-  "/delete_salary_rate",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(staffPaymentZodSchema.deleteStaffSalaryRateZodSchema),
+  "/delete_salary_rate/:id",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  validateZodParams(staffPaymentZodSchema.staffSalaryRateIdParamsZodSchema),
   staffPaymentController.deleteStaffSalaryRate,
 );
 
@@ -41,7 +45,7 @@ router.delete(
 // ======================================================
 router.post(
   "/payment",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
   validateZodSchema(staffPaymentZodSchema.createStaffPaymentZodSchema),
   staffPaymentController.createStaffPayment,
 );
@@ -50,8 +54,9 @@ router.post(
 // UPDATE A SINGLE STAFF PAYMENT FIELD ROUTE
 // ======================================================
 router.patch(
-  "/update_payment_field",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  "/update_payment_field/:id",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  validateZodParams(staffPaymentZodSchema.staffPaymentIdParamsZodSchema),
   validateZodSchema(staffPaymentZodSchema.updateStaffPaymentFieldZodSchema),
   staffPaymentController.updateStaffPaymentField,
 );
@@ -60,9 +65,9 @@ router.patch(
 // DELETE STAFF PAYMENT ROUTE
 // ======================================================
 router.delete(
-  "/delete_payment",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
-  validateZodSchema(staffPaymentZodSchema.deleteStaffPaymentZodSchema),
+  "/delete_payment/:id",
+  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  validateZodParams(staffPaymentZodSchema.staffPaymentIdParamsZodSchema),
   staffPaymentController.deleteStaffPayment,
 );
 

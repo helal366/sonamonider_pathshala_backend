@@ -118,10 +118,9 @@ const createAcademicResult = async (
 // DELETE ACADEMIC RESULT SERVICE LAYER
 // =============================================
 const deleteAcademicResult = async (
-  payload: TDeleteAcademicResultZodSchema,
+  academic_result_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { academic_result_id } = payload;
 
   const academicResult = await prisma.academicResult.findUnique({
     where: { id: academic_result_id },
@@ -154,11 +153,11 @@ const deleteAcademicResult = async (
 // UPDATE ACADEMIC RESULT FIELD SERVICE LAYER
 // =============================================
 const updateAcademicResultField = async (
-  payload: TUpdateAcademicResultField,
+  payload: Omit<TUpdateAcademicResultField, "academic_result_id">,
   loggedInUser: TLoggedInUser,
+  academic_result_id: string,
 ) => {
-  // 1. Destructure payload
-  const { academic_result_id, field, value } = payload;
+  const { field, value } = payload;
 
   // 2. Check the existancce of the academic result id
   const existingAcademicResult = await prisma.academicResult.findUnique({

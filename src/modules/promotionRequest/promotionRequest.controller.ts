@@ -3,9 +3,8 @@ import { catchAsync } from "../../utils/catchAsync";
 import {
   TActionPromotionRequestZodSchema,
   TCreatePromotionRequestZodSchema,
-  TDeletePromotionRequestZodSchema,
   TGetPromotionRequestsZodSchema,
-  TGetSinglePromotionRequestZodSchema,
+  TPromotionRequestIdParamsZodSchema,
 } from "./promotionRequest.zodValidation";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { sendResponse } from "../../utils/sendResponse";
@@ -40,11 +39,10 @@ const createPromotionRequest = catchAsync(
 // DELETE PROMOTION REQUEST CONTROLLER
 // =========================================================
 const deletePromotionRequest = catchAsync(
-  async (req: Request, res: Response) => {
-    const payload: TDeletePromotionRequestZodSchema = req.body;
+  async (req: Request<TPromotionRequestIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const result = await promotionRequestServices.deletePromotionRequest(
-      payload,
+      req.params.id,
       loggedInUser,
     );
 
@@ -61,7 +59,7 @@ const deletePromotionRequest = catchAsync(
 // ACTION PROMOTION REQUEST CONTROLLER
 // =========================================================
 const actionPromotionRequest = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TPromotionRequestIdParamsZodSchema>, res: Response) => {
     const payload: TActionPromotionRequestZodSchema = req.body;
     if (!payload) {
       throw new AppError(`Payload not found.`, StatusCodes.NOT_FOUND);
@@ -71,6 +69,7 @@ const actionPromotionRequest = catchAsync(
     const result = await promotionRequestActionServices.actionPromotionRequest(
       payload,
       loggedInUser,
+      req.params.id,
     );
 
     sendResponse(res, {
@@ -112,12 +111,12 @@ const getSinglePromotionRequest = catchAsync(
     helperFunctions.requiredUser(req);
 
     // Cast and capture safely from route path parameters
-    const { promotion_request_id } =
-      req.params as unknown as TGetSinglePromotionRequestZodSchema;
+    const { id } =
+      req.params as unknown as TPromotionRequestIdParamsZodSchema;
 
     const result =
       await promotionRequestGetServices.getPromotionRequestById(
-        promotion_request_id,
+        id,
       );
 
     sendResponse(res, {

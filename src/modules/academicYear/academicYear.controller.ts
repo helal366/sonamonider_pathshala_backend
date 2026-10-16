@@ -4,7 +4,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { academicYearServices } from "./academicYear.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TGetSingleAcademicYearZodSchema } from "./academicYear.zodValidation";
+import { TAcademicYearIdParamsZodSchema } from "./academicYear.zodValidation";
 
 // ==========================================
 // CREATE ACADEMIC YEAR CONTROLLER
@@ -28,11 +28,10 @@ const createAcademicYear = catchAsync(async (req: Request, res: Response) => {
 // ==========================================
 // DELETE ACADEMIC YEAR CONTROLLER
 // ==========================================
-const deleteAcademicYear = catchAsync(async (req: Request, res: Response) => {
+const deleteAcademicYear = catchAsync(async (req: Request<TAcademicYearIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const payload = req.body;
   const result = await academicYearServices.deleteAcademicYear(
-    payload,
+    req.params.id,
     loggedInUser,
   );
 
@@ -48,12 +47,13 @@ const deleteAcademicYear = catchAsync(async (req: Request, res: Response) => {
 // UPDATE ACADEMIC YEAR FIELD CONTROLLER
 // ==========================================
 const updateAcademicYearField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TAcademicYearIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
     const result = await academicYearServices.updateAcademicYearField(
       payload,
       loggedInUser,
+      req.params.id,
     );
 
     sendResponse(res, {
@@ -82,15 +82,11 @@ const getAllAcademicYearName = catchAsync(
 );
 
 const getSingleAcademicYearWithHistory = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TAcademicYearIdParamsZodSchema>, res: Response) => {
     helperFunctions.requiredUser(req);
-    const payload: TGetSingleAcademicYearZodSchema = {
-      params: req.params as TGetSingleAcademicYearZodSchema["params"],
-    };
-    const academic_year_id = payload.params.academic_year_id;
     const result =
       await academicYearServices.getSingleAcademicYearWithHistory(
-        academic_year_id,
+        req.params.id,
       );
     sendResponse(res, {
       success: true,

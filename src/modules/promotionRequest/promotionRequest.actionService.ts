@@ -11,9 +11,9 @@ const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
 const actionPromotionRequest = async (
   payload: TActionPromotionRequestZodSchema,
   loggedInUser: TLoggedInUser,
+  promotion_request_id: string,
 ) => {
   const {
-    promotion_request_id,
     action_status,
     rejection_reason,
     effective_date,

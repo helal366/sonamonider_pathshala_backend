@@ -6,11 +6,21 @@ import { prisma } from "../../lib/prisma.js";
 import {
   TCreateStudentFeePaymentZodSchema,
   TCreateStudentFeeRateZodSchema,
-  TDeleteStudentFeePaymentZodSchema,
-  TDeleteStudentFeeRateZodSchema,
   TUpdateStudentFeePaymentFieldZodSchema,
   TUpdateStudentFeeRateFieldZodSchema,
 } from "./studentFee.zodValidation.js";
+
+const assertManagementAccountant = (loggedInUser: TLoggedInUser) => {
+  if (
+    loggedInUser.role_name === "MANAGEMENT" &&
+    loggedInUser.position_name !== "ACCOUNTANT"
+  ) {
+    throw new AppError(
+      "Only management users with the ACCOUNTANT position can manage student fees.",
+      StatusCodes.FORBIDDEN,
+    );
+  }
+};
 
 const toAuditValue = (value: unknown): string | number | boolean | null => {
   if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
@@ -29,6 +39,7 @@ const createStudentFeeRate = async (
   payload: TCreateStudentFeeRateZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
+  assertManagementAccountant(loggedInUser);
   return prisma.$transaction(async (tx) => {
     const student = await tx.student.findUnique({
       where: { id: payload.student_id },
@@ -74,8 +85,10 @@ const createStudentFeeRate = async (
 const updateStudentFeeRateField = async (
   payload: TUpdateStudentFeeRateFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  id: string,
 ) => {
-  const { id, field, value } = payload;
+  assertManagementAccountant(loggedInUser);
+  const { field, value } = payload;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.studentFeeRate.findUnique({ where: { id } });
@@ -110,10 +123,10 @@ const updateStudentFeeRateField = async (
 // DELETE STUDENT FEE RATE SERVICE LAYER
 // ======================================================
 const deleteStudentFeeRate = async (
-  payload: TDeleteStudentFeeRateZodSchema,
+  id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { id } = payload;
+  assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.studentFeeRate.findUnique({ where: { id } });
@@ -153,6 +166,7 @@ const createStudentFeePayment = async (
   payload: TCreateStudentFeePaymentZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
+  assertManagementAccountant(loggedInUser);
   return prisma.$transaction(async (tx) => {
     const [student, academicYear] = await Promise.all([
       tx.student.findUnique({
@@ -210,8 +224,10 @@ const createStudentFeePayment = async (
 const updateStudentFeePaymentField = async (
   payload: TUpdateStudentFeePaymentFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  id: string,
 ) => {
-  const { id, field, value } = payload;
+  assertManagementAccountant(loggedInUser);
+  const { field, value } = payload;
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.studentFeePayment.findUnique({ where: { id } });
@@ -246,10 +262,10 @@ const updateStudentFeePaymentField = async (
 // DELETE STUDENT FEE PAYMENT SERVICE LAYER
 // ======================================================
 const deleteStudentFeePayment = async (
-  payload: TDeleteStudentFeePaymentZodSchema,
+  id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { id } = payload;
+  assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.studentFeePayment.findUnique({ where: { id } });

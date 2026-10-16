@@ -6,7 +6,6 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import {
   TConnectFatherDetailsZodSchema,
   TCreateFatherDetailsZodSchema,
-  TDisconnectFatherDetailsZodSchema,
   TUpdateFatherDetailsFieldPayload,
 } from "./fatherDetails.zodValidation.js";
 
@@ -258,8 +257,9 @@ const connectFatherDetails = async (
 const updateFatherDetailsField = async (
   payload: TUpdateFatherDetailsFieldPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
+  user_id: string,
 ) => {
-  const { user_id, field, value } = payload;
+  const { field, value } = payload;
   const targetUser = await prisma.user.findUnique({
     where: { id: user_id },
     select: {
@@ -325,10 +325,9 @@ const updateFatherDetailsField = async (
 // DISCONNECT FATHER DETAILS SERVICE LAYER
 // ======================================================
 const disconnectFatherDetails = async (
-  payload: TDisconnectFatherDetailsZodSchema,
+  user_id: string,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { user_id } = payload;
 
   const targetUser = await prisma.user.findUnique({
     where: {

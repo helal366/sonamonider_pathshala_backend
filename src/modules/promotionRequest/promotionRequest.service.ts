@@ -7,7 +7,6 @@ import { prisma } from "../../lib/prisma";
 import {
   TActionPromotionRequestZodSchema,
   TCreatePromotionRequestZodSchema,
-  TDeletePromotionRequestZodSchema,
 } from "./promotionRequest.zodValidation";
 import { Prisma } from "#db-client";
 
@@ -180,10 +179,9 @@ const createPromotionRequest = async (
 // DELETE PROMOTION REQUEST SERVICE LAYER
 // =========================================================
 const deletePromotionRequest = async (
-  payload: TDeletePromotionRequestZodSchema,
+  promotion_request_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { promotion_request_id } = payload;
   return prisma.$transaction(async (tx) => {
     // CHECK THE EXISTANCE OF THE PROMOTION REQUEST
     const promotionRequest = await tx.promotionRequest.findUnique({

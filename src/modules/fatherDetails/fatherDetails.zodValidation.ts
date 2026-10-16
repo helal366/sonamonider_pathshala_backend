@@ -103,12 +103,7 @@ export type TConnectFatherDetailsZodSchema = z4.infer<
 // DELETE/DISCONNECT FATHER DETAILS ZOD SCHEMA
 // ======================================================
 const disconnectFatherDetailsZodSchema = z4.object({
-  user_id: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
-    })
-    .trim(),
+  id: z4.uuid("Invalid user ID."),
 });
 
 export type TDisconnectFatherDetailsZodSchema = z4.infer<
@@ -121,26 +116,22 @@ export type TDisconnectFatherDetailsZodSchema = z4.infer<
 
 const updateFatherDetailsFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("father_name"),
     value: z4.string().trim().min(2, "Father name is required."),
   }),
   ...(["nid_no", "occupation", "job_title", "monthly_income"] as const).map(
     (field) =>
       z4.object({
-        user_id: z4.string().trim().min(1, "User ID is required."),
         field: z4.literal(field),
         value: z4.string().trim().nullable(),
       }),
   ),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("educational_qualification"),
     value: z4.enum(EducationDegree).nullable(),
   }),
   ...(["mobile_no_1", "mobile_no_2", "mobile_no_3"] as const).map((field) =>
     z4.object({
-      user_id: z4.string().trim().min(1, "User ID is required."),
       field: z4.literal(field),
       value: z4
         .string()
@@ -159,9 +150,20 @@ export type TUpdateFatherDetailsFieldPayload = z4.infer<
   typeof updateFatherDetailsFieldZodSchema
 >;
 
+// ======================================================
+// FATHER DETAILS USER ID PARAMS ZOD SCHEMA
+// ======================================================
+const fatherDetailsUserIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid user ID."),
+});
+export type TFatherDetailsUserIdParamsZodSchema = z4.infer<
+  typeof fatherDetailsUserIdParamsZodSchema
+>;
+
 export const fatherDetailsZodSchema = {
   createFatherDetailsZodSchema,
   connectFatherDetailsZodSchema,
   disconnectFatherDetailsZodSchema,
   updateFatherDetailsFieldZodSchema,
+  fatherDetailsUserIdParamsZodSchema,
 };

@@ -32,11 +32,11 @@ const createAcademicResult = catchAsync(async (req: Request, res: Response) => {
 // DELETE ACADEMIC RESULT CONTROLLER
 // ==========================================
 const deleteAcademicResult = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
   const loggedInUser = helperFunctions.requiredUser(req);
+  const { id } = req.params as unknown as { id: string };
 
   const result = await academicResultServices.deleteAcademicResult(
-    payload,
+    id,
     loggedInUser,
   );
   sendResponse(res, {
@@ -54,10 +54,12 @@ const updateAcademicResultField = catchAsync(
   async (req: Request, res: Response) => {
     const payload = req.body;
     const loggedInUser = helperFunctions.requiredUser(req);
+    const { id } = req.params as unknown as { id: string };
 
-    const result = await academicResultServices.deleteAcademicResult(
+    const result = await academicResultServices.updateAcademicResultField(
       payload,
       loggedInUser,
+      id,
     );
     sendResponse(res, {
       success: true,
@@ -91,14 +93,11 @@ const getSingleAcademicResult = catchAsync(
   async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
 
-    const payload: TGetSingleAcademicResultZodSchema = {
-      params: req.params as TGetSingleAcademicResultZodSchema["params"],
-    };
-
-    const { academic_result_id } = payload.params;
+    const { id } =
+      req.params as unknown as TGetSingleAcademicResultZodSchema;
 
     const result =
-      await academicResultServices.getSingleAcademicResult(academic_result_id);
+      await academicResultServices.getSingleAcademicResult(id);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
@@ -114,10 +113,8 @@ const getSingleAcademicResult = catchAsync(
 const getAcademicResultByStaffId = catchAsync(
   async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
-    const payload: TGetAcademicResultByStaffIdZodSchema = {
-      params: req.params as TGetAcademicResultByStaffIdZodSchema["params"],
-    };
-    const { staff_id, staff_role_name } = payload.params;
+    const { staff_id, staff_role_name } =
+      req.params as unknown as TGetAcademicResultByStaffIdZodSchema;
 
     const result = await academicResultServices.getAcademicResultByStaffId(
       staff_id,

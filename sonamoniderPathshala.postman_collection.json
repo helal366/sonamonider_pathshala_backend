@@ -19,6 +19,11 @@
     { "key": "shiftId", "value": "00000000-0000-4000-8000-000000000008" },
     { "key": "studentId", "value": "00000000-0000-4000-8000-000000000009" },
     { "key": "academicStaffId", "value": "00000000-0000-4000-8000-000000000010" },
+    { "key": "managementStaffId", "value": "00000000-0000-4000-8000-000000000014" },
+    { "key": "studentFeeRateId", "value": "00000000-0000-4000-8000-000000000015" },
+    { "key": "studentFeePaymentId", "value": "00000000-0000-4000-8000-000000000016" },
+    { "key": "staffSalaryRateId", "value": "00000000-0000-4000-8000-000000000017" },
+    { "key": "staffPaymentId", "value": "00000000-0000-4000-8000-000000000018" },
     { "key": "quranicClassId", "value": "00000000-0000-4000-8000-000000000011" },
     { "key": "quranicClassPeriodId", "value": "00000000-0000-4000-8000-000000000012" },
     { "key": "promotionRequestId", "value": "00000000-0000-4000-8000-000000000013" },
@@ -500,10 +505,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "raw": "{\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address"
+            "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address/{{userId}}"
           },
           "response": []
         },
@@ -514,10 +519,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"field\": \"district\",\n  \"value\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "raw": "{\n  \"field\": \"district\",\n  \"value\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/user/address/update_address_field"
+            "url": "{{baseUrl}}/api/v1/smps/user/address/update_address_field/{{userId}}"
           },
           "response": []
         }
@@ -565,10 +570,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
+              "raw": "{}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/disconnect_father_details"
+            "url": "{{baseUrl}}/api/v1/smps/father_details/disconnect_father_details/{{userId}}"
           },
           "response": []
         },
@@ -579,10 +584,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"father_name\",\n  \"value\": \"FATHER_NAME\"\n}",
+              "raw": "{\n  \"field\": \"father_name\",\n  \"value\": \"FATHER_NAME\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/update_father_details_field"
+            "url": "{{baseUrl}}/api/v1/smps/father_details/update_father_details_field/{{userId}}"
           },
           "response": []
         }
@@ -630,10 +635,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"mother_name\",\n  \"value\": \"MOTHER_NAME\"\n}",
+              "raw": "{\n  \"field\": \"mother_name\",\n  \"value\": \"MOTHER_NAME\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/update_mother_details_field"
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/update_mother_details_field/{{userId}}"
           },
           "response": []
         },
@@ -644,10 +649,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\"\n}",
+              "raw": "{}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/disconnect_mother_details"
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/disconnect_mother_details/{{userId}}"
           },
           "response": []
         }
@@ -690,10 +695,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"full_name\",\n  \"value\": \"SPOUSE_FULL_NAME\"\n}",
+              "raw": "{\n  \"field\": \"full_name\",\n  \"value\": \"SPOUSE_FULL_NAME\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/spouse_information/update_spouse_information_field"
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/update_spouse_information_field/{{userId}}"
           },
           "response": []
         }
@@ -722,28 +727,21 @@
         },
         {
           "name": "Delete Class",
-          "description": "The request body mirrors the current Zod schema; the class ID is also included in the URL path.",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"class_id\": \"{{classId}}\"\n  }\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [],
             "url": "{{baseUrl}}/api/v1/smps/class/delete/{{classId}}"
           },
           "response": []
         },
         {
           "name": "Update Class Field",
-          "description": "The request body mirrors the current Zod schema; the class ID is also included in the URL path.",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"class_id\": \"{{classId}}\"\n  },\n  \"body\": {\n    \"field\": \"class_name\",\n    \"value\": \"NEW_CLASS_NAME\"\n  }\n}",
+              "raw": "{\n  \"field\": \"class_name\",\n  \"value\": \"NEW_CLASS_NAME\"\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": "{{baseUrl}}/api/v1/smps/class/update/{{classId}}"
@@ -915,13 +913,8 @@
           "name": "Delete Academic Year",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"academic_year_id\": \"{{academicYearId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete"
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete/{{academicYearId}}"
           },
           "response": []
         },
@@ -932,10 +925,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_year_id\": \"{{academicYearId}}\",\n  \"field\": \"academic_year_name\",\n  \"value\": \"2027-2028\"\n}",
+              "raw": "{\n  \"field\": \"academic_year_name\",\n  \"value\": \"2027-2028\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field"
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field/{{academicYearId}}"
           },
           "response": []
         },
@@ -983,14 +976,9 @@
         {
           "name": "Delete Academic Result",
           "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"academic_result_id\": \"{{academicResultId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete"
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete/{{academicResultId}}"
           },
           "response": []
         },
@@ -1001,10 +989,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_result_id\": \"{{academicResultId}}\",\n  \"field\": \"ssc_result\",\n  \"value\": \"A+\"\n}",
+              "raw": "{\n  \"field\": \"ssc_result\",\n  \"value\": \"A+\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field"
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field/{{academicResultId}}"
           },
           "response": []
         },
@@ -1019,33 +1007,19 @@
         },
         {
           "name": "Get Academic Result by ID",
-          "description": "The current GET validation middleware reads the params object from the JSON body; the ID is also included in the URL path.",
-          "protocolProfileBehavior": { "disableBodyPruning": true },
           "request": {
             "method": "GET",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"academic_result_id\": \"{{academicResultId}}\"\n  }\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [],
             "url": "{{baseUrl}}/api/v1/smps/academic_result/{{academicResultId}}"
           },
           "response": []
         },
         {
           "name": "Get Academic Result by Staff ID",
-          "description": "This request matches a registered route, but its /:staff_id path is shadowed by the earlier /:academic_result_id route. The current GET validation middleware also reads params from the JSON body.",
-          "protocolProfileBehavior": { "disableBodyPruning": true },
           "request": {
             "method": "GET",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"staff_id\": \"{{staffId}}\",\n    \"staff_role_name\": \"ACADEMIC\"\n  }\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{staffId}}"
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/by_staff/{{staffId}}/ACADEMIC"
           },
           "response": []
         }
@@ -1065,10 +1039,24 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academicStaff_id\": \"{{academicStaffId}}\",\n  \"current_subject\": \"MATHEMATICS\",\n  \"new_subject\": \"SCIENCE\"\n}",
+              "raw": "{\n  \"current_subject\": \"MATHEMATICS\",\n  \"new_subject\": \"SCIENCE\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject"
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject/{{academicStaffId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Academic Staff Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"teaching_experience_year\",\n  \"value\": 5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_field/{{academicStaffId}}"
           },
           "response": []
         }
@@ -1099,13 +1087,8 @@
           "name": "Delete Promotion Request",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"promotion_request_id\": \"{{promotionRequestId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/delete_promotion_request"
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/delete_promotion_request/{{promotionRequestId}}"
           },
           "response": []
         },
@@ -1116,10 +1099,10 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"promotion_request_id\": \"{{promotionRequestId}}\",\n  \"action_status\": \"APPROVED\",\n  \"effective_date\": \"2026-01-01T00:00:00.000Z\"\n}",
+              "raw": "{\n  \"action_status\": \"APPROVED\",\n  \"effective_date\": \"2026-01-01T00:00:00.000Z\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/action_promotion_request"
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/action_promotion_request/{{promotionRequestId}}"
           },
           "response": []
         },
@@ -1137,7 +1120,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/get_promotion_request/{{promotionRequestId}}"
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/{{promotionRequestId}}"
           },
           "response": []
         }
@@ -1290,6 +1273,172 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_class_period/{{quranicClassPeriodId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student Fees",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Student Fee Rate",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_rate"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student Fee Rate Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1200\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{studentFeeRateId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student Fee Rate",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{studentFeeRateId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Student Fee Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"academic_year_id\": \"{{academicYearId}}\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_payment"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student Fee Payment Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"receipt_number\",\n  \"value\": \"RECEIPT-001\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_payment_field/{{studentFeePaymentId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student Fee Payment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_payment/{{studentFeePaymentId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Staff Payments",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Create Staff Salary Rate",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_staff_id\": \"{{academicStaffId}}\",\n  \"monthly_salary\": 30000,\n  \"eid_bonus\": 15000,\n  \"change_type\": \"INITIAL\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/salary-rate"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Staff Salary Rate Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"monthly_salary\",\n  \"value\": 32000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_salary_rate_field/{{staffSalaryRateId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Staff Salary Rate",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_salary_rate/{{staffSalaryRateId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Staff Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_staff_id\": \"{{academicStaffId}}\",\n  \"payment_type\": \"MONTHLY_SALARY\",\n  \"payment_period_key\": \"2026-10\",\n  \"amount\": 30000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/payment"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Staff Payment Field",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"receipt_number\",\n  \"value\": \"PAYMENT-001\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_payment_field/{{staffPaymentId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Staff Payment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_payment/{{staffPaymentId}}"
           },
           "response": []
         }

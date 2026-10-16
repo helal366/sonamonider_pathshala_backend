@@ -13,8 +13,9 @@ import {
 const updateSubjectForSubjectTeacher = async (
   payload: TUpdateSubjectForSubjectTeacherZodSchema,
   loggedInUser: TLoggedInUser,
+  academicStaff_id: string,
 ) => {
-  const { academicStaff_id, current_subject, new_subject } = payload;
+  const { current_subject, new_subject } = payload;
   return await prisma.$transaction(async (tx) => {
     // FIND ACADEMIC STAFF
     const teacher = await tx.academicStaff.findUnique({
@@ -94,8 +95,9 @@ const updateSubjectForSubjectTeacher = async (
 const updateAcademicStaffField = async (
   payload: TUpdateAcademicStaffFieldZodSchema,
   loggedInUser: TLoggedInUser,
+  academicStaff_id: string,
 ) => {
-  const { academicStaff_id, field, value } = payload;
+  const { field, value } = payload;
   return prisma.$transaction(async (tx) => {
     // FIND ACADEMIC STAFF
     const academicStaff = await tx.academicStaff.findUnique({

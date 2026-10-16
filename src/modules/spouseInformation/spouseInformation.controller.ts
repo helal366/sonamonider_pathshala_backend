@@ -4,7 +4,10 @@ import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { spouseInformationServices } from "./spouseInformation.service.js";
-import type { TDeleteSpouseInformationZodSchema, TUpdateSpouseInformationFieldPayload } from "./spouseInformation.zodValidation.js";
+import type {
+  TUpdateSpouseInformationFieldPayload,
+  TSpouseInformationUserIdParamsZodSchema,
+} from "./spouseInformation.zodValidation.js";
 
 // ============================================================
 // CREATE SPOUSE INFORMATION CONTROLLER
@@ -29,11 +32,11 @@ const createSpouseInformation = catchAsync(
 // DELETE SPOUSE INFORMATION CONTROLLER
 // ============================================================
 const deleteSpouseInformation = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TSpouseInformationUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const {user_id} = req.params as unknown as TDeleteSpouseInformationZodSchema
+    const { id } = req.params;
     const result = await spouseInformationServices.deleteSpouseInformation(
-      user_id,
+      id,
       loggedInUser,
     );
     sendResponse(res, {
@@ -49,12 +52,14 @@ const deleteSpouseInformation = catchAsync(
 // UPDATE SPOUSE INFORMATION FIELD CONTROLLER
 // ============================================================
 const updateSpouseInformationField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TSpouseInformationUserIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateSpouseInformationFieldPayload;
+    const { id } = req.params;
     const result = await spouseInformationServices.updateSpouseInformationField(
       payload,
       loggedInUser,
+      id,
     );
     sendResponse(res, {
       statusCode: StatusCodes.OK,

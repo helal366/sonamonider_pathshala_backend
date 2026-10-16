@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { classController } from "./class.controller";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validateZodSchema";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema";
 import { classZodSchema } from "./class.zodValidation";
 
 const router = Router();
@@ -20,9 +23,9 @@ router.post(
 // DELETE CLASS NAME ROUTE
 // =============================================
 router.delete(
-  "/delete/:class_id",
+  "/delete/:id",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(classZodSchema.deleteClassNameZodSchema),
+  validateZodParams(classZodSchema.classIdParamsZodSchema),
   classController.deleteClassName,
 );
 
@@ -30,8 +33,9 @@ router.delete(
 // UPDATE CLASS FIELD ROUTE
 // =============================================
 router.patch(
-  "/update/:class_id",
+  "/update/:id",
   userAuth("SUPER_ADMIN"),
+  validateZodParams(classZodSchema.classIdParamsZodSchema),
   validateZodSchema(classZodSchema.updateClassFieldZodSchema),
   classController.updateClassField,
 );

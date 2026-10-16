@@ -5,7 +5,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { userAddressServices } from "./address.service.js";
-import { TDeleteAddressZodSchema } from "./address.zodValidation.js";
+import { TAddressOwnerIdParamsZodSchema } from "./address.zodValidation.js";
 
 // ============================================================
 // UPDATE ADDRESS CONTROLLER
@@ -33,13 +33,15 @@ const createAddress = catchAsync(
 // DELETE ADDRESS CONTROLLER
 // ============================================================
 const deleteAddress = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
-    const payload: TDeleteAddressZodSchema = req.body;
+    const payload = req.body;
+    const { id } = req.params;
 
     const result = await userAddressServices.deleteAddress(
       loggedInUser,
       payload,
+      id,
     );
 
     sendResponse(res, {
@@ -54,13 +56,15 @@ const deleteAddress = catchAsync(
 // UPDATE ADDRESS FIELD CONTROLLER
 // ============================================================
 const updateUserAddressField = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
+    const { id } = req.params;
 
     const result = await userAddressServices.updateUserAddressFiled(
       loggedInUser,
       payload,
+      id,
     );
 
     sendResponse(res, {

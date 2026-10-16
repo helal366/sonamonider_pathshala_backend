@@ -7,8 +7,8 @@ import { staffPaymentServices } from "./staffPayment.service.js";
 import {
   TCreateStaffPaymentZodSchema,
   TCreateStaffSalaryRateZodSchema,
-  TDeleteStaffPaymentZodSchema,
-  TDeleteStaffSalaryRateZodSchema,
+  TStaffPaymentIdParamsZodSchema,
+  TStaffSalaryRateIdParamsZodSchema,
   TUpdateStaffPaymentFieldZodSchema,
   TUpdateStaffSalaryRateFieldZodSchema,
 } from "./staffPayment.zodValidation.js";
@@ -38,12 +38,17 @@ const createStaffSalaryRate = catchAsync(
 // UPDATE A SINGLE STAFF SALARY RATE FIELD CONTROLLER
 // ======================================================
 const updateStaffSalaryRateField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStaffSalaryRateIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStaffSalaryRateFieldZodSchema;
+    const { id } = req.params;
     const result = await staffPaymentServices.updateStaffSalaryRateField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -59,11 +64,14 @@ const updateStaffSalaryRateField = catchAsync(
 // DELETE STAFF SALARY RATE CONTROLLER
 // ======================================================
 const deleteStaffSalaryRate = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStaffSalaryRateIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TDeleteStaffSalaryRateZodSchema;
+    const { id } = req.params;
     const result = await staffPaymentServices.deleteStaffSalaryRate(
-      payload,
+      id,
       loggedInUser,
     );
 
@@ -101,12 +109,17 @@ const createStaffPayment = catchAsync(
 // UPDATE A SINGLE STAFF PAYMENT FIELD CONTROLLER
 // ======================================================
 const updateStaffPaymentField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStaffPaymentIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStaffPaymentFieldZodSchema;
+    const { id } = req.params;
     const result = await staffPaymentServices.updateStaffPaymentField(
       payload,
       loggedInUser,
+      id,
     );
 
     sendResponse(res, {
@@ -122,11 +135,14 @@ const updateStaffPaymentField = catchAsync(
 // DELETE STAFF PAYMENT CONTROLLER
 // ======================================================
 const deleteStaffPayment = catchAsync(
-  async (req: Request, res: Response) => {
+  async (
+    req: Request<TStaffPaymentIdParamsZodSchema>,
+    res: Response,
+  ) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TDeleteStaffPaymentZodSchema;
+    const { id } = req.params;
     const result = await staffPaymentServices.deleteStaffPayment(
-      payload,
+      id,
       loggedInUser,
     );
 

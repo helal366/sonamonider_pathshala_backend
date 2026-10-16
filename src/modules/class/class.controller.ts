@@ -5,7 +5,7 @@ import { classServices } from "./class.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
-  TDeleteClassNameZodSchema,
+  TClassIdParamsZodSchema,
   TUpdateClassFieldZodSchema,
 } from "./class.zodValidation";
 
@@ -28,12 +28,9 @@ const createClassName = catchAsync(async (req: Request, res: Response) => {
 // =============================================
 // DELETE CLASS NAME CONTROLLER
 // =============================================
-const deleteClassName = catchAsync(async (req: Request, res: Response) => {
+const deleteClassName = catchAsync(async (req: Request<TClassIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const payload: TDeleteClassNameZodSchema = {
-    params: req.params as TDeleteClassNameZodSchema["params"],
-  };
-  const { class_id } = payload.params;
+  const { id: class_id } = req.params;
 
   const result = await classServices.deleteClassName(class_id, loggedInUser);
 
@@ -48,14 +45,10 @@ const deleteClassName = catchAsync(async (req: Request, res: Response) => {
 // =============================================
 // UPDATE CLASS FIELD CONTROLLER
 // =============================================
-const updateClassField = catchAsync(async (req: Request, res: Response) => {
+const updateClassField = catchAsync(async (req: Request<TClassIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const payload: TUpdateClassFieldZodSchema = {
-    params: req.params as TUpdateClassFieldZodSchema["params"],
-    body: req.body as TUpdateClassFieldZodSchema["body"],
-  };
-  const { class_id } = payload.params;
-  const { field, value } = payload.body;
+  const { id: class_id } = req.params;
+  const { field, value } = req.body as TUpdateClassFieldZodSchema;
   const updatePayload = {
     class_id,
     field,

@@ -67,38 +67,31 @@ export type TConnectMotherDetailsZodSchema = z4.infer<
 
 const updateMotherDetailsFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("mother_name"),
     value: z4.string().trim().min(2, "Mother name is required."),
   }),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("nid_no"),
     value: z4.string().trim().nullable(),
   }),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("occupation"),
     value: z4.string().trim().nullable(),
   }),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("job_title"),
     value: z4.string().trim().nullable(),
   }),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("educational_qualification"),
     value: z4.enum(EducationDegree).nullable(),
   }),
   z4.object({
-    user_id: z4.string().trim().min(1, "User ID is required."),
     field: z4.literal("monthly_income"),
     value: z4.string().trim().nullable(),
   }),
   ...(["mobile_no_1", "mobile_no_2", "mobile_no_3"] as const).map((field) =>
     z4.object({
-      user_id: z4.string().trim().min(1, "User ID is required."),
       field: z4.literal(field),
       value: z4
         .string()
@@ -122,16 +115,21 @@ export type TUpdateMotherDetailsFieldPayload = z4.infer<
 // ============================================================
 
 const disconnectMotherDetailsZodSchema = z4.object({
-  user_id: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined ? "User ID is required." : "Invalid user ID.",
-    })
-    .trim(),
+  id: z4.uuid("Invalid user ID."),
 });
 
 export type TDisconnectMotherDetailsZodSchema = z4.infer<
   typeof disconnectMotherDetailsZodSchema
+>;
+
+// ============================================================
+// MOTHER DETAILS USER ID PARAMS ZOD SCHEMA
+// ============================================================
+const motherDetailsUserIdParamsZodSchema = z4.object({
+  id: z4.uuid("Invalid user ID."),
+});
+export type TMotherDetailsUserIdParamsZodSchema = z4.infer<
+  typeof motherDetailsUserIdParamsZodSchema
 >;
 
 export const motherDetailsZodSchema = {
@@ -139,4 +137,5 @@ export const motherDetailsZodSchema = {
   connectMotherDetailsZodSchema,
   updateMotherDetailsFieldZodSchema,
   disconnectMotherDetailsZodSchema,
+  motherDetailsUserIdParamsZodSchema,
 };

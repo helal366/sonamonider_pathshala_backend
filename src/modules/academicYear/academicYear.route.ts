@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
-import { validateZodSchema } from "../../middlewares/validateZodSchema";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema";
 import { academicYearZodSchema } from "./academicYear.zodValidation";
 import { academicYearController } from "./academicYear.controller";
 
@@ -20,9 +23,9 @@ router.post(
 // DELETE ACADEMIC YEAR ROUTE
 // ==========================================
 router.delete(
-  "/delete",
+  "/delete/:id",
   userAuth("SUPER_ADMIN"),
-  validateZodSchema(academicYearZodSchema.deleteAcademicYearZodSchema),
+  validateZodParams(academicYearZodSchema.academicYearIdParamsZodSchema),
   academicYearController.deleteAcademicYear,
 );
 
@@ -30,8 +33,9 @@ router.delete(
 // UPDATE ACADEMIC YEAR FIELD ROUTE
 // ==========================================
 router.patch(
-  "/update_field",
+  "/update_field/:id",
   userAuth("SUPER_ADMIN"),
+  validateZodParams(academicYearZodSchema.academicYearIdParamsZodSchema),
   validateZodSchema(academicYearZodSchema.updateAcademicYearFieldZodSchema),
   academicYearController.updateAcademicYearField,
 );
@@ -51,6 +55,7 @@ router.get(
 router.get(
   "/:id",
   userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  validateZodParams(academicYearZodSchema.getSingleAcademicYearZodSchema),
   academicYearController.getSingleAcademicYearWithHistory,
 );
 export const academicYearRouter: Router = router;
