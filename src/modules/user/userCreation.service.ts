@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
 
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { userHelperFunction } from "./user.helper.function";
+import { userHelperFunction } from "./user.helperFunction";
 import { TCleanRolesUserCreation } from "./user.interface";
 import { TUserCreateZodSchema } from "./user.zodValidation";
 import { prisma } from "../../lib/prisma";
@@ -188,10 +188,9 @@ const createUser = async (
               quranic_subject: { connect: { id: existingQuranicClass.id } },
               arabic_literature: payload.arabic_literature ?? false,
               class_history_quranic_periods: {
-                create: 
-                  quranicClassPeriodIDs.map((id:string)=>({
-                    quranic_period: {connect: {id}}
-                  }))                
+                create: quranicClassPeriodIDs.map((id: string) => ({
+                  quranic_period: { connect: { id } },
+                })),
               },
               created_by: { connect: { id: loggedInUser.user_id } },
             },
@@ -207,7 +206,7 @@ const createUser = async (
               end_date: academicEndDate.toISOString(),
               arabic_literature: payload.arabic_literature ?? false,
               quranic_class_id: existingQuranicClass.id,
-              quranic_class_period_ids: quranicClassPeriodIDs
+              quranic_class_period_ids: quranicClassPeriodIDs,
             },
             action: "CREATE",
             changed_by_id: loggedInUser.user_id,

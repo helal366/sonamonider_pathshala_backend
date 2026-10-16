@@ -26,8 +26,6 @@ const actionPromotionRequest = async (
             mobile_number: true,
           },
         },
-        old_role: true,
-        new_role: true,
         old_position: { select: { position_name: true } },
         new_position: { select: { position_name: true } },
       },
@@ -245,8 +243,8 @@ const actionPromotionRequest = async (
         const updatedUser = await tx.user.update({
           where: { id: user_id },
           data: {
-            role: new_role,
-            position_id: new_position_id,
+            current_role: new_role,
+            current_position_id: new_position_id,
             updated_by_id: loggedInUser.user_id,
           },
         });

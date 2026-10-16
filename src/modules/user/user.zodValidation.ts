@@ -170,7 +170,7 @@ const changePasswordZodSchema = z4
             ? "New password is required."
             : "Invalid new password format.",
       })
-      .min(8, "New password must be at least 8 characters."),
+      .min(6, "New password must be at least 6 characters."),
     confirm_password: z4
       .string({
         error: (issue) =>
@@ -178,7 +178,7 @@ const changePasswordZodSchema = z4
             ? "Confirm password is required."
             : "Invalid confirm password format.",
       })
-      .min(8, "Confirm password must be at least 8 characters."),
+      .min(6, "Confirm password must be at least 6 characters."),
   })
   .check(({ value, issues }) => {
     if (value.new_password !== value.confirm_password) {

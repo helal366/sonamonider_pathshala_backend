@@ -7,7 +7,7 @@ import {
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
 import { Prisma } from "#db-client";
-import { userHelperFunction } from "../user/user.helper.function";
+import { userHelperFunction } from "../user/user.helperFunction";
 
 // =============================================
 // STUDENT READMISSION SERVICE LAYER
@@ -165,7 +165,7 @@ const studentReadmission = async (
 
       const freshClassHistory = await transaction.classHistory.create({
         data: {
-          student: {connect: {id: student_id}},
+          student: { connect: { id: student_id } },
           class: { connect: { id: activeClassID } },
           academic_year: { connect: { id: academicYear.id } },
           shift: { connect: { id: existingShift?.id } },
@@ -185,20 +185,20 @@ const studentReadmission = async (
 
       // Construct clean, filtered audit payload using camelCase structure rules
       auditRecords.push({
-            entity_id: freshClassHistory.id,
-            entity_name: "classHistory",
-            old_value: Prisma.JsonNull,
-            new_value: {
-              class_id: activeClassID,
-              start_date: academicStartDate.toISOString(),
-              end_date: academicEndDate.toISOString(),
-              arabic_literature: payload.arabic_literature ?? false,
-              quranic_class_id: existingQuranicClass.id,
-              quranic_class_period_ids: quranicClassPeriodIDs
-            },
-            action: "CREATE",
-            changed_by_id: loggedInUser.user_id,
-          });
+        entity_id: freshClassHistory.id,
+        entity_name: "classHistory",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          class_id: activeClassID,
+          start_date: academicStartDate.toISOString(),
+          end_date: academicEndDate.toISOString(),
+          arabic_literature: payload.arabic_literature ?? false,
+          quranic_class_id: existingQuranicClass.id,
+          quranic_class_period_ids: quranicClassPeriodIDs,
+        },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
 
       // 7. STEP D: BULK ATOMIC COMMIT OF TRACKED AUDIT ENTRIES
       await transaction.auditLog.createMany({ data: auditRecords });

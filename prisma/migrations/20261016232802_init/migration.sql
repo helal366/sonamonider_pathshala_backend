@@ -68,6 +68,9 @@ CREATE TABLE "academic_result" (
 -- CreateTable
 CREATE TABLE "academic_staffs" (
     "id" TEXT NOT NULL,
+    "full_name" TEXT NOT NULL,
+    "mobile_number" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "current_position_id" TEXT,
     "current_role_id" TEXT,
     "current_role" "Role",
@@ -583,7 +586,13 @@ CREATE UNIQUE INDEX "academic_result_academic_staff_id_key" ON "academic_result"
 CREATE UNIQUE INDEX "academic_result_governing_body_id_key" ON "academic_result"("governing_body_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "academic_staffs_email_key" ON "academic_staffs"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "academic_staffs_user_id_key" ON "academic_staffs"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "academic_staffs_full_name_mobile_number_key" ON "academic_staffs"("full_name", "mobile_number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AcademicYear_academic_year_name_key" ON "AcademicYear"("academic_year_name");

@@ -27,7 +27,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === "STUDENT") {
+  } else if (role === Role.STUDENT) {
     return await prisma.student.findUnique({
       where: {
         student_full_name_mobile_unique: {
@@ -36,7 +36,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === "ACADEMIC") {
+  } else if (role === Role.ACADEMIC) {
     return await prisma.academicStaff.findUnique({
       where: {
         academic_full_name_mobile_unique: {
@@ -45,7 +45,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === "GOVERNING_BODY") {
+  } else if (role === Role.GOVERNING_BODY) {
     return await prisma.governingBody.findUnique({
       where: {
         governing_body_full_name_mobile_unique: {

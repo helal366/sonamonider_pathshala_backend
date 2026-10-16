@@ -25,11 +25,7 @@ import { userGetServices } from "./user.getService.js";
 //=============================================
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+    const loggedInUser = helperFunctions.requiredUser(req);
 
     const payload: TUserCreateZodSchema = req.body;
     const result = await createUserServices.createUser(payload, loggedInUser);
@@ -50,11 +46,7 @@ const createUser = catchAsync(
 const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangePasswordPayload = req.body;
-    const loggedInUser = req.user;
-
-    if (!loggedInUser) {
-      throw new AppError("Please login.", StatusCodes.BAD_REQUEST);
-    }
+    const loggedInUser = helperFunctions.requiredUser(req);
 
     const result = await userServices.changePassword(payload, loggedInUser);
 
@@ -231,7 +223,7 @@ const getInactiveUsers = catchAsync(async (req: Request, res: Response) => {
 // ============================================================
 // GET SOFT DELETED USERS CONTROLLER
 // ============================================================
-const getSoftDeletedUsers=catchAsync(async(req: Request, res: Response)=>{
+const getSoftDeletedUsers = catchAsync(async (req: Request, res: Response) => {
   helperFunctions.requiredUser(req);
   const result = await userGetServices.getSoftDeletedUsers();
   sendResponse(res, {
@@ -240,7 +232,7 @@ const getSoftDeletedUsers=catchAsync(async(req: Request, res: Response)=>{
     message: `Users retrieved successfully.`,
     data: result,
   });
-})
+});
 
 // ============================================================
 // GET SINGLE USER CONTROLLER

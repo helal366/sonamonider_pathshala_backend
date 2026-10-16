@@ -7,6 +7,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { jwtTokens } from "../utils/jwtTokens.js";
 import { sendResponse } from "../utils/sendResponse.js";
 import { AppError } from "../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { Role } from "#db-client";
 
 declare global {
   namespace Express {
@@ -17,7 +18,7 @@ declare global {
         full_name: string;
         mobile_number: string;
         email: string;
-        role_name: string;
+        role_name: Role;
         position_name: string;
       };
     }
@@ -28,7 +29,7 @@ type AuthTokenPayload = JwtPayload & {
   user_id: string;
   user_name: string;
   full_name: string;
-  role_name: string;
+  role_name: Role;
   position_name?: string;
 };
 
@@ -40,13 +41,13 @@ const isAuthTokenPayload = (
     typeof value.user_id === "string" &&
     typeof value.user_name === "string" &&
     typeof value.full_name === "string" &&
-    typeof value.role_name === "string" &&
+    Object.values(Role).includes(value.role_name as Role) &&
     (value.position_name === undefined ||
       typeof value.position_name === "string")
   );
 };
 
-export const userAuth = (...requiredRoles: string[]) => {
+export const userAuth = (...requiredRoles: Role[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const authorization = req.headers.authorization;
     const token =
@@ -91,7 +92,6 @@ export const userAuth = (...requiredRoles: string[]) => {
     const user = await prisma.user.findUnique({
       where: { id: payload.user_id },
       include: {
-        current_role: true,
         current_position: { select: { position_name: true } },
       },
     });

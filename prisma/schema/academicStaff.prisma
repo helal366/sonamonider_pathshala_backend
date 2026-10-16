@@ -1,6 +1,10 @@
 model AcademicStaff {
   id            String @id @default(uuid())
 
+    full_name     String
+  mobile_number String
+  email         String @unique
+
   academic_result AcademicResult? @relation(name: "academic_staff_academic_result")
 
   current_position_id String?
@@ -37,6 +41,6 @@ model AcademicStaff {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-
+  @@unique([full_name, mobile_number], name:"academic_full_name_mobile_unique")
   @@map("academic_staffs")
 }

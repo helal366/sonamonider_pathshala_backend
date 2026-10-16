@@ -15,7 +15,7 @@ const seedPositions = async () => {
     "TEACHER",
     "ASSISTANT_TEACHER",
     "TEACHER_ASSISTANT",
-    "CO-ORDINATOR",
+    "CO_ORDINATOR",
     "ACCOUNTANT",
     "STUDENT",
     "GOVERNING_BODY",
