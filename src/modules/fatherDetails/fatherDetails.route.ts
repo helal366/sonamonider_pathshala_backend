@@ -6,7 +6,9 @@ import { fatherDetailsZodSchema } from "./fatherDetails.zodValidation.js";
 
 const router = Router();
 
-// CREATE FATHER DETAILS
+// ====================================================
+// CREATE FATHER DETAILS ROUTE
+// ====================================================
 router.post(
   "/create_father_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -14,7 +16,9 @@ router.post(
   fatherDetailsController.createFatherDetails,
 );
 
-// CONNECT FATHER DETAILS
+// ====================================================
+// CONNECT FATHER DETAILS ROUTE
+// ====================================================
 router.post(
   "/connect_father_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -22,7 +26,9 @@ router.post(
   fatherDetailsController.connectFatherDetails,
 );
 
-// DISCONNECT FATHER DETAILS
+// ====================================================
+// DISCONNECT FATHER DETAILS ROUTE
+// ====================================================
 router.patch(
   "/disconnect_father_details",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
@@ -30,7 +36,9 @@ router.patch(
   fatherDetailsController.disconnectFatherDetails,
 );
 
-// UPDATE A SINGLE FATHER DETAILS FIELD
+// ====================================================
+// UPDATE A SINGLE FATHER DETAILS FIELD ROUTE
+// ====================================================
 router.patch(
   "/update_father_details_field",
   userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),

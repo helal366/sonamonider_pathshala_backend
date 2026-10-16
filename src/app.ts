@@ -26,6 +26,8 @@ import { quranicPeriodRouter } from "./modules/quranicPeriod/quranicPeriod.route
 import { subjectRouter } from "./modules/subject/subject.route.js";
 import { periodRouter } from "./modules/period/period.route.js";
 import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
+import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
+import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -55,6 +57,8 @@ app.use("/api/v1/smps/quranic_class_period", quranicPeriodRouter);
 app.use("/api/v1/smps/subject", subjectRouter);
 app.use("/api/v1/smps/period", periodRouter);
 app.use("/api/v1/smps/class_routine", classRoutineRouter);
+app.use("/api/v1/smps/student_fee", studentFeeRouter);
+app.use("/api/v1/smps/staff_payment", staffPaymentRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

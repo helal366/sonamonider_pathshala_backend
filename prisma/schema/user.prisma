@@ -37,8 +37,6 @@ model User {
   academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")
   student_profile          Student?         @relation("student_profile")
   governing_body_profile   GoverningBody?   @relation("governing_body_profile")
-  salary_rates             StaffSalaryRate[]
-  staff_payments           StaffPayment[]
 
   created_management_staffs ManagementStaff[] @relation("management_staff_created_by")
   updated_management_staffs ManagementStaff[] @relation("management_staff_updated_by")
@@ -113,6 +111,18 @@ model User {
 
   created_roles UserRole[] @relation("role_created_by")
   updated_roles UserRole[] @relation("role_updated_by")
+
+  created_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_created_by")
+  updated_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_updated_by")
+
+  created_student_fee_payments StudentFeePayment[] @relation("student_fee_payment_created_by")
+  updated_student_fee_payments StudentFeePayment[] @relation("student_fee_payment_updated_by")
+
+  created_staff_salary_rates StaffSalaryRate[] @relation("staff_salary_rate_created_by")
+  updated_staff_salary_rates StaffSalaryRate[] @relation("staff_salary_rate_updated_by")
+
+  created_staff_payments StaffPayment[] @relation("staff_payment_created_by")
+  updated_staff_payments StaffPayment[] @relation("staff_payment_updated_by")
 
   father_details_id String?
   father_details    FatherDetails? @relation("user_father_details", fields: [father_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

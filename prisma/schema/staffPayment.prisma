@@ -1,34 +1,61 @@
 model StaffSalaryRate {
   id             String           @id @default(uuid())
-  user_id        String
+
+  academic_staff_id String?
+  academic_staff    AcademicStaff? @relation("academic_staff_salary_rates", fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  management_staff_id String?
+  management_staff    ManagementStaff? @relation("management_staff_salary_rates", fields: [management_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   monthly_salary Decimal          @db.Decimal(10, 2)
+  eid_bonus Decimal          @db.Decimal(10, 2)
   change_type    SalaryChangeType @default(INITIAL)
   effective_from DateTime         @default(now())
   note           String?
 
-  staff User @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  created_by_id String?
+  created_by    User?   @relation("staff_salary_rate_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  created_at DateTime @default(now())
+  updated_by_id String?
+  updated_by    User?   @relation("staff_salary_rate_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  @@unique([user_id, effective_from])
-  @@index([user_id, effective_from])
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([academic_staff_id, effective_from])
+  @@unique([management_staff_id, effective_from])
+  @@index([academic_staff_id, effective_from])
+  @@index([management_staff_id, effective_from])
   @@map("staff_salary_rates")
 }
 
 model StaffPayment {
   id                 String           @id @default(uuid())
-  user_id            String
+
+  academic_staff_id String?
+  academic_staff    AcademicStaff? @relation("academic_staff_payments", fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  management_staff_id String?
+  management_staff    ManagementStaff? @relation("management_staff_payments", fields: [management_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   payment_type       StaffPaymentType
   payment_period_key String
   amount             Decimal          @db.Decimal(10, 2)
   paid_at            DateTime         @default(now())
   receipt_number     String?          @unique
 
-  staff User @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  created_by_id String?
+  created_by    User?   @relation("staff_payment_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  created_at DateTime @default(now())
+  updated_by_id String?
+  updated_by    User?   @relation("staff_payment_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  @@unique([user_id, payment_type, payment_period_key])
-  @@index([user_id, paid_at])
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([academic_staff_id, payment_type, payment_period_key])
+  @@unique([management_staff_id, payment_type, payment_period_key])
+  @@index([academic_staff_id, paid_at])
+  @@index([management_staff_id, paid_at])
   @@map("staff_payments")
 }

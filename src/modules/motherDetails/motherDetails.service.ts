@@ -14,7 +14,7 @@ import {
 } from "./motherDetails.zodValidation.js";
 
 // ============================================================
-// CREATE MOTHER DETAILS CONTROLLER
+// CREATE MOTHER DETAILS SERVICE LAYER
 // ============================================================
 const createMotherDetails = async (
   payload: TCreateMotherDetailsZodSchema,
@@ -106,7 +106,7 @@ const createMotherDetails = async (
 };
 
 // ============================================================
-// CONNECT MOTHER DETAILS CONTROLLER
+// CONNECT MOTHER DETAILS SERVICE LAYER
 // ============================================================
 const connectMotherDetails = async (
   payload: TConnectMotherDetailsZodSchema,
@@ -181,7 +181,9 @@ const connectMotherDetails = async (
   });
 };
 
-// UPDATE A SINGLE MOTHER DETAILS FIELD
+// ============================================================
+// UPDATE A SINGLE MOTHER DETAILS FIELD SERVICE LAYER
+// ============================================================
 const updateMotherDetailsField = async (
   payload: TUpdateMotherDetailsFieldPayload,
   loggedInUser: TLoggedInUser,
@@ -223,7 +225,7 @@ const updateMotherDetailsField = async (
 };
 
 // ============================================================
-// DISCONNECT MOTHER DETAILS CONTROLLER
+// DISCONNECT MOTHER DETAILS CONTROLLER SERVICE LAYER
 // ============================================================
 const disconnectMotherDetails = async (
   payload: TDisconnectMotherDetailsZodSchema,

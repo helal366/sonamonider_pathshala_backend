@@ -1,13 +1,19 @@
 model StudentFeeRate {
   id                String            @id @default(uuid())
   student_id        String
+  student Student @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  
   fee_type          StudentFeeType
   billing_frequency BillingFrequency
   amount            Decimal           @db.Decimal(10, 2)
   effective_from    DateTime          @default(now())
   effective_to      DateTime?
 
-  student Student @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  created_by_id String?
+  created_by    User?   @relation("student_fee_rate_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("student_fee_rate_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -20,6 +26,11 @@ model StudentFeeRate {
 model StudentFeePayment {
   id                 String            @id @default(uuid())
   student_id         String
+  student Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  academic_year_id String
+  academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   fee_type           StudentFeeType
   billing_frequency  BillingFrequency
   billing_period_key String
@@ -27,11 +38,16 @@ model StudentFeePayment {
   paid_at            DateTime          @default(now())
   receipt_number     String?           @unique
 
-  student Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  created_by_id String?
+  created_by    User?   @relation("student_fee_payment_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  created_at DateTime @default(now())
+  updated_by_id String?
+  updated_by    User?   @relation("student_fee_payment_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  @@unique([student_id, fee_type, billing_frequency, billing_period_key])
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([student_id, fee_type, billing_frequency, academic_year_id, billing_period_key])
   @@index([student_id, paid_at])
   @@map("student_fee_payments")
 }

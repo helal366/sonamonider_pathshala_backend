@@ -21,6 +21,8 @@ model ManagementStaff {
 
   promotion_history  PromotionHistory[]
   promotion_requests PromotionRequest[]
+  salary_rates       StaffSalaryRate[] @relation("management_staff_salary_rates")
+  staff_payments     StaffPayment[]    @relation("management_staff_payments")
 
   created_by_id String?
   created_by    User?   @relation("management_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

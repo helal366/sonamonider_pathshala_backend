@@ -2,7 +2,7 @@ import { EducationDegree } from "#db-client";
 import z4 from "zod/v4";
 
 // ======================================================
-// CREATE FATHER DETAILS
+// CREATE FATHER DETAILS ZOD SCHEMA
 // ======================================================
 const createFatherDetailsZodSchema = z4.object({
   user_id: z4
@@ -88,7 +88,7 @@ export type TCreateFatherDetailsZodSchema = z4.infer<
 >;
 
 // ======================================================
-// CONNECT FATHER DETAILS
+// CONNECT FATHER DETAILS ZOD SCHEMA
 // ======================================================
 const connectFatherDetailsZodSchema = z4.object({
   user_id: z4.string().trim(),
@@ -100,7 +100,7 @@ export type TConnectFatherDetailsZodSchema = z4.infer<
 >;
 
 // ======================================================
-// DELETE/DISCONNECT FATHER DETAILS
+// DELETE/DISCONNECT FATHER DETAILS ZOD SCHEMA
 // ======================================================
 const disconnectFatherDetailsZodSchema = z4.object({
   user_id: z4
@@ -116,7 +116,7 @@ export type TDisconnectFatherDetailsZodSchema = z4.infer<
 >;
 
 // ======================================================
-// UPDATE FATHER NAME
+// UPDATE FATHER NAME ZOD SCHEMA
 // ======================================================
 
 const updateFatherDetailsFieldZodSchema = z4.discriminatedUnion("field", [
