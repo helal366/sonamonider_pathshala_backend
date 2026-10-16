@@ -11,6 +11,17 @@ This note captures decisions and implementation context from the October 2026 cl
 - One teacher must not have overlapping routine periods. The ClassRoutine and period update services check intervals using half-open overlap semantics, so back-to-back periods are allowed. This is service-level protection, not a database exclusion constraint; direct database writes can bypass it.
 - The requested Prisma table mapping is currently `@@map("class_rotine")` (spelled `rotine`) in `prisma/schema/classRoutine.prisma`.
 
+## Recent business logic: staff payments and student fees
+
+- Staff salary rates and student fee rates are separate from their payment records. Rate records carry effective dates; payment records store the amount actually paid, the payment date, and an optional unique receipt number. Payment amounts are supplied explicitly; these services do not calculate payments from rates or generate them automatically.
+- Staff salary rates apply to exactly one academic or management staff member and record monthly salary, Eid bonus, change type (`INITIAL`, `INCREMENT`, or `ADJUSTMENT`), effective date, and optional note. A staff member cannot have two rates of the same staff category with the same effective date.
+- Staff payments apply to exactly one academic or management staff member. Payment types are monthly salary, Eid-ul-Fitr bonus, Eid-ul-Adha bonus, and performance bonus. A staff member can have at most one payment for a given payment type and payment-period key.
+- Student fee rates belong to a student and are categorized by fee type and billing frequency (`MONTHLY`, `HALF_YEARLY`, `YEARLY`, or `ONE_TIME`), with an amount and effective date range. A student cannot have duplicate rates for the same fee type, frequency, and effective start date.
+- Student fee payments are recorded against a student, academic year, fee type, billing frequency, and billing-period key. At most one payment can exist for the same student, fee type, frequency, academic year, and billing-period key.
+- Rate effective dates are stored and uniqueness is enforced for matching effective start dates; the current services do not check for overlapping effective date ranges.
+- Create, single-field update, and delete operations for rates and payments are available to Super Admin, Admin, Teacher Admin, and Management roles. A Management user must have the `ACCOUNTANT` position. Creation verifies that referenced staff, students, and academic years exist; amounts must be nonnegative.
+- Each rate/payment mutation and its audit log entry are written in the same database transaction.
+
 ## API modules
 
 Mounted in `src/app.ts`:

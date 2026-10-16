@@ -168,6 +168,43 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 - Academic and management staff are both linked to their `User` record for salary rates and payments. Record each salary change as a new salary rate with its effective date and mark increments with `INCREMENT`.
 - Staff payment records capture the full amount paid and date. Use `YYYY-MM` for monthly salary, `YYYY` for yearly performance bonuses, and a year-based period key for each Eid bonus. The application should validate monthly salary payments against the effective salary rate.
 
+## Extra curriculum activities:
+
+### Cultural club:
+* সংগীত
+* অভিনয়
+* বিতর্ক
+* আবৃতি
+* বক্তৃতা
+* উপস্থাপনা
+* art
+* দেয়াল লিখন (caligraphy)
+
+### Quran club:
+* কেরাত
+* after school maktab
+* senior citizen quran learning
+
+### Language club:
+* Spoken english
+* Spoken arabic
+* Phoenetics
+* Reading (Presentation)
+* Cursive writing 
+* শুদ্ধ বাংলা উচ্চারণ
+
+### Science club:
+* ক্ষুদে বিজ্ঞানী (with project)
+* ক্ষুদে ডাক্তার (with project)
+* Basic computer learning
+* Robotics
+* Basic IT with basic AI
+
+### Scout and sports club:
+* PT Parade (শারীরিক শিক্ষা কুচকাওয়াজ বা শারীরিক কসরত প্রদর্শনী।)
+* Martial arts/Karate
+* Swimming
+
 -- AddUniqueConstraintForSingleResponsibleTeacher
 CREATE UNIQUE INDEX student_single_active_responsibility_idx 
 ON "students_responsibility" ("student_id") 
