@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Prisma } from "#db-client";
+import { Prisma, Role } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 
@@ -139,7 +139,6 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
     mobile_number,
     email,
     positionId,
-    roleId,
     loggedInUserId,
     active_class_id,
   } = payload;
@@ -155,11 +154,11 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
         mobile_number,
         email,
         current_position: { connect: { id: positionId } },
-        current_role: { connect: { id: roleId } },
+        current_role: cleanRole,
         created_by: { connect: { id: loggedInUserId } },
       },
     };
-  } else if (cleanRole === "ACADEMIC") {
+  } else if (cleanRole === Role.ACADEMIC) {
     targetEntityName = "academicStaff";
     profileData.academic_staff_profile = {
       create: {
@@ -167,11 +166,11 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
         mobile_number,
         email,
         current_position: { connect: { id: positionId } },
-        current_role: { connect: { id: roleId } },
+        current_role: cleanRole,
         created_by: { connect: { id: loggedInUserId } },
       },
     };
-  } else if (cleanRole === "STUDENT") {
+  } else if (cleanRole === Role.STUDENT) {
     if (!active_class_id) {
       throw new AppError(
         "active_class_id is required to onboard a Student profile.",
@@ -188,7 +187,7 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
         created_by: { connect: { id: loggedInUserId } },
       },
     };
-  } else if (cleanRole === "GOVERNING_BODY") {
+  } else if (cleanRole === Role.GOVERNING_BODY) {
     targetEntityName = "governingBody";
     profileData.governing_body_profile = {
       create: {
@@ -235,7 +234,6 @@ const buildInitialAuditRecords = (
     email,
     cleanRole,
     cleanPosition,
-    roleId,
     positionId,
     loggedInUserId,
   } = payload;
@@ -248,8 +246,8 @@ const buildInitialAuditRecords = (
         full_name,
         mobile_number,
         email,
-        role_name: cleanRole,
-        position_name: cleanPosition,
+        current_role: cleanRole,
+        current_position: cleanPosition,
       } as Prisma.InputJsonValue,
       action: "CREATE",
       changed_by_id: loggedInUserId,
@@ -265,7 +263,6 @@ const buildInitialAuditRecords = (
         full_name,
         mobile_number,
         email,
-        role_id: roleId,
         position_id: positionId,
       } as Prisma.InputJsonValue,
       action: "CREATE",

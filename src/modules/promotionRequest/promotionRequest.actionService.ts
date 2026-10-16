@@ -3,7 +3,7 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
-import { ActiveStatus, Prisma } from "#db-client";
+import { ActiveStatus, Prisma, Role } from "#db-client";
 import { connect } from "node:http2";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
@@ -13,11 +13,7 @@ const actionPromotionRequest = async (
   loggedInUser: TLoggedInUser,
   promotion_request_id: string,
 ) => {
-  const {
-    action_status,
-    rejection_reason,
-    effective_date,
-  } = payload;
+  const { action_status, rejection_reason, effective_date } = payload;
   const effectiveDate = effective_date ? new Date(effective_date) : new Date();
   return prisma.$transaction(async (tx) => {
     // Fetch promotion request and check existance
@@ -30,8 +26,8 @@ const actionPromotionRequest = async (
             mobile_number: true,
           },
         },
-        old_role: { select: { role_name: true } },
-        new_role: { select: { role_name: true } },
+        old_role: true,
+        new_role: true,
         old_position: { select: { position_name: true } },
         new_position: { select: { position_name: true } },
       },
@@ -49,8 +45,8 @@ const actionPromotionRequest = async (
 
     // PREVENT STUDENT AND GOVERNING BODY ROLE TO PROMOTE;
     if (
-      promotionRequest.old_role.role_name === "STUDENT" ||
-      promotionRequest.old_role.role_name === "GOVERNING_BODY"
+      promotionRequest.old_role === Role.STUDENT ||
+      promotionRequest.old_role === Role.GOVERNING_BODY
     ) {
       throw new AppError(
         `STUDENT and GOVERNING_BODY are not promotable.`,
@@ -62,11 +58,9 @@ const actionPromotionRequest = async (
       user_id,
       management_staff_id,
       academic_staff_id,
-      student_id,
-      governing_body_id,
-      new_role_id,
+      new_role,
       new_position_id,
-      old_role_id,
+      old_role,
       old_position_id,
     } = promotionRequest;
     // Find and check existance of target user
@@ -135,28 +129,15 @@ const actionPromotionRequest = async (
     });
 
     // Prepare for pipelines
-    const oldRoleName = promotionRequest.old_role.role_name;
-    const newRoleName = promotionRequest.new_role.role_name;
+    const oldRoleName = promotionRequest.old_role;
+    const newRoleName = promotionRequest.new_role;
 
     const isSourceManagement = MANAGEMENT_ROLE_TRACK.includes(oldRoleName);
     const isSourceAcademic = ACADEMIC_ROLE_TRACK.includes(oldRoleName);
-    const isSourceStudent = oldRoleName === "STUDENT";
-    const isSourceGoverningBody = oldRoleName === "GOVERNING_BODY";
 
     const isTargetManagement = MANAGEMENT_ROLE_TRACK.includes(newRoleName);
     const isTargetAcademic = ACADEMIC_ROLE_TRACK.includes(newRoleName);
-    const isTargetStudent = newRoleName === "STUDENT";
-    const isTargetGoverningBody = newRoleName === "GOVERNING_BODY";
 
-    const isUnusual =
-      (isSourceStudent === true && isTargetStudent === true) ||
-      (isSourceGoverningBody === true && isTargetGoverningBody === true);
-    if (isUnusual) {
-      throw new AppError(
-        "The current and proposed roles cannot be identical for STUDENT or GOVERNING_BODY tracks.",
-        StatusCodes.BAD_REQUEST,
-      );
-    }
     const isSamePipeline =
       (isSourceManagement === true && isTargetManagement === true) ||
       (isSourceAcademic === true && isTargetAcademic === true);
@@ -215,7 +196,7 @@ const actionPromotionRequest = async (
           data: {
             management_staff_id,
             position_id: new_position_id,
-            role_id: new_role_id,
+            role: new_role,
             start_date: effectiveDate,
             created_by_id: loggedInUser.user_id,
           },
@@ -231,7 +212,7 @@ const actionPromotionRequest = async (
           new_value: {
             management_staff_id,
             position_id: new_position_id,
-            role_id: new_role_id,
+            role: new_role,
             start_date: effectiveDate.toISOString(),
           },
         });
@@ -240,7 +221,7 @@ const actionPromotionRequest = async (
           where: { id: management_staff_id },
           data: {
             current_position_id: new_position_id,
-            current_role_id: new_role_id,
+            current_role: new_role,
             updated_by_id: loggedInUser.user_id,
           },
         });
@@ -252,11 +233,11 @@ const actionPromotionRequest = async (
           action: "UPDATE",
           old_value: {
             current_position_id: old_position_id,
-            current_role_id: old_role_id,
+            current_role: old_role,
           },
           new_value: {
             current_position_id: new_position_id,
-            current_role_id: new_role_id,
+            current_role: new_role,
           },
         });
 
@@ -264,7 +245,7 @@ const actionPromotionRequest = async (
         const updatedUser = await tx.user.update({
           where: { id: user_id },
           data: {
-            role_id: new_role_id,
+            role: new_role,
             position_id: new_position_id,
             updated_by_id: loggedInUser.user_id,
           },
@@ -277,11 +258,11 @@ const actionPromotionRequest = async (
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
-            role_id: old_role_id,
+            role: old_role,
             position_id: old_position_id,
           },
           new_value: {
-            role_id: new_role_id,
+            role: new_role,
             position_id: new_position_id,
           },
         });
@@ -326,7 +307,7 @@ const actionPromotionRequest = async (
           data: {
             academic_staff_id,
             position_id: new_position_id,
-            role_id: new_role_id,
+            role: new_role,
             start_date: effectiveDate,
             created_by_id: loggedInUser.user_id,
           },
@@ -342,7 +323,7 @@ const actionPromotionRequest = async (
           new_value: {
             academic_staff_id,
             position_id: new_position_id,
-            role_id: new_role_id,
+            role: new_role,
             start_date: effectiveDate.toISOString(),
           },
         });
@@ -352,7 +333,7 @@ const actionPromotionRequest = async (
           where: { id: academic_staff_id },
           data: {
             current_position: { connect: { id: new_position_id } },
-            current_role: { connect: { id: new_role_id } },
+            current_role: new_role,
             updated_by: { connect: { id: loggedInUser.user_id } },
           },
         });
@@ -365,11 +346,11 @@ const actionPromotionRequest = async (
           action: "UPDATE",
           old_value: {
             current_position_id: old_position_id,
-            current_role_id: old_role_id,
+            current_role: old_role,
           },
           new_value: {
             current_position_id: new_position_id,
-            current_role_id: new_role_id,
+            current_role: new_role,
           },
         });
 
@@ -377,8 +358,8 @@ const actionPromotionRequest = async (
         await tx.user.update({
           where: { id: user_id },
           data: {
-            role_id: new_role_id,
-            position_id: new_position_id,
+            current_role: new_role,
+            current_position_id: new_position_id,
             updated_by_id: loggedInUser.user_id,
           },
         });
@@ -389,8 +370,8 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { role_id: old_role_id, position_id: old_position_id },
-          new_value: { role_id: new_role_id, position_id: new_position_id },
+          old_value: { current_role: old_role, current_position_id: old_position_id },
+          new_value: { current_role: new_role, current_position_id: new_position_id },
         });
       }
 
@@ -526,7 +507,7 @@ const actionPromotionRequest = async (
                   },
                 },
               },
-              current_role: { connect: { id: new_role_id } },
+              current_role: new_role,
               current_position: { connect: { id: new_position_id } },
               updated_by: {
                 connect: { id: loggedInUser.user_id },
@@ -568,7 +549,7 @@ const actionPromotionRequest = async (
               mobile_number: targetUser.mobile_number,
               email: targetUser.email,
               user_id,
-              current_role_id: new_role_id,
+              current_role: new_role,
               current_position_id: new_position_id,
               created_by_id: loggedInUser.user_id,
             },
@@ -597,8 +578,8 @@ const actionPromotionRequest = async (
         await tx.user.update({
           where: { id: user_id },
           data: {
-            role_id: new_role_id,
-            position_id: new_position_id,
+            current_role: new_role,
+            current_position_id: new_position_id,
             updated_by_id: loggedInUser.user_id,
           },
         });
@@ -608,15 +589,15 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { role_id: old_role_id, position_id: old_position_id },
-          new_value: { role_id: new_role_id, position_id: new_position_id },
+          old_value: { current_role: old_role, current_position_id: old_position_id },
+          new_value: { current_role: new_role, current_position_id: new_position_id },
         });
 
         // Create new promotion history
         const newPromotionHistory = await tx.promotionHistory.create({
           data: {
             academic_staff_id: targetAcademicStaffId,
-            role_id: new_role_id,
+            role: new_role,
             position_id: new_position_id,
             start_date: effectiveDate,
             created_by_id: loggedInUser.user_id,
@@ -631,7 +612,7 @@ const actionPromotionRequest = async (
           old_value: Prisma.JsonNull,
           new_value: {
             academic_staff_id: newPromotionHistory.academic_staff_id,
-            role_id: newPromotionHistory.role_id,
+            role: newPromotionHistory.role,
             position_id: newPromotionHistory.position_id,
             start_date: newPromotionHistory.start_date.toISOString(),
           },
@@ -780,7 +761,7 @@ const actionPromotionRequest = async (
               mobile_number: targetUser.mobile_number,
               email: targetUser.email,
               user_id,
-              current_role_id: new_role_id,
+              current_role: new_role,
               current_position_id: new_position_id,
               created_by_id: loggedInUser.user_id,
             },
@@ -801,7 +782,7 @@ const actionPromotionRequest = async (
               mobile_number: createdMngStaff.mobile_number,
               email: createdMngStaff.email,
               user_id: createdMngStaff.user_id,
-              current_role_id: createdMngStaff.current_role_id,
+              current_role: createdMngStaff.current_role,
               current_position_id: createdMngStaff.current_position_id,
             },
           });
@@ -811,8 +792,8 @@ const actionPromotionRequest = async (
         await tx.user.update({
           where: { id: user_id },
           data: {
-            role_id: new_role_id,
-            position_id: new_position_id,
+            current_role: new_role,
+            current_position_id: new_position_id,
             updated_by_id: loggedInUser.user_id,
           },
         });
@@ -822,15 +803,15 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { role_id: old_role_id, position_id: old_position_id },
-          new_value: { role_id: new_role_id, position_id: new_position_id },
+          old_value: { current_role: old_role, current_position_id: old_position_id },
+          new_value: { current_role: new_role, current_position_id: new_position_id },
         });
 
         // 8. Create a fresh new open baseline promotion timeline tracking log row
         const newPromotionHistory = await tx.promotionHistory.create({
           data: {
             management_staff_id: targetManagementStaffId,
-            role_id: new_role_id,
+            role: new_role,
             position_id: new_position_id,
             start_date: effectiveDate,
             created_by_id: loggedInUser.user_id,
@@ -846,7 +827,7 @@ const actionPromotionRequest = async (
           old_value: Prisma.JsonNull,
           new_value: {
             management_staff_id: newPromotionHistory.management_staff_id,
-            role_id: newPromotionHistory.role_id,
+            role: newPromotionHistory.role,
             position_id: newPromotionHistory.position_id,
             start_date: newPromotionHistory.start_date.toISOString(), // Perfectly string-serialized
           },

@@ -1,14 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import {
-  TActionPromotionRequestZodSchema,
-  TCreatePromotionRequestZodSchema,
-} from "./promotionRequest.zodValidation";
-import { Prisma } from "#db-client";
+import { TCreatePromotionRequestZodSchema } from "./promotionRequest.zodValidation";
+import { Prisma, Role } from "#db-client";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
@@ -21,17 +17,13 @@ const createPromotionRequest = async (
 ) => {
   const { user_id, old_role, new_role, old_position, new_position } = payload;
 
-  // GET CLEAN ROLE POSITION
-  const clean_old_role = old_role.trim().toUpperCase();
-  const clean_new_role = new_role.trim().toUpperCase();
+  // GET CLEAN POSITION
+
   const clean_old_position = old_position.trim().toUpperCase();
   const clean_new_position = new_position.trim().toUpperCase();
 
   // CHECK ACTUAL PROMOTION OR FAKE
-  if (
-    clean_old_role === clean_new_role &&
-    clean_old_position === clean_new_position
-  ) {
+  if (old_role === new_role && clean_old_position === clean_new_position) {
     throw new AppError(
       "Proposed role and position are identical to current records. Not promotable.",
       StatusCodes.BAD_REQUEST,
@@ -39,33 +31,13 @@ const createPromotionRequest = async (
   }
 
   // PREVENT STUDENT AND GOVERNING BODY ROLE TO PROMOTE;
-  if (clean_old_role === "STUDENT" || clean_old_role === "GOVERNING_BODY") {
+  if (old_role === Role.STUDENT || old_role === Role.GOVERNING_BODY ) {
     throw new AppError(
-      `STUDENT and GOVERNING_BODY are not promotable.`,
+      `SUPER_ADMIN, STUDENT and GOVERNING_BODY are not promotable.`,
       StatusCodes.UNAUTHORIZED,
     );
   }
 
-  // CHECK STUDENT AND GOVERNING_BODY ROLES
-  if (clean_old_role === "STUDENT" && clean_new_role === "STUDENT") {
-    throw new AppError(
-      "A student cannot be promoted to another student role via the staff pipeline.",
-      StatusCodes.BAD_REQUEST,
-    );
-  }
-  if (
-    clean_old_role === "GOVERNING_BODY" &&
-    clean_new_role === "GOVERNING_BODY"
-  ) {
-    throw new AppError(
-      "A governing body member cannot hold duplicate governing body tracks.",
-      StatusCodes.BAD_REQUEST,
-    );
-  }
-
-  // CHECK ROLE POSITION EXISTANCE
-  const oldRoleExists = await findRoleExistence(clean_old_role);
-  const newRoleExists = await findRoleExistence(clean_new_role);
   const oldPositionExists = await findPositionExistence(clean_old_position);
   const newPositionExists = await findPositionExistence(clean_new_position);
 
@@ -74,7 +46,7 @@ const createPromotionRequest = async (
     const targetUser = await tx.user.findUnique({
       where: { id: user_id },
       select: {
-        current_role: { select: { role_name: true } },
+        current_role: true,
         current_position: { select: { position_name: true } },
         management_staff_profile: { select: { id: true } },
         academic_staff_profile: { select: { id: true } },
@@ -88,7 +60,7 @@ const createPromotionRequest = async (
 
     // CHECK ROLE POSITION ARE SAME OR NOT WITH THE CURRENT ROLE AND POSITION
     if (
-      clean_old_role !== targetUser.current_role?.role_name ||
+      old_role !== targetUser.current_role ||
       clean_old_position !== targetUser.current_position?.position_name
     ) {
       throw new AppError(
@@ -113,16 +85,11 @@ const createPromotionRequest = async (
     let academic_staff_id: string | undefined;
     let student_id: string | undefined;
     let governing_body_id: string | undefined;
-    if (MANAGEMENT_ROLE_TRACK.includes(clean_old_role)) {
+    if (MANAGEMENT_ROLE_TRACK.includes(old_role)) {
       management_staff_id = targetUser.management_staff_profile?.id;
-    } else if (ACADEMIC_ROLE_TRACK.includes(clean_old_role)) {
+    } else if (ACADEMIC_ROLE_TRACK.includes(old_role)) {
       academic_staff_id = targetUser.academic_staff_profile?.id;
-    } else if (clean_old_role === "STUDENT") {
-      student_id = targetUser.student_profile?.id;
-    } else if (clean_old_role === "GOVERNING_BODY") {
-      governing_body_id = targetUser.governing_body_profile?.id;
     }
-
     // CREATE PROMOTION REQUEST
     const created = await tx.promotionRequest.create({
       data: {
@@ -132,8 +99,8 @@ const createPromotionRequest = async (
         student_id,
         governing_body_id,
         promotion_request_status: "PENDING",
-        old_role_id: oldRoleExists.id,
-        new_role_id: newRoleExists.id,
+        old_role: old_role,
+        new_role: new_role,
         old_position_id: oldPositionExists.id,
         new_position_id: newPositionExists.id,
         created_by_id: loggedInUser.user_id,
@@ -147,8 +114,8 @@ const createPromotionRequest = async (
       student_id,
       governing_body_id,
       promotion_request_status: "PENDING",
-      old_role_id: oldRoleExists.id,
-      new_role_id: newRoleExists.id,
+      old_role,
+      new_role,
       old_position_id: oldPositionExists.id,
       new_position_id: newPositionExists.id,
       created_by_id: loggedInUser.user_id,

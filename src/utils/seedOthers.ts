@@ -1,41 +1,6 @@
 import { prisma } from "../lib/prisma";
 
 // =========================================================
-// SEED ROLES
-// =========================================================
-const seedRoles = async () => {
-  const roles = [
-    "TEACHER_ADMIN",
-    "ADMIN",
-    "MANAGEMENT",
-    "ACADEMIC",
-    "STUDENT",
-    "GOVERNING_BODY",
-  ];
-
-  await prisma.$transaction(
-    async (tx) => {
-      for (const role of roles) {
-        const existingRole = await tx.userRole.findUnique({
-          where: { role_name: role },
-        });
-
-        if (!existingRole) {
-          await tx.userRole.create({
-            data: { role_name: role },
-          });
-
-          console.log(`${role} role created.`);
-        } else {
-          console.log(`${role} role already exists.`);
-        }
-      }
-    },
-    { timeout: 60000 },
-  );
-};
-
-// =========================================================
 // SEED POSITIONS
 // =========================================================
 const seedPositions = async () => {
@@ -280,7 +245,6 @@ const seedQuranicPeriods = async () => {
   );
 };
 export const runInitialOthers = async () => {
-  await seedRoles();
   await seedPositions();
   await seedShifts();
   await seedClasses();

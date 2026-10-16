@@ -1,5 +1,6 @@
 import z4 from "zod/v4";
 import { AcademicResult_Update_Fields, Staff_Role_Name } from "./academicResult.interface";
+import { Role } from "#db-client";
 
 // ==========================================
 // CREATE ACADEMIC RESULT ZOD SCHEMA
@@ -17,15 +18,14 @@ const createAcademicResultZodSchema = z4.object({
     .min(1, "Record ID  is required"),
 
   role_name: z4
-    .string({
+    .enum(Role, {
       error: (issue) => {
         issue.input === undefined
           ? "Role name is required."
           : "Invalid role name format.";
       },
-    })
-    .trim()
-    .min(1, "Role name is required."),
+    }),
+   
 
   position_name: z4.string({
     error: (issue) => {

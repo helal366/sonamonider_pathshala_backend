@@ -153,14 +153,14 @@ const changeUserPosition = async (
     select: {
       id: true,
       current_position: { select: { position_name: true } },
-      current_role: { select: { role_name: true } },
+      current_role: true,
       management_staff_profile: {
         select: {
           id: true,
           current_position: { select: { position_name: true } },
-          current_role: { select: { role_name: true } },
+          current_role: true,
           positions: { select: { position_name: true } },
-          roles: { select: { role_name: true } },
+          roles: true,
         },
       },
     },
@@ -168,8 +168,7 @@ const changeUserPosition = async (
 
   if (
     !targetStaff ||
-    !targetStaff.current_role ||
-    !targetStaff.current_role.role_name
+    !targetStaff.current_role
   ) {
     throw new AppError(
       "The requested user does not exist.",
@@ -183,8 +182,6 @@ const changeUserPosition = async (
       StatusCodes.NOT_FOUND,
     );
   }
-
-  const currentRoleName = targetStaff.current_role.role_name;
 
   await findPositionExistence(cleanPosition);
 

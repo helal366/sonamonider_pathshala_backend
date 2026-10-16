@@ -1,28 +1,9 @@
+import { Role } from "#db-client";
 import { envVars } from "../config/index.js";
 import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcryptjs";
 
 const seedSuperAdminRolePrincipalPosition = async () => {
-  // Check SUPER_ADMIN role
-  let superAdminRole = await prisma.userRole.findUnique({
-    where: {
-      role_name: "SUPER_ADMIN",
-    },
-  });
-
-  // Create role only if it doesn't exist
-  if (!superAdminRole) {
-    superAdminRole = await prisma.userRole.create({
-      data: {
-        role_name: "SUPER_ADMIN",
-      },
-    });
-
-    console.log("SUPER_ADMIN role created.");
-  } else {
-    console.log("SUPER_ADMIN role already exists.");
-  }
-
   // Check PRINCIPAL position
   let principalPosition = await prisma.userPosition.findUnique({
     where: {
@@ -70,11 +51,7 @@ const createPrincipal = async () => {
         user_name: envVars.SUPER_ADMIN_MOBILE_NO,
         user_password: hashedPassword,
 
-        current_role: {
-          connect: {
-            role_name: "SUPER_ADMIN",
-          },
-        },
+        current_role: Role.SUPER_ADMIN,
 
         current_position: {
           connect: {
@@ -90,45 +67,27 @@ const createPrincipal = async () => {
   }
 };
 
-const createAdminRolePosition = async () => {
-  // Check SUPER_ADMIN role
-  let adminRole = await prisma.userRole.findUnique({
-    where: {
-      role_name: "ADMIN",
-    },
-  });
+const createAdminPosition = async () => {
 
-  // Create role only if it doesn't exist
-  if (!adminRole) {
-    adminRole = await prisma.userRole.create({
-      data: {
-        role_name: "ADMIN",
-      },
-    });
 
     // Check PRINCIPAL position
     let CoOrdinatorPosition = await prisma.userPosition.findUnique({
       where: {
-        position_name: "CO-ORDINATOR",
+        position_name: "CO_ORDINATOR",
       },
     });
     // Create position only if it doesn't exist
     if (!CoOrdinatorPosition) {
       CoOrdinatorPosition = await prisma.userPosition.create({
         data: {
-          position_name: "PRINCIPAL",
-          role: {
-            connect: {
-              id: adminRole.id,
-            },
-          },
+          position_name: "CO_ORDINATOR",
         },
       });
-      console.log("ADMIN role created.");
+      console.log("CO_ORDINATOR position created.");
     } else {
-      console.log("ADMIN role already exists.");
+      console.log("CO_ORDINATOR position already exists.");
     }
-  }
+  
 };
 
 const createCoOrdinator = async()=>{

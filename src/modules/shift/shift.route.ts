@@ -6,20 +6,21 @@ import {
   validateZodSchema,
 } from "../../middlewares/validateZodSchema";
 import { shiftZodSchema } from "./shift.zodValidation";
+import { Role } from "#db-client";
 
 const router = Router();
 
 // =============================================
 // CREATE SHIFT ROUTE
 // =============================================
-router.post("/create", userAuth("SUPER_ADMIN"), shiftController.createShift);
+router.post("/create", userAuth(Role.SUPER_ADMIN), shiftController.createShift);
 
 // =============================================
 // DELETE SHIFT ROUTE
 // =============================================
 router.delete(
   "/delete/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(shiftZodSchema.deleteShiftZodSchema),
   shiftController.deleteShift,
 );
@@ -29,7 +30,7 @@ router.delete(
 // =============================================
 router.patch(
   "/update/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(shiftZodSchema.updateShiftFieldParamsZodSchema),
   validateZodSchema(shiftZodSchema.updateShiftFieldZodSchema),
   shiftController.updateShiftField,
@@ -40,7 +41,7 @@ router.patch(
 // =============================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   shiftController.getShiftNames,
 );
 
@@ -49,8 +50,8 @@ router.get(
 // =============================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(shiftZodSchema.getSingleShiftZodSchema),
-  shiftController.getSingleShift
-)
+  shiftController.getSingleShift,
+);
 export const shiftRouter: Router = router;

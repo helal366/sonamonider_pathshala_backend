@@ -13,9 +13,7 @@ const login = async (payload: TLoginZodSchema) => {
   const userExistence = await prisma.user.findUnique({
     where: { user_name },
     include: {
-      current_role: {
-        select: { role_name: true },
-      },
+      
       current_position: {
         select: { position_name: true },
       },
@@ -52,7 +50,7 @@ const login = async (payload: TLoginZodSchema) => {
     mobile_number: userExistence.mobile_number,
     email: userExistence.email,
     active_status: userExistence.active_status,
-    role_name: userExistence.current_role?.role_name,
+    role_name: userExistence.current_role,
     position_name: userExistence.current_position?.position_name,
   };
 

@@ -1,4 +1,4 @@
-import { ActiveStatus, BloodGroup, Gender, Prisma, Religion } from "#db-client";
+import { ActiveStatus, BloodGroup, Gender, Prisma, Religion, Role } from "#db-client";
 
 // ==========================================
 // CREATE USER
@@ -19,16 +19,15 @@ export interface IDynamicProfilePayload {
   mobile_number: string;
   email: string;
   positionId: string;
-  roleId: string;
   loggedInUserId: string;
   active_class_id?: string;
 }
 
 export const VALID_USER_ROLES_USER_CREATE = [
-  "MANAGEMENT",
-  "ACADEMIC",
-  "STUDENT",
-  "GOVERNING_BODY",
+  Role.MANAGEMENT,
+  Role.ACADEMIC,
+  Role.STUDENT,
+  Role.GOVERNING_BODY
 ] as const;
 
 export type TCleanRolesUserCreation =
@@ -56,7 +55,6 @@ export interface IBuildInitialAuditRecordsPayload {
   email: string | null; // Allow null if optional in your system
   cleanRole: string;
   cleanPosition: string;
-  roleId: string;
   positionId: string;
   loggedInUserId: string;
 }

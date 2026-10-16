@@ -6,19 +6,20 @@ import {
 } from "../../middlewares/validateZodSchema.js";
 import { subjectController } from "./subject.controller.js";
 import { subjectZodSchema } from "./subject.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
 router.post(
   "/create_subject",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(subjectZodSchema.createSubjectZodSchema),
   subjectController.createSubject,
 );
 
 router.patch(
   "/update_subject/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
   validateZodSchema(subjectZodSchema.updateSubjectZodSchema),
   subjectController.updateSubject,
@@ -26,7 +27,7 @@ router.patch(
 
 router.patch(
   "/update_single_subject_field/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
   validateZodSchema(subjectZodSchema.updateSubjectSingleFieldZodSchema),
   subjectController.updateSubjectSingleField,
@@ -34,20 +35,20 @@ router.patch(
 
 router.delete(
   "/delete_subject/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.deleteSubjectParamsZodSchema),
   subjectController.deleteSubject,
 );
 
 router.get(
   "/get_subjects",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   subjectController.getAllSubjects,
 );
 
 router.get(
   "/get_subject/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(subjectZodSchema.getSingleSubjectParamsZodSchema),
   subjectController.getSingleSubject,
 );

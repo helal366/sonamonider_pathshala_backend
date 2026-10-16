@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema.js";
 import { staffPaymentController } from "./staffPayment.controller.js";
 import { staffPaymentZodSchema } from "./staffPayment.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // ======================================================
 router.post(
   "/salary-rate",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodSchema(staffPaymentZodSchema.createStaffSalaryRateZodSchema),
   staffPaymentController.createStaffSalaryRate,
 );
@@ -24,7 +25,7 @@ router.post(
 // ======================================================
 router.patch(
   "/update_salary_rate_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(staffPaymentZodSchema.staffSalaryRateIdParamsZodSchema),
   validateZodSchema(staffPaymentZodSchema.updateStaffSalaryRateFieldZodSchema),
   staffPaymentController.updateStaffSalaryRateField,
@@ -35,7 +36,7 @@ router.patch(
 // ======================================================
 router.delete(
   "/delete_salary_rate/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(staffPaymentZodSchema.staffSalaryRateIdParamsZodSchema),
   staffPaymentController.deleteStaffSalaryRate,
 );
@@ -45,7 +46,7 @@ router.delete(
 // ======================================================
 router.post(
   "/payment",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodSchema(staffPaymentZodSchema.createStaffPaymentZodSchema),
   staffPaymentController.createStaffPayment,
 );
@@ -55,7 +56,7 @@ router.post(
 // ======================================================
 router.patch(
   "/update_payment_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(staffPaymentZodSchema.staffPaymentIdParamsZodSchema),
   validateZodSchema(staffPaymentZodSchema.updateStaffPaymentFieldZodSchema),
   staffPaymentController.updateStaffPaymentField,
@@ -66,7 +67,7 @@ router.patch(
 // ======================================================
 router.delete(
   "/delete_payment/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+ userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(staffPaymentZodSchema.staffPaymentIdParamsZodSchema),
   staffPaymentController.deleteStaffPayment,
 );

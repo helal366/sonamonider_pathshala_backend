@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema";
 import { promotionRequestsZodSchema } from "./promotionRequest.zodValidation";
 import { promotionRequestController } from "./promotionRequest.controller";
+import { Role } from "#db-client";
 
 // =========================================================
 // CREATE PROMOTION REQUEST ROUTE
@@ -13,7 +14,7 @@ import { promotionRequestController } from "./promotionRequest.controller";
 const router = Router();
 router.post(
   "/create_promotion_request",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(promotionRequestsZodSchema.createPromotionRequestZodSchema),
   promotionRequestController.createPromotionRequest,
 );
@@ -23,7 +24,7 @@ router.post(
 // =========================================================
 router.delete(
   "/delete_promotion_request/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
   ),
@@ -35,7 +36,7 @@ router.delete(
 // =========================================================
 router.patch(
   "/action_promotion_request/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
   ),
@@ -48,7 +49,7 @@ router.patch(
 // =========================================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(promotionRequestsZodSchema.getPromotionRequestsZodSchema),
   promotionRequestController.getAllPromotionRequests,
 );
@@ -58,7 +59,7 @@ router.get(
 // =========================================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     promotionRequestsZodSchema.getSinglePromotionRequestZodSchema,
   ), // Parses req.params

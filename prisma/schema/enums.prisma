@@ -3,7 +3,15 @@ enum Gender {
   FEMALE
   OTHER
 }
-
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  TEACHER_ADMIN
+  ACADEMIC
+  MANAGEMENT
+  STUDENT
+  GOVERNING_BODY
+}
 enum BloodGroup {
   A_POSITIVE
   A_NEGATIVE

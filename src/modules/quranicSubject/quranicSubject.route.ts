@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema.js"; // Your custom params validator
 import { quranicSubjectController } from "./quranicSubject.controller.js";
 import { quranicSubjectZodSchema } from "./quranicSubject.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // ===================================================
 router.post(
   "/create_quranic_subject",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(quranicSubjectZodSchema.createQuranicSubjectZodSchema),
   quranicSubjectController.createQuranicSubject,
 );
@@ -24,8 +25,10 @@ router.post(
 // ====================================================
 router.patch(
   "/update_quranic_subject/:id",
-  userAuth("SUPER_ADMIN"),
-  validateZodParams(quranicSubjectZodSchema.updateQuranicSubjectParamsZodSchema),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodParams(
+    quranicSubjectZodSchema.updateQuranicSubjectParamsZodSchema,
+  ),
   validateZodSchema(quranicSubjectZodSchema.updateQuranicSubjectZodSchema),
   quranicSubjectController.updateQuranicSubject,
 );
@@ -35,7 +38,7 @@ router.patch(
 // ====================================================
 router.patch(
   "/update_quranic_single_subject_field/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     quranicSubjectZodSchema.updateQuranicSubjectSingleFieldParamsZodSchema,
   ),
@@ -50,8 +53,10 @@ router.patch(
 // =====================================================
 router.delete(
   "/delete_quranic_subject/:id",
-  userAuth("SUPER_ADMIN"),
-  validateZodParams(quranicSubjectZodSchema.deleteQuranicSubjectParamsZodSchema),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodParams(
+    quranicSubjectZodSchema.deleteQuranicSubjectParamsZodSchema,
+  ),
   quranicSubjectController.deleteQuranicSubject,
 );
 
@@ -60,7 +65,7 @@ router.delete(
 // ======================================================
 router.get(
   "/get_quranic_subjects",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   quranicSubjectController.getAllQuranicSubjects,
 );
 
@@ -69,7 +74,7 @@ router.get(
 // ========================================================
 router.get(
   "/get_quranic_subject/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(quranicSubjectZodSchema.getSingleQuranicSubjectZodSchema), // Uses your optimized params middleware helper
   quranicSubjectController.getSingleQuranicSubject,
 );

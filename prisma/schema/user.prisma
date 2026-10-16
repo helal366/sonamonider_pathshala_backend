@@ -27,8 +27,7 @@ model User {
 
   promotion_requests PromotionRequest[]
 
-  current_role_id      String?
-  current_role UserRole? @relation("user_role_relation", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_role Role? 
 
   current_position_id      String?
   current_position UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -109,8 +108,8 @@ model User {
   created_positions UserPosition[] @relation("user_position_created_by")
   updated_positions UserPosition[] @relation("user_position_updated_by")
 
-  created_roles UserRole[] @relation("role_created_by")
-  updated_roles UserRole[] @relation("role_updated_by")
+  created_roles Role[] 
+  updated_roles Role[] 
 
   created_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_created_by")
   updated_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_updated_by")

@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { positionController } from "./position.controller.js";
-import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { positionZodSchema } from "./position.zodValidation.js";
 import { userAuth } from "../../middlewares/userAuth.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -11,7 +15,7 @@ const router = Router();
 // ============================================
 router.post(
   "/create_position",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(positionZodSchema.createPositionZodSchema),
   positionController.createPosition,
 );
@@ -21,7 +25,7 @@ router.post(
 // ============================================
 router.patch(
   "/update_position",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(positionZodSchema.updatePositionZodSchema),
   positionController.updatePosition,
 );
@@ -31,7 +35,7 @@ router.patch(
 // =============================================
 router.delete(
   "/delete_position",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(positionZodSchema.deletePositionZodSchema),
   positionController.deletePosition,
 );
@@ -41,7 +45,7 @@ router.delete(
 // =============================================
 router.get(
   "/get_positions",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   positionController.getAllPositions,
 );
 
@@ -50,7 +54,7 @@ router.get(
 // =============================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(positionZodSchema.getSinglePositionParamsZodSchema),
   positionController.getSinglePosition,
 );

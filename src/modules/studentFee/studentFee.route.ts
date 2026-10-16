@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema.js";
 import { studentFeeController } from "./studentFee.controller.js";
 import { studentFeeZodSchema } from "./studentFee.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // ======================================================
 router.post(
   "/create_student_fee_rate",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodSchema(studentFeeZodSchema.createStudentFeeRateZodSchema),
   studentFeeController.createStudentFeeRate,
 );
@@ -24,7 +25,7 @@ router.post(
 // ======================================================
 router.patch(
   "/update_student_fee_rate_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
   validateZodSchema(studentFeeZodSchema.updateStudentFeeRateFieldZodSchema),
   studentFeeController.updateStudentFeeRateField,
@@ -35,7 +36,7 @@ router.patch(
 // ======================================================
 router.delete(
   "/delete_student_fee_rate/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
   studentFeeController.deleteStudentFeeRate,
 );
@@ -45,7 +46,7 @@ router.delete(
 // ======================================================
 router.post(
   "/create_student_fee_payment",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodSchema(studentFeeZodSchema.createStudentFeePaymentZodSchema),
   studentFeeController.createStudentFeePayment,
 );
@@ -55,7 +56,7 @@ router.post(
 // ======================================================
 router.patch(
   "/update_student_fee_payment_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeePaymentIdParamsZodSchema),
   validateZodSchema(studentFeeZodSchema.updateStudentFeePaymentFieldZodSchema),
   studentFeeController.updateStudentFeePaymentField,
@@ -66,7 +67,7 @@ router.patch(
 // ======================================================
 router.delete(
   "/delete_student_fee_payment/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN", "MANAGEMENT"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeePaymentIdParamsZodSchema),
   studentFeeController.deleteStudentFeePayment,
 );

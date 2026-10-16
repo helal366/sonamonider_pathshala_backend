@@ -4,11 +4,8 @@ model PromotionRequest {
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  old_role_id String
-  old_role    UserRole @relation("promotion_request_old_role", fields: [old_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  new_role_id String
-  new_role    UserRole @relation("promotion_request_new_role", fields: [new_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  old_role    Role 
+  new_role    Role 
 
   old_position_id String
   old_position    UserPosition @relation("promotion_request_old_position", fields: [old_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

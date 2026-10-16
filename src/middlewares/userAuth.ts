@@ -91,7 +91,7 @@ export const userAuth = (...requiredRoles: string[]) => {
     const user = await prisma.user.findUnique({
       where: { id: payload.user_id },
       include: {
-        current_role: { select: { role_name: true } },
+        current_role: true,
         current_position: { select: { position_name: true } },
       },
     });
@@ -109,7 +109,7 @@ export const userAuth = (...requiredRoles: string[]) => {
       return;
     }
 
-    const currentRole = user.current_role?.role_name;
+    const currentRole = user.current_role;
     // console.log("current role: ", currentRole);
     // console.log("required role: ", requiredRoles);
 

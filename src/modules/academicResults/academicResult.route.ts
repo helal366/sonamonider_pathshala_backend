@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema";
 import { academicResultZodSchema } from "./academicResult.zodValidation";
 import { academicResultController } from "./academicResult.controller";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // ==========================================
 router.post(
   "/create",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(academicResultZodSchema.createAcademicResultZodSchema),
   academicResultController.createAcademicResult,
 );
@@ -24,7 +25,7 @@ router.post(
 // ==========================================
 router.delete(
   "/delete/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
   academicResultController.deleteAcademicResult,
 );
@@ -34,7 +35,7 @@ router.delete(
 // ==========================================
 router.patch(
   "/update_field/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
   validateZodSchema(academicResultZodSchema.updateAcademicResultFieldZodSchema),
   academicResultController.updateAcademicResultField,
@@ -45,7 +46,7 @@ router.patch(
 // ==========================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   academicResultController.getAllAcademicResults,
 );
 
@@ -54,7 +55,7 @@ router.get(
 // ==========================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicResultZodSchema.getSingleAcademicResultZodSchema),
   academicResultController.getSingleAcademicResult,
 );
@@ -64,7 +65,7 @@ router.get(
 // ===============================================
 router.get(
   "/by_staff/:staff_id/:staff_role_name",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     academicResultZodSchema.getAcademicResultByStaffIdZodSchema,
   ),

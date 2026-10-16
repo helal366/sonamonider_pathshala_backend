@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
-import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { spouseInformationZodSchema } from "./spouseInformation.zodValidation.js";
 import { spouseInformationController } from "./spouseInformation.controller.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -11,7 +15,7 @@ const router = Router();
 // ============================================================
 router.post(
   "/create",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(
     spouseInformationZodSchema.createSpouseInformationZodSchema,
   ),
@@ -23,7 +27,7 @@ router.post(
 // ============================================================
 router.delete(
   "/delete/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     spouseInformationZodSchema.spouseInformationUserIdParamsZodSchema,
   ),
@@ -35,7 +39,7 @@ router.delete(
 // ============================================================
 router.patch(
   "/update_spouse_information_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     spouseInformationZodSchema.spouseInformationUserIdParamsZodSchema,
   ),

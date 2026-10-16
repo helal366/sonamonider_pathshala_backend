@@ -1,12 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
+
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { userHelperFunction } from "./user.helper.function";
 import { TCleanRolesUserCreation } from "./user.interface";
 import { TUserCreateZodSchema } from "./user.zodValidation";
 import { prisma } from "../../lib/prisma";
-import { Prisma } from "#db-client";
+import { Prisma, Role } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
 import { redisClient } from "../../lib/redis";
 import crypto from "crypto";
@@ -36,9 +36,6 @@ const createUser = async (
   // 1. Check the role and position are authorized to create or not.
   // Called helper function
   userHelperFunction.userCreationRolePostionCheck(cleanRole, cleanPosition);
-
-  //  2. Validate role
-  const roleExists = await findRoleExistence(cleanRole);
 
   // 3. Validate role-position relationship
   const positionExists = await findPositionExistence(cleanPosition);
@@ -80,7 +77,6 @@ const createUser = async (
             mobile_number,
             email,
             positionId: positionExists.id,
-            roleId: roleExists.id,
             loggedInUserId: loggedInUser.user_id,
             active_class_id: payload.active_class_id,
           });
@@ -93,11 +89,9 @@ const createUser = async (
             user_name,
             ...rest,
             ...profileData,
-            role: {
-              connect: { id: roleExists.id },
-            },
+            current_role: cleanRole,
 
-            position: {
+            current_position: {
               connect: { id: positionExists.id },
             },
 
@@ -132,7 +126,6 @@ const createUser = async (
           email,
           cleanRole,
           cleanPosition,
-          roleId: roleExists.id,
           positionId: positionExists.id,
           loggedInUserId: loggedInUser.user_id,
         };
@@ -141,15 +134,15 @@ const createUser = async (
           userHelperFunction.buildInitialAuditRecords(buildAuditRecordsPayload);
 
         // Seed Promotion History blocks (Only valid for Staff profiles)
-        if (cleanRole === "MANAGEMENT" || cleanRole === "ACADEMIC") {
+        if (cleanRole === Role.MANAGEMENT || cleanRole === Role.ACADEMIC) {
           await transaction.promotionHistory.create({
             data: {
               management_staff_id:
-                cleanRole === "MANAGEMENT" ? subProfileId : undefined,
+                cleanRole === Role.MANAGEMENT ? subProfileId : undefined,
               academic_staff_id:
-                cleanRole === "ACADEMIC" ? subProfileId : undefined,
+                cleanRole === Role.ACADEMIC ? subProfileId : undefined,
               position_id: positionExists.id,
-              role_id: roleExists.id,
+              role: cleanRole,
               start_date: effectiveJoiningDate,
               created_by_id: loggedInUser.user_id,
             },
@@ -158,7 +151,7 @@ const createUser = async (
         // ======================
         // STUDENT CREATION
         // ======================
-        if (cleanRole === "STUDENT" && subProfileId) {
+        if (cleanRole === Role.STUDENT && subProfileId) {
           // MAKE STUDENT REQUIREMENTS PAYLOAD
           const studentsRequirementPayload = {
             transaction,
@@ -226,7 +219,7 @@ const createUser = async (
           entity_name: "promotionHistory",
           old_value: Prisma.JsonNull,
           new_value: {
-            role_id: roleExists.id,
+            role: cleanRole,
             position_id: positionExists.id,
             start_date: effectiveJoiningDate.toISOString(),
             end_date: null,

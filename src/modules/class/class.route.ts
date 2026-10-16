@@ -6,6 +6,7 @@ import {
   validateZodSchema,
 } from "../../middlewares/validateZodSchema";
 import { classZodSchema } from "./class.zodValidation";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // =============================================
 router.post(
   "/create",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(classZodSchema.createClassZodSchema),
   classController.createClassName,
 );
@@ -24,7 +25,7 @@ router.post(
 // =============================================
 router.delete(
   "/delete/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(classZodSchema.classIdParamsZodSchema),
   classController.deleteClassName,
 );
@@ -34,7 +35,7 @@ router.delete(
 // =============================================
 router.patch(
   "/update/:id",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodParams(classZodSchema.classIdParamsZodSchema),
   validateZodSchema(classZodSchema.updateClassFieldZodSchema),
   classController.updateClassField,
@@ -45,7 +46,7 @@ router.patch(
 // =============================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   classController.getAllClassNames,
 );
 
@@ -54,7 +55,7 @@ router.get(
 // =============================================
 router.patch(
   "/assign_grade_group_teacher",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(classZodSchema.assignGradeGroupTeacherZodSchema),
   classController.assignGradeGroupTeacher,
 );
@@ -64,7 +65,7 @@ router.patch(
 // =============================================
 router.patch(
   "disconnect_grade_group_teacher",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(classZodSchema.disconnectGradeGroupTeacherZodSchema),
   classController.disconnectGradeGroupTeacher,
 );

@@ -10,7 +10,7 @@ model AcademicStaff {
   current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   current_role_id String?
-  current_role    UserRole? @relation("academic_current_role", fields: [current_role_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_role    Role? 
 
   promotion_history          PromotionHistory[]
   promotion_requests         PromotionRequest[]

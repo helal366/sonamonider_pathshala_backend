@@ -6,11 +6,12 @@ import {
 } from "../../middlewares/validateZodSchema";
 import { academicStaffZodSchema } from "./academicStaff.zodValidation";
 import { academicStaffController } from "./academicStaff.controller";
+import { Role } from "#db-client";
 
 const router = Router();
 router.patch(
   "/update_subject/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicStaffZodSchema.academicStaffParamsZodSchema),
   validateZodSchema(
     academicStaffZodSchema.updateSubjectForSubjectTeacherZodSchema,
@@ -20,7 +21,7 @@ router.patch(
 
 router.patch(
   "/update_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicStaffZodSchema.academicStaffParamsZodSchema),
   validateZodSchema(academicStaffZodSchema.updateAcademicStaffFieldZodSchema),
   academicStaffController.updateAcademicStaffField,

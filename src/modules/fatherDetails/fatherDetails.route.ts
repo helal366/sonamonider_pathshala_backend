@@ -6,6 +6,7 @@ import {
 } from "../../middlewares/validateZodSchema.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { fatherDetailsZodSchema } from "./fatherDetails.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const router = Router();
 // ====================================================
 router.post(
   "/create_father_details",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(fatherDetailsZodSchema.createFatherDetailsZodSchema),
   fatherDetailsController.createFatherDetails,
 );
@@ -24,7 +25,7 @@ router.post(
 // ====================================================
 router.post(
   "/connect_father_details",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(fatherDetailsZodSchema.connectFatherDetailsZodSchema),
   fatherDetailsController.connectFatherDetails,
 );
@@ -34,7 +35,7 @@ router.post(
 // ====================================================
 router.patch(
   "/disconnect_father_details/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(fatherDetailsZodSchema.fatherDetailsUserIdParamsZodSchema),
   fatherDetailsController.disconnectFatherDetails,
 );
@@ -44,7 +45,7 @@ router.patch(
 // ====================================================
 router.patch(
   "/update_father_details_field/:id",
-  userAuth("SUPER_ADMIN", "TEACHER_ADMIN", "ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(fatherDetailsZodSchema.fatherDetailsUserIdParamsZodSchema),
   validateZodSchema(fatherDetailsZodSchema.updateFatherDetailsFieldZodSchema),
   fatherDetailsController.updateFatherDetailsField,

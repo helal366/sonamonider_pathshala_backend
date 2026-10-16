@@ -1,7 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { findPositionExistence } from "../../helperFunctions/cachedData/cache_positions";
-import { findRoleExistence } from "../../helperFunctions/cachedData/cache_roles";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import {
   TCreateAcademicResultZodSchema,
@@ -22,9 +21,6 @@ const createAcademicResult = async (
 ) => {
   const cleanRole = payload.role_name.trim().toUpperCase();
   const cleanPosition = payload.position_name.trim().toUpperCase();
-
-  //  1. Validate role
-  await findRoleExistence(cleanRole);
 
   // 2. Validate role-position relationship
   await findPositionExistence(cleanPosition);
@@ -121,7 +117,6 @@ const deleteAcademicResult = async (
   academic_result_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
-
   const academicResult = await prisma.academicResult.findUnique({
     where: { id: academic_result_id },
   });
@@ -208,7 +203,7 @@ const getAllAcademicResults = async () => {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: { select: { role_name: true } },
+          current_role: true,
           current_position: { select: { position_name: true } },
         },
       },
@@ -217,7 +212,7 @@ const getAllAcademicResults = async () => {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: { select: { role_name: true } },
+          current_role: true,
           current_position: { select: { position_name: true } },
         },
       },
@@ -249,7 +244,7 @@ const getSingleAcademicResult = async (academic_result_id: string) => {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: { select: { role_name: true } },
+          current_role: true,
           current_position: { select: { position_name: true } },
         },
       },
@@ -258,7 +253,7 @@ const getSingleAcademicResult = async (academic_result_id: string) => {
           full_name: true,
           mobile_number: true,
           email: true,
-          current_role: { select: { role_name: true } },
+          current_role: true,
           current_position: { select: { position_name: true } },
         },
       },

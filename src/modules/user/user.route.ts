@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { userController } from "./user.controller.js";
-import { validateZodParams, validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import {
+  validateZodParams,
+  validateZodSchema,
+} from "../../middlewares/validateZodSchema.js";
 import { userAuth } from "../../middlewares/userAuth.js";
 import { userZodSchema } from "./user.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -11,7 +15,7 @@ const router = Router();
 //================================================
 router.post(
   "/create_user",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(userZodSchema.userCreateZodSchema),
   userController.createUser,
 );
@@ -40,7 +44,7 @@ router.post(
 // ==========================================
 router.patch(
   "/change_position",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(userZodSchema.changeUserPositionZodSchema),
   userController.changeUserPosition,
 );
@@ -49,7 +53,7 @@ router.patch(
 // ==========================================
 router.patch(
   "/update_user_single_field_admin",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldAdmin,
 );
@@ -59,7 +63,7 @@ router.patch(
 // ==========================================
 router.patch(
   "/update_user_single_field_super_admin",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(userZodSchema.updateSingleUserFieldAdminZodSchema),
   userController.updateSingleUserFieldSuperAdmin,
 );
@@ -68,7 +72,7 @@ router.patch(
 // ==========================================
 router.patch(
   "/update_user_name",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(userZodSchema.updateUserNameZodSchema),
   userController.updateUserName,
 );
@@ -78,7 +82,7 @@ router.patch(
 // ============================================================
 router.patch(
   "/update_user_password",
-  userAuth("SUPER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN),
   validateZodSchema(userZodSchema.updateUserPasswordZodSchema),
   userController.updateUserPassword,
 );
@@ -88,17 +92,17 @@ router.patch(
 // ============================================================
 router.get(
   "/",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  userController.getAllUsers
-)
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  userController.getAllUsers,
+);
 
 // ============================================================
 // GET ACTIVE USERS ROUTE
 // ============================================================
 router.get(
   "/active_users",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  userController.getActiveUsers
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  userController.getActiveUsers,
 );
 
 // ============================================================
@@ -106,8 +110,8 @@ router.get(
 // ============================================================
 router.get(
   "/inactive_users",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  userController.getInactiveUsers
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  userController.getInactiveUsers,
 );
 
 // ============================================================
@@ -115,8 +119,8 @@ router.get(
 // ============================================================
 router.get(
   "/soft_deleted_users",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
-  userController.getSoftDeletedUsers
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  userController.getSoftDeletedUsers,
 );
 
 // ============================================================
@@ -124,8 +128,8 @@ router.get(
 // ============================================================
 router.get(
   "/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(userZodSchema.getSingleUserZodSchema),
-  userController.getSingleUser
-)
+  userController.getSingleUser,
+);
 export const userRouter: Router = router;

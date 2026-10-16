@@ -5,8 +5,8 @@ import {
   validateZodSchema,
 } from "../../middlewares/validateZodSchema.js"; // Your custom params validator
 import { quranicPeriodController } from "./quranicPeriod.controller.js";
-import { quranicPeriodZodSchema
- } from "./quranicPeriod.zodValidation.js";
+import { quranicPeriodZodSchema } from "./quranicPeriod.zodValidation.js";
+import { Role } from "#db-client";
 
 const router = Router();
 
@@ -15,11 +15,8 @@ const router = Router();
 // =======================================================
 router.post(
   "/create_quranic_period",
-  userAuth("SUPER_ADMIN"),
-  validateZodSchema(
-    quranicPeriodZodSchema
-.createQuranicPeriodZodSchema
-  ),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodSchema(quranicPeriodZodSchema.createQuranicPeriodZodSchema),
   quranicPeriodController.createQuranicPeriod,
 );
 
@@ -28,13 +25,9 @@ router.post(
 // =========================================================
 router.patch(
   "/update_quranic_period/:id",
-  userAuth("SUPER_ADMIN"),
-  validateZodParams(quranicPeriodZodSchema
-.updateQuranicPeriodParamsZodSchema),
-  validateZodSchema(
-    quranicPeriodZodSchema
-.updateQuranicPeriodZodSchema,
-  ),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodParams(quranicPeriodZodSchema.updateQuranicPeriodParamsZodSchema),
+  validateZodSchema(quranicPeriodZodSchema.updateQuranicPeriodZodSchema),
   quranicPeriodController.updateQuranicPeriod,
 );
 
@@ -43,8 +36,10 @@ router.patch(
 // =========================================================
 router.patch(
   "/update_quranic_single_period_field/:id",
-  userAuth("SUPER_ADMIN"),
-  validateZodParams(quranicPeriodZodSchema.updateQuranicPeriodSingleFieldParamsZodSchema),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodParams(
+    quranicPeriodZodSchema.updateQuranicPeriodSingleFieldParamsZodSchema,
+  ),
   validateZodSchema(
     quranicPeriodZodSchema.updateQuranicPeriodSingleFieldZodSchema,
   ),
@@ -56,9 +51,8 @@ router.patch(
 // =========================================================
 router.delete(
   "/:id",
-  userAuth("SUPER_ADMIN"),
-  validateZodParams(
-    quranicPeriodZodSchema.deleteQuranicPeriodParamsZodSchema),
+  userAuth(Role.SUPER_ADMIN),
+  validateZodParams(quranicPeriodZodSchema.deleteQuranicPeriodParamsZodSchema),
   quranicPeriodController.deleteQuranicPeriod,
 );
 
@@ -67,7 +61,7 @@ router.delete(
 // ==========================================================
 router.get(
   "/get_quranic_periods",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   quranicPeriodController.getAllQuranicPeriods,
 );
 
@@ -76,7 +70,7 @@ router.get(
 // ==================================================================
 router.get(
   "/get_quranic_period/:id",
-  userAuth("SUPER_ADMIN", "ADMIN", "TEACHER_ADMIN"),
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     quranicPeriodZodSchema.getSingleQuranicPeriodParamsZodSchema,
   ), // Uses your optimized params middleware helper
