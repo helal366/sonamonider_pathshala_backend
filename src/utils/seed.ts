@@ -3,27 +3,44 @@ import { envVars } from "../config/index.js";
 import { prisma } from "../lib/prisma.js";
 import bcrypt from "bcryptjs";
 
-const seedSuperAdminRolePrincipalPosition = async () => {
-  // Check PRINCIPAL position
-  let principalPosition = await prisma.userPosition.findUnique({
-    where: {
-      position_name: "PRINCIPAL",
-    },
+const seedPositions = async () => {
+  const positions = [
+    "PRINCIPAL",
+    "VICE_PRINCIPAL",
+    "ADMINISTRATIVE_INCHARGE",
+    "ACADEMIC_INCHARGE",
+    "LOGISTIC_OFFICER",
+    "ACADEMIC_STAFF",
+    "MANAGEMENT_STAFF",
+    "TEACHER",
+    "ASSISTANT_TEACHER",
+    "TEACHER_ASSISTANT",
+    "CO-ORDINATOR",
+    "ACCOUNTANT",
+    "STUDENT",
+    "GOVERNING_BODY",
+    "SISTER",
+    "AAYA",
+    "GUARD",
+    "CLEANER",
+  ];
+
+  console.log("Seeding positions...");
+
+  // 1. Map array to the structure your model expects
+  const dataToInsert = positions.map((position) => ({
+    position_name: position,
+  }));
+
+  // 2. Perform a single batch operation instead of a loop inside a transaction
+  const result = await prisma.userPosition.createMany({
+    data: dataToInsert,
+    skipDuplicates: true, // It will ignore names that already exist without throwing errors
   });
 
-  // Create position only if it doesn't exist
-  if (!principalPosition) {
-    principalPosition = await prisma.userPosition.create({
-      data: {
-        position_name: "PRINCIPAL",
-      },
-    });
-
-    console.log("PRINCIPAL position created.");
-  } else {
-    console.log("PRINCIPAL position already exists.");
-  }
+  console.log(`Positions seeding done. Created ${result.count} new positions.`);
 };
+
 
 const createPrincipal = async () => {
   // Check SUPER_ADMIN user
@@ -94,7 +111,7 @@ const createCoOrdinator = async()=>{
   
 }
 export const runInitialSeed = async () => {
-  await seedSuperAdminRolePrincipalPosition();
+  await seedPositions();
 
   await createPrincipal();
 
