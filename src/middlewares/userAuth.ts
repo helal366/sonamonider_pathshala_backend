@@ -96,8 +96,11 @@ export const userAuth = (...requiredRoles: Role[]) => {
       },
     });
 
-    if (!user || user.is_deleted) {
-      throw new AppError("User account is Deleted.", StatusCodes.UNAUTHORIZED);
+    if (!user ) {
+      throw new AppError("Please login.", StatusCodes.NOT_FOUND);
+    }
+    if(user.is_deleted){
+       throw new AppError("User account is deleted.", StatusCodes.UNAUTHORIZED);
     }
 
     if (user.active_status === "INACTIVE") {

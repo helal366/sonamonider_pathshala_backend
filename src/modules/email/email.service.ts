@@ -16,52 +16,8 @@ import {
   issueOtpAndSendEmail,
   sendVerificationResultEmail,
 } from "./email.helper.function.js";
+import { envVars } from "../../config/index.js";
 
-// RESEND OTP EMAIL VERIFY
-const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
-  const normalizedEmail = email.trim().toLowerCase();
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-    select: {
-      email: true,
-      full_name: true,
-      user_name: true,
-      is_email_verified: true,
-    },
-  });
-
-  if (!user) {
-    throw new AppError(
-      "No user found with this email address.",
-      StatusCodes.NOT_FOUND,
-    );
-  }
-
-  if (user.is_email_verified) {
-    throw new AppError(
-      "This email address is already verified.",
-      StatusCodes.CONFLICT,
-    );
-  }
-
-  const expirationSeconds = 5 * 60;
-  const otpValue = crypto.randomInt(100000, 1000000).toString();
-  const otpKey = `new_user_welcome_otp:${normalizedEmail}`;
-  await issueOtpAndSendEmail({
-    key: otpKey,
-    otp: otpValue,
-    expirationSeconds,
-    to: normalizedEmail,
-    templateName: "resend_otp_email_verify.ejs",
-    subject: "Your New SONAMONIDER PATHSHALA Verification Code",
-    templateData: {
-      name: user.full_name,
-      user_name: user.user_name ?? "",
-      OTP: otpValue,
-      year: new Date().getFullYear(),
-    },
-  });
-};
 
 // VERIFY EMAIL WHILE REGISTRATION OR USER CREATION
 const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
@@ -109,8 +65,9 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
     );
   }
 
+  console.log(Number(envVars.BCRYPT_SALT_ROUND));
   const temporaryPassword = createTemporaryPassword();
-  const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+  const hashedPassword = await bcrypt.hash(temporaryPassword, Number(envVars.BCRYPT_SALT_ROUND));
 
   await prisma.$transaction(
     async (transaction) => {
@@ -164,6 +121,53 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
 
   await redisClient.del(otpKey);
 };
+// RESEND OTP EMAIL VERIFY
+const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+    select: {
+      email: true,
+      full_name: true,
+      user_name: true,
+      is_email_verified: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(
+      "No user found with this email address.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  if (user.is_email_verified) {
+    throw new AppError(
+      "This email address is already verified.",
+      StatusCodes.CONFLICT,
+    );
+  }
+
+  const expirationSeconds = 5 * 60;
+  const otpValue = crypto.randomInt(100000, 1000000).toString();
+  const otpKey = `new_user_welcome_otp:${normalizedEmail}`;
+  await issueOtpAndSendEmail({
+    key: otpKey,
+    otp: otpValue,
+    expirationSeconds,
+    to: normalizedEmail,
+    templateName: "resend_otp_email_verify.ejs",
+    subject: "Your New SONAMONIDER PATHSHALA Verification Code",
+    templateData: {
+      name: user.full_name,
+      user_name: user.user_name ?? "",
+      OTP: otpValue,
+      year: new Date().getFullYear(),
+    },
+  });
+};
+
+
 
 // SEND FORGET PASSWORD OTP
 const sendForgetPasswordOtp = async ({

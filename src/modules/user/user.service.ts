@@ -25,7 +25,10 @@ const changePassword = async (
   payload: TChangePasswordPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
 ) => {
-  const { current_password, new_password } = payload;
+  const { current_password, new_password, confirm_password } = payload;
+  const cleanCurrentPassword = current_password.trim();
+  const cleanNewPassword  = new_password.trim();
+  const cleanConfirmPassword = confirm_password.trim();
   const user = await prisma.user.findUnique({
     where: { id: loggedInUser.user_id },
     select: {
@@ -51,7 +54,7 @@ const changePassword = async (
   const userEmail = user.email;
 
   const isCurrentPasswordValid = await bcrypt.compare(
-    current_password,
+    cleanCurrentPassword,
     user.user_password,
   );
   if (!isCurrentPasswordValid) {
@@ -61,15 +64,19 @@ const changePassword = async (
     );
   }
 
-  if (current_password === new_password) {
+  if (cleanCurrentPassword === cleanNewPassword) {
     throw new AppError(
       "New password must be different from the current password.",
       StatusCodes.BAD_REQUEST,
     );
   }
 
+  if(cleanNewPassword !== cleanConfirmPassword){
+    throw new AppError("New password and Confirm password mismatch.", StatusCodes.BAD_REQUEST)
+  }
+
   const hashedPassword = await bcrypt.hash(
-    new_password,
+    cleanNewPassword,
     Number(envVars.BCRYPT_SALT_ROUND),
   );
   await prisma.$transaction(
