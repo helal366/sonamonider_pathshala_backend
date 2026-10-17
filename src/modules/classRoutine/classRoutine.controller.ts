@@ -5,14 +5,20 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { classRoutineServices } from "./classRoutine.service.js";
 import {
+  TCreateClassRoutinePayload,
   TDeleteClassRoutineParams,
   TGetSingleClassRoutineParams,
   TUpdateClassRoutineParams,
+  TUpdateClassRoutinePayload,
+  TUpdateClassRoutineSingleFieldPayload,
 } from "./classRoutine.zodValidation.js";
 
 const createClassRoutine = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
-  const result = await classRoutineServices.createClassRoutine(req.body, user);
+  const result = await classRoutineServices.createClassRoutine(
+    req.body as TCreateClassRoutinePayload,
+    user,
+  );
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.CREATED,
@@ -25,7 +31,7 @@ const updateClassRoutine = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
   const { id } = req.params as unknown as TUpdateClassRoutineParams;
   const result = await classRoutineServices.updateClassRoutine(
-    req.body,
+    req.body as TUpdateClassRoutinePayload,
     user,
     id,
   );
@@ -42,7 +48,7 @@ const updateClassRoutineSingleField = catchAsync(
     const user = helperFunctions.requiredUser(req);
     const { id } = req.params as unknown as TUpdateClassRoutineParams;
     const result = await classRoutineServices.updateClassRoutineSingleField(
-      req.body,
+      req.body as TUpdateClassRoutineSingleFieldPayload,
       user,
       id,
     );

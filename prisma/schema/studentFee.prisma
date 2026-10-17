@@ -2,7 +2,7 @@ model StudentFeeRate {
   id                String            @id @default(uuid())
   student_id        String
   student Student @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+
   fee_type          StudentFeeType
   billing_frequency BillingFrequency
   amount            Decimal           @db.Decimal(10, 2)

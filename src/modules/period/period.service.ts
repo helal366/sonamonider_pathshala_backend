@@ -11,7 +11,7 @@ import {
 
 type LoggedInUser = NonNullable<Express.Request["user"]>;
 
-const ensureNoTeacherScheduleConflict = async (
+const ensureNoRoutineScheduleConflict = async (
   tx: Prisma.TransactionClient,
   periodId: string,
   startTime: string,
@@ -19,18 +19,50 @@ const ensureNoTeacherScheduleConflict = async (
 ) => {
   const affectedRoutines = await tx.classRoutine.findMany({
     where: { period_id: periodId },
-    select: { id: true, teacher_id: true },
+    select: {
+      id: true,
+      shift_id: true,
+      class: { select: { id: true } },
+      teachers: { select: { id: true } },
+    },
   });
   if (affectedRoutines.length === 0) return;
 
-  const teacherIds = [
-    ...new Set(affectedRoutines.map((routine) => routine.teacher_id)),
+  const teacherIds = [...new Set(affectedRoutines.flatMap((routine) =>
+    routine.teachers.map(({ id }) => id),
+  ))];
+  const classIds = [
+    ...new Set(affectedRoutines.flatMap((routine) =>
+      routine.class.map(({ id }) => id),
+    )),
   ];
+  const shiftIds = [
+    ...new Set(
+      affectedRoutines
+        .map((routine) => routine.shift_id)
+        .filter((shiftId): shiftId is string => shiftId !== null),
+    ),
+  ];
+  const classOverlapFilter = affectedRoutines.some(
+    (routine) => routine.shift_id === null,
+  )
+    ? { class: { some: { id: { in: classIds } } } }
+    : {
+        class: { some: { id: { in: classIds } } },
+        OR: [{ shift_id: { in: shiftIds } }, { shift_id: null }],
+      };
   const teacherRoutines = await tx.classRoutine.findMany({
-    where: { teacher_id: { in: teacherIds } },
+    where: {
+      OR: [
+        { teachers: { some: { id: { in: teacherIds } } } },
+        classOverlapFilter,
+      ],
+    },
     select: {
       id: true,
-      teacher_id: true,
+      shift_id: true,
+      class: { select: { id: true } },
+      teachers: { select: { id: true } },
       period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
     },
@@ -40,12 +72,21 @@ const ensureNoTeacherScheduleConflict = async (
 
   for (const assignedRoutine of affectedRoutines) {
     for (const otherRoutine of teacherRoutines) {
-      if (
-        assignedRoutine.id === otherRoutine.id ||
-        assignedRoutine.teacher_id !== otherRoutine.teacher_id
-      ) {
+      if (assignedRoutine.id === otherRoutine.id) {
         continue;
       }
+
+      const conflicts =
+        assignedRoutine.teachers.some(({ id }) =>
+          otherRoutine.teachers.some((teacher) => teacher.id === id),
+        ) ||
+        ((assignedRoutine.shift_id === null ||
+          otherRoutine.shift_id === null ||
+          assignedRoutine.shift_id === otherRoutine.shift_id) &&
+          assignedRoutine.class.some(({ id }) =>
+            otherRoutine.class.some((classRecord) => classRecord.id === id),
+          ));
+      if (!conflicts) continue;
 
       const otherStart =
         otherRoutine.period?.start_time ??
@@ -60,7 +101,7 @@ const ensureNoTeacherScheduleConflict = async (
         toMinutes(otherStart) < nextEnd
       ) {
         throw new AppError(
-          "This time change would overlap another class routine assigned to the same teacher.",
+          "This time change would overlap another class routine for a teacher or class in the same shift.",
           StatusCodes.CONFLICT,
         );
       }
@@ -130,7 +171,7 @@ const updatePeriod = async (
   return prisma.$transaction(
     async (tx) => {
       if (current.start_time !== startTime || current.end_time !== endTime) {
-        await ensureNoTeacherScheduleConflict(tx, id, startTime, endTime);
+        await ensureNoRoutineScheduleConflict(tx, id, startTime, endTime);
       }
       const updated = await tx.period.update({
         where: { id },
@@ -201,7 +242,7 @@ const updatePeriodSingleField = async (
   return prisma.$transaction(
     async (tx) => {
       if (payload.field !== "period_name") {
-        await ensureNoTeacherScheduleConflict(
+        await ensureNoRoutineScheduleConflict(
           tx,
           id,
           payload.field === "start_time" ? value : current.start_time,

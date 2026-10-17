@@ -1,24 +1,19 @@
 model AcademicStaff {
-  id            String @id @default(uuid())
-
-    full_name     String
-  mobile_number String
-  email         String @unique
+  id String @id @default(uuid())
 
   academic_result AcademicResult? @relation(name: "academic_staff_academic_result")
 
   current_position_id String?
   current_position    UserPosition? @relation("academic_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  current_role_id String?
-  current_role    Role? 
+  current_role Role?
 
   promotion_history          PromotionHistory[]
   promotion_requests         PromotionRequest[]
-  salary_rates               StaffSalaryRate[] @relation("academic_staff_salary_rates")
-  staff_payments             StaffPayment[]    @relation("academic_staff_payments")
+  salary_rates               StaffSalaryRate[]  @relation("academic_staff_salary_rates")
+  staff_payments             StaffPayment[]     @relation("academic_staff_payments")
   students_in_responsibility Student[]
-  class_routines_as_teacher  ClassRoutine[]
+  class_routines_as_teacher  ClassRoutine[]     @relation("class_routine_teachers")
 
   subject_as_subject_teacher String?
 
@@ -41,6 +36,5 @@ model AcademicStaff {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([full_name, mobile_number], name:"academic_full_name_mobile_unique")
   @@map("academic_staffs")
 }

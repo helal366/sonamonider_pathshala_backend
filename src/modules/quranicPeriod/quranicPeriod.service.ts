@@ -9,7 +9,7 @@ import {
   TUpdateQuranicPeriodZodSchema,
 } from "./quranicPeriod.zodValidation.js";
 
-const ensureNoTeacherScheduleConflict = async (
+const ensureNoRoutineScheduleConflict = async (
   transaction: Prisma.TransactionClient,
   quranicPeriodId: string,
   startTime: string,
@@ -17,19 +17,49 @@ const ensureNoTeacherScheduleConflict = async (
 ) => {
   const affectedRoutines = await transaction.classRoutine.findMany({
     where: { quranic_period_id: quranicPeriodId },
-    select: { id: true, teacher_id: true },
+    select: {
+      id: true,
+      shift_id: true,
+      class: { select: { id: true } },
+      teachers: { select: { id: true } },
+    },
   });
 
   if (affectedRoutines.length === 0) return;
 
-  const teacherIds = [
-    ...new Set(affectedRoutines.map(({ teacher_id }) => teacher_id)),
+  const teacherIds = [...new Set(affectedRoutines.flatMap((routine) =>
+    routine.teachers.map(({ id }) => id),
+  ))];
+  const classIds = [...new Set(affectedRoutines.flatMap((routine) =>
+    routine.class.map(({ id }) => id),
+  ))];
+  const shiftIds = [
+    ...new Set(
+      affectedRoutines
+        .map(({ shift_id }) => shift_id)
+        .filter((shiftId): shiftId is string => shiftId !== null),
+    ),
   ];
+  const classOverlapFilter = affectedRoutines.some(
+    (routine) => routine.shift_id === null,
+  )
+    ? { class: { some: { id: { in: classIds } } } }
+    : {
+        class: { some: { id: { in: classIds } } },
+        OR: [{ shift_id: { in: shiftIds } }, { shift_id: null }],
+      };
   const otherRoutines = await transaction.classRoutine.findMany({
-    where: { teacher_id: { in: teacherIds } },
+    where: {
+      OR: [
+        { teachers: { some: { id: { in: teacherIds } } } },
+        classOverlapFilter,
+      ],
+    },
     select: {
       id: true,
-      teacher_id: true,
+      shift_id: true,
+      class: { select: { id: true } },
+      teachers: { select: { id: true } },
       period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
     },
@@ -40,12 +70,21 @@ const ensureNoTeacherScheduleConflict = async (
 
   for (const routine of affectedRoutines) {
     for (const otherRoutine of otherRoutines) {
-      if (
-        routine.id === otherRoutine.id ||
-        routine.teacher_id !== otherRoutine.teacher_id
-      ) {
+      if (routine.id === otherRoutine.id) {
         continue;
       }
+
+      const conflicts =
+        routine.teachers.some(({ id }) =>
+          otherRoutine.teachers.some((teacher) => teacher.id === id),
+        ) ||
+        ((routine.shift_id === null ||
+          otherRoutine.shift_id === null ||
+          routine.shift_id === otherRoutine.shift_id) &&
+          routine.class.some(({ id }) =>
+            otherRoutine.class.some((classRecord) => classRecord.id === id),
+          ));
+      if (!conflicts) continue;
 
       const otherStart =
         otherRoutine.period?.start_time ??
@@ -61,7 +100,7 @@ const ensureNoTeacherScheduleConflict = async (
         toMinutes(otherStart) < proposedEnd
       ) {
         throw new AppError(
-          "This time change would overlap another class routine assigned to the same teacher.",
+          "This time change would overlap another class routine for a teacher or class in the same shift.",
           StatusCodes.CONFLICT,
         );
       }
@@ -185,7 +224,7 @@ const updateQuranicPeriod = async (
         currentPeriod.start_time !== cleanStartTime ||
         currentPeriod.end_time !== cleanEndTime
       ) {
-        await ensureNoTeacherScheduleConflict(
+        await ensureNoRoutineScheduleConflict(
           transaction,
           quranic_period_id,
           cleanStartTime,
@@ -301,7 +340,7 @@ if (field === "start_time" || field === "end_time") {
   // 4. Atomically commit individual field updates and write structural audit log tracking records
   return prisma.$transaction(async (transaction) => {
     if (field === "start_time" || field === "end_time") {
-      await ensureNoTeacherScheduleConflict(
+      await ensureNoRoutineScheduleConflict(
         transaction,
         quranic_period_id,
         field === "start_time" ? cleanValue : currentPeriod.start_time,

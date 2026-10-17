@@ -62,6 +62,16 @@ const deleteShift = async (shift_id: string, loggedInUser: TLoggedInUser) => {
       throw new AppError(`Shift not found`, StatusCodes.NOT_FOUND);
     }
 
+    const routineCount = await tx.classRoutine.count({
+      where: { shift_id },
+    });
+    if (routineCount > 0) {
+      throw new AppError(
+        "Cannot delete a shift that is assigned to class routines.",
+        StatusCodes.CONFLICT,
+      );
+    }
+
     const deleted = await tx.shift.delete({
       where: { id: shift_id },
     });

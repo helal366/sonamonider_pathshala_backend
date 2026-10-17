@@ -1,8 +1,9 @@
 model QuranicSubject {
-  id                 String @id @default(uuid())
+  id                   String @id @default(uuid())
   quranic_subject_name String @unique
 
-  class_history ClassHistory[]
+  class_history  ClassHistory[]
+  class_routines ClassRoutine[] @relation("class_routine_quranic_subjects")
 
   created_by_id String?
   created_by    User?   @relation("quranic_subject_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

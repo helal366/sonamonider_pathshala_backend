@@ -326,50 +326,50 @@ const updateSingleUserFieldAdmin = async (
       omit: { user_password: true },
     });
 
-    if (user.management_staff_profile) {
-      const profileId = user.management_staff_profile.id;
-      if (field === "full_name") {
-        await transaction.managementStaff.update({
-          where: { id: profileId },
-          data: {
-            full_name: normalizedValue as string,
-            updated_by: { connect: { id: loggedInUser.user_id } },
-          },
-        });
-      } else if (field === "mobile_number") {
-        await transaction.managementStaff.update({
-          where: { id: profileId },
-          data: {
-            mobile_number: normalizedValue as string,
-            updated_by: { connect: { id: loggedInUser.user_id } },
-          },
-        });
-      } else if (field === "email") {
-        await transaction.managementStaff.update({
-          where: { id: profileId },
-          data: {
-            email: normalizedValue as string,
-            updated_by: { connect: { id: loggedInUser.user_id } },
-          },
-        });
-      }
-      if (
-        field === "full_name" ||
-        field === "mobile_number" ||
-        field === "email"
-      ) {
-        await transaction.auditLog.create({
-          data: {
-            entity_id: profileId,
-            entity_name: "managementStaff",
-            action: "UPDATE",
-            changed_by: { connect: { id: loggedInUser.user_id } },
-            old_value: { [field]: user[typedField] },
-            new_value: { [field]: normalizedValue },
-          },
-        });
-      }
-    }
+    // if (user.management_staff_profile) {
+    //   const profileId = user.management_staff_profile.id;
+    //   if (field === "full_name") {
+    //     await transaction.managementStaff.update({
+    //       where: { id: profileId },
+    //       data: {
+    //         full_name: normalizedValue as string,
+    //         updated_by: { connect: { id: loggedInUser.user_id } },
+    //       },
+    //     });
+    //   } else if (field === "mobile_number") {
+    //     await transaction.managementStaff.update({
+    //       where: { id: profileId },
+    //       data: {
+    //         mobile_number: normalizedValue as string,
+    //         updated_by: { connect: { id: loggedInUser.user_id } },
+    //       },
+    //     });
+    //   } else if (field === "email") {
+    //     await transaction.managementStaff.update({
+    //       where: { id: profileId },
+    //       data: {
+    //         email: normalizedValue as string,
+    //         updated_by: { connect: { id: loggedInUser.user_id } },
+    //       },
+    //     });
+    //   }
+    //   if (
+    //     field === "full_name" ||
+    //     field === "mobile_number" ||
+    //     field === "email"
+    //   ) {
+    //     await transaction.auditLog.create({
+    //       data: {
+    //         entity_id: profileId,
+    //         entity_name: "managementStaff",
+    //         action: "UPDATE",
+    //         changed_by: { connect: { id: loggedInUser.user_id } },
+    //         old_value: { [field]: user[typedField] },
+    //         new_value: { [field]: normalizedValue },
+    //       },
+    //     });
+    //   }
+    // }
 
     await transaction.auditLog.create({
       data: {

@@ -207,6 +207,7 @@ const deleteQuranicSubject = async (
       _count: {
         select: {
           class_history: true, // Counts how many students are/were attached to this Quranic subject
+          class_routines: true,
         },
       },
     },
@@ -222,6 +223,12 @@ const deleteQuranicSubject = async (
       `Cannot delete quranic subject '${
         targetSubject.quranic_subject_name
       }'. There are active or historical student timelines linked to it.`,
+      StatusCodes.CONFLICT,
+    );
+  }
+  if (targetSubject._count.class_routines > 0) {
+    throw new AppError(
+      `Cannot delete Quranic subject "${targetSubject.quranic_subject_name}". It is used by ${targetSubject._count.class_routines} class routine(s).`,
       StatusCodes.CONFLICT,
     );
   }
@@ -257,7 +264,7 @@ const getAllQuranicSubjects = async () => {
     orderBy: { quranic_subject_name: "asc" },
     include: {
       _count: {
-        select: { class_history: true },
+        select: { class_history: true, class_routines: true },
       },
     },
   });
@@ -273,7 +280,7 @@ const getSingleQuranicSubject = async (id: string) => {
     where: { id },
     include: {
       _count: {
-        select: { class_history: true },
+        select: { class_history: true, class_routines: true },
       },
     },
   });

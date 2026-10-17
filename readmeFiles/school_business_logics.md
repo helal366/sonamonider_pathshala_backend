@@ -14,6 +14,8 @@
 ## Class routine:
 - Normal rule:
 * A teacher will not be able to take two class in a single period.
+* A routine may represent a combined session with multiple classes, teachers, regular subjects, and Quranic subjects.
+* A class will not have overlapping routines in the same shift. Teacher overlap is checked across shifts.
 * Each student will be able to see their own class routine.
 * Each teacher will be able to see their own class routine.
 * Each GRADE and GROUP teacher will be able to see the specific class's class routine which class's GRADE TEACHER or GROUP TEACHER he/she is.

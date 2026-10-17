@@ -26,6 +26,7 @@ const seedClasses = async () => {
     "GRADE_TWO_BANGLA", "GRADE_THREE_BANGLA", "GRADE_FOUR_BANGLA",
     "GRADE_FIVE_BANGLA", "GRADE_SIX_BANGLA", "GRADE_SEVEN_BANGLA",
     "GRADE_EIGHT_BANGLA", "GRADE_NINE_BANGLA", "GRADE_TEN_BANGLA",
+    "GRADE_ONE_GIRLS", "GRADE_TWO_GIRLS", "GRADE_FIVE_GIRLS", "GRADE_SIX_GIRLS", "GRADE_EIGHT_GIRLS"
   ];
 
   console.log("Seeding classes...");
@@ -66,8 +67,8 @@ const quranicPeriods = [
   { quranic_period_name: "HIFZ_MORNING", start_time: "6:01 AM", end_time: "7:50 AM" },
   { quranic_period_name: "ASSEMBLY", start_time: "7:51 AM", end_time: "8:00 AM" },
   { quranic_period_name: "ARABIC_LITERATURE", start_time: "10:16 AM", end_time: "11:15 AM" },
-  { quranic_period_name: "ARABIC_LITERATURE_BOYS", start_time: "11:16 AM", end_time: "12:00 AM" },
-  { quranic_period_name: "ARABIC_LITERATURE_HIGH", start_time: "11:46 AM", end_time: "12:15 AM" },
+  { quranic_period_name: "ARABIC_LITERATURE_BOYS", start_time: "11:16 AM", end_time: "12:00 PM" },
+  { quranic_period_name: "ARABIC_LITERATURE_HIGH", start_time: "11:46 AM", end_time: "12:15 PM" },
   { quranic_period_name: "QURANIC_EVENING", start_time: "3:01 PM", end_time: "5:00 PM" },
   { quranic_period_name: "HIFZ_NIGHT", start_time: "5:00 PM", end_time: "8:00 PM" },
   { quranic_period_name: "HIFZ_GIRLS", start_time: "08:01 AM", end_time: "09:00 AM" },
@@ -114,6 +115,30 @@ const seedPeriods = async () => {
   console.log(`Regular periods done. Created ${result.count} entries.`);
 };
 
+const subjects = [
+  "BANGLA",
+  "ENGLISH",
+  "MATH",
+  "QURAN",
+  "ARABIC",
+  "SPOKEN_ENGLISH",
+  "HAND_WRITING",
+  "BGS",
+  "ICT",
+  "ISLAMIC",
+  "AQUA",
+  "AGRICULTURE",
+];
+
+const seedSubjects = async () => {
+  console.log("Seeding regular subjects...");
+  const result = await prisma.subject.createMany({
+    data: subjects.map((subject_name) => ({ subject_name })),
+    skipDuplicates: true,
+  });
+  console.log(`Regular subjects done. Created ${result.count} entries.`);
+};
+
 // ========================================================
 // INITIAL EXECUTION HANDLER
 // ========================================================
@@ -121,6 +146,7 @@ export const runInitialOthers = async () => {
   await seedShifts();
   await seedClasses();
   await seedquranicSubjectes();
+  await seedSubjects();
   await seedQuranicPeriods();
   await seedPeriods();
   console.log("Initial secondary seeds completed safely.");

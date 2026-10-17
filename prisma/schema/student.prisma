@@ -1,11 +1,11 @@
 model Student {
-  id            String @id @default(uuid())
-  full_name     String
-  mobile_number String
-  email         String @unique
+  id String @id @default(uuid())
 
   active_class_id String
   active_class    Class  @relation("student_active_classes", fields: [active_class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  user_id           String @unique
+  user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   class_history      ClassHistory[]
   promotion_requests PromotionRequest[]
@@ -14,15 +14,12 @@ model Student {
   fee_payments       StudentFeePayment[]
 
   current_position_id String?
-  current_position  UserPosition? @relation("student_current_position", fields: [current_position_id], references: [id])
+  current_position    UserPosition? @relation("student_current_position", fields: [current_position_id], references: [id])
 
-  current_role_id String?
-  current_role Role? 
+  current_role_id        String?
+  current_role           Role?
   responsible_teacher_id String?
   responsible_teacher    AcademicStaff? @relation(fields: [responsible_teacher_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  user_id           String @unique
-  user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
   created_by    User?   @relation("student_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -33,6 +30,5 @@ model Student {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([full_name, mobile_number], name: "student_full_name_mobile_unique")
   @@map("students")
 }

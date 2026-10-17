@@ -27,12 +27,21 @@ const toMinutes = (value: string) => {
 
 const routineInclude = {
   class: true,
+  shift: true,
   period: true,
   quranic_period: true,
-  teacher: true,
+  teachers: true,
   subjects: true,
+  quranic_subjects: true,
   created_by: true,
   updated_by: true,
+} satisfies Prisma.ClassRoutineInclude;
+
+const routineAuditInclude = {
+  class: { select: { id: true } },
+  teachers: { select: { id: true } },
+  subjects: { select: { id: true } },
+  quranic_subjects: { select: { id: true } },
 } satisfies Prisma.ClassRoutineInclude;
 
 const routineTimes = async (
@@ -61,13 +70,6 @@ const routineTimes = async (
     throw new AppError("Selected period was not found.", StatusCodes.NOT_FOUND);
   }
 
-  if (!timePattern.test(period.start_time) || !timePattern.test(period.end_time)) {
-    throw new AppError(
-      "The selected period has an invalid time configuration.",
-      StatusCodes.INTERNAL_SERVER_ERROR,
-    );
-  }
-
   const startMinutes = toMinutes(period.start_time);
   const endMinutes = toMinutes(period.end_time);
   if (endMinutes <= startMinutes) {
@@ -87,32 +89,48 @@ const routineTimes = async (
 
 const validateRoutineReferences = async (
   tx: DbTransaction,
-  payload: TCreateClassRoutinePayload,
+  payload: TCreateClassRoutinePayload | TUpdateClassRoutinePayload,
 ) => {
-  const [classRecord, teacher, times, subjectCount] = await Promise.all([
-    tx.class.findUnique({
-      where: { id: payload.class_id },
+  const [
+    classCount,
+    shift,
+    teacherCount,
+    subjectCount,
+    quranicSubjectCount,
+    times,
+  ] = await Promise.all([
+    tx.class.count({ where: { id: { in: payload.class_ids } } }),
+    tx.shift.findUnique({
+      where: { id: payload.shift_id },
       select: { id: true },
     }),
-    tx.academicStaff.findUnique({
-      where: { id: payload.teacher_id },
-      select: { id: true },
-    }),
-    routineTimes(tx, payload.period_id, payload.quranic_period_id),
-    payload.subjects.length === 0
+    tx.academicStaff.count({ where: { id: { in: payload.teacher_ids } } }),
+    payload.subject_ids.length === 0
       ? Promise.resolve(0)
-      : tx.subject.count({ where: { id: { in: payload.subjects } } }),
+      : tx.subject.count({ where: { id: { in: payload.subject_ids } } }),
+    payload.quranic_subject_ids.length === 0
+      ? Promise.resolve(0)
+      : tx.quranicSubject.count({
+          where: { id: { in: payload.quranic_subject_ids } },
+        }),
+    routineTimes(tx, payload.period_id, payload.quranic_period_id),
   ]);
 
-  if (!classRecord) {
-    throw new AppError("Selected class was not found.", StatusCodes.NOT_FOUND);
+  if (classCount !== payload.class_ids.length) {
+    throw new AppError("One or more selected classes were not found.", StatusCodes.NOT_FOUND);
   }
-  if (!teacher) {
-    throw new AppError("Selected teacher/academic staff was not found.", StatusCodes.NOT_FOUND);
+  if (!shift) {
+    throw new AppError("Selected shift was not found.", StatusCodes.NOT_FOUND);
   }
-  if (subjectCount !== payload.subjects.length) {
+  if (teacherCount !== payload.teacher_ids.length) {
+    throw new AppError("One or more selected teachers were not found.", StatusCodes.NOT_FOUND);
+  }
+  if (subjectCount !== payload.subject_ids.length) {
+    throw new AppError("One or more selected subjects were not found.", StatusCodes.NOT_FOUND);
+  }
+  if (quranicSubjectCount !== payload.quranic_subject_ids.length) {
     throw new AppError(
-      "One or more selected subjects were not found.",
+      "One or more selected Quranic subjects were not found.",
       StatusCodes.NOT_FOUND,
     );
   }
@@ -120,19 +138,30 @@ const validateRoutineReferences = async (
   return times;
 };
 
-const assertNoTeacherOverlap = async (
+const assertNoScheduleOverlap = async (
   tx: DbTransaction,
-  teacherId: string,
+  classIds: string[],
+  shiftId: string,
+  teacherIds: string[],
   times: Awaited<ReturnType<typeof routineTimes>>,
   excludeRoutineId?: string,
 ) => {
   const existingRoutines = await tx.classRoutine.findMany({
     where: {
-      teacher_id: teacherId,
       ...(excludeRoutineId ? { id: { not: excludeRoutineId } } : {}),
+      OR: [
+        { teachers: { some: { id: { in: teacherIds } } } },
+        {
+          class: { some: { id: { in: classIds } } },
+          OR: [{ shift_id: shiftId }, { shift_id: null }],
+        },
+      ],
     },
     select: {
       id: true,
+      shift_id: true,
+      class: { select: { id: true } },
+      teachers: { select: { id: true } },
       period_id: true,
       quranic_period_id: true,
       period: { select: { start_time: true, end_time: true } },
@@ -140,32 +169,46 @@ const assertNoTeacherOverlap = async (
     },
   });
 
+  const classIdSet = new Set(classIds);
+  const teacherIdSet = new Set(teacherIds);
+
   for (const routine of existingRoutines) {
     if (Boolean(routine.period_id) === Boolean(routine.quranic_period_id)) {
       throw new AppError(
-        "An existing routine for this teacher must reference exactly one period.",
+        "An existing routine must reference exactly one period.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
+
     const startTime =
       routine.period?.start_time ?? routine.quranic_period?.start_time;
     const endTime =
       routine.period?.end_time ?? routine.quranic_period?.end_time;
     if (!startTime || !endTime) {
       throw new AppError(
-        "An existing routine for this teacher has no period assigned.",
+        "An existing routine has no period assigned.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
     const existingStart = toMinutes(startTime);
     const existingEnd = toMinutes(endTime);
+    const hasTeacherConflict = routine.teachers.some((teacher) =>
+      teacherIdSet.has(teacher.id),
+    );
+    const hasClassConflict =
+      (routine.shift_id === shiftId || routine.shift_id === null) &&
+      routine.class.some((classRecord) => classIdSet.has(classRecord.id));
+
     if (
+      (hasTeacherConflict || hasClassConflict) &&
       times.startMinutes < existingEnd &&
       existingStart < times.endMinutes
     ) {
       throw new AppError(
-        "This teacher is already assigned to another routine during this period.",
+        hasTeacherConflict
+          ? "A selected teacher is already assigned to another routine during this period."
+          : "A selected class already has another routine during this period and shift.",
         StatusCodes.CONFLICT,
       );
     }
@@ -174,22 +217,26 @@ const assertNoTeacherOverlap = async (
 
 const routineAuditValue = (routine: {
   id: string;
-  class_id: string;
+  shift_id: string | null;
   period_id: string | null;
   quranic_period_id: string | null;
-  teacher_id: string;
+  class: { id: string }[];
+  teachers: { id: string }[];
   subjects: { id: string }[];
+  quranic_subjects: { id: string }[];
 }) => ({
   id: routine.id,
-  class_id: routine.class_id,
+  class_ids: routine.class.map(({ id }) => id),
+  shift_id: routine.shift_id,
   period_id: routine.period_id,
   quranic_period_id: routine.quranic_period_id,
-  teacher_id: routine.teacher_id,
-  subjects: routine.subjects.map((subject) => subject.id),
+  teacher_ids: routine.teachers.map(({ id }) => id),
+  subject_ids: routine.subjects.map(({ id }) => id),
+  quranic_subject_ids: routine.quranic_subjects.map(({ id }) => id),
 });
 
 type CurrentRoutine = Prisma.ClassRoutineGetPayload<{
-  include: { subjects: { select: { id: true } } };
+  include: typeof routineAuditInclude;
 }>;
 
 const persistRoutineUpdate = async (
@@ -200,13 +247,21 @@ const persistRoutineUpdate = async (
   id: string,
 ) => {
   const times = await validateRoutineReferences(tx, payload);
-  await assertNoTeacherOverlap(tx, payload.teacher_id, times, id);
+  await assertNoScheduleOverlap(
+    tx,
+    payload.class_ids,
+    payload.shift_id,
+    payload.teacher_ids,
+    times,
+    id,
+  );
 
   const updated = await tx.classRoutine.update({
     where: { id },
     data: {
-      class: { connect: { id: payload.class_id } },
-      teacher: { connect: { id: payload.teacher_id } },
+      class: { set: payload.class_ids.map((classId) => ({ id: classId })) },
+      shift: { connect: { id: payload.shift_id } },
+      teachers: { set: payload.teacher_ids.map((teacherId) => ({ id: teacherId })) },
       ...(payload.period_id
         ? {
             period: { connect: { id: payload.period_id } },
@@ -216,7 +271,10 @@ const persistRoutineUpdate = async (
             period: { disconnect: true },
             quranic_period: { connect: { id: payload.quranic_period_id! } },
           }),
-      subjects: { set: payload.subjects.map((subjectId) => ({ id: subjectId })) },
+      subjects: { set: payload.subject_ids.map((subjectId) => ({ id: subjectId })) },
+      quranic_subjects: {
+        set: payload.quranic_subject_ids.map((subjectId) => ({ id: subjectId })),
+      },
       updated_by: { connect: { id: user.user_id } },
     },
     include: routineInclude,
@@ -242,16 +300,26 @@ const createClassRoutine = async (
   prisma.$transaction(
     async (tx) => {
       const times = await validateRoutineReferences(tx, payload);
-      await assertNoTeacherOverlap(tx, payload.teacher_id, times);
+      await assertNoScheduleOverlap(
+        tx,
+        payload.class_ids,
+        payload.shift_id,
+        payload.teacher_ids,
+        times,
+      );
 
       const routine = await tx.classRoutine.create({
         data: {
-          class: { connect: { id: payload.class_id } },
-          teacher: { connect: { id: payload.teacher_id } },
+          class: { connect: payload.class_ids.map((id) => ({ id })) },
+          shift: { connect: { id: payload.shift_id } },
+          teachers: { connect: payload.teacher_ids.map((id) => ({ id })) },
           ...(payload.period_id
             ? { period: { connect: { id: payload.period_id } } }
             : { quranic_period: { connect: { id: payload.quranic_period_id! } } }),
-          subjects: { connect: payload.subjects.map((id) => ({ id })) },
+          subjects: { connect: payload.subject_ids.map((id) => ({ id })) },
+          quranic_subjects: {
+            connect: payload.quranic_subject_ids.map((id) => ({ id })),
+          },
           created_by: { connect: { id: user.user_id } },
         },
         include: routineInclude,
@@ -281,7 +349,7 @@ const updateClassRoutine = async (
     async (tx) => {
       const current = await tx.classRoutine.findUnique({
         where: { id },
-        include: { subjects: { select: { id: true } } },
+        include: routineAuditInclude,
       });
       if (!current) {
         throw new AppError("Class routine not found.", StatusCodes.NOT_FOUND);
@@ -301,26 +369,31 @@ const updateClassRoutineSingleField = async (
     async (tx) => {
       const current = await tx.classRoutine.findUnique({
         where: { id },
-        include: { subjects: { select: { id: true } } },
+        include: routineAuditInclude,
       });
       if (!current) {
         throw new AppError("Class routine not found.", StatusCodes.NOT_FOUND);
       }
 
       const next: TUpdateClassRoutinePayload = {
-        class_id: current.class_id,
+        class_ids: current.class.map(({ id: classId }) => classId),
+        shift_id: current.shift_id ?? "",
         period_id: current.period_id ?? undefined,
         quranic_period_id: current.quranic_period_id ?? undefined,
-        teacher_id: current.teacher_id,
-        subjects: current.subjects.map((subject) => subject.id),
+        teacher_ids: current.teachers.map(({ id: teacherId }) => teacherId),
+        subject_ids: current.subjects.map(({ id: subjectId }) => subjectId),
+        quranic_subject_ids: current.quranic_subjects.map(({ id: subjectId }) => subjectId),
       };
 
       switch (payload.field) {
-        case "class_id":
-          next.class_id = payload.value;
+        case "class_ids":
+          next.class_ids = payload.value;
           break;
-        case "teacher_id":
-          next.teacher_id = payload.value;
+        case "shift_id":
+          next.shift_id = payload.value;
+          break;
+        case "teacher_ids":
+          next.teacher_ids = payload.value;
           break;
         case "period_id":
           next.period_id = payload.value;
@@ -330,9 +403,19 @@ const updateClassRoutineSingleField = async (
           next.period_id = undefined;
           next.quranic_period_id = payload.value;
           break;
-        case "subjects":
-          next.subjects = payload.value;
+        case "subject_ids":
+          next.subject_ids = payload.value;
           break;
+        case "quranic_subject_ids":
+          next.quranic_subject_ids = payload.value;
+          break;
+      }
+
+      if (!next.shift_id) {
+        throw new AppError(
+          "Assign a shift to this existing routine before updating it.",
+          StatusCodes.BAD_REQUEST,
+        );
       }
 
       return persistRoutineUpdate(tx, current, next, user, id);
@@ -344,7 +427,7 @@ const deleteClassRoutine = async (id: string, user: LoggedInUser) =>
   prisma.$transaction(async (tx) => {
     const current = await tx.classRoutine.findUnique({
       where: { id },
-      include: { subjects: { select: { id: true } } },
+      include: routineAuditInclude,
     });
     if (!current) {
       throw new AppError("Class routine not found.", StatusCodes.NOT_FOUND);

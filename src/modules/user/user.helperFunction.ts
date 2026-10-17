@@ -19,40 +19,77 @@ const userExistence = async ({
   mobile_number,
 }: IExistencePayload) => {
   if (isManagement.includes(role)) {
-    return await prisma.managementStaff.findUnique({
+    return await prisma.managementStaff.findFirst({
       where: {
-        management_full_name_mobile_unique: {
-          full_name,
-          mobile_number,
-        },
+        user_primary_data: {
+            full_name,
+            mobile_number
+          }
       },
+      include: {
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            email:true
+          }
+        }
+      }
     });
   } else if (role === Role.STUDENT) {
-    return await prisma.student.findUnique({
+    return await prisma.student.findFirst({
       where: {
-        student_full_name_mobile_unique: {
-          full_name,
-          mobile_number,
-        },
+        user_primary_data: {
+            full_name,
+            mobile_number
+          }
       },
+      include: {
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            email:true
+          }
+        }
+      }
     });
   } else if (role === Role.ACADEMIC) {
-    return await prisma.academicStaff.findUnique({
+    return await prisma.academicStaff.findFirst({
+
       where: {
-        academic_full_name_mobile_unique: {
-          full_name,
-          mobile_number,
-        },
+        user_primary_data: {
+            full_name,
+            mobile_number
+          }
       },
+      include: {
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            email:true
+          }
+        }
+      }
     });
   } else if (role === Role.GOVERNING_BODY) {
-    return await prisma.governingBody.findUnique({
+    return await prisma.governingBody.findFirst({
       where: {
-        governing_body_full_name_mobile_unique: {
-          full_name,
-          mobile_number,
-        },
+        user_primary_data: {
+            full_name,
+            mobile_number
+          }
       },
+      include: {
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            email:true
+          }
+        }
+      }
     });
   }
   return null;
@@ -60,13 +97,13 @@ const userExistence = async ({
 
 const userCount = async ({ role_name: role, mobile_number }: IUserCount) => {
   if (isManagement.includes(role)) {
-    return await prisma.managementStaff.count({ where: { mobile_number } });
+    return await prisma.managementStaff.count({ where: {user_primary_data: {mobile_number} } });
   } else if (role === "STUDENT") {
-    return await prisma.student.count({ where: { mobile_number } });
+    return await prisma.student.count({ where: {user_primary_data: {mobile_number} } });
   } else if (role === "GOVERNING_BODY") {
-    return await prisma.governingBody.count({ where: { mobile_number } });
+    return await prisma.governingBody.count({ where: {user_primary_data: {mobile_number} } });
   } else if (role === "ACADEMIC") {
-    return await prisma.academicStaff.count({ where: { mobile_number } });
+    return await prisma.academicStaff.count({ where: {user_primary_data: {mobile_number} } });
   }
   return 0;
 };

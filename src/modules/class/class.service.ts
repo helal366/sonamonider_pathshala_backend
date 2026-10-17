@@ -66,6 +66,16 @@ const deleteClassName = async (
     if (!existingClass) {
       throw new AppError(`Provided class not found.`, StatusCodes.NOT_FOUND);
     }
+    const routineCount = await tx.classRoutine.count({
+      where: { class: { some: { id: class_id } } },
+    });
+    if (routineCount > 0) {
+      throw new AppError(
+        "Cannot delete a class that is assigned to class routines.",
+        StatusCodes.CONFLICT,
+      );
+    }
+
     const deleteClassData = await tx.class.delete({ where: { id: class_id } });
     await tx.auditLog.create({
       data: {
@@ -147,7 +157,16 @@ const assignGradeGroupTeacher = async (
       select: {
         class_name: true,
         grade_group_teacher_id: true,
-        grade_group_teacher: true,
+        grade_group_teacher: {
+          include: {
+            user_primary_data: {
+              select: {
+                full_name: true,
+                mobile_number: true
+              }
+            }
+          }
+        },
       },
     });
 
@@ -157,7 +176,7 @@ const assignGradeGroupTeacher = async (
 
     if (existingClass.grade_group_teacher_id) {
       throw new AppError(
-        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.full_name} (${existingClass.grade_group_teacher?.mobile_number})`,
+        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.user_primary_data.full_name} (${existingClass.grade_group_teacher?.user_primary_data.mobile_number})`,
         StatusCodes.CONFLICT,
       );
     }

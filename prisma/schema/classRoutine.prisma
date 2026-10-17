@@ -1,8 +1,10 @@
 model ClassRoutine {
   id String @id @default(uuid())
 
-  class_id String
-  class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  class Class[] @relation("class_routine_classes")
+
+  shift_id String?
+  shift    Shift?  @relation(fields: [shift_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   period_id String?
   period    Period? @relation(fields: [period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -10,10 +12,10 @@ model ClassRoutine {
   quranic_period_id String?
   quranic_period    QuranicPeriod? @relation(fields: [quranic_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  teacher_id String
-  teacher    AcademicStaff @relation(fields: [teacher_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  teachers AcademicStaff[] @relation("class_routine_teachers")
 
-  subjects Subject[] @relation("class_routine_subjects")
+  subjects         Subject[]        @relation("class_routine_subjects")
+  quranic_subjects QuranicSubject[] @relation("class_routine_quranic_subjects")
 
   created_by_id String?
   created_by    User?   @relation("class_routine_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

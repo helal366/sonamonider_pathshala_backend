@@ -1,8 +1,5 @@
 model ManagementStaff {
-  id            String @id @default(uuid())
-  full_name     String
-  mobile_number String
-  email         String @unique
+  id String @id @default(uuid())
 
   academic_result          AcademicResult? @relation(name: "management_staff_academic_result")
   working_experience_year  Int?
@@ -15,12 +12,12 @@ model ManagementStaff {
   current_position_id String?
   current_position    UserPosition? @relation("management_current_position", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  current_role    Role? 
+  current_role Role?
 
   promotion_history  PromotionHistory[]
   promotion_requests PromotionRequest[]
-  salary_rates       StaffSalaryRate[] @relation("management_staff_salary_rates")
-  staff_payments     StaffPayment[]    @relation("management_staff_payments")
+  salary_rates       StaffSalaryRate[]  @relation("management_staff_salary_rates")
+  staff_payments     StaffPayment[]     @relation("management_staff_payments")
 
   created_by_id String?
   created_by    User?   @relation("management_staff_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -31,6 +28,5 @@ model ManagementStaff {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([full_name, mobile_number], name: "management_full_name_mobile_unique")
   @@map("management_staffs")
 }

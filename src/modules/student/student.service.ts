@@ -217,9 +217,9 @@ const addResponsibleTeacher = async (
 ) => {
   const { student_id, teacher_full_name, teacher_mobile_number } = payload;
   return await prisma.$transaction(async (transaction) => {
-    const existingTeacher = await transaction.academicStaff.findUnique({
+    const existingTeacher = await transaction.academicStaff.findFirst({
       where: {
-        academic_full_name_mobile_unique: {
+        user_primary_data: {
           full_name: teacher_full_name,
           mobile_number: teacher_mobile_number,
         },
@@ -254,9 +254,13 @@ const addResponsibleTeacher = async (
         mobile_number: true,
         responsible_teacher_id: true,
         responsible_teacher: {
-          select: {
-            full_name: true,
-            mobile_number: true,
+          include: {
+            user_primary_data: {
+              select: {
+                full_name: true,
+                mobile_number: true,
+              },
+            },
           },
         },
         user_primary_data: {
@@ -279,7 +283,7 @@ const addResponsibleTeacher = async (
     }
     if (existingStudent.responsible_teacher_id) {
       throw new AppError(
-        `Responsible teacher is already assigned. Responsible teacher is: ${existingStudent.responsible_teacher?.full_name} with a mobile number ${existingStudent.responsible_teacher?.mobile_number}`,
+        `Responsible teacher is already assigned. Responsible teacher is: ${existingStudent.responsible_teacher?.user_primary_data.full_name} with a mobile number ${existingStudent.responsible_teacher?.user_primary_data.mobile_number}`,
         StatusCodes.CONFLICT,
       );
     }

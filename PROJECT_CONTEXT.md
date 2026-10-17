@@ -6,9 +6,10 @@ This note captures decisions and implementation context from the October 2026 cl
 
 - `Period` and `QuranicPeriod` are separate period catalogs. Both store `start_time` and `end_time` as formatted strings such as `8:00 AM`.
 - `Subject` and `QuranicSubject` are separate subject catalogs.
-- `ClassRoutine` represents a class's teacher assignment to exactly one regular `Period` or `QuranicPeriod`, and can link multiple regular `Subject` records.
+- `ClassRoutine` represents a session at exactly one regular `Period` or `QuranicPeriod`. It can link multiple classes, multiple academic teachers, regular subjects, and Quranic subjects. This supports combined sessions such as a shared HIFZ period without duplicating the session row.
+- Each new routine must specify exactly one shift. Classes do not yet have a shift-eligibility mapping, so the service stores the selected shift but does not infer or validate a class-to-shift mapping. Existing routines may have a null shift until updated.
 - Routine time is read from its related period record; the routine does not duplicate start/end time fields. This avoids time values drifting out of sync when a period is edited.
-- One teacher must not have overlapping routine periods. The ClassRoutine and period update services check intervals using half-open overlap semantics, so back-to-back periods are allowed. This is service-level protection, not a database exclusion constraint; direct database writes can bypass it.
+- A teacher must not have overlapping routine periods across any shift. A class must not have overlapping routines in the same shift. Both checks use half-open overlap semantics, so back-to-back periods are allowed. Multiple teachers and classes within the same routine are an intentional combined session. This is service-level protection, not a database exclusion constraint; direct database writes can bypass it.
 - The requested Prisma table mapping is currently `@@map("class_rotine")` (spelled `rotine`) in `prisma/schema/classRoutine.prisma`.
 
 ## Recent business logic: staff payments and student fees
@@ -37,9 +38,10 @@ The modules provide create, full update, single-field update, delete, list, and 
 ## Validation and schedule behavior
 
 - Quranic period create/update validation accepts 12-hour AM/PM time strings and requires end time to be later than start time.
-- ClassRoutine request validation requires exactly one of `period_id` or `quranic_period_id`, and rejects duplicate subject IDs.
-- ClassRoutine create/update checks that referenced class, teacher, period, and subjects exist.
-- ClassRoutine create/update and period time changes check teacher time overlap across both regular and Quranic periods.
+- ClassRoutine request validation requires at least one class and teacher, exactly one of `period_id` or `quranic_period_id`, and unique class, teacher, and subject IDs. Request arrays are `class_ids`, `teacher_ids`, `subject_ids`, and `quranic_subject_ids`; `shift_id` is required for new/updated routines.
+- ClassRoutine create/update checks that referenced classes, teachers, shift, period, and both subject types exist.
+- ClassRoutine create/update and period time changes check teacher overlaps across all shifts and class overlaps within a shift, across regular and Quranic periods.
+- The class-routine migration copies existing single-class and single-teacher links into join tables. Existing rows have no reliable shift assignment, so `shift_id` remains nullable for legacy data; update those rows with a shift before relying on class-overlap checks for them.
 - Period names are unique (`Period.period_name` and `QuranicPeriod.quranic_period_name`). If one display name needs different time definitions, this uniqueness/design needs reconsideration.
 
 ## Verification completed

@@ -4,8 +4,8 @@ model Class {
   is_active_class Boolean   @default(true)
   active_students Student[] @relation("student_active_classes")
 
-  class_history ClassHistory[]
-  class_routines ClassRoutine[]
+  class_history  ClassHistory[]
+  class_routines ClassRoutine[] @relation("class_routine_classes")
 
   grade_group_teacher_id String?        @unique
   grade_group_teacher    AcademicStaff? @relation(fields: [grade_group_teacher_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

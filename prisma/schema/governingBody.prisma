@@ -1,8 +1,6 @@
 model GoverningBody {
-  id              String          @id @default(uuid())
-  full_name       String
-  mobile_number   String
-  email           String          @unique
+  id String @id @default(uuid())
+
   academic_result AcademicResult? @relation(name: "governing_body_academic_result")
 
   user_id           String @unique
@@ -12,9 +10,9 @@ model GoverningBody {
   promotion_requests PromotionRequest[]
 
   current_position_id String?
-  current_position UserPosition? @relation("governing_bodies_current_position", fields: [current_position_id], references: [id])
+  current_position    UserPosition? @relation("governing_bodies_current_position", fields: [current_position_id], references: [id])
 
-  current_role Role? 
+  current_role Role?
 
   created_by_id String?
   created_by    User?   @relation("governing_bodies_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -25,6 +23,5 @@ model GoverningBody {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([full_name, mobile_number], name: "governing_body_full_name_mobile_unique")
   @@map("governing_bodies")
 }

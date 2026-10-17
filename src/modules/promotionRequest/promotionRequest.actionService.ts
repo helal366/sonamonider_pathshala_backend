@@ -4,7 +4,6 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
 import { ActiveStatus, Prisma, Role } from "#db-client";
-import { connect } from "node:http2";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
@@ -215,7 +214,7 @@ const actionPromotionRequest = async (
           },
         });
         // Update management staff profile : update promoted role position
-        const updatedManagementStaff = await tx.managementStaff.update({
+        await tx.managementStaff.update({
           where: { id: management_staff_id },
           data: {
             current_position_id: new_position_id,
@@ -368,8 +367,14 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { current_role: old_role, current_position_id: old_position_id },
-          new_value: { current_role: new_role, current_position_id: new_position_id },
+          old_value: {
+            current_role: old_role,
+            current_position_id: old_position_id,
+          },
+          new_value: {
+            current_role: new_role,
+            current_position_id: new_position_id,
+          },
         });
       }
 
@@ -483,7 +488,6 @@ const actionPromotionRequest = async (
               user_primary_data: {
                 select: { active_status: true },
               },
-              current_role_id: true,
               current_position_id: true,
             },
           });
@@ -528,14 +532,12 @@ const actionPromotionRequest = async (
                 active_status:
                   existingAcademicStaff.user_primary_data.active_status,
               },
-              current_role_id: existingAcademicStaff.current_role_id,
               current_position_id: existingAcademicStaff.current_position_id,
             },
             new_value: {
               user_primary_data: {
                 active_status: updatedAcadStaff.user_primary_data.active_status,
               },
-              current_role_id: updatedAcadStaff.current_role_id,
               current_position_id: updatedAcadStaff.current_position_id,
             },
           });
@@ -551,6 +553,15 @@ const actionPromotionRequest = async (
               current_position_id: new_position_id,
               created_by_id: loggedInUser.user_id,
             },
+            include: {
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                  email: true
+                }
+              }
+            }
           });
           // Assign target academic staff id
           targetAcademicStaffId = createdAcadStaff.id;
@@ -562,11 +573,10 @@ const actionPromotionRequest = async (
             action: "CREATE",
             old_value: Prisma.JsonNull,
             new_value: {
-              full_name: createdAcadStaff.full_name,
-              mobile_number: createdAcadStaff.mobile_number,
-              email: createdAcadStaff.email,
+              full_name: createdAcadStaff.user_primary_data.full_name,
+              mobile_number: createdAcadStaff.user_primary_data.mobile_number,
+              email: createdAcadStaff.user_primary_data.email,
               user_id: createdAcadStaff.user_id,
-              current_role_id: createdAcadStaff.current_role_id,
               current_position_id: createdAcadStaff.current_position_id,
             },
           });
@@ -587,8 +597,14 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { current_role: old_role, current_position_id: old_position_id },
-          new_value: { current_role: new_role, current_position_id: new_position_id },
+          old_value: {
+            current_role: old_role,
+            current_position_id: old_position_id,
+          },
+          new_value: {
+            current_role: new_role,
+            current_position_id: new_position_id,
+          },
         });
 
         // Create new promotion history
@@ -629,6 +645,7 @@ const actionPromotionRequest = async (
         const acadStaff = await tx.academicStaff.findUnique({
           where: { id: academic_staff_id },
           select: {
+            user_id: true,
             user_primary_data: {
               select: {
                 active_status: true,
@@ -637,35 +654,33 @@ const actionPromotionRequest = async (
           },
         });
 
+        if (!acadStaff?.user_id) {
+          throw new AppError(
+            `User regarding academic staff not found`,
+            StatusCodes.NOT_FOUND,
+          );
+        }
+
         // 2. Soft-deactivate the source academic staff profile record
-        const updatedAcadStaff = await tx.academicStaff.update({
-          where: { id: academic_staff_id },
+        const updatedUser = await tx.user.update({
+          where: { id: user_id },
           data: {
-            user_primary_data: {
-              update: {
-                active_status: ActiveStatus.INACTIVE,
-                updated_by: { connect: { id: loggedInUser.user_id } },
-              },
-            },
+            active_status: ActiveStatus.INACTIVE,
             updated_by: { connect: { id: loggedInUser.user_id } },
-          },
-          include: {
-            user_primary_data: { select: { active_status: true } },
           },
         });
 
         // 3. Track the academic staff deactivation state modification
         auditRecords.push({
-          entity_id: academic_staff_id,
-          entity_name: "academicStaff",
+          entity_id: acadStaff?.user_id,
+          entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
-            user_primary_data: acadStaff?.user_primary_data.active_status,
+            active_status: acadStaff?.user_primary_data.active_status,
           },
           new_value: {
-            user_primary_data:
-              updatedAcadStaff?.user_primary_data.active_status,
+            active_status: updatedUser?.active_status,
           },
         });
 
@@ -763,6 +778,15 @@ const actionPromotionRequest = async (
               current_position_id: new_position_id,
               created_by_id: loggedInUser.user_id,
             },
+            include: {
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                  email: true
+                }
+              }
+            }
           });
 
           // Assign the generated unique profile ID
@@ -776,9 +800,9 @@ const actionPromotionRequest = async (
             action: "CREATE",
             old_value: Prisma.JsonNull,
             new_value: {
-              full_name: createdMngStaff.full_name,
-              mobile_number: createdMngStaff.mobile_number,
-              email: createdMngStaff.email,
+              full_name: createdMngStaff.user_primary_data.full_name,
+              mobile_number: createdMngStaff.user_primary_data.mobile_number,
+              email: createdMngStaff.user_primary_data.email,
               user_id: createdMngStaff.user_id,
               current_role: createdMngStaff.current_role,
               current_position_id: createdMngStaff.current_position_id,
@@ -801,8 +825,14 @@ const actionPromotionRequest = async (
           entity_name: "user",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: { current_role: old_role, current_position_id: old_position_id },
-          new_value: { current_role: new_role, current_position_id: new_position_id },
+          old_value: {
+            current_role: old_role,
+            current_position_id: old_position_id,
+          },
+          new_value: {
+            current_role: new_role,
+            current_position_id: new_position_id,
+          },
         });
 
         // 8. Create a fresh new open baseline promotion timeline tracking log row
