@@ -1,0 +1,9 @@
+model Booklist{
+    id String @id @default(uuid())
+
+    book_name String 
+    publisher String
+
+    class_id String
+    class_name Class @relation(fields: [class_id], references: [id])
+}
