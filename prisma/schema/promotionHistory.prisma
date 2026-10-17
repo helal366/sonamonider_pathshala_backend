@@ -17,7 +17,7 @@ model PromotionHistory {
   governing_body_id String?
   governing_body    GoverningBody? @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  role    Role 
+  role       Role
   // Metadata Fields
   start_date DateTime  @default(now())
   end_date   DateTime?

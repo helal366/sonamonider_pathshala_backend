@@ -1,12 +1,12 @@
-model ClassHistoryQuranicPeriod{
-    id String @id @default(uuid())
-    class_history_id        String
-  class_history           ClassHistory       @relation(fields: [class_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+model ClassHistoryQuranicPeriod {
+  id               String       @id @default(uuid())
+  class_history_id String
+  class_history    ClassHistory @relation(fields: [class_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   quranic_period_id String
   quranic_period    QuranicPeriod @relation(fields: [quranic_period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  created_at              DateTime           @default(now())
+  created_at DateTime @default(now())
 
   // Prevents linking the exact same period to the exact same class history row twice
   @@unique([class_history_id, quranic_period_id], name: "history_period_unique")

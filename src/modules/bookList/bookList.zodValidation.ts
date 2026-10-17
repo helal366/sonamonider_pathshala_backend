@@ -1,5 +1,8 @@
 import z4 from "zod/v4";
 
+// =====================================================================
+// CREATE BOOK LIST ZOD SCHEMA
+// =====================================================================
 const createBookListZodSchema = z4.object({
     book_name: z4.string({
         error: (issue)=>
@@ -15,6 +18,17 @@ const createBookListZodSchema = z4.object({
 });
 export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;
 
+
+// =====================================================================
+// DELETE BOOK LIST SERVICE LAYER
+// =====================================================================
+const deleteBookListParamsZodSchema = z4.object({
+    id: z4.uuid("Invalid book list ID format.")
+});
+export type TDeleteBookListParamsZodSchema =z4.infer<typeof deleteBookListParamsZodSchema>;
+
+
 export const bookListZodSchema = {
     createBookListZodSchema,
+    deleteBookListParamsZodSchema
 }

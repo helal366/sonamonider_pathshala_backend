@@ -27,10 +27,10 @@ model User {
 
   promotion_requests PromotionRequest[]
 
-  current_role Role? 
+  current_role Role?
 
-  current_position_id      String?
-  current_position UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  current_position_id String?
+  current_position    UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   management_staff_profile ManagementStaff? @relation("management_staff_profile")
   academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")
@@ -73,6 +73,9 @@ model User {
   created_class_history ClassHistory[] @relation("class_history_created_by")
   updated_class_history ClassHistory[] @relation("class_history_updated_by")
 
+  created_book_list Booklist[] @relation("book_list_created_by")
+  updated_book_list Booklist[] @relation("book_list_updated_by")
+
   created_promotion_requests PromotionRequest[] @relation("promotion_request_created_by")
   updated_promotion_requests PromotionRequest[] @relation("promotion_request_updated_by")
 
@@ -108,8 +111,8 @@ model User {
   created_positions UserPosition[] @relation("user_position_created_by")
   updated_positions UserPosition[] @relation("user_position_updated_by")
 
-  created_roles Role[] 
-  updated_roles Role[] 
+  created_roles Role[]
+  updated_roles Role[]
 
   created_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_created_by")
   updated_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_updated_by")

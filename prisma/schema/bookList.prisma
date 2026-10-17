@@ -1,9 +1,20 @@
-model Booklist{
-    id String @id @default(uuid())
+model Booklist {
+  id String @id @default(uuid())
 
-    book_name String 
-    publisher String
+  book_name String
+  publisher String
 
-    class_id String
-    class_name Class @relation(fields: [class_id], references: [id])
+  class_id   String
+  class Class  @relation(fields: [class_id], references: [id])
+
+  created_by_id String?
+  created_by    User?   @relation("book_list_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("book_list_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("book_list")
 }

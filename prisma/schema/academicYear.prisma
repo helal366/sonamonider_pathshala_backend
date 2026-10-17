@@ -2,7 +2,7 @@ model AcademicYear {
   id                 String @id @default(uuid())
   academic_year_name String @unique
 
-  class_history ClassHistory[]
+  class_history        ClassHistory[]
   student_fee_payments StudentFeePayment[]
 
   created_by_id String?

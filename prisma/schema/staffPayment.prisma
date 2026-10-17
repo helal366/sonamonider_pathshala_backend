@@ -1,5 +1,5 @@
 model StaffSalaryRate {
-  id             String           @id @default(uuid())
+  id String @id @default(uuid())
 
   academic_staff_id String?
   academic_staff    AcademicStaff? @relation("academic_staff_salary_rates", fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -8,7 +8,7 @@ model StaffSalaryRate {
   management_staff    ManagementStaff? @relation("management_staff_salary_rates", fields: [management_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   monthly_salary Decimal          @db.Decimal(10, 2)
-  eid_bonus Decimal          @db.Decimal(10, 2)
+  eid_bonus      Decimal          @db.Decimal(10, 2)
   change_type    SalaryChangeType @default(INITIAL)
   effective_from DateTime         @default(now())
   note           String?
@@ -30,7 +30,7 @@ model StaffSalaryRate {
 }
 
 model StaffPayment {
-  id                 String           @id @default(uuid())
+  id String @id @default(uuid())
 
   academic_staff_id String?
   academic_staff    AcademicStaff? @relation("academic_staff_payments", fields: [academic_staff_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

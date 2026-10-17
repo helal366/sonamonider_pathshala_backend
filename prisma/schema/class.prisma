@@ -6,7 +6,7 @@ model Class {
 
   class_history  ClassHistory[]
   class_routines ClassRoutine[] @relation("class_routine_classes")
-  book_list Booklist[]
+  book_list      Booklist[]
 
   grade_group_teacher_id String?        @unique
   grade_group_teacher    AcademicStaff? @relation(fields: [grade_group_teacher_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

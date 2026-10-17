@@ -13,7 +13,7 @@ model ClassHistory {
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
-  arabic_literature Boolean @default(false)
+  arabic_literature             Boolean                     @default(false)
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
