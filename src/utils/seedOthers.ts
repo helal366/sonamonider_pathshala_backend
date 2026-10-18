@@ -21,12 +21,11 @@ const seedShifts = async () => {
 // =========================================================
 const seedClasses = async () => {
   const classes = [
-    "PLAYGROUP", "NURSERY", "KINDERGARTEN", "KINDERGARTEN_DAY",
+    "PLAYGROUP", "NURSERY", "KINDERGARTEN", 
     "GRADE_ONE_ENGLISH", "GRADE_ONE_BANGLA", "GRADE_TWO_ENGLISH",
     "GRADE_TWO_BANGLA", "GRADE_THREE_BANGLA", "GRADE_FOUR_BANGLA",
     "GRADE_FIVE_BANGLA", "GRADE_SIX_BANGLA", "GRADE_SEVEN_BANGLA",
     "GRADE_EIGHT_BANGLA", "GRADE_NINE_BANGLA", "GRADE_TEN_BANGLA",
-    "GRADE_ONE_GIRLS", "GRADE_TWO_GIRLS", "GRADE_FIVE_GIRLS", "GRADE_SIX_GIRLS", "GRADE_EIGHT_GIRLS"
   ];
 
   console.log("Seeding classes...");

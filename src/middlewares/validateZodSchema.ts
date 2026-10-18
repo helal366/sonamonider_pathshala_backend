@@ -4,6 +4,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../helperFunctions/globalError/globalErrorHelperFunction.js";
 
+// BODY
 export const validateZodSchema = (zodSchema: z4.ZodType) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {

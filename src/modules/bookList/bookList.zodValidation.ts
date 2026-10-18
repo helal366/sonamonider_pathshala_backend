@@ -1,5 +1,6 @@
 import z4 from "zod/v4";
 
+
 // =====================================================================
 // CREATE BOOK LIST ZOD SCHEMA
 // =====================================================================
@@ -20,15 +21,44 @@ export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;
 
 
 // =====================================================================
-// DELETE BOOK LIST SERVICE LAYER
+// DELETE BOOK LIST ZOD SCHEMA
 // =====================================================================
 const deleteBookListParamsZodSchema = z4.object({
     id: z4.uuid("Invalid book list ID format.")
 });
 export type TDeleteBookListParamsZodSchema =z4.infer<typeof deleteBookListParamsZodSchema>;
 
+// =====================================================================
+// UPDATE BOOK LIST SINGLE FIELD ZOD SCHEMA
+// =====================================================================
+const updateBookListSingleFieldParamsZodSchema = z4.object({
+    id: z4.uuid("Book list ID is required.")
+});
+export type TUpdateBookListSingleFieldParamsZodSchema =z4.infer<typeof updateBookListSingleFieldParamsZodSchema>;
+
+const BookListFields = ["book_name", "publisher"] as const;
+
+const updateBookListSingleFieldZodSchema = z4.object({
+    field: z4.enum(BookListFields, "Invalid book list field format."),
+    value: z4.string({
+        error: (issue)=>
+            issue.input === undefined ? "Field value is required" : "Invalid field value format."
+    }).trim().min(1,"Field value is required")
+})
+export type TUpdateBookListSingleFieldZodSchema = z4.infer<typeof updateBookListSingleFieldZodSchema>;
+
+// =====================================================================
+// GET BOOK LIST BY CLASS ID ZOD SCHEMA
+// =====================================================================
+const getBookListsByClassIdParamsZodSchema = z4.object({
+    class_id: z4.uuid("Invalid Class ID format.")
+});
+export type TGetBookListsByClassIdParamsZodSchema = z4.infer<typeof getBookListsByClassIdParamsZodSchema>;
 
 export const bookListZodSchema = {
     createBookListZodSchema,
-    deleteBookListParamsZodSchema
+    deleteBookListParamsZodSchema,
+    updateBookListSingleFieldZodSchema,
+    updateBookListSingleFieldParamsZodSchema,
+    getBookListsByClassIdParamsZodSchema
 }
