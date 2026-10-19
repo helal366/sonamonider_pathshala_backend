@@ -45,7 +45,7 @@ const seedquranicSubjectes = async () => {
   const quranicSubjectes = [
     "NURANI_PLAYGROUP", "NURANI_NURSERY", "NURANI_PRELIMINARY",
     "NURANI_ADVANCE", "NURANI_AMPARA", "NAZERA_PRELIMINARY",
-    "NAZERA_ADVANCE", "PRE_HIFZ", "HIFZ", "ARABIC_LITERATURE",
+    "NAZERA_ADVANCE", "PRE_HIFZ", "HIFZ", 
   ];
 
   console.log("Seeding Quranic subjects...");
@@ -65,13 +65,9 @@ const quranicPeriods = [
   { quranic_period_name: "NURANI_MORNING", start_time: "7:01 AM", end_time: "7:50 AM" },
   { quranic_period_name: "HIFZ_MORNING", start_time: "6:01 AM", end_time: "7:50 AM" },
   { quranic_period_name: "ASSEMBLY", start_time: "7:51 AM", end_time: "8:00 AM" },
-  { quranic_period_name: "ARABIC_LITERATURE", start_time: "10:16 AM", end_time: "11:15 AM" },
-  { quranic_period_name: "ARABIC_LITERATURE_BOYS", start_time: "11:16 AM", end_time: "12:00 PM" },
-  { quranic_period_name: "ARABIC_LITERATURE_HIGH", start_time: "11:46 AM", end_time: "12:15 PM" },
   { quranic_period_name: "QURANIC_EVENING", start_time: "3:01 PM", end_time: "5:00 PM" },
   { quranic_period_name: "HIFZ_NIGHT", start_time: "5:00 PM", end_time: "8:00 PM" },
   { quranic_period_name: "HIFZ_GIRLS", start_time: "08:01 AM", end_time: "09:00 AM" },
-  { quranic_period_name: "ARABIC_LITERATURE_GIRLS", start_time: "09:01 AM", end_time: "09:45 AM" },
   { quranic_period_name: "NURANI_NAZERA_GIRLS", start_time: "9:46 AM", end_time: "10:30 AM" },
 ];
 
@@ -103,6 +99,9 @@ const periods = [
   { period_name: "4TH_PERIOD_GIRLS", start_time: "1:21 PM", end_time: "1:50 PM" },
   { period_name: "5TH_PERIOD_GIRLS", start_time: "1:51 PM", end_time: "2:20 PM" },
   { period_name: "6TH_PERIOD_GIRLS", start_time: "2:20 PM", end_time: "2:50 PM" },
+  { period_name: "ARABIC_LITERATURE", start_time: "10:16 AM", end_time: "11:15 AM" },
+  { period_name: "ARABIC_LITERATURE_BOYS", start_time: "11:16 AM", end_time: "12:00 PM" },
+  { period_name: "ARABIC_LITERATURE_GIRLS", start_time: "09:01 AM", end_time: "09:45 AM" },
 ];
 
 const seedPeriods = async () => {
@@ -120,13 +119,14 @@ const subjects = [
   "MATH",
   "QURAN",
   "ARABIC",
-  "SPOKEN_ENGLISH",
-  "HAND_WRITING",
+  "SPOKEN_HOUR",
   "BGS",
   "ICT",
-  "ISLAMIC",
-  "AQUA",
+  "ISLAM",
+  "AQUAID",
   "AGRICULTURE",
+  "ARABIC_LITERATURE",
+  "HOME_SCIENCE"
 ];
 
 const seedSubjects = async () => {

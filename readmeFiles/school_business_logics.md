@@ -2,8 +2,8 @@
 * A teacher may have some honourable responsibilities like SUBJECT_TEACHER, RESPONSIBLE_TEACHER, GRADE_TEACHER, GROUP_TEACHER
 * A teacher who will assign as a SUBJECT_TEACHER, will assign not for a single class rather will assign for the whole school for that subject.
 * A teacher will assign as a RESPONSIBLE_TEACHER for maximum 10 students.
-* GRADE_TEACHER for PLAYGROUP AND NURSERY
-* GROUP_TEACHER for other classes.
+* GROUP_TEACHER for PLAYGROUP AND NURSERY
+* GRADE_TEACHER for other classes.
 * GRADE_TEACHER or GROUP_TEACHER are like class teachers.
 * if a teacher is assign for GRADE_TEACHER for a class, then he/she will not assign as GRADE_TEACHER or GROUP_TEACHER for any other class. uniquely assign.
 * if a teacher is assign for GROUP_TEACHER for a class, then he/she will not assign as GRADE_TEACHER or GROUP_TEACHER for any other class. uniquely assign.
@@ -25,6 +25,20 @@
 1. A student will only have one responsible teacher at a time.
 2. A teacher will have more than one responsible teacher at a time.
 3. Principal sir will decide, how many students' responsibility a teacher will take. Primarily, a teacher can take upto 10(ten) students' responsibility.
+
+## Subject Teacher:
+* One teacher can assign as Subject Teacher for only one Subject.
+* One subject can assign to one or more Subject Teacher.
+* Example: We consider subject English. and Three teachers Sumon, Karim, Rahim. Sumon is assigned as Subject Teacher for English. So Sumon will not assign for any more subject. He is now restricted to assign for any subject. On the other hand, English can be assigned to Karim and English can be assigned to Rahim as well. After assigning English to Karim and Rahim. They are now restricted to assign any subject further.
+
+## QURAN: HIFZ, NAZERA AND NURANI
+* The Grade teacher for GRADE_HIFZ can see the other Quranic teachers. 
+* All the quranic teachers are assigned as Subject Teacher of QURAN subject.
+* So Grade teacher of GRADE_HIFZ will be able to see all the teacher's class routine who are assign as Subject Teacher of QURAN.
+
+## QURANIC SUBJECTS:
+* A student must take one QURANIC SUBJECT from all QURANIC SUBJECTS. And only quranic subject can take not more than one.
+* A student can take ARABIC SUBJECT optional.
 
 ## REGISTRATION:
 * Only SUPER_ADMIN and  ADMIN and TEACHER_ADMIN can create different USER like STUDENT, MANAGEMENT_STAFF,  ACADEMIC_STAFF, GOVERNING_BODY. No public registration.

@@ -15,7 +15,9 @@ model ClassRoutine {
   teachers AcademicStaff[] @relation("class_routine_teachers")
 
   subjects         Subject[]        @relation("class_routine_subjects")
-  quranic_subjects QuranicSubject[] @relation("class_routine_quranic_subjects")
+
+  quranic_subject_id String?
+  quranic_subject QuranicSubject? @relation("class_routine_quranic_subjects", fields: [quranic_subject_id], references: [id])
 
   created_by_id String?
   created_by    User?   @relation("class_routine_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

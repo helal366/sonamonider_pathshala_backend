@@ -16,17 +16,83 @@ const teacherIds = uniqueIds("teacher").min(1, {
 });
 const subjectIds = uniqueIds("subject");
 const quranicSubjectIds = uniqueIds("Quranic subject");
+const arabicSubjectIds = uniqueIds("Arabic subject")
 
 const periodSelection = (
-  data: { period_id?: string; quranic_period_id?: string },
+  data: {
+    period_id?: string;
+    quranic_period_id?: string;
+    subject_ids: string[];
+    quranic_subject_ids: string[];
+    arabic_period_id?: string;
+    arabic_subject_ids: string[];
+  },
   ctx: z4.RefinementCtx,
 ) => {
-  if (Boolean(data.period_id) === Boolean(data.quranic_period_id)) {
+  const hasPeriod = Boolean(data.period_id);
+  const hasQuranicPeriod = Boolean(data.quranic_period_id);
+  const hasSubjectIds = Boolean(data.subject_ids.length);
+  const hasQuranicSubjectIds = Boolean(data.quranic_subject_ids.length);
+  const hasArabicPeriod = Boolean(data.arabic_period_id);
+  const hasArabicSubject = Boolean(data.arabic_subject_ids.length);
+
+  // Check Arabic period and subject
+  if (hasArabicPeriod !== hasArabicSubject) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["arabic_period_id"],
+      message:
+        "Arabic period and arabic subject are paired. Either provide both or neither.",
+    });
+  }
+
+  // Exactly one period must be provided
+  if (hasPeriod === hasQuranicPeriod) {
     ctx.addIssue({
       code: "custom",
       path: ["period_id"],
       message: "Provide exactly one of period_id or quranic_period_id.",
     });
+  }
+
+  if (hasPeriod) {
+    if (!hasSubjectIds) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["subject_ids"],
+        message:
+          "General subject must be provided when general period is provided.",
+      });
+    }
+
+    if (hasQuranicSubjectIds) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["quranic_subject_ids"],
+        message:
+          "Quranic subject must not be provided when general period is provided.",
+      });
+    }
+  }
+
+  if (hasQuranicPeriod) {
+    if (hasSubjectIds) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["subject_ids"],
+        message:
+          "General subject must not be provided when quranic period is provided.",
+      });
+    }
+
+    if (!hasQuranicSubjectIds) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["quranic_subject_ids"],
+        message:
+          "Quranic subject must be provided when general period is not provided.",
+      });
+    }
   }
 };
 
@@ -39,6 +105,8 @@ const createClassRoutinePayload = z4
     teacher_ids: teacherIds,
     subject_ids: subjectIds.default([]),
     quranic_subject_ids: quranicSubjectIds.default([]),
+    arabic_period_id: uuid("Arabic period").optional(),
+    arabic_subject_ids: arabicSubjectIds.default([]),
   })
   .superRefine(periodSelection);
 
@@ -51,6 +119,8 @@ const updateClassRoutinePayload = z4
     teacher_ids: teacherIds,
     subject_ids: subjectIds,
     quranic_subject_ids: quranicSubjectIds,
+    arabic_period_id: uuid("Arabic period").optional(),
+    arabic_subject_ids: arabicSubjectIds,
   })
   .superRefine(periodSelection);
 

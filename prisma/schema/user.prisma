@@ -58,6 +58,12 @@ model User {
   created_quranic_periods QuranicPeriod[] @relation("quranic_period_created_by")
   updated_quranic_periods QuranicPeriod[] @relation("quranic_period_updated_by")
 
+  created_arabic_subjects ArabicSubject[] @relation("arabic_subject_created_by")
+  updated_arabic_subjects ArabicSubject[] @relation("arabic_subject_updated_by")
+
+  created_arabic_periods ArabiPeriod[] @relation("arabic_period_created_by")
+  updated_arabic_periods ArabiPeriod[] @relation("arabic_period_updated_by")
+
   created_subjects Subject[] @relation("subject_created_by")
   updated_subjects Subject[] @relation("subject_updated_by")
 

@@ -4,7 +4,7 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { bookListServices } from "./bookList.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { bookListZodSchema, TDeleteBookListParamsZodSchema, TGetBookListsByClassIdParamsZodSchema, TUpdateBookListSingleFieldParamsZodSchema } from "./bookList.zodValidation";
+import { TDeleteBookListParamsZodSchema, TGetBookListByPublisherZodSchema, TGetBookListsByClassIdParamsZodSchema, TGetSingleBookListParamsZodSchema, TUpdateBookListSingleFieldParamsZodSchema } from "./bookList.zodValidation";
 
 // =====================================================================
 // CREATE BOOK LIST CONTROLLER
@@ -81,10 +81,41 @@ const getBookListByClass = catchAsync(async(req:Request, res: Response)=>{
     })
 });
 
+// =====================================================================
+// GET SINGLE BOOK LIST CONTROLLER
+// =====================================================================
+const getSingleBookList = catchAsync(async(req:Request, res: Response)=>{
+    helperFunctions.requiredUser(req);
+    const {id} = req.params as unknown as TGetSingleBookListParamsZodSchema;
+    const result = await bookListServices.getSingleBookList(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Book list retrieved successfully.`,
+        data : result
+    })
+});
+
+// =====================================================================
+// GET BOOK LIST BY PUBLISHER CONTROLLER
+// =====================================================================
+const getBookListPublisher = catchAsync(async(req:Request, res: Response)=>{
+    helperFunctions.requiredUser(req);
+    const {publisher} = req.body as TGetBookListByPublisherZodSchema
+    const result = await bookListServices.getBookListPublisher(publisher)
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Books list retrieved successfully.`,
+        data : result
+    })
+})
 export const bookListController = {
     createBookList,
     deleteBookList,
     updateBookListSingleField,
     getAllBookList,
-    getBookListByClass
+    getBookListByClass,
+    getSingleBookList,
+    getBookListPublisher
 }

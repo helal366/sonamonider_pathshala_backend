@@ -55,5 +55,25 @@ router.get(
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
     validateZodParams(bookListZodSchema.getBookListsByClassIdParamsZodSchema),
     bookListController.getBookListByClass
+);
+
+// =====================================================================
+// GET SINGLE BOOK LIST ROUTE
+// =====================================================================
+router.get(
+    "/single_book_list/:id",
+    userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
+    validateZodParams(bookListZodSchema.getSingleBookListParamsZodSchema),
+    bookListController.getSingleBookList
+);
+
+// =====================================================================
+// GET BOOK LIST BY PUBLISHER ROUTE
+// =====================================================================
+router.get(
+    "/book_list_by_publusher",
+    userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
+    validateZodSchema(bookListZodSchema.getBookListByPublisherZodSchema),
+    bookListController.getBookListPublisher
 )
 export const bookListRouter: Router = router;

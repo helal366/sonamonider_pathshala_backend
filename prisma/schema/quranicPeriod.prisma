@@ -2,8 +2,8 @@ model QuranicPeriod {
   id String @id @default(uuid())
 
   quranic_period_name String @unique
-  start_time          String //example: 6:00 AM
-  end_time            String //example: 8:00 AM
+  start_time          String    //example: 6:00 AM
+  end_time            String    //example: 8:00 AM
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
   class_routines                ClassRoutine[]
@@ -18,4 +18,23 @@ model QuranicPeriod {
   updated_at DateTime? @updatedAt
 
   @@map("quranic_periods")
+}
+
+model QuranicSubject {
+  id                   String @id @default(uuid())
+  quranic_subject_name String @unique
+
+  class_history  ClassHistory[]
+  class_routines ClassRoutine[] @relation("class_routine_quranic_subjects")
+
+  created_by_id String?
+  created_by    User?   @relation("quranic_subject_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("quranic_subject_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("quranic_subjects")
 }

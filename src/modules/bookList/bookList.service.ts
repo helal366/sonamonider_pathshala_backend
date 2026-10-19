@@ -173,38 +173,73 @@ const updateBookListSingleField = async (
 // =====================================================================
 // GET ALL BOOK LIST SERVICE LAYER
 // =====================================================================
-const getAllBookList = async()=>{
+const getAllBookList = async () => {
   return await prisma.booklist.findMany({
     include: {
-      class:{select: {class_name: true}},
-      created_by: {select: {full_name: true, mobile_number: true}}
-    }
-  })
+      class: { select: { class_name: true } },
+      created_by: { select: { full_name: true, mobile_number: true } },
+    },
+  });
 };
-
 
 // =====================================================================
 // GET BOOK LIST BY CLASS ID SERVICE LAYER
 // =====================================================================
-const getBookListByClass = async(class_id:string)=>{
-  return prisma.$transaction(async(transaction)=>{
+const getBookListByClass = async (class_id: string) => {
+  return prisma.$transaction(async (transaction) => {
     // Find the class by class_id
-    const theClass =await transaction.class.findUnique({
-      where: {id: class_id},
+    const theClass = await transaction.class.findUnique({
+      where: { id: class_id },
     });
     // Check the class is exists or not
-    if(!theClass){
-      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND)
-    };
+    if (!theClass) {
+      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+    }
 
     // Get book list by class
-    return transaction.booklist.findMany({where: {class_id}})
-  })
+    return transaction.booklist.findMany({ where: { class_id } });
+  });
+};
+
+// =====================================================================
+// GET SINGLE BOOK LIST SERVICE LAYER
+// =====================================================================
+const getSingleBookList = async (bookListId: string) => {
+  return prisma.$transaction(async (transaction) => {
+    // Find the book list
+    const bookList = await transaction.booklist.findUnique({
+      where: { id: bookListId },
+      include: {
+        class: {
+          select: {
+            class_name: true,
+          },
+        },
+      },
+    });
+    
+    // Check the existance
+    if (!bookList) {
+      throw new AppError(`The book list not found.`, StatusCodes.NOT_FOUND);
+    };
+
+    // Return 
+    return bookList
+  });
+};
+
+// =====================================================================
+// GET BOOK LIST BY PUBLISHER SERVICE LAYER
+// =====================================================================
+const getBookListPublisher = async(publisher: string)=>{
+  return await prisma.booklist.findMany({where: {publisher}})
 }
 export const bookListServices = {
   createBookList,
   deleteBookList,
   updateBookListSingleField,
   getAllBookList,
-  getBookListByClass
+  getBookListByClass,
+  getSingleBookList,
+  getBookListPublisher
 };

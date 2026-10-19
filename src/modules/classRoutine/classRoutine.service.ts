@@ -51,7 +51,7 @@ const routineTimes = async (
 ) => {
   if (Boolean(periodId) === Boolean(quranicPeriodId)) {
     throw new AppError(
-      "Provide exactly one regular period or Quranic period.",
+      "Provide exactly one regular Period or Quranic period.",
       StatusCodes.BAD_REQUEST,
     );
   }
