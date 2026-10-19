@@ -1,3 +1,4 @@
+// ClassHistory and ClassHistoryQuranicPeriod
 model ClassHistory {
   id String @id @default(uuid())
 
@@ -13,7 +14,7 @@ model ClassHistory {
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
-  arabic_literature             Boolean                     @default(false)
+  is_arabic             Boolean                     @default(false)
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -42,3 +43,20 @@ model ClassHistory {
 
 // index: readmission time: (student_id and end_date = null) this will be the search input to get the admission data
 // index: start_date
+
+model ClassHistoryQuranicPeriod {
+  id               String       @id @default(uuid())
+  class_history_id String
+  class_history    ClassHistory @relation(fields: [class_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  quranic_period_id String
+  quranic_period    QuranicPeriod @relation(fields: [quranic_period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  created_at DateTime @default(now())
+
+  // Prevents linking the exact same period to the exact same class history row twice
+  @@unique([class_history_id, quranic_period_id], name: "history_period_unique")
+  @@index([class_history_id])
+  @@index([quranic_period_id])
+  @@map("class_history_quranic_periods")
+}

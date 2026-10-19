@@ -75,7 +75,7 @@ enum AuditAction {
   DELETE
 }
 
-enum SubjectForSubjectTeacher{
+enum SubjectForSubjectTeacher {
   QURAN
   BENGALI
   ARABIC

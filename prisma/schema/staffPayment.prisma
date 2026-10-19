@@ -1,3 +1,4 @@
+// StaffSalaryRate and StaffPayment
 model StaffSalaryRate {
   id String @id @default(uuid())
 

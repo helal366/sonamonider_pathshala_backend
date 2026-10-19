@@ -1,4 +1,5 @@
-model Period {
+// Period and Subject
+model GeneralPeriod {
   id          String @id @default(uuid())
   period_name String @unique
   start_time  String //example: 6:00 AM
@@ -18,7 +19,7 @@ model Period {
   @@map("periods")
 }
 
-model Subject {
+model GeneralSubject {
   id           String @id @default(uuid())
   subject_name String @unique
 

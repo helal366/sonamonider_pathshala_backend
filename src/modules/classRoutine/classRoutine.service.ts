@@ -28,11 +28,13 @@ const toMinutes = (value: string) => {
 const routineInclude = {
   class: true,
   shift: true,
-  period: true,
+  general_period: true,
   quranic_period: true,
+  arabic_period: true,
   teachers: true,
-  subjects: true,
+  general_subjects: true,
   quranic_subjects: true,
+  arabic_subject: true,
   created_by: true,
   updated_by: true,
 } satisfies Prisma.ClassRoutineInclude;
@@ -40,51 +42,81 @@ const routineInclude = {
 const routineAuditInclude = {
   class: { select: { id: true } },
   teachers: { select: { id: true } },
-  subjects: { select: { id: true } },
+  general_subjects: { select: { id: true } },
   quranic_subjects: { select: { id: true } },
+  arabic_subject: { select: { id: true } },
 } satisfies Prisma.ClassRoutineInclude;
+
+type TimeRange = { startMinutes: number; endMinutes: number };
 
 const routineTimes = async (
   tx: DbTransaction,
-  periodId?: string,
+  generalPeriodId?: string,
   quranicPeriodId?: string,
+  arabicPeriodId?: string,
 ) => {
-  if (Boolean(periodId) === Boolean(quranicPeriodId)) {
+  if (Boolean(generalPeriodId) === Boolean(quranicPeriodId)) {
     throw new AppError(
-      "Provide exactly one regular Period or Quranic period.",
+      "Provide exactly one general period or Quranic period.",
       StatusCodes.BAD_REQUEST,
     );
   }
 
-  const period = periodId
-    ? await tx.period.findUnique({
-        where: { id: periodId },
-        select: { id: true, start_time: true, end_time: true },
-      })
-    : await tx.quranicPeriod.findUnique({
-        where: { id: quranicPeriodId },
-        select: { id: true, start_time: true, end_time: true },
-      });
+  const [period, arabicPeriod] = await Promise.all([
+    generalPeriodId
+      ? tx.generalPeriod.findUnique({
+          where: { id: generalPeriodId },
+          select: { id: true, start_time: true, end_time: true },
+        })
+      : tx.quranicPeriod.findUnique({
+          where: { id: quranicPeriodId },
+          select: { id: true, start_time: true, end_time: true },
+        }),
+    arabicPeriodId
+      ? tx.arabicPeriod.findUnique({
+          where: { id: arabicPeriodId },
+          select: { id: true, start_time: true, end_time: true },
+        })
+      : Promise.resolve(null),
+  ]);
 
   if (!period) {
     throw new AppError("Selected period was not found.", StatusCodes.NOT_FOUND);
   }
 
-  const startMinutes = toMinutes(period.start_time);
-  const endMinutes = toMinutes(period.end_time);
-  if (endMinutes <= startMinutes) {
+  if (arabicPeriodId && !arabicPeriod) {
     throw new AppError(
-      "The selected period must end after it starts.",
+      "Selected Arabic period was not found.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const ranges = [period, ...(arabicPeriod ? [arabicPeriod] : [])].map(
+    ({ start_time, end_time }): TimeRange => {
+      const startMinutes = toMinutes(start_time);
+      const endMinutes = toMinutes(end_time);
+      if (endMinutes <= startMinutes) {
+        throw new AppError(
+          "The selected period must end after it starts.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      return { startMinutes, endMinutes };
+    },
+  );
+
+  if (
+    ranges.length === 2 &&
+    ranges[0]!.startMinutes < ranges[1]!.endMinutes &&
+    ranges[1]!.startMinutes < ranges[0]!.endMinutes
+  ) {
+    throw new AppError(
+      "The selected Arabic period overlaps the main routine period.",
       StatusCodes.BAD_REQUEST,
     );
   }
 
-  return {
-    start_time: period.start_time,
-    end_time: period.end_time,
-    startMinutes,
-    endMinutes,
-  };
+  return ranges;
 };
 
 const validateRoutineReferences = async (
@@ -97,6 +129,7 @@ const validateRoutineReferences = async (
     teacherCount,
     subjectCount,
     quranicSubjectCount,
+    arabicSubject,
     times,
   ] = await Promise.all([
     tx.class.count({ where: { id: { in: payload.class_ids } } }),
@@ -105,15 +138,26 @@ const validateRoutineReferences = async (
       select: { id: true },
     }),
     tx.academicStaff.count({ where: { id: { in: payload.teacher_ids } } }),
-    payload.subject_ids.length === 0
+    payload.general_subject_ids.length === 0
       ? Promise.resolve(0)
-      : tx.subject.count({ where: { id: { in: payload.subject_ids } } }),
+      : tx.generalSubject.count({ where: { id: { in: payload.general_subject_ids } } }),
     payload.quranic_subject_ids.length === 0
       ? Promise.resolve(0)
       : tx.quranicSubject.count({
           where: { id: { in: payload.quranic_subject_ids } },
         }),
-    routineTimes(tx, payload.period_id, payload.quranic_period_id),
+    payload.arabic_subject_id
+      ? tx.arabicSubject.findUnique({
+          where: { id: payload.arabic_subject_id },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+    routineTimes(
+      tx,
+      payload.general_period_id,
+      payload.quranic_period_id,
+      payload.arabic_period_id,
+    ),
   ]);
 
   if (classCount !== payload.class_ids.length) {
@@ -125,12 +169,18 @@ const validateRoutineReferences = async (
   if (teacherCount !== payload.teacher_ids.length) {
     throw new AppError("One or more selected teachers were not found.", StatusCodes.NOT_FOUND);
   }
-  if (subjectCount !== payload.subject_ids.length) {
+  if (subjectCount !== payload.general_subject_ids.length) {
     throw new AppError("One or more selected subjects were not found.", StatusCodes.NOT_FOUND);
   }
   if (quranicSubjectCount !== payload.quranic_subject_ids.length) {
     throw new AppError(
       "One or more selected Quranic subjects were not found.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+  if (payload.arabic_subject_id && !arabicSubject) {
+    throw new AppError(
+      "Selected Arabic subject was not found.",
       StatusCodes.NOT_FOUND,
     );
   }
@@ -143,7 +193,7 @@ const assertNoScheduleOverlap = async (
   classIds: string[],
   shiftId: string,
   teacherIds: string[],
-  times: Awaited<ReturnType<typeof routineTimes>>,
+  times: TimeRange[],
   excludeRoutineId?: string,
 ) => {
   const existingRoutines = await tx.classRoutine.findMany({
@@ -162,10 +212,11 @@ const assertNoScheduleOverlap = async (
       shift_id: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
-      period_id: true,
+      general_period_id: true,
       quranic_period_id: true,
-      period: { select: { start_time: true, end_time: true } },
+      general_period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
+      arabic_period: { select: { start_time: true, end_time: true } },
     },
   });
 
@@ -173,26 +224,38 @@ const assertNoScheduleOverlap = async (
   const teacherIdSet = new Set(teacherIds);
 
   for (const routine of existingRoutines) {
-    if (Boolean(routine.period_id) === Boolean(routine.quranic_period_id)) {
+    if (
+      Boolean(routine.general_period_id) === Boolean(routine.quranic_period_id)
+    ) {
       throw new AppError(
         "An existing routine must reference exactly one period.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
-    const startTime =
-      routine.period?.start_time ?? routine.quranic_period?.start_time;
-    const endTime =
-      routine.period?.end_time ?? routine.quranic_period?.end_time;
-    if (!startTime || !endTime) {
+    const primaryPeriod = routine.general_period ?? routine.quranic_period;
+    if (!primaryPeriod) {
       throw new AppError(
         "An existing routine has no period assigned.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
+    const periodRanges = [
+      primaryPeriod,
+      ...(routine.arabic_period ? [routine.arabic_period] : []),
+    ];
 
-    const existingStart = toMinutes(startTime);
-    const existingEnd = toMinutes(endTime);
+    const existingTimes = periodRanges.map(({ start_time, end_time }) => {
+      const startMinutes = toMinutes(start_time);
+      const endMinutes = toMinutes(end_time);
+      if (endMinutes <= startMinutes) {
+        throw new AppError(
+          "An existing routine has an invalid period configuration.",
+          StatusCodes.INTERNAL_SERVER_ERROR,
+        );
+      }
+      return { startMinutes, endMinutes };
+    });
     const hasTeacherConflict = routine.teachers.some((teacher) =>
       teacherIdSet.has(teacher.id),
     );
@@ -202,8 +265,13 @@ const assertNoScheduleOverlap = async (
 
     if (
       (hasTeacherConflict || hasClassConflict) &&
-      times.startMinutes < existingEnd &&
-      existingStart < times.endMinutes
+      times.some((time) =>
+        existingTimes.some(
+          (existingTime) =>
+            time.startMinutes < existingTime.endMinutes &&
+            existingTime.startMinutes < time.endMinutes,
+        ),
+      )
     ) {
       throw new AppError(
         hasTeacherConflict
@@ -215,29 +283,24 @@ const assertNoScheduleOverlap = async (
   }
 };
 
-const routineAuditValue = (routine: {
-  id: string;
-  shift_id: string | null;
-  period_id: string | null;
-  quranic_period_id: string | null;
-  class: { id: string }[];
-  teachers: { id: string }[];
-  subjects: { id: string }[];
-  quranic_subjects: { id: string }[];
-}) => ({
+type RoutineAuditRecord = Prisma.ClassRoutineGetPayload<{
+  include: typeof routineAuditInclude;
+}>;
+
+const routineAuditValue = (routine: RoutineAuditRecord) => ({
   id: routine.id,
   class_ids: routine.class.map(({ id }) => id),
   shift_id: routine.shift_id,
-  period_id: routine.period_id,
+  general_period_id: routine.general_period_id,
   quranic_period_id: routine.quranic_period_id,
+  arabic_period_id: routine.arabic_period_id,
   teacher_ids: routine.teachers.map(({ id }) => id),
-  subject_ids: routine.subjects.map(({ id }) => id),
+  general_subject_ids: routine.general_subjects.map(({ id }) => id),
   quranic_subject_ids: routine.quranic_subjects.map(({ id }) => id),
+  arabic_subject_id: routine.arabic_subject?.id ?? null,
 });
 
-type CurrentRoutine = Prisma.ClassRoutineGetPayload<{
-  include: typeof routineAuditInclude;
-}>;
+type CurrentRoutine = RoutineAuditRecord;
 
 const persistRoutineUpdate = async (
   tx: DbTransaction,
@@ -262,19 +325,25 @@ const persistRoutineUpdate = async (
       class: { set: payload.class_ids.map((classId) => ({ id: classId })) },
       shift: { connect: { id: payload.shift_id } },
       teachers: { set: payload.teacher_ids.map((teacherId) => ({ id: teacherId })) },
-      ...(payload.period_id
+      ...(payload.general_period_id
         ? {
-            period: { connect: { id: payload.period_id } },
+            general_period: { connect: { id: payload.general_period_id } },
             quranic_period: { disconnect: true },
           }
         : {
-            period: { disconnect: true },
+            general_period: { disconnect: true },
             quranic_period: { connect: { id: payload.quranic_period_id! } },
           }),
-      subjects: { set: payload.subject_ids.map((subjectId) => ({ id: subjectId })) },
+      general_subjects: { set: payload.general_subject_ids.map((subjectId) => ({ id: subjectId })) },
       quranic_subjects: {
         set: payload.quranic_subject_ids.map((subjectId) => ({ id: subjectId })),
       },
+      arabic_period: payload.arabic_period_id
+        ? { connect: { id: payload.arabic_period_id } }
+        : { disconnect: true },
+      arabic_subject: payload.arabic_subject_id
+        ? { connect: { id: payload.arabic_subject_id } }
+        : { disconnect: true },
       updated_by: { connect: { id: user.user_id } },
     },
     include: routineInclude,
@@ -313,13 +382,21 @@ const createClassRoutine = async (
           class: { connect: payload.class_ids.map((id) => ({ id })) },
           shift: { connect: { id: payload.shift_id } },
           teachers: { connect: payload.teacher_ids.map((id) => ({ id })) },
-          ...(payload.period_id
-            ? { period: { connect: { id: payload.period_id } } }
+          ...(payload.general_period_id
+            ? { general_period: { connect: { id: payload.general_period_id } } }
             : { quranic_period: { connect: { id: payload.quranic_period_id! } } }),
-          subjects: { connect: payload.subject_ids.map((id) => ({ id })) },
+          general_subjects: {
+            connect: payload.general_subject_ids.map((id) => ({ id })),
+          },
           quranic_subjects: {
             connect: payload.quranic_subject_ids.map((id) => ({ id })),
           },
+          ...(payload.arabic_period_id
+            ? { arabic_period: { connect: { id: payload.arabic_period_id } } }
+            : {}),
+          ...(payload.arabic_subject_id
+            ? { arabic_subject: { connect: { id: payload.arabic_subject_id } } }
+            : {}),
           created_by: { connect: { id: user.user_id } },
         },
         include: routineInclude,
@@ -378,11 +455,15 @@ const updateClassRoutineSingleField = async (
       const next: TUpdateClassRoutinePayload = {
         class_ids: current.class.map(({ id: classId }) => classId),
         shift_id: current.shift_id ?? "",
-        period_id: current.period_id ?? undefined,
+        general_period_id: current.general_period_id ?? undefined,
         quranic_period_id: current.quranic_period_id ?? undefined,
         teacher_ids: current.teachers.map(({ id: teacherId }) => teacherId),
-        subject_ids: current.subjects.map(({ id: subjectId }) => subjectId),
-        quranic_subject_ids: current.quranic_subjects.map(({ id: subjectId }) => subjectId),
+        general_subject_ids: current.general_subjects.map(({ id: subjectId }) => subjectId),
+        quranic_subject_ids: current.quranic_subjects.map(
+          ({ id: subjectId }) => subjectId,
+        ),
+        arabic_period_id: current.arabic_period_id ?? undefined,
+        arabic_subject_id: current.arabic_subject_id ?? undefined,
       };
 
       switch (payload.field) {
@@ -395,19 +476,25 @@ const updateClassRoutineSingleField = async (
         case "teacher_ids":
           next.teacher_ids = payload.value;
           break;
-        case "period_id":
-          next.period_id = payload.value;
+        case "general_period_id":
+          next.general_period_id = payload.value;
           next.quranic_period_id = undefined;
           break;
         case "quranic_period_id":
-          next.period_id = undefined;
+          next.general_period_id = undefined;
           next.quranic_period_id = payload.value;
           break;
         case "subject_ids":
-          next.subject_ids = payload.value;
+          next.general_subject_ids = payload.value;
           break;
         case "quranic_subject_ids":
           next.quranic_subject_ids = payload.value;
+          break;
+        case "arabic_period_id":
+          next.arabic_period_id = payload.value;
+          break;
+        case "arabic_subject_id":
+          next.arabic_subject_id = payload.value;
           break;
       }
 

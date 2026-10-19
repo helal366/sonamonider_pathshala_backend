@@ -1,3 +1,4 @@
+// StudentFeeRate and StudentFeePayment
 model StudentFeeRate {
   id         String  @id @default(uuid())
   student_id String

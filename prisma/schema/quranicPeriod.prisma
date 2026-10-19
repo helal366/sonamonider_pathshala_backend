@@ -1,9 +1,10 @@
+// QuranicPeriod and QuranicSubject
 model QuranicPeriod {
   id String @id @default(uuid())
 
   quranic_period_name String @unique
-  start_time          String    //example: 6:00 AM
-  end_time            String    //example: 8:00 AM
+  start_time          String //example: 6:00 AM
+  end_time            String //example: 8:00 AM
 
   class_history_quranic_periods ClassHistoryQuranicPeriod[]
   class_routines                ClassRoutine[]

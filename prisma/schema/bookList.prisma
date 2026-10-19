@@ -4,8 +4,8 @@ model Booklist {
   book_name String
   publisher String
 
-  class_id   String
-  class Class  @relation(fields: [class_id], references: [id])
+  class_id String
+  class    Class  @relation(fields: [class_id], references: [id])
 
   created_by_id String?
   created_by    User?   @relation("book_list_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

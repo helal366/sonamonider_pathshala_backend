@@ -61,14 +61,14 @@ model User {
   created_arabic_subjects ArabicSubject[] @relation("arabic_subject_created_by")
   updated_arabic_subjects ArabicSubject[] @relation("arabic_subject_updated_by")
 
-  created_arabic_periods ArabiPeriod[] @relation("arabic_period_created_by")
-  updated_arabic_periods ArabiPeriod[] @relation("arabic_period_updated_by")
+  created_arabic_periods ArabicPeriod[] @relation("arabic_period_created_by")
+  updated_arabic_periods ArabicPeriod[] @relation("arabic_period_updated_by")
 
-  created_subjects Subject[] @relation("subject_created_by")
-  updated_subjects Subject[] @relation("subject_updated_by")
+  created_subjects GeneralSubject[] @relation("subject_created_by")
+  updated_subjects GeneralSubject[] @relation("subject_updated_by")
 
-  created_periods Period[] @relation("period_created_by")
-  updated_periods Period[] @relation("period_updated_by")
+  created_periods GeneralPeriod[] @relation("period_created_by")
+  updated_periods GeneralPeriod[] @relation("period_updated_by")
 
   created_class_routines ClassRoutine[] @relation("class_routine_created_by")
   updated_class_routines ClassRoutine[] @relation("class_routine_updated_by")

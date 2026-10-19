@@ -6,18 +6,23 @@ model ClassRoutine {
   shift_id String?
   shift    Shift?  @relation(fields: [shift_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  period_id String?
-  period    Period? @relation(fields: [period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  general_period_id String?
+  general_period    GeneralPeriod? @relation(fields: [general_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  general_subjects GeneralSubject[] @relation("class_routine_subjects")
 
   quranic_period_id String?
   quranic_period    QuranicPeriod? @relation(fields: [quranic_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
+  quranic_subjects    QuranicSubject[] @relation("class_routine_quranic_subjects")
+
+  arabic_period_id String?
+  arabic_period ArabicPeriod? @relation(fields: [arabic_period_id], references: [id])
+
+  arabic_subject_id String?
+  arabic_subject ArabicSubject? @relation(fields: [arabic_subject_id], references: [id])
+
   teachers AcademicStaff[] @relation("class_routine_teachers")
-
-  subjects         Subject[]        @relation("class_routine_subjects")
-
-  quranic_subject_id String?
-  quranic_subject QuranicSubject? @relation("class_routine_quranic_subjects", fields: [quranic_subject_id], references: [id])
 
   created_by_id String?
   created_by    User?   @relation("class_routine_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
