@@ -2,12 +2,9 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
-import {
-  TCreateQuranicPeriodZodSchema,
-  toMinutes,
-  TUpdateQuranicPeriodSingleFieldPayload,
-  TUpdateQuranicPeriodZodSchema,
-} from "./quranicPeriod.zodValidation.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
+import { TCreateQuranicPeriodZodSchema, TUpdateQuranicPeriodSingleFieldPayload, TUpdateQuranicPeriodZodSchema } from "./quranicPeriod.zodValidation.js";
+
 
 const ensureNoRoutineScheduleConflict = async (
   transaction: Prisma.TransactionClient,
@@ -60,13 +57,13 @@ const ensureNoRoutineScheduleConflict = async (
       shift_id: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
-      period: { select: { start_time: true, end_time: true } },
+      general_period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
     },
   });
 
-  const proposedStart = toMinutes(startTime);
-  const proposedEnd = toMinutes(endTime);
+  const proposedStart = helperFunctions.toMinutes(startTime);
+  const proposedEnd = helperFunctions.toMinutes(endTime);
 
   for (const routine of affectedRoutines) {
     for (const otherRoutine of otherRoutines) {
@@ -87,17 +84,17 @@ const ensureNoRoutineScheduleConflict = async (
       if (!conflicts) continue;
 
       const otherStart =
-        otherRoutine.period?.start_time ??
+        otherRoutine.general_period?.start_time ??
         otherRoutine.quranic_period?.start_time;
       const otherEnd =
-        otherRoutine.period?.end_time ??
+        otherRoutine.general_period?.end_time ??
         otherRoutine.quranic_period?.end_time;
 
       if (
         otherStart &&
         otherEnd &&
-        proposedStart < toMinutes(otherEnd) &&
-        toMinutes(otherStart) < proposedEnd
+        proposedStart < helperFunctions.toMinutes(otherEnd) &&
+        helperFunctions.toMinutes(otherStart) < proposedEnd
       ) {
         throw new AppError(
           "This time change would overlap another class routine for a teacher or class in the same shift.",
@@ -158,7 +155,6 @@ const createQuranicPeriod = async (
           quranic_period_name: cleanPeriodName,
           start_time: cleanStartTime,
           end_time: cleanEndTime,
-          created_by_id: loggedInUser.user_id,
         },
       },
     });
@@ -330,7 +326,7 @@ if (field === "start_time" || field === "end_time") {
   const nextEndTime =
     field === "end_time" ? cleanValue : currentPeriod.end_time;
 
-  if (toMinutes(nextEndTime) <= toMinutes(nextStartTime)) {
+  if (helperFunctions.toMinutes(nextEndTime) <= helperFunctions.toMinutes(nextStartTime)) {
     throw new AppError(
       "End time must be after start time.",
       StatusCodes.BAD_REQUEST,

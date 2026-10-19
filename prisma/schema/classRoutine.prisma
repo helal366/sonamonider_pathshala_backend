@@ -1,5 +1,6 @@
 model ClassRoutine {
   id String @id @default(uuid())
+  students Student[]
 
   class Class[] @relation("class_routine_classes")
 

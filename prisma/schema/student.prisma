@@ -8,8 +8,7 @@ model Student {
   user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   class_history      ClassHistory[]
-  promotion_requests PromotionRequest[]
-  promotion_history  PromotionHistory[]
+  class_routines    ClassRoutine[]
   fee_rates          StudentFeeRate[]
   fee_payments       StudentFeePayment[]
 
@@ -18,8 +17,12 @@ model Student {
 
   current_role_id        String?
   current_role           Role?
+
   responsible_teacher_id String?
   responsible_teacher    AcademicStaff? @relation(fields: [responsible_teacher_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  
+  promotion_requests PromotionRequest[]
+  promotion_history  PromotionHistory[]
 
   created_by_id String?
   created_by    User?   @relation("student_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

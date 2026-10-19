@@ -1,17 +1,7 @@
 import z4 from "zod/v4";
+import { helperFunctions } from '../../helperFunctions/helpers/helperFunctions';
+import { timeStringRegex } from "../../commonInterfaces/interfaces";
 
-// 🌟 Regex to strictly validate standard time format (e.g., "6:00 AM", "12:30 PM")
-const timeStringRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s(AM|PM)$/i;
-
-// CHECK START TIME ALWAYS LESS THAN END TIME
-export const toMinutes = (time: string): number => {
-  const [clock, period] = time.trim().toUpperCase().split(/\s+/);
-  const [hours, minutes] = clock!.split(":").map(Number);
-
-  const hours24 = (hours! % 12) + (period === "PM" ? 12 : 0);
-
-  return hours24 * 60 + minutes!;
-};
 // ==========================================================
 // CREATE QURANIC PERIOD ZOD SCHEMA
 // ==========================================================
@@ -22,7 +12,7 @@ const createQuranicPeriodZodSchema = z4
         error: (issue) =>
           issue.input === undefined
             ? "Quranic period name is required."
-            : "Invalid period name format.",
+            : "Invalid quranic period name format.",
       })
       .trim()
       .min(1, "Quranic period name cannot be empty."),
@@ -53,7 +43,7 @@ const createQuranicPeriodZodSchema = z4
       ),
   })
   .superRefine((data, ctx) => {
-    if (toMinutes(data.end_time) <= toMinutes(data.start_time)) {
+    if (helperFunctions.toMinutes(data.end_time) <= helperFunctions.toMinutes(data.start_time)) {
       ctx.addIssue({
         code: "custom",
         path: ["end_time"],
@@ -117,7 +107,7 @@ const updateQuranicPeriodZodSchema = z4
       ),
   })
   .superRefine((data, ctx) => {
-    if (toMinutes(data.end_time) <= toMinutes(data.start_time)) {
+    if (helperFunctions.toMinutes(data.end_time) <= helperFunctions.toMinutes(data.start_time)) {
       ctx.addIssue({
         code: "custom",
         path: ["end_time"],

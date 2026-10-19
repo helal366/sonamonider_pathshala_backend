@@ -28,6 +28,7 @@ import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js
 import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
 import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js";
 import { bookListRouter } from "./modules/bookList/bookList.route.js";
+import { arabicPeriodRouter } from "./modules/arabicPeriod/arabicPeriod.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -59,6 +60,7 @@ app.use("/api/v1/smps/class_routine", classRoutineRouter);
 app.use("/api/v1/smps/student_fee", studentFeeRouter);
 app.use("/api/v1/smps/staff_payment", staffPaymentRouter);
 app.use("/api/v1/smps/book_list", bookListRouter);
+app.use("/api/v1/smps/arabic_period", arabicPeriodRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

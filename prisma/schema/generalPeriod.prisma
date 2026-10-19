@@ -16,7 +16,7 @@ model GeneralPeriod {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@map("periods")
+  @@map("general_periods")
 }
 
 model GeneralSubject {
@@ -34,5 +34,5 @@ model GeneralSubject {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@map("subjects")
+  @@map("general_subjects")
 }

@@ -1,4 +1,4 @@
-## Roles: 
+## ROLES (enum): 
 SUPER_ADMIN
 TEACHER_ADMIN
 ADMIN
@@ -7,7 +7,7 @@ ACADEMIC
 STUDENT 
 GOVERNING_BODY
 
-## Positions:
+## POSITIONS:
 PRINCIPAL
 VICE_PRINCIPAL
 ADMINISTRATIVE_INCHARGE
@@ -33,7 +33,7 @@ CLEANER
 <!-- student role : STUDENT -->
 <!-- governing body role: GOVERNING_BODY -->
 
-## Classes:
+## CLASSES:
 PLAYGROUP
 NURSERY
 GRADE_ONE_ENGLISH
@@ -52,7 +52,7 @@ GRADE_HIFZ
 GRADE_NURANI
 GRADE_NAZERA
 
-## Quranic subjects:
+## QURANIC SUBJECTS:
 - NURANI_PLAYGROUP
 - NURANI_NURSERY
 - NURANI_PRELIMINARY
@@ -71,23 +71,23 @@ GRADE_NAZERA
 - ENGLISH
 - MATHEMATICS
 
-## Shifts:
+## SHIFTS:
 - MORNING     For PLAYGROUP, NURSERY, KG, 
 - DAY         For PLAYGROUP, NURSERY, KG, 
 - BOYS        For GRADE_ONE to GRADE_TEN
 - GIRLS       For GRADE_ONE to GRADE_TEN
 
-## Connection between Class and Branch:
-PLAYGROUP, NURSERY, KG, ---> MORNING and DAY
+## CONNECTION BETWEEN CLASS AND BRANCH:
+PLAYGROUP, NURSERY, KG, GRADE_ONE AND GRADE_TWO---> MORNING and DAY
 OTHER CLASSES ---> BOYS and GIRLS
 
-## Honourable responsibilities for teachers:
+## HONOURABLE RESPONSIBILITIES FOR TEACHERS:
 SUBJECT_TEACHER
 GROUP_TEACHER
 GRADE_TEACHER
 RESPONSIBLE_TEACHER
 
-## Nurani curriculum for different classes:
+## NURANI CURRICULUM FOR DIFFERENT CLASSES:
 NURANI_PLAYGROUP: ARABIC ALPHABET
 NURANI_NURSERY: ARABIC WORD MAKING
 NURANI_PRELIMINARY: কায়েদা শুরু থেকে মাদ্দ অধ্যায় পর্যন্ত
@@ -96,7 +96,7 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 
 
 
-## Quranic Class Periods scheduling/timimg:
+## QURANIC CLASS PERIODS SCHEDULING/TIMING:
 **QURANIC CLASS PERIODS: **
 - NURANI_MORNING: 07:01 AM to 07:50 AM
 - HIFZ_MORNING: 06:01 AM to 07:50 AM
@@ -149,7 +149,7 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
     \- HIFZ_GIRLS and 10:30 to 14:20 and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
 
-## Students fees:
+## STUDENTS FEES:
 - monthly_tuition_fee
 - session/admission_fee
 - monthly_academic_evaluation_fee
@@ -166,7 +166,7 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 - certification_fee
 - residential_dayCare_establishment_charge
 
-## Staff salary:
+## STAFF SALARY:
 - monthly_salary
 - eid_bonus [eid_ul_fitr and eid_ul_adha]
 - performance_bonus [yearly]

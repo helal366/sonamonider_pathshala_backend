@@ -26,6 +26,9 @@ CREATE TYPE "ActiveStatus" AS ENUM ('ACTIVE', 'INACTIVE');
 CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 
 -- CreateEnum
+CREATE TYPE "SubjectForSubjectTeacher" AS ENUM ('QURAN', 'BENGALI', 'ARABIC', 'ENGLISH', 'MATHEMATICS');
+
+-- CreateEnum
 CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', 'MSC', 'M_COM', 'M_ARTS', 'PHD', 'ALIM', 'DAKHIL', 'KAMIL', 'FAZIL', 'OTHERS');
 
 -- CreateEnum
@@ -97,6 +100,32 @@ CREATE TABLE "AcademicYear" (
 );
 
 -- CreateTable
+CREATE TABLE "arabic_periods" (
+    "id" TEXT NOT NULL,
+    "arabic_period_name" TEXT NOT NULL,
+    "start_time" TEXT NOT NULL,
+    "end_time" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "arabic_periods_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "arabic_subjects" (
+    "id" TEXT NOT NULL,
+    "arabic_subject_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "arabic_subjects_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "audit_logs" (
     "audit_id" TEXT NOT NULL,
     "entity_id" TEXT NOT NULL,
@@ -111,13 +140,17 @@ CREATE TABLE "audit_logs" (
 );
 
 -- CreateTable
-CREATE TABLE "Booklist" (
+CREATE TABLE "book_list" (
     "id" TEXT NOT NULL,
     "book_name" TEXT NOT NULL,
     "publisher" TEXT NOT NULL,
     "class_id" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
-    CONSTRAINT "Booklist_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "book_list_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -142,7 +175,7 @@ CREATE TABLE "class_history" (
     "academic_year_id" TEXT NOT NULL,
     "roll_number" INTEGER NOT NULL,
     "quranic_subject_id" TEXT NOT NULL,
-    "arabic_literature" BOOLEAN NOT NULL DEFAULT false,
+    "is_arabic" BOOLEAN NOT NULL DEFAULT false,
     "class_id" TEXT NOT NULL,
     "shift_id" TEXT NOT NULL,
     "student_id" TEXT NOT NULL,
@@ -168,8 +201,10 @@ CREATE TABLE "class_history_quranic_periods" (
 CREATE TABLE "class_rotine" (
     "id" TEXT NOT NULL,
     "shift_id" TEXT,
-    "period_id" TEXT,
+    "general_period_id" TEXT,
     "quranic_period_id" TEXT,
+    "arabic_period_id" TEXT,
+    "arabic_subject_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -196,6 +231,32 @@ CREATE TABLE "father_details" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "father_details_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "general_periods" (
+    "id" TEXT NOT NULL,
+    "period_name" TEXT NOT NULL,
+    "start_time" TEXT NOT NULL,
+    "end_time" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "general_periods_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "general_subjects" (
+    "id" TEXT NOT NULL,
+    "subject_name" TEXT NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "general_subjects_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -247,20 +308,6 @@ CREATE TABLE "mother_details" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "mother_details_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "periods" (
-    "id" TEXT NOT NULL,
-    "period_name" TEXT NOT NULL,
-    "start_time" TEXT NOT NULL,
-    "end_time" TEXT NOT NULL,
-    "created_by_id" TEXT,
-    "updated_by_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3),
-
-    CONSTRAINT "periods_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -505,18 +552,6 @@ CREATE TABLE "student_fee_payments" (
 );
 
 -- CreateTable
-CREATE TABLE "subjects" (
-    "id" TEXT NOT NULL,
-    "subject_name" TEXT NOT NULL,
-    "created_by_id" TEXT,
-    "updated_by_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3),
-
-    CONSTRAINT "subjects_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
@@ -612,6 +647,12 @@ CREATE UNIQUE INDEX "academic_staffs_user_id_key" ON "academic_staffs"("user_id"
 CREATE UNIQUE INDEX "AcademicYear_academic_year_name_key" ON "AcademicYear"("academic_year_name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "arabic_periods_arabic_period_name_key" ON "arabic_periods"("arabic_period_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "arabic_subjects_arabic_subject_name_key" ON "arabic_subjects"("arabic_subject_name");
+
+-- CreateIndex
 CREATE INDEX "audit_logs_created_at_idx" ON "audit_logs"("created_at");
 
 -- CreateIndex
@@ -648,13 +689,16 @@ CREATE INDEX "class_history_quranic_periods_quranic_period_id_idx" ON "class_his
 CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_peri_key" ON "class_history_quranic_periods"("class_history_id", "quranic_period_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "general_periods_period_name_key" ON "general_periods"("period_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "general_subjects_subject_name_key" ON "general_subjects"("subject_name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "governing_bodies_user_id_key" ON "governing_bodies"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "management_staffs_user_id_key" ON "management_staffs"("user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "periods_period_name_key" ON "periods"("period_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permanent_addresses_user_id_key" ON "permanent_addresses"("user_id");
@@ -747,9 +791,6 @@ CREATE INDEX "student_fee_payments_student_id_paid_at_idx" ON "student_fee_payme
 CREATE UNIQUE INDEX "student_fee_payments_student_id_fee_type_billing_frequency__key" ON "student_fee_payments"("student_id", "fee_type", "billing_frequency", "academic_year_id", "billing_period_key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subjects_subject_name_key" ON "subjects"("subject_name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
@@ -807,10 +848,28 @@ ALTER TABLE "AcademicYear" ADD CONSTRAINT "AcademicYear_created_by_id_fkey" FORE
 ALTER TABLE "AcademicYear" ADD CONSTRAINT "AcademicYear_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "arabic_periods" ADD CONSTRAINT "arabic_periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_periods" ADD CONSTRAINT "arabic_periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_subjects" ADD CONSTRAINT "arabic_subjects_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_subjects" ADD CONSTRAINT "arabic_subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Booklist" ADD CONSTRAINT "Booklist_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "book_list" ADD CONSTRAINT "book_list_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "book_list" ADD CONSTRAINT "book_list_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "book_list" ADD CONSTRAINT "book_list_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_grade_group_teacher_id_fkey" FOREIGN KEY ("grade_group_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -852,10 +911,16 @@ ALTER TABLE "class_history_quranic_periods" ADD CONSTRAINT "class_history_qurani
 ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_shift_id_fkey" FOREIGN KEY ("shift_id") REFERENCES "shifts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_period_id_fkey" FOREIGN KEY ("period_id") REFERENCES "periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_general_period_id_fkey" FOREIGN KEY ("general_period_id") REFERENCES "general_periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_quranic_period_id_fkey" FOREIGN KEY ("quranic_period_id") REFERENCES "quranic_periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_arabic_period_id_fkey" FOREIGN KEY ("arabic_period_id") REFERENCES "arabic_periods"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_arabic_subject_id_fkey" FOREIGN KEY ("arabic_subject_id") REFERENCES "arabic_subjects"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_rotine" ADD CONSTRAINT "class_rotine_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -868,6 +933,18 @@ ALTER TABLE "father_details" ADD CONSTRAINT "father_details_created_by_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "father_details" ADD CONSTRAINT "father_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "general_periods" ADD CONSTRAINT "general_periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "general_periods" ADD CONSTRAINT "general_periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "general_subjects" ADD CONSTRAINT "general_subjects_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "general_subjects" ADD CONSTRAINT "general_subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "governing_bodies" ADD CONSTRAINT "governing_bodies_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -898,12 +975,6 @@ ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_created_by_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "periods" ADD CONSTRAINT "periods_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "periods" ADD CONSTRAINT "periods_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1068,12 +1139,6 @@ ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_created_
 ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "subjects" ADD CONSTRAINT "subjects_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subjects" ADD CONSTRAINT "subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1110,7 +1175,7 @@ ALTER TABLE "_class_routine_classes" ADD CONSTRAINT "_class_routine_classes_B_fk
 ALTER TABLE "_class_routine_subjects" ADD CONSTRAINT "_class_routine_subjects_A_fkey" FOREIGN KEY ("A") REFERENCES "class_rotine"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_class_routine_subjects" ADD CONSTRAINT "_class_routine_subjects_B_fkey" FOREIGN KEY ("B") REFERENCES "subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_class_routine_subjects" ADD CONSTRAINT "_class_routine_subjects_B_fkey" FOREIGN KEY ("B") REFERENCES "general_subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_class_routine_quranic_subjects" ADD CONSTRAINT "_class_routine_quranic_subjects_A_fkey" FOREIGN KEY ("A") REFERENCES "class_rotine"("id") ON DELETE CASCADE ON UPDATE CASCADE;
