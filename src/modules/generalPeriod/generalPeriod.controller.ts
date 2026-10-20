@@ -3,12 +3,12 @@ import { StatusCodes } from "http-status-codes";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
-import { periodServices } from "./period.service.js";
+import { periodServices } from "./generalPeriod.service.js";
 import {
   TDeletePeriodParams,
   TGetSinglePeriodParams,
   TUpdatePeriodParams,
-} from "./period.zodValidation.js";
+} from "./generalPeriod.zodValidation.js";
 
 const createPeriod = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);

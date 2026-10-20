@@ -21,7 +21,7 @@ const seedShifts = async () => {
 // =========================================================
 const seedClasses = async () => {
   const classes = [
-    "PLAYGROUP", "NURSERY", "KINDERGARTEN", 
+    "PLAYGROUP", "NURSERY", "GRADE_NURANI", "GRADE_NAZERA", "GRADE_HIFZ",
     "GRADE_ONE_ENGLISH", "GRADE_ONE_BANGLA", "GRADE_TWO_ENGLISH",
     "GRADE_TWO_BANGLA", "GRADE_THREE_BANGLA", "GRADE_FOUR_BANGLA",
     "GRADE_FIVE_BANGLA", "GRADE_SIX_BANGLA", "GRADE_SEVEN_BANGLA",
@@ -43,9 +43,7 @@ const seedClasses = async () => {
 // =========================================================
 const seedquranicSubjectes = async () => {
   const quranicSubjectes = [
-    "NURANI_PLAYGROUP", "NURANI_NURSERY", "NURANI_PRELIMINARY",
-    "NURANI_ADVANCE", "NURANI_AMPARA", "NAZERA_PRELIMINARY",
-    "NAZERA_ADVANCE", "PRE_HIFZ", "HIFZ", 
+    "NURANI_PLAYGROUP", "NURANI_NURSERY", "NURANI_PRELIMINARY", "NURANI_AMMAPARA", "NURANI_ADVANCE", "NAZERA_PRELIMINARY", "NAZERA_ADVANCE", "PRE_HIFZ", "HIFZ", "HIFZ_REVISION"
   ];
 
   console.log("Seeding Quranic subjects...");
@@ -81,39 +79,40 @@ const seedQuranicPeriods = async () => {
 };
 
 // ========================================================
-// SEED PERIODS
+// SEED GENERAL PERIODS
 // ========================================================
-const periods = [
-  { period_name: "1ST_PERIOD", start_time: "8:01 AM", end_time: "8:45 AM" },
-  { period_name: "TIFFIN_PERIOD", start_time: "8:46 AM", end_time: "9:00 AM" },
-  { period_name: "2ND_PERIOD", start_time: "9:01 AM", end_time: "9:45 AM" },
-  { period_name: "3RD_PERIOD", start_time: "9:46 AM", end_time: "10:15 AM" },
-  { period_name: "4TH_PERIOD", start_time: "10:16 AM", end_time: "10:45 AM" },
-  { period_name: "5TH_PERIOD", start_time: "10:46 AM", end_time: "11:15 AM" },
-  { period_name: "6TH_PERIOD", start_time: "11:16 AM", end_time: "11:45 AM" },
-  { period_name: "1ST_PERIOD_GIRLS", start_time: "10:31 AM", end_time: "11:15 AM" },
-  { period_name: "TIFFIN_PERIOD_GIRLS", start_time: "11:16 AM", end_time: "11:30 AM" },
-  { period_name: "2ND_PERIOD_GIRLS", start_time: "11:31 AM", end_time: "12:15 PM" },
-  { period_name: "3RD_PERIOD_GIRLS", start_time: "12:16 PM", end_time: "1:00 PM" },
-  { period_name: "JOHR_SALAT_BREAK", start_time: "1:01 PM", end_time: "1:20 PM" },
-  { period_name: "4TH_PERIOD_GIRLS", start_time: "1:21 PM", end_time: "1:50 PM" },
-  { period_name: "5TH_PERIOD_GIRLS", start_time: "1:51 PM", end_time: "2:20 PM" },
-  { period_name: "6TH_PERIOD_GIRLS", start_time: "2:20 PM", end_time: "2:50 PM" },
-  { period_name: "ARABIC_LITERATURE", start_time: "10:16 AM", end_time: "11:15 AM" },
-  { period_name: "ARABIC_LITERATURE_BOYS", start_time: "11:16 AM", end_time: "12:00 PM" },
-  { period_name: "ARABIC_LITERATURE_GIRLS", start_time: "09:01 AM", end_time: "09:45 AM" },
+const generalPeriods = [
+  { general_period_name: "1ST_PERIOD", start_time: "8:01 AM", end_time: "8:45 AM" },
+  { general_period_name: "TIFFIN_PERIOD", start_time: "8:46 AM", end_time: "9:00 AM" },
+  { general_period_name: "2ND_PERIOD", start_time: "9:01 AM", end_time: "9:45 AM" },
+  { general_period_name: "3RD_PERIOD", start_time: "9:46 AM", end_time: "10:15 AM" },
+  { general_period_name: "4TH_PERIOD", start_time: "10:16 AM", end_time: "10:45 AM" },
+  { general_period_name: "5TH_PERIOD", start_time: "10:46 AM", end_time: "11:15 AM" },
+  { general_period_name: "6TH_PERIOD", start_time: "11:16 AM", end_time: "11:45 AM" },
+  { general_period_name: "1ST_PERIOD_GIRLS", start_time: "10:31 AM", end_time: "11:15 AM" },
+  { general_period_name: "TIFFIN_PERIOD_GIRLS", start_time: "11:16 AM", end_time: "11:30 AM" },
+  { general_period_name: "2ND_PERIOD_GIRLS", start_time: "11:31 AM", end_time: "12:15 PM" },
+  { general_period_name: "3RD_PERIOD_GIRLS", start_time: "12:16 PM", end_time: "1:00 PM" },
+  { general_period_name: "JOHR_SALAT_BREAK", start_time: "1:01 PM", end_time: "1:20 PM" },
+  { general_period_name: "4TH_PERIOD_GIRLS", start_time: "1:21 PM", end_time: "1:50 PM" },
+  { general_period_name: "5TH_PERIOD_GIRLS", start_time: "1:51 PM", end_time: "2:20 PM" },
+  { general_period_name: "6TH_PERIOD_GIRLS", start_time: "2:20 PM", end_time: "2:50 PM" },
+  
 ];
 
 const seedPeriods = async () => {
   console.log("Seeding regular periods...");
-  const result = await prisma.period.createMany({
-    data: periods,
+  const result = await prisma.generalPeriod.createMany({
+    data: generalPeriods,
     skipDuplicates: true,
   });
   console.log(`Regular periods done. Created ${result.count} entries.`);
 };
 
-const subjects = [
+// ========================================================
+// SEED GENERAL SUBJECTS
+// ========================================================
+const generalSubjects = [
   "BANGLA",
   "ENGLISH",
   "MATH",
@@ -125,18 +124,50 @@ const subjects = [
   "ISLAM",
   "AQUAID",
   "AGRICULTURE",
-  "ARABIC_LITERATURE",
   "HOME_SCIENCE"
 ];
 
-const seedSubjects = async () => {
+const seedGeneralSubjects = async () => {
   console.log("Seeding regular subjects...");
-  const result = await prisma.subject.createMany({
-    data: subjects.map((subject_name) => ({ subject_name })),
+  const result = await prisma.generalSubject.createMany({
+    data: generalSubjects.map((general_subject_name) => ({ general_subject_name })),
     skipDuplicates: true,
   });
   console.log(`Regular subjects done. Created ${result.count} entries.`);
 };
+
+// ========================================================
+// SEED ARABIC PERIODS
+// ========================================================
+const arabicPeriods = [
+  { arabic_period_name: "ARABIC", start_time: "10:16 AM", end_time: "11:15 AM" },
+  { arabic_period_name: "ARABIC_BOYS", start_time: "11:16 AM", end_time: "12:00 PM" },
+  { arabic_period_name: "ARABIC_GIRLS", start_time: "09:01 AM", end_time: "09:45 AM" },
+];
+const seedArabicPeriods = async () =>{
+  console.log("Seeding arabic periods...");
+  const result = await prisma.arabicPeriod.createMany({
+    data: arabicPeriods,
+    skipDuplicates: true
+  });
+  console.log(`Arabic periods done. Created ${result.count} entries.`);
+};
+
+// ========================================================
+// SEED ARABIC PERIODS
+// ========================================================
+const arabicSubjects = [
+  "ARABIC"
+];
+const seedArabicSubjects = async()=>{
+  console.log("Seeding arabic periods...");
+  const result = await prisma.arabicSubject.createMany({
+    data: arabicSubjects.map((arabic_subject_name)=> ({arabic_subject_name})),
+    skipDuplicates: true
+  });
+  console.log(`Arabic subjects done. Created ${result.count} entries.`);
+}
+
 
 // ========================================================
 // INITIAL EXECUTION HANDLER
@@ -145,8 +176,10 @@ export const runInitialOthers = async () => {
   await seedShifts();
   await seedClasses();
   await seedquranicSubjectes();
-  await seedSubjects();
+  await seedGeneralSubjects();
   await seedQuranicPeriods();
   await seedPeriods();
+  await seedArabicPeriods();
+  await seedArabicSubjects();
   console.log("Initial secondary seeds completed safely.");
 };

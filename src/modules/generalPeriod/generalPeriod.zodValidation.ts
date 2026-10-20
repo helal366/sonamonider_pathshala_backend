@@ -25,7 +25,7 @@ const periodTime = (field: "start_time" | "end_time") =>
 
 const createPeriodZodSchema = z4
   .object({
-    period_name: periodName("Period name is required."),
+    general_period_name: periodName("Period name is required."),
     start_time: periodTime("start_time"),
     end_time: periodTime("end_time"),
   })
@@ -47,7 +47,7 @@ const updatePeriodZodSchema = createPeriodZodSchema;
 
 const updatePeriodSingleFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
-    field: z4.literal("period_name"),
+    field: z4.literal("general_period_name"),
     value: periodName("Period name is required."),
   }),
   z4.object({ field: z4.literal("start_time"), value: periodTime("start_time") }),

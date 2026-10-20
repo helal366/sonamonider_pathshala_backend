@@ -42,7 +42,7 @@ The modules provide create, full update, single-field update, delete, list, and 
 - ClassRoutine create/update checks that referenced classes, teachers, shift, period, and both subject types exist.
 - ClassRoutine create/update and period time changes check teacher overlaps across all shifts and class overlaps within a shift, across regular and Quranic periods.
 - The class-routine migration copies existing single-class and single-teacher links into join tables. Existing rows have no reliable shift assignment, so `shift_id` remains nullable for legacy data; update those rows with a shift before relying on class-overlap checks for them.
-- Period names are unique (`Period.period_name` and `QuranicPeriod.quranic_period_name`). If one display name needs different time definitions, this uniqueness/design needs reconsideration.
+- Period names are unique (`GeneralPeriod.general_period_name` and `QuranicPeriod.quranic_period_name`). If one display name needs different time definitions, this uniqueness/design needs reconsideration.
 
 ## Verification completed
 

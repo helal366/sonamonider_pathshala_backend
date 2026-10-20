@@ -7,7 +7,7 @@ import {
   toMinutes,
   TUpdatePeriodPayload,
   TUpdatePeriodSingleFieldPayload,
-} from "./period.zodValidation.js";
+} from "./generalPeriod.zodValidation.js";
 
 type LoggedInUser = NonNullable<Express.Request["user"]>;
 
@@ -18,7 +18,7 @@ const ensureNoRoutineScheduleConflict = async (
   endTime: string,
 ) => {
   const affectedRoutines = await tx.classRoutine.findMany({
-    where: { period_id: periodId },
+    where: { general_period_id: periodId },
     select: {
       id: true,
       shift_id: true,
@@ -28,13 +28,17 @@ const ensureNoRoutineScheduleConflict = async (
   });
   if (affectedRoutines.length === 0) return;
 
-  const teacherIds = [...new Set(affectedRoutines.flatMap((routine) =>
-    routine.teachers.map(({ id }) => id),
-  ))];
+  const teacherIds = [
+    ...new Set(
+      affectedRoutines.flatMap((routine) =>
+        routine.teachers.map(({ id }) => id),
+      ),
+    ),
+  ];
   const classIds = [
-    ...new Set(affectedRoutines.flatMap((routine) =>
-      routine.class.map(({ id }) => id),
-    )),
+    ...new Set(
+      affectedRoutines.flatMap((routine) => routine.class.map(({ id }) => id)),
+    ),
   ];
   const shiftIds = [
     ...new Set(
@@ -63,7 +67,7 @@ const ensureNoRoutineScheduleConflict = async (
       shift_id: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
-      period: { select: { start_time: true, end_time: true } },
+      general_period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
     },
   });
@@ -89,11 +93,10 @@ const ensureNoRoutineScheduleConflict = async (
       if (!conflicts) continue;
 
       const otherStart =
-        otherRoutine.period?.start_time ??
+        otherRoutine.general_period?.start_time ??
         otherRoutine.quranic_period?.start_time;
       const otherEnd =
-        otherRoutine.period?.end_time ??
-        otherRoutine.quranic_period?.end_time;
+        otherRoutine.general_period?.end_time ?? otherRoutine.quranic_period?.end_time;
       if (
         otherStart &&
         otherEnd &&
@@ -109,22 +112,28 @@ const ensureNoRoutineScheduleConflict = async (
   }
 };
 
-const createPeriod = async (payload: TCreatePeriodPayload, user: LoggedInUser) => {
-  const periodName = payload.period_name.trim().toUpperCase();
+const createPeriod = async (
+  payload: TCreatePeriodPayload,
+  user: LoggedInUser,
+) => {
+  const periodName = payload.general_period_name.trim().toUpperCase();
   const startTime = payload.start_time.trim().toUpperCase();
   const endTime = payload.end_time.trim().toUpperCase();
-  const existing = await prisma.period.findUnique({
-    where: { period_name: periodName },
+  const existing = await prisma.generalPeriod.findUnique({
+    where: { general_period_name: periodName },
     select: { id: true },
   });
   if (existing) {
-    throw new AppError(`Period "${periodName}" already exists.`, StatusCodes.CONFLICT);
+    throw new AppError(
+      `Period "${periodName}" already exists.`,
+      StatusCodes.CONFLICT,
+    );
   }
 
   return prisma.$transaction(async (tx) => {
-    const period = await tx.period.create({
+    const period = await tx.generalPeriod.create({
       data: {
-        period_name: periodName,
+        general_period_name: periodName,
         start_time: startTime,
         end_time: endTime,
         created_by_id: user.user_id,
@@ -138,7 +147,7 @@ const createPeriod = async (payload: TCreatePeriodPayload, user: LoggedInUser) =
         changed_by_id: user.user_id,
         old_value: Prisma.JsonNull,
         new_value: {
-          period_name: periodName,
+          general_period_name: periodName,
           start_time: startTime,
           end_time: endTime,
           created_by_id: user.user_id,
@@ -154,18 +163,21 @@ const updatePeriod = async (
   user: LoggedInUser,
   id: string,
 ) => {
-  const periodName = payload.period_name.trim().toUpperCase();
+  const periodName = payload.general_period_name.trim().toUpperCase();
   const startTime = payload.start_time.trim().toUpperCase();
   const endTime = payload.end_time.trim().toUpperCase();
-  const current = await prisma.period.findUnique({ where: { id } });
+  const current = await prisma.generalPeriod.findUnique({ where: { id } });
   if (!current) throw new AppError("Period not found.", StatusCodes.NOT_FOUND);
 
-  const nameConflict = await prisma.period.findFirst({
-    where: { period_name: periodName, id: { not: id } },
+  const nameConflict = await prisma.generalPeriod.findFirst({
+    where: { general_period_name: periodName, id: { not: id } },
     select: { id: true },
   });
   if (nameConflict) {
-    throw new AppError(`Period "${periodName}" already exists.`, StatusCodes.CONFLICT);
+    throw new AppError(
+      `Period "${periodName}" already exists.`,
+      StatusCodes.CONFLICT,
+    );
   }
 
   return prisma.$transaction(
@@ -173,10 +185,10 @@ const updatePeriod = async (
       if (current.start_time !== startTime || current.end_time !== endTime) {
         await ensureNoRoutineScheduleConflict(tx, id, startTime, endTime);
       }
-      const updated = await tx.period.update({
+      const updated = await tx.generalPeriod.update({
         where: { id },
         data: {
-          period_name: periodName,
+          general_period_name: periodName,
           start_time: startTime,
           end_time: endTime,
           updated_by_id: user.user_id,
@@ -189,12 +201,12 @@ const updatePeriod = async (
           action: "UPDATE",
           changed_by_id: user.user_id,
           old_value: {
-            period_name: current.period_name,
+            general_period_name: current.general_period_name,
             start_time: current.start_time,
             end_time: current.end_time,
           },
           new_value: {
-            period_name: periodName,
+            general_period_name: periodName,
             start_time: startTime,
             end_time: endTime,
           },
@@ -212,7 +224,7 @@ const updatePeriodSingleField = async (
   id: string,
 ) => {
   const value = payload.value.trim().toUpperCase();
-  const current = await prisma.period.findUnique({ where: { id } });
+  const current = await prisma.generalPeriod.findUnique({ where: { id } });
   if (!current) throw new AppError("Period not found.", StatusCodes.NOT_FOUND);
 
   const oldValue = current[payload.field];
@@ -223,25 +235,32 @@ const updatePeriodSingleField = async (
     );
   }
 
-  if (payload.field === "period_name") {
-    const nameConflict = await prisma.period.findFirst({
-      where: { period_name: value, id: { not: id } },
+  if (payload.field === "general_period_name") {
+    const nameConflict = await prisma.generalPeriod.findFirst({
+      where: { general_period_name: value, id: { not: id } },
       select: { id: true },
     });
     if (nameConflict) {
-      throw new AppError(`Period "${value}" already exists.`, StatusCodes.CONFLICT);
+      throw new AppError(
+        `Period "${value}" already exists.`,
+        StatusCodes.CONFLICT,
+      );
     }
   } else {
-    const startTime = payload.field === "start_time" ? value : current.start_time;
+    const startTime =
+      payload.field === "start_time" ? value : current.start_time;
     const endTime = payload.field === "end_time" ? value : current.end_time;
     if (toMinutes(endTime) <= toMinutes(startTime)) {
-      throw new AppError("End time must be after start time.", StatusCodes.BAD_REQUEST);
+      throw new AppError(
+        "End time must be after start time.",
+        StatusCodes.BAD_REQUEST,
+      );
     }
   }
 
   return prisma.$transaction(
     async (tx) => {
-      if (payload.field !== "period_name") {
+      if (payload.field !== "general_period_name") {
         await ensureNoRoutineScheduleConflict(
           tx,
           id,
@@ -249,7 +268,7 @@ const updatePeriodSingleField = async (
           payload.field === "end_time" ? value : current.end_time,
         );
       }
-      const updated = await tx.period.update({
+      const updated = await tx.generalPeriod.update({
         where: { id },
         data: {
           [payload.field]: value,
@@ -273,20 +292,20 @@ const updatePeriodSingleField = async (
 };
 
 const deletePeriod = async (id: string, user: LoggedInUser) => {
-  const current = await prisma.period.findUnique({
+  const current = await prisma.generalPeriod.findUnique({
     where: { id },
     include: { _count: { select: { class_routines: true } } },
   });
   if (!current) throw new AppError("Period not found.", StatusCodes.NOT_FOUND);
   if (current._count.class_routines > 0) {
     throw new AppError(
-      `Cannot delete period "${current.period_name}". It is used by ${current._count.class_routines} class routine(s).`,
+      `Cannot delete period "${current.general_period_name}". It is used by ${current._count.class_routines} class routine(s).`,
       StatusCodes.CONFLICT,
     );
   }
 
   return prisma.$transaction(async (tx) => {
-    const deleted = await tx.period.delete({ where: { id } });
+    const deleted = await tx.generalPeriod.delete({ where: { id } });
     await tx.auditLog.create({
       data: {
         entity_id: id,
@@ -294,7 +313,7 @@ const deletePeriod = async (id: string, user: LoggedInUser) => {
         action: "DELETE",
         changed_by_id: user.user_id,
         old_value: {
-          period_name: current.period_name,
+          general_period_name: current.general_period_name,
           start_time: current.start_time,
           end_time: current.end_time,
         },
@@ -306,17 +325,21 @@ const deletePeriod = async (id: string, user: LoggedInUser) => {
 };
 
 const getAllPeriods = () =>
-  prisma.period.findMany({
+  prisma.generalPeriod.findMany({
     orderBy: { start_time: "asc" },
     include: { _count: { select: { class_routines: true } } },
   });
 
 const getSinglePeriod = async (id: string) => {
-  const period = await prisma.period.findUnique({
+  const period = await prisma.generalPeriod.findUnique({
     where: { id },
     include: { _count: { select: { class_routines: true } } },
   });
-  if (!period) throw new AppError("Requested period does not exist.", StatusCodes.NOT_FOUND);
+  if (!period)
+    throw new AppError(
+      "Requested period does not exist.",
+      StatusCodes.NOT_FOUND,
+    );
   return period;
 };
 

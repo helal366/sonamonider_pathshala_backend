@@ -14,7 +14,7 @@ const classIds = uniqueIds("class").min(1, {
 const teacherIds = uniqueIds("teacher").min(1, {
   message: "At least one teacher must be assigned to a routine.",
 });
-const generalSubjectIds = uniqueIds("subject");
+const generalSubjectIds = uniqueIds("General subject");
 const quranicSubjectIds = uniqueIds("Quranic subject");
 const arabicSubjectId = uniqueIds("Arabic subject")
 

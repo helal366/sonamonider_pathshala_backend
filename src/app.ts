@@ -22,8 +22,8 @@ import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route
 import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
 import { quranicSubjectRouter } from "./modules/quranicSubject/quranicSubject.route.js";
 import { quranicPeriodRouter } from "./modules/quranicPeriod/quranicPeriod.route.js";
-import { subjectRouter } from "./modules/subject/subject.route.js";
-import { periodRouter } from "./modules/period/period.route.js";
+import { subjectRouter } from "./modules/generalSubject/generalSubject.route.js";
+import { periodRouter } from "./modules/generalPeriod/generalPeriod.route.js";
 import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
 import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
 import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js";

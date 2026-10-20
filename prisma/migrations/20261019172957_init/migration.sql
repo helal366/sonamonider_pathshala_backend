@@ -236,7 +236,7 @@ CREATE TABLE "father_details" (
 -- CreateTable
 CREATE TABLE "general_periods" (
     "id" TEXT NOT NULL,
-    "period_name" TEXT NOT NULL,
+    "general_period_name" TEXT NOT NULL,
     "start_time" TEXT NOT NULL,
     "end_time" TEXT NOT NULL,
     "created_by_id" TEXT,
@@ -250,7 +250,7 @@ CREATE TABLE "general_periods" (
 -- CreateTable
 CREATE TABLE "general_subjects" (
     "id" TEXT NOT NULL,
-    "subject_name" TEXT NOT NULL,
+    "general_subject_name" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -689,10 +689,10 @@ CREATE INDEX "class_history_quranic_periods_quranic_period_id_idx" ON "class_his
 CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_peri_key" ON "class_history_quranic_periods"("class_history_id", "quranic_period_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "general_periods_period_name_key" ON "general_periods"("period_name");
+CREATE UNIQUE INDEX "general_periods_period_name_key" ON "general_periods"("general_period_name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "general_subjects_subject_name_key" ON "general_subjects"("subject_name");
+CREATE UNIQUE INDEX "general_subjects_subject_name_key" ON "general_subjects"("general_subject_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "governing_bodies_user_id_key" ON "governing_bodies"("user_id");

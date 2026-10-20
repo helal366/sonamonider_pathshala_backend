@@ -7,7 +7,7 @@ const subjectName = (requiredMessage: string) =>
     .min(1, "Subject name cannot be empty.");
 
 const createSubjectZodSchema = z4.object({
-  subject_name: subjectName("Subject name is required."),
+  general_subject_name: subjectName("Subject name is required."),
 });
 
 const updateSubjectParamsZodSchema = z4.object({
@@ -17,7 +17,7 @@ const updateSubjectParamsZodSchema = z4.object({
 const updateSubjectZodSchema = createSubjectZodSchema;
 
 const updateSubjectSingleFieldZodSchema = z4.object({
-  field: z4.literal("subject_name"),
+  field: z4.literal("general_subject_name"),
   value: subjectName("Subject name is required."),
 });
 

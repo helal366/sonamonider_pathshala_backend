@@ -4,8 +4,8 @@ import {
   validateZodParams,
   validateZodSchema,
 } from "../../middlewares/validateZodSchema.js";
-import { subjectController } from "./subject.controller.js";
-import { subjectZodSchema } from "./subject.zodValidation.js";
+import { subjectController } from "./generalSubject.controller.js";
+import { subjectZodSchema } from "./generalSubject.zodValidation.js";
 import { Role } from "#db-client";
 
 const router = Router();

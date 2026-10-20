@@ -3,12 +3,12 @@ import { StatusCodes } from "http-status-codes";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
-import { subjectServices } from "./subject.service.js";
+import { subjectServices } from "./generalSubject.service.js";
 import {
   TDeleteSubjectParams,
   TGetSingleSubjectParams,
   TUpdateSubjectParams,
-} from "./subject.zodValidation.js";
+} from "./generalSubject.zodValidation.js";
 
 const createSubject = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);

@@ -4,8 +4,8 @@ import {
   validateZodParams,
   validateZodSchema,
 } from "../../middlewares/validateZodSchema.js";
-import { periodController } from "./period.controller.js";
-import { periodZodSchema } from "./period.zodValidation.js";
+import { periodController } from "./generalPeriod.controller.js";
+import { periodZodSchema } from "./generalPeriod.zodValidation.js";
 import { Role } from "#db-client";
 
 const router = Router();
