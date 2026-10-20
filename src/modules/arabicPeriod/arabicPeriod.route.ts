@@ -24,5 +24,35 @@ router.delete(
     userAuth(Role.SUPER_ADMIN),
     validateZodParams(arabicPeriodZodSchema.deleteArabicPeriodParamsZodSchema),
     arabicPeriodController.deleteArabicPeriod
+);
+
+// ==========================================================
+// UPDATE ARABIC PERIOD SINGLE FIELD ROUTE
+// ==========================================================
+router.patch(
+    "/update_quranic_period/:id",
+    userAuth(Role.SUPER_ADMIN),
+    validateZodParams(arabicPeriodZodSchema.updateArabicPeriodSingleFieldParamsZodSchema),
+    validateZodSchema(arabicPeriodZodSchema.updateArabicPeriodSingleFieldZodSchema),
+    arabicPeriodController.updateArabicPeriodSingleField
+);
+
+// ==========================================================
+// GET ALL ARABIC PERIOD ROUTE
+// ==========================================================
+router.get(
+    "/",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    arabicPeriodController.getAllArabicPeriods
+);
+
+// ==========================================================
+// GET SINGLE ARABIC PERIOD ROUTE
+// ==========================================================
+router.get(
+    "/single_arabic_period/:id",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    validateZodParams(arabicPeriodZodSchema.getSingleArabicPeriodParamsZodSchema),
+    arabicPeriodController.getSingleArabicPeriod
 )
 export const arabicPeriodRouter:Router = router;

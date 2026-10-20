@@ -16,6 +16,7 @@ const teacherIds = uniqueIds("teacher").min(1, {
 });
 const generalSubjectIds = uniqueIds("subject");
 const quranicSubjectIds = uniqueIds("Quranic subject");
+const arabicSubjectId = uniqueIds("Arabic subject")
 
 const periodSelection = (
   data: {
