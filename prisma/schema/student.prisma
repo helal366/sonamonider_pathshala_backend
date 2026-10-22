@@ -7,20 +7,20 @@ model Student {
   user_id           String @unique
   user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  class_history      ClassHistory[]
-  class_routines    ClassRoutine[]
-  fee_rates          StudentFeeRate[]
-  fee_payments       StudentFeePayment[]
+  class_history  ClassHistory[]
+  class_routines ClassRoutine[]
+  fee_rates      StudentFeeRate[]
+  fee_payments   StudentFeePayment[]
 
   current_position_id String?
   current_position    UserPosition? @relation("student_current_position", fields: [current_position_id], references: [id])
 
-  current_role_id        String?
-  current_role           Role?
+  current_role_id String?
+  current_role    Role?
 
   responsible_teacher_id String?
   responsible_teacher    AcademicStaff? @relation(fields: [responsible_teacher_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+
   promotion_requests PromotionRequest[]
   promotion_history  PromotionHistory[]
 

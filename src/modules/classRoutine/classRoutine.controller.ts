@@ -14,10 +14,10 @@ import {
 } from "./classRoutine.zodValidation.js";
 
 const createClassRoutine = catchAsync(async (req: Request, res: Response) => {
-  const user = helperFunctions.requiredUser(req);
+  const loggedInUser = helperFunctions.requiredUser(req);
   const result = await classRoutineServices.createClassRoutine(
     req.body as TCreateClassRoutinePayload,
-    user,
+    loggedInUser,
   );
   sendResponse(res, {
     success: true,

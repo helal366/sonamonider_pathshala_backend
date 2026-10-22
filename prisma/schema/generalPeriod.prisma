@@ -1,9 +1,9 @@
 // Period and Subject
 model GeneralPeriod {
-  id          String @id @default(uuid())
+  id                  String @id @default(uuid())
   general_period_name String @unique
-  start_time  String //example: 6:00 AM
-  end_time    String //example: 8:00 AM
+  start_time          String //example: 6:00 AM
+  end_time            String //example: 8:00 AM
 
   class_routines ClassRoutine[]
 
@@ -20,7 +20,7 @@ model GeneralPeriod {
 }
 
 model GeneralSubject {
-  id           String @id @default(uuid())
+  id                   String @id @default(uuid())
   general_subject_name String @unique
 
   class_routines ClassRoutine[] @relation("class_routine_subjects")

@@ -24,9 +24,5 @@ model SpouseInformation {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@index([full_name])
-  @@index([contact_no])
-  @@index([created_by_id])
-  @@index([updated_by_id])
   @@map("spouse_infromation")
 }

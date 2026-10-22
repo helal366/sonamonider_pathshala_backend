@@ -22,7 +22,17 @@ const toMinutes = (value: string) => {
   }
   const [clock, meridiem] = value.trim().toUpperCase().split(/\s+/);
   const [hours, minutes] = clock!.split(":").map(Number);
-  return (hours! % 12) * 60 + minutes! + (meridiem === "PM" ? 720 : 0);
+
+  // Prevent times from 09:00 PM to 05:00 AM
+  const totalMinutes =
+    (hours! % 12) * 60 + minutes! + (meridiem === "PM" ? 720 : 0);
+  if (totalMinutes > 21 * 60 || totalMinutes < 5 * 60) {
+    throw new AppError(
+      "Period time must not be between 09:00 PM and 05:00 AM.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  return totalMinutes;
 };
 
 const routineInclude = {
@@ -34,7 +44,7 @@ const routineInclude = {
   teachers: true,
   general_subjects: true,
   quranic_subjects: true,
-  arabic_subject: true,
+  arabic_subjects: true,
   created_by: true,
   updated_by: true,
 } satisfies Prisma.ClassRoutineInclude;
@@ -44,7 +54,7 @@ const routineAuditInclude = {
   teachers: { select: { id: true } },
   general_subjects: { select: { id: true } },
   quranic_subjects: { select: { id: true } },
-  arabic_subject: { select: { id: true } },
+  arabic_subjects: { select: { id: true } },
 } satisfies Prisma.ClassRoutineInclude;
 
 type TimeRange = { startMinutes: number; endMinutes: number };
@@ -55,23 +65,33 @@ const routineTimes = async (
   quranicPeriodId?: string,
   arabicPeriodId?: string,
 ) => {
-  if (Boolean(generalPeriodId) === Boolean(quranicPeriodId)) {
+  const periodIdCount = [
+    Boolean(generalPeriodId),
+    Boolean(quranicPeriodId),
+    Boolean(arabicPeriodId),
+  ].filter(Boolean).length;
+  if (periodIdCount !== 1) {
     throw new AppError(
-      "Provide exactly one general period or Quranic period.",
+      "Provide exactly one. General period or quranic period or arabic period.",
       StatusCodes.BAD_REQUEST,
     );
   }
 
-  const [period, arabicPeriod] = await Promise.all([
+  const [generalPeriod, quranicPeriod, arabicPeriod] = await Promise.all([
     generalPeriodId
       ? tx.generalPeriod.findUnique({
           where: { id: generalPeriodId },
           select: { id: true, start_time: true, end_time: true },
         })
-      : tx.quranicPeriod.findUnique({
+      : Promise.resolve(null),
+
+    quranicPeriodId
+      ? tx.quranicPeriod.findUnique({
           where: { id: quranicPeriodId },
           select: { id: true, start_time: true, end_time: true },
-        }),
+        })
+      : Promise.resolve(null),
+
     arabicPeriodId
       ? tx.arabicPeriod.findUnique({
           where: { id: arabicPeriodId },
@@ -80,42 +100,33 @@ const routineTimes = async (
       : Promise.resolve(null),
   ]);
 
-  if (!period) {
-    throw new AppError("Selected period was not found.", StatusCodes.NOT_FOUND);
-  }
-
-  if (arabicPeriodId && !arabicPeriod) {
-    throw new AppError(
-      "Selected Arabic period was not found.",
-      StatusCodes.NOT_FOUND,
-    );
-  }
-
-  const ranges = [period, ...(arabicPeriod ? [arabicPeriod] : [])].map(
-    ({ start_time, end_time }): TimeRange => {
-      const startMinutes = toMinutes(start_time);
-      const endMinutes = toMinutes(end_time);
-      if (endMinutes <= startMinutes) {
-        throw new AppError(
-          "The selected period must end after it starts.",
-          StatusCodes.BAD_REQUEST,
-        );
-      }
-      return { startMinutes, endMinutes };
-    },
+  const periodCount = [generalPeriod, quranicPeriod, arabicPeriod].filter(
+    Boolean,
   );
-
-  if (
-    ranges.length === 2 &&
-    ranges[0]!.startMinutes < ranges[1]!.endMinutes &&
-    ranges[1]!.startMinutes < ranges[0]!.endMinutes
-  ) {
+  if (periodCount.length !== 1) {
     throw new AppError(
-      "The selected Arabic period overlaps the main routine period.",
+      `"Provide exactly one. General period or quranic period or arabic period.",`,
       StatusCodes.BAD_REQUEST,
     );
   }
-
+  const period = generalPeriod || quranicPeriod || arabicPeriod;
+  interface IPeriodPayload {
+    startTime: string;
+    endTime: string;
+  }
+  const startTime = period!.start_time;
+  const endTime = period!.end_time;
+  const ranges = (({ startTime, endTime }: IPeriodPayload) => {
+    const startMinutes = toMinutes(startTime);
+    const endMinutes = toMinutes(endTime);
+    if (endMinutes <= startMinutes) {
+      throw new AppError(
+        "The selected period must end after it starts.",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    return [{ startMinutes, endMinutes }];
+  })({ startTime, endTime });
   return ranges;
 };
 
@@ -127,9 +138,9 @@ const validateRoutineReferences = async (
     classCount,
     shift,
     teacherCount,
-    subjectCount,
+    generalSubjectCount,
     quranicSubjectCount,
-    arabicSubject,
+    arabicSubjectCount,
     times,
   ] = await Promise.all([
     tx.class.count({ where: { id: { in: payload.class_ids } } }),
@@ -140,18 +151,19 @@ const validateRoutineReferences = async (
     tx.academicStaff.count({ where: { id: { in: payload.teacher_ids } } }),
     payload.general_subject_ids.length === 0
       ? Promise.resolve(0)
-      : tx.generalSubject.count({ where: { id: { in: payload.general_subject_ids } } }),
+      : tx.generalSubject.count({
+          where: { id: { in: payload.general_subject_ids } },
+        }),
     payload.quranic_subject_ids.length === 0
       ? Promise.resolve(0)
       : tx.quranicSubject.count({
           where: { id: { in: payload.quranic_subject_ids } },
         }),
-    payload.arabic_subject_id
-      ? tx.arabicSubject.findUnique({
-          where: { id: payload.arabic_subject_id },
-          select: { id: true },
-        })
-      : Promise.resolve(null),
+    payload.arabic_subject_ids.length === 0
+      ? Promise.resolve(0)
+      : tx.arabicSubject.count({
+          where: { id: { in: payload.arabic_subject_ids } },
+        }),
     routineTimes(
       tx,
       payload.general_period_id,
@@ -161,16 +173,25 @@ const validateRoutineReferences = async (
   ]);
 
   if (classCount !== payload.class_ids.length) {
-    throw new AppError("One or more selected classes were not found.", StatusCodes.NOT_FOUND);
+    throw new AppError(
+      "One or more selected classes were not found.",
+      StatusCodes.NOT_FOUND,
+    );
   }
   if (!shift) {
     throw new AppError("Selected shift was not found.", StatusCodes.NOT_FOUND);
   }
   if (teacherCount !== payload.teacher_ids.length) {
-    throw new AppError("One or more selected teachers were not found.", StatusCodes.NOT_FOUND);
+    throw new AppError(
+      "One or more selected teachers were not found.",
+      StatusCodes.NOT_FOUND,
+    );
   }
-  if (subjectCount !== payload.general_subject_ids.length) {
-    throw new AppError("One or more selected subjects were not found.", StatusCodes.NOT_FOUND);
+  if (generalSubjectCount !== payload.general_subject_ids.length) {
+    throw new AppError(
+      "One or more selected subjects were not found.",
+      StatusCodes.NOT_FOUND,
+    );
   }
   if (quranicSubjectCount !== payload.quranic_subject_ids.length) {
     throw new AppError(
@@ -178,7 +199,7 @@ const validateRoutineReferences = async (
       StatusCodes.NOT_FOUND,
     );
   }
-  if (payload.arabic_subject_id && !arabicSubject) {
+  if (arabicSubjectCount !== payload.arabic_subject_ids.length) {
     throw new AppError(
       "Selected Arabic subject was not found.",
       StatusCodes.NOT_FOUND,
@@ -214,6 +235,7 @@ const assertNoScheduleOverlap = async (
       teachers: { select: { id: true } },
       general_period_id: true,
       quranic_period_id: true,
+      arabic_period_id: true,
       general_period: { select: { start_time: true, end_time: true } },
       quranic_period: { select: { start_time: true, end_time: true } },
       arabic_period: { select: { start_time: true, end_time: true } },
@@ -224,38 +246,33 @@ const assertNoScheduleOverlap = async (
   const teacherIdSet = new Set(teacherIds);
 
   for (const routine of existingRoutines) {
-    if (
-      Boolean(routine.general_period_id) === Boolean(routine.quranic_period_id)
-    ) {
+    const routinePeriodCount = [
+      routine.general_period_id,
+      routine.quranic_period_id,
+      routine.arabic_period_id,
+    ].filter(Boolean);
+    if (routinePeriodCount.length !== 1) {
       throw new AppError(
         "An existing routine must reference exactly one period.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
-    const primaryPeriod = routine.general_period ?? routine.quranic_period;
+    const primaryPeriod =
+      routine.general_period || routine.quranic_period || routine.arabic_period;
     if (!primaryPeriod) {
       throw new AppError(
         "An existing routine has no period assigned.",
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
-    const periodRanges = [
-      primaryPeriod,
-      ...(routine.arabic_period ? [routine.arabic_period] : []),
-    ];
 
-    const existingTimes = periodRanges.map(({ start_time, end_time }) => {
-      const startMinutes = toMinutes(start_time);
-      const endMinutes = toMinutes(end_time);
-      if (endMinutes <= startMinutes) {
-        throw new AppError(
-          "An existing routine has an invalid period configuration.",
-          StatusCodes.INTERNAL_SERVER_ERROR,
-        );
-      }
-      return { startMinutes, endMinutes };
-    });
+    const existingTimes = ((startTime: string, endTime: string) => {
+      const startMinutes = toMinutes(startTime);
+      const endMinutes = toMinutes(endTime);
+      return [{ startMinutes, endMinutes }];
+    })(primaryPeriod.start_time, primaryPeriod.end_time);
+
     const hasTeacherConflict = routine.teachers.some((teacher) =>
       teacherIdSet.has(teacher.id),
     );
@@ -297,7 +314,7 @@ const routineAuditValue = (routine: RoutineAuditRecord) => ({
   teacher_ids: routine.teachers.map(({ id }) => id),
   general_subject_ids: routine.general_subjects.map(({ id }) => id),
   quranic_subject_ids: routine.quranic_subjects.map(({ id }) => id),
-  arabic_subject_id: routine.arabic_subject?.id ?? null,
+  arabic_subject_ids: routine.arabic_subjects.map(({ id }) => id),
 });
 
 type CurrentRoutine = RoutineAuditRecord;
@@ -319,31 +336,48 @@ const persistRoutineUpdate = async (
     id,
   );
 
+  const hasGeneralPeriodId = Boolean(payload.general_period_id);
+  const hasQuranicPeriodId = Boolean(payload.quranic_period_id);
   const updated = await tx.classRoutine.update({
     where: { id },
     data: {
       class: { set: payload.class_ids.map((classId) => ({ id: classId })) },
       shift: { connect: { id: payload.shift_id } },
-      teachers: { set: payload.teacher_ids.map((teacherId) => ({ id: teacherId })) },
+      teachers: {
+        set: payload.teacher_ids.map((teacherId) => ({ id: teacherId })),
+      },
       ...(payload.general_period_id
         ? {
             general_period: { connect: { id: payload.general_period_id } },
             quranic_period: { disconnect: true },
+            arabic_period: { disconnect: true },
           }
-        : {
-            general_period: { disconnect: true },
-            quranic_period: { connect: { id: payload.quranic_period_id! } },
-          }),
-      general_subjects: { set: payload.general_subject_ids.map((subjectId) => ({ id: subjectId })) },
-      quranic_subjects: {
-        set: payload.quranic_subject_ids.map((subjectId) => ({ id: subjectId })),
+        : hasQuranicPeriodId
+          ? {
+              general_period: { disconnect: true },
+              quranic_period: { connect: { id: payload.quranic_period_id } },
+              arabic_period: { disconnect: true },
+            }
+          : {
+              general_period: { disconnect: true },
+              quranic_period: { disconnect: true },
+              arabic_period: { connect: { id: payload.arabic_period_id } },
+            }),
+      general_subjects: {
+        set: payload.general_subject_ids.map((subjectId) => ({
+          id: subjectId,
+        })),
       },
-      arabic_period: payload.arabic_period_id
-        ? { connect: { id: payload.arabic_period_id } }
-        : { disconnect: true },
-      arabic_subject: payload.arabic_subject_id
-        ? { connect: { id: payload.arabic_subject_id } }
-        : { disconnect: true },
+      quranic_subjects: {
+        set: payload.quranic_subject_ids.map((subjectId) => ({
+          id: subjectId,
+        })),
+      },
+      arabic_subjects: {
+        set: payload.arabic_subject_ids.map((subjectId) => ({
+          id: subjectId,
+        })),
+      },
       updated_by: { connect: { id: user.user_id } },
     },
     include: routineInclude,
@@ -377,6 +411,7 @@ const createClassRoutine = async (
         times,
       );
 
+      const hasQuranicPeriodId = Boolean(payload.quranic_period_id);
       const routine = await tx.classRoutine.create({
         data: {
           class: { connect: payload.class_ids.map((id) => ({ id })) },
@@ -384,19 +419,24 @@ const createClassRoutine = async (
           teachers: { connect: payload.teacher_ids.map((id) => ({ id })) },
           ...(payload.general_period_id
             ? { general_period: { connect: { id: payload.general_period_id } } }
-            : { quranic_period: { connect: { id: payload.quranic_period_id! } } }),
+            : hasQuranicPeriodId
+              ? {
+                  quranic_period: {
+                    connect: { id: payload.quranic_period_id! },
+                  },
+                }
+              : {
+                  arabic_period: { connect: { id: payload.arabic_period_id } },
+                }),
           general_subjects: {
             connect: payload.general_subject_ids.map((id) => ({ id })),
           },
           quranic_subjects: {
             connect: payload.quranic_subject_ids.map((id) => ({ id })),
           },
-          ...(payload.arabic_period_id
-            ? { arabic_period: { connect: { id: payload.arabic_period_id } } }
-            : {}),
-          ...(payload.arabic_subject_id
-            ? { arabic_subject: { connect: { id: payload.arabic_subject_id } } }
-            : {}),
+          arabic_subjects: {
+            connect: payload.arabic_subject_ids.map((id) => ({ id })),
+          },
           created_by: { connect: { id: user.user_id } },
         },
         include: routineInclude,
@@ -451,19 +491,63 @@ const updateClassRoutineSingleField = async (
       if (!current) {
         throw new AppError("Class routine not found.", StatusCodes.NOT_FOUND);
       }
+      if (current.general_period_id) {
+        if (current.quranic_period_id || current.arabic_period_id) {
+          throw new AppError(
+            "Class routine has an invalid period configuration.",
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        }
+      } else if (current.quranic_period_id) {
+        if (current.general_period_id || current.arabic_period_id) {
+          throw new AppError(
+            "Class routine has an invalid period configuration.",
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        }
+      } else if (current.arabic_period_id) {
+        if (current.general_period_id || current.quranic_period_id) {
+          throw new AppError(
+            "Class routine has an invalid period configuration.",
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          );
+        }
+      } else {
+        throw new AppError(
+          "Class routine has no period configuration.",
+          StatusCodes.INTERNAL_SERVER_ERROR,
+        );
+      }
 
+      let currentPeriodType: "general" | "quranic" | "arabic";
+      if (current.general_period_id) {
+        currentPeriodType = "general";
+      } else if (current.quranic_period_id) {
+        currentPeriodType = "quranic";
+      } else if (current.arabic_period_id) {
+        currentPeriodType = "arabic";
+      } else {
+        throw new AppError(
+          "Class routine has no period configuration.",
+          StatusCodes.INTERNAL_SERVER_ERROR,
+        );
+      }
       const next: TUpdateClassRoutinePayload = {
         class_ids: current.class.map(({ id: classId }) => classId),
         shift_id: current.shift_id ?? "",
+        teacher_ids: current.teachers.map(({ id: teacherId }) => teacherId),
         general_period_id: current.general_period_id ?? undefined,
         quranic_period_id: current.quranic_period_id ?? undefined,
-        teacher_ids: current.teachers.map(({ id: teacherId }) => teacherId),
-        general_subject_ids: current.general_subjects.map(({ id: subjectId }) => subjectId),
+        arabic_period_id: current.arabic_period_id ?? undefined,
+        general_subject_ids: current.general_subjects.map(
+          ({ id: subjectId }) => subjectId,
+        ),
         quranic_subject_ids: current.quranic_subjects.map(
           ({ id: subjectId }) => subjectId,
         ),
-        arabic_period_id: current.arabic_period_id ?? undefined,
-        arabic_subject_id: current.arabic_subject_id ?? undefined,
+        arabic_subject_ids: current.arabic_subjects.map(
+          ({ id: subjectId }) => subjectId,
+        ),
       };
 
       switch (payload.field) {
@@ -479,22 +563,51 @@ const updateClassRoutineSingleField = async (
         case "general_period_id":
           next.general_period_id = payload.value;
           next.quranic_period_id = undefined;
+          next.arabic_period_id = undefined;
           break;
         case "quranic_period_id":
           next.general_period_id = undefined;
           next.quranic_period_id = payload.value;
-          break;
-        case "subject_ids":
-          next.general_subject_ids = payload.value;
-          break;
-        case "quranic_subject_ids":
-          next.quranic_subject_ids = payload.value;
+          next.arabic_period_id = undefined;
           break;
         case "arabic_period_id":
+          next.general_period_id = undefined;
+          next.quranic_period_id = undefined;
           next.arabic_period_id = payload.value;
           break;
-        case "arabic_subject_id":
-          next.arabic_subject_id = payload.value;
+        case "general_subject_ids":
+          if (currentPeriodType !== "general") {
+            throw new AppError(
+              "General subjects cannot be assigned to a non-general period.",
+              StatusCodes.BAD_REQUEST,
+            );
+          }
+          next.general_subject_ids = payload.value;
+          next.quranic_subject_ids = [];
+          next.arabic_subject_ids = [];
+          break;
+        case "quranic_subject_ids":
+          if (currentPeriodType !== "quranic") {
+            throw new AppError(
+              "Quranic subjects cannot be assigned to a non-quranic period.",
+              StatusCodes.BAD_REQUEST,
+            );
+          }
+          next.general_subject_ids = [];
+          next.quranic_subject_ids = payload.value;
+          next.arabic_subject_ids = [];
+          break;
+
+        case "arabic_subject_ids":
+          if (currentPeriodType !== "arabic") {
+            throw new AppError(
+              "Arabic subjects cannot be assigned to a non-arabic period.",
+              StatusCodes.BAD_REQUEST,
+            );
+          }
+          next.general_subject_ids = [];
+          next.quranic_subject_ids = [];
+          next.arabic_subject_ids = payload.value;
           break;
       }
 

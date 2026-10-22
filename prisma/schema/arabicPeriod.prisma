@@ -5,7 +5,7 @@ model ArabicPeriod {
   start_time String //example: 6:00 AM
   end_time   String //example: 8:00 AM
 
-  class_routines                ClassRoutine[]
+  class_routines ClassRoutine[]
 
   created_by_id String?
   created_by    User?   @relation("arabic_period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -20,9 +20,9 @@ model ArabicPeriod {
 }
 
 model ArabicSubject {
-  id                  String @id @default(uuid())
-  arabic_subject_name String @unique
-  class_routines                ClassRoutine[]
+  id                  String         @id @default(uuid())
+  arabic_subject_name String         @unique
+  class_routines      ClassRoutine[]
 
   created_by_id String?
   created_by    User?   @relation("arabic_subject_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

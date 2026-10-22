@@ -1,5 +1,5 @@
 model ClassRoutine {
-  id String @id @default(uuid())
+  id       String    @id @default(uuid())
   students Student[]
 
   class Class[] @relation("class_routine_classes")
@@ -8,20 +8,16 @@ model ClassRoutine {
   shift    Shift?  @relation(fields: [shift_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   general_period_id String?
-  general_period    GeneralPeriod? @relation(fields: [general_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  general_subjects GeneralSubject[] @relation("class_routine_subjects")
+  general_period    GeneralPeriod?   @relation(fields: [general_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  general_subjects  GeneralSubject[] @relation("class_routine_subjects")
 
   quranic_period_id String?
-  quranic_period    QuranicPeriod? @relation(fields: [quranic_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  quranic_subjects    QuranicSubject[] @relation("class_routine_quranic_subjects")
+  quranic_period    QuranicPeriod?   @relation(fields: [quranic_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  quranic_subjects  QuranicSubject[] @relation("class_routine_quranic_subjects")
 
   arabic_period_id String?
-  arabic_period ArabicPeriod? @relation(fields: [arabic_period_id], references: [id])
-
-  arabic_subject_id String?
-  arabic_subject ArabicSubject? @relation(fields: [arabic_subject_id], references: [id])
+  arabic_period    ArabicPeriod?   @relation(fields: [arabic_period_id], references: [id])
+  arabic_subjects  ArabicSubject[]
 
   teachers AcademicStaff[] @relation("class_routine_teachers")
 
@@ -34,5 +30,5 @@ model ClassRoutine {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@map("class_rotine")
+  @@map("class_routines")
 }
