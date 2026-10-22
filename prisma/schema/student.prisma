@@ -7,6 +7,8 @@ model Student {
   user_id           String @unique
   user_primary_data User   @relation("student_profile", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  student_results StudentResult[]
+
   class_history  ClassHistory[]
   class_routines ClassRoutine[]
   fee_rates      StudentFeeRate[]

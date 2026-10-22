@@ -73,11 +73,17 @@ model User {
   created_class_routines ClassRoutine[] @relation("class_routine_created_by")
   updated_class_routines ClassRoutine[] @relation("class_routine_updated_by")
 
+  created_student_result StudentResult[] @relation("student_result_created_by")
+  updated_student_result StudentResult[] @relation("student_result_updated_by")
+
   created_shifts Shift[] @relation("shift_created_by")
   updated_shifts Shift[] @relation("shift_updated_by")
 
   created_class_history ClassHistory[] @relation("class_history_created_by")
   updated_class_history ClassHistory[] @relation("class_history_updated_by")
+
+  created_monthly_exam_mark monthlyExamMark[] @relation("monthly_exam_mark_created_by")
+  updated_monthly_exam_mark monthlyExamMark[] @relation("monthly_exam_mark_updated_by")
 
   created_book_list Booklist[] @relation("book_list_created_by")
   updated_book_list Booklist[] @relation("book_list_updated_by")
