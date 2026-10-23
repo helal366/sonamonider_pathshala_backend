@@ -1,0 +1,111 @@
+model MonthlyExamMark {
+  id              String          @id @default(uuid())
+  student_results StudentResult[]
+  january_mark    Decimal         @db.Decimal(10, 2)
+  february_mark   Decimal         @db.Decimal(10, 2)
+  march_mark      Decimal         @db.Decimal(10, 2)
+  april_mark      Decimal         @db.Decimal(10, 2)
+  july_mark       Decimal         @db.Decimal(10, 2)
+  august_mark     Decimal         @db.Decimal(10, 2)
+  september_mark  Decimal         @db.Decimal(10, 2)
+  october_mark    Decimal         @db.Decimal(10, 2)
+
+  created_by_id String?
+  created_by    User?   @relation("monthly_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("monthly_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("monthly_exam_marks")
+}
+model HalfYearlyExamMark {
+  id String @id @default(uuid())
+
+  student_result_id String
+  student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  book_list_id String
+  book_list    Booklist @relation(fields: [book_list_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  full_mark Decimal @db.Decimal(10, 2)
+  highest_mark Decimal @db.Decimal(10, 2)
+  obtained_mark      Decimal @db.Decimal(10, 2)
+
+  created_by_id String?
+  created_by    User? @relation("half_yearly_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User? @relation("half_yearly_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([student_result_id, book_list_id])
+  @@map("half_yearly_exam_marks")
+}
+model AnnualExamMark {
+  id String @id @default(uuid())
+
+  student_result_id String
+  student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  book_list_id String
+  book_list    Booklist @relation(fields: [book_list_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  full_mark Decimal @db.Decimal(10, 2)
+  mark      Decimal @db.Decimal(10, 2)
+
+  created_by_id String?
+  created_by    User? @relation("annual_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User? @relation("annual_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@unique([student_result_id, book_list_id])
+  @@map("annual_exam_marks")
+}
+
+model CoCurricularActivitiesMark{
+  id String @id @default(uuid())
+  al_quran_grade ResultGrade
+  conversation ResultGrade
+  akhlake_hasanah ResultGrade
+  cultural_activities ResultGrade
+  sports_scouts ResultGrade
+
+  created_by_id String?
+  created_by    User? @relation("co_curricular_activities_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User? @relation("co_curricular_activities_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("co_curricular_activities")
+}
+
+model MoralMannersEvaluation{
+  id String @id @default(uuid())
+  cleanliness ResultGrade
+  class_performance ResultGrade
+  speaking_the_truth ResultGrade
+  speaking_the_correct ResultGrade
+  salat_religious_work ResultGrade
+
+  created_by_id String?
+  created_by    User? @relation("moral_manners_evaluation_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User? @relation("moral_manners_evaluation_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  @@map("moral_manners_evaluation")
+}

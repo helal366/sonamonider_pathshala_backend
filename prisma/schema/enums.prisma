@@ -143,3 +143,13 @@ enum SalaryChangeType {
   INCREMENT
   ADJUSTMENT
 }
+
+enum ResultGrade {
+  A_PLUS
+  A
+  A_MINUS
+  B
+  C
+  D
+  F
+}
