@@ -88,8 +88,8 @@ model User {
   created_co_curricular_activities_mark CoCurricularActivitiesMark[] @relation("co_curricular_activities_mark_created_by")
   updated_co_curricular_activities_mark CoCurricularActivitiesMark[] @relation("co_curricular_activities_mark_updated_by")
 
-  created_moral_manners_evaluation_mark MoralMannersEvaluation[] @relation("moral_manners_evaluation_mark_created_by")
-  updated_moral_manners_evaluation_mark MoralMannersEvaluation[] @relation("moral_manners_evaluation_mark_updated_by")
+  created_moral_manners_evaluation_mark MoralMannersEvaluationMark[] @relation("moral_manners_evaluation_mark_created_by")
+  updated_moral_manners_evaluation_mark MoralMannersEvaluationMark[] @relation("moral_manners_evaluation_mark_updated_by")
 
   created_class_history ClassHistory[] @relation("class_history_created_by")
   updated_class_history ClassHistory[] @relation("class_history_updated_by")

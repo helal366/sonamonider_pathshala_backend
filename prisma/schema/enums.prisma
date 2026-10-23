@@ -153,3 +153,8 @@ enum ResultGrade {
   D
   F
 }
+
+enum ExamType {
+  HALF_YEARLY
+  ANNUAL
+}
