@@ -15,7 +15,7 @@ const createBookList = async (
   LoggedInUser: TLoggedInUser,
   payload: TCreateBookListZodSchema,
 ) => {
-  const { class_id, book_name, publisher } = payload;
+  const { class_id, book_name, publisher, section } = payload;
 
   return await prisma.$transaction(async (transaction) => {
     // Find class
@@ -33,6 +33,7 @@ const createBookList = async (
         class_id,
         book_name,
         publisher,
+        section
       },
     });
     // Check duplicate entry
@@ -49,6 +50,7 @@ const createBookList = async (
         class_id,
         book_name,
         publisher,
+        section,
         created_by_id: LoggedInUser.user_id,
       },
     });
@@ -65,6 +67,7 @@ const createBookList = async (
           class_id,
           book_name,
           publisher,
+          section
         },
       },
     });

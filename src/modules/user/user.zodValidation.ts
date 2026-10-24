@@ -1,4 +1,4 @@
-import { BloodGroup, Gender, Religion } from "#db-client";
+import { BloodGroup, Gender, Religion, Section, Version } from "#db-client";
 import z4 from "zod/v4";
 import {
   ACTIVE_STATUS_ENUM,
@@ -86,6 +86,8 @@ const userCreateZodSchema = z4
     active_class_id: z4.string().trim().optional(),
     year_name: z4.string().trim().optional(),
     shift_name: z4.string().trim().optional(),
+    section: z4.enum(Section).optional(),
+    version: z4.enum(Version).optional(),
     roll_number: z4.coerce
       .number("Invalid roll number.")
       .int("Roll number must be an integer.")
@@ -96,7 +98,6 @@ const userCreateZodSchema = z4
         z4.uuid({ error: "Each period ID must be a valid UUID string format." })
       )
       .optional(),
-    arabic_literature: z4.boolean().optional()
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -132,6 +133,20 @@ const userCreateZodSchema = z4
         });
       }
 
+      if(!data.version){
+        ctx.addIssue({
+          code: "custom",
+          message: "Version is required for student",
+          path: ["version"]
+        })
+      }
+      if(!data.section){
+        ctx.addIssue({
+          code: "custom",
+          message: "Section is required for student",
+          path: ["section"]
+        })
+      }
       if(!data.quranic_class_name ||data.quranic_class_name.trim() === ""){
         ctx.addIssue({
           code: "custom",

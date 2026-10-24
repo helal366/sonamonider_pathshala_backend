@@ -152,6 +152,15 @@ const createUser = async (
         // STUDENT CREATION
         // ======================
         if (cleanRole === Role.STUDENT && subProfileId) {
+          // CHECK SECTION
+          if (!payload.section) {
+            throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
+          }
+
+          // CHECK VERSION
+          if (!payload.version) {
+            throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+          }
           // MAKE STUDENT REQUIREMENTS PAYLOAD
           const studentsRequirementPayload = {
             transaction,
@@ -159,6 +168,8 @@ const createUser = async (
             year_name: payload.year_name,
             shift_name: payload.shift_name,
             roll_number: payload.roll_number,
+            section: payload.section,
+            version: payload.version,
             quranic_class_name: payload.quranic_class_name,
             quranic_class_period_ids: payload.quranic_class_period_ids,
           };
@@ -170,6 +181,8 @@ const createUser = async (
             academicYear,
             existingShift,
             rollNumber,
+            section,
+            version,
             existingQuranicClass,
             quranicClassPeriodIDs,
           } = await userHelperFunction.checkStudentCreationRequirements(
@@ -186,7 +199,8 @@ const createUser = async (
               start_date: academicStartDate,
               end_date: academicEndDate,
               quranic_subject: { connect: { id: existingQuranicClass.id } },
-              arabic_literature: payload.arabic_literature ?? false,
+              section,
+              version,
               class_history_quranic_periods: {
                 create: quranicClassPeriodIDs.map((id: string) => ({
                   quranic_period: { connect: { id } },
@@ -204,7 +218,8 @@ const createUser = async (
               class_id: activeClassID,
               start_date: academicStartDate.toISOString(),
               end_date: academicEndDate.toISOString(),
-              arabic_literature: payload.arabic_literature ?? false,
+              section,
+              version,
               quranic_class_id: existingQuranicClass.id,
               quranic_class_period_ids: quranicClassPeriodIDs,
             },

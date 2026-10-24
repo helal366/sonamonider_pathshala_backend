@@ -147,6 +147,8 @@ const studentReadmission = async (
         year_name: payload.target_year_name,
         shift_name: payload.target_shift_name,
         roll_number: payload.roll_number,
+        section: payload.section,
+        version: payload.version,
         quranic_class_name: payload.quranic_class_name,
         quranic_class_period_ids: payload.quranic_class_period_ids,
       };
@@ -157,6 +159,8 @@ const studentReadmission = async (
         academicYear,
         existingShift,
         rollNumber,
+        section, 
+        version,
         existingQuranicClass,
         quranicClassPeriodIDs,
       } = await userHelperFunction.checkStudentCreationRequirements(
@@ -172,7 +176,8 @@ const studentReadmission = async (
           roll_number: rollNumber,
           start_date: academicStartDate,
           end_date: academicEndDate,
-          arabic_literature: payload.arabic_literature ?? false,
+          section,
+          version,
           quranic_subject: { connect: { id: existingQuranicClass.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
@@ -192,7 +197,8 @@ const studentReadmission = async (
           class_id: activeClassID,
           start_date: academicStartDate.toISOString(),
           end_date: academicEndDate.toISOString(),
-          arabic_literature: payload.arabic_literature ?? false,
+          section,
+          version,
           quranic_class_id: existingQuranicClass.id,
           quranic_class_period_ids: quranicClassPeriodIDs,
         },

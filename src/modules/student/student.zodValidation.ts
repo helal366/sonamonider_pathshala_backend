@@ -1,3 +1,4 @@
+import { Section, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // ============================================================
@@ -40,7 +41,8 @@ export const studentReadmissionZodSchema = z4.object({
     .number({ error: (issue) => "Roll number must be an integer." })
     .int()
     .min(1, "Roll number must be greater than 0"),
-  arabic_literature: z4.boolean().optional(),
+  section: z4.enum(Section),
+  version: z4.enum(Version),
   quranic_class_name: z4.string().trim(),
   quranic_class_period_ids: z4
     .array(

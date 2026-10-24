@@ -1,4 +1,4 @@
-import { ActiveStatus, BloodGroup, Gender, Prisma, Religion, Role } from "#db-client";
+import { ActiveStatus, BloodGroup, Gender, Prisma, Religion, Role, Section, Version } from "#db-client";
 
 // ==========================================
 // CREATE USER
@@ -145,6 +145,8 @@ export interface IStudentRequirementsPayload {
   year_name: string | undefined;
   shift_name: string | undefined;
   roll_number: number | undefined;
+  section: Section;
+  version: Version;
   quranic_class_name: string | undefined;
   quranic_class_period_ids: string[] | undefined;
   transaction: Prisma.TransactionClient ;

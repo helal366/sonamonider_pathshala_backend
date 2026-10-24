@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Prisma, Role } from "#db-client";
+import { Prisma, Role, Section } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 
@@ -22,74 +22,73 @@ const userExistence = async ({
     return await prisma.managementStaff.findFirst({
       where: {
         user_primary_data: {
-            full_name,
-            mobile_number
-          }
+          full_name,
+          mobile_number,
+        },
       },
       include: {
         user_primary_data: {
           select: {
             full_name: true,
             mobile_number: true,
-            email:true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   } else if (role === Role.STUDENT) {
     return await prisma.student.findFirst({
       where: {
         user_primary_data: {
-            full_name,
-            mobile_number
-          }
+          full_name,
+          mobile_number,
+        },
       },
       include: {
         user_primary_data: {
           select: {
             full_name: true,
             mobile_number: true,
-            email:true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   } else if (role === Role.ACADEMIC) {
     return await prisma.academicStaff.findFirst({
-
       where: {
         user_primary_data: {
-            full_name,
-            mobile_number
-          }
+          full_name,
+          mobile_number,
+        },
       },
       include: {
         user_primary_data: {
           select: {
             full_name: true,
             mobile_number: true,
-            email:true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   } else if (role === Role.GOVERNING_BODY) {
     return await prisma.governingBody.findFirst({
       where: {
         user_primary_data: {
-            full_name,
-            mobile_number
-          }
+          full_name,
+          mobile_number,
+        },
       },
       include: {
         user_primary_data: {
           select: {
             full_name: true,
             mobile_number: true,
-            email:true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   }
   return null;
@@ -97,13 +96,21 @@ const userExistence = async ({
 
 const userCount = async ({ role_name: role, mobile_number }: IUserCount) => {
   if (isManagement.includes(role)) {
-    return await prisma.managementStaff.count({ where: {user_primary_data: {mobile_number} } });
+    return await prisma.managementStaff.count({
+      where: { user_primary_data: { mobile_number } },
+    });
   } else if (role === "STUDENT") {
-    return await prisma.student.count({ where: {user_primary_data: {mobile_number} } });
+    return await prisma.student.count({
+      where: { user_primary_data: { mobile_number } },
+    });
   } else if (role === "GOVERNING_BODY") {
-    return await prisma.governingBody.count({ where: {user_primary_data: {mobile_number} } });
+    return await prisma.governingBody.count({
+      where: { user_primary_data: { mobile_number } },
+    });
   } else if (role === "ACADEMIC") {
-    return await prisma.academicStaff.count({ where: {user_primary_data: {mobile_number} } });
+    return await prisma.academicStaff.count({
+      where: { user_primary_data: { mobile_number } },
+    });
   }
   return 0;
 };
@@ -317,6 +324,8 @@ const checkStudentCreationRequirements = async (
     year_name,
     shift_name,
     roll_number,
+    section,
+    version,
     quranic_class_name,
     quranic_class_period_ids,
   } = studentsRequirementPayload;
@@ -361,6 +370,16 @@ const checkStudentCreationRequirements = async (
     );
   }
 
+  // CHECK SECTION
+  if (!section) {
+    throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
+  }
+
+  // CHECK VERSION
+  if (!version) {
+    throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+  }
+
   // CHECK THE SHIFT NAME
   const cleanShiftName = shift_name?.trim().toUpperCase();
   const existingShift = await transaction.shift.findUnique({
@@ -371,6 +390,17 @@ const checkStudentCreationRequirements = async (
     throw new AppError(
       `Provided shift ${cleanShiftName} is not found.`,
       StatusCodes.NOT_FOUND,
+    );
+  }
+  if (cleanShiftName === "MORNING" && section !== Section.MADRASHA) {
+    throw new AppError(
+      "Morning shift only allows MADRASHA section.",
+      StatusCodes.BAD_REQUEST,
+    );
+  } else if (cleanShiftName === "DAY" && section !== Section.SCHOOL) {
+    throw new AppError(
+      "Day shift only allows SCHOOL section.",
+      StatusCodes.BAD_REQUEST,
     );
   }
 
@@ -433,10 +463,13 @@ const checkStudentCreationRequirements = async (
     academicYear,
     existingShift,
     rollNumber: roll_number,
+    section,
+    version,
     existingQuranicClass,
     quranicClassPeriodIDs: quranic_class_period_ids,
   };
 };
+
 export const userHelperFunction = {
   userExistence,
   userCount,

@@ -1,3 +1,4 @@
+import { Section } from "#db-client";
 import z4 from "zod/v4";
 
 // =====================================================================
@@ -23,7 +24,7 @@ const createBookListZodSchema = z4.object({
     })
     .trim()
     .min(1, "Publisher is required."),
-
+  section: z4.enum(Section),
   class_id: z4.uuid("Invalid class ID format."),
 });
 export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;

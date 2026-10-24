@@ -158,3 +158,13 @@ enum ExamType {
   HALF_YEARLY
   ANNUAL
 }
+
+enum Section {
+  MADRASHA
+  SCHOOL
+}
+
+enum Version {
+  BANGLA
+  ENGLISH
+}

@@ -5,16 +5,8 @@ model ClassHistory {
   start_date DateTime
   end_date   DateTime?
 
-  academic_year_id String
-  academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  roll_number Int
-
-  quranic_subject_id String
-  quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  class_history_quranic_periods ClassHistoryQuranicPeriod[]
-  is_arabic                     Boolean                     @default(false)
+  student_id String
+  student    Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -22,8 +14,17 @@ model ClassHistory {
   shift_id String
   shift    Shift  @relation(fields: [shift_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  student_id String
-  student    Student @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academic_year_id String
+  academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  roll_number Int
+  section Section
+  version Version
+
+  quranic_subject_id String
+  quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  class_history_quranic_periods ClassHistoryQuranicPeriod[]
 
   created_by_id String?
   created_by    User?   @relation("class_history_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

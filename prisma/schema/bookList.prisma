@@ -6,6 +6,7 @@ model Booklist {
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id])
+  section Section
 
   half_yearly_exam_marks HalfYearlyExamMark[]
   annual_exam_marks AnnualExamMark[]
