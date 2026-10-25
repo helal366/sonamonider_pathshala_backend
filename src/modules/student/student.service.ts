@@ -25,7 +25,7 @@ const studentReadmission = async (
     quranic_class_name,
     quranic_class_period_ids,
   } = payload;
-  const cleanShiftName = target_shift_name.trim().toUpperCase();
+  const cleanShiftName = target_shift_name;
   const cleanYearName = target_year_name.trim();
   // 1. Resolve exact target bounds from cache/master tables
   const targetYear = await prisma.academicYear.findUnique({
@@ -34,16 +34,6 @@ const studentReadmission = async (
   if (!targetYear) {
     throw new AppError(
       `Academic Year '${cleanYearName}' not found.`,
-      StatusCodes.NOT_FOUND,
-    );
-  }
-
-  const targetShift = await prisma.shift.findUnique({
-    where: { shift_name: cleanShiftName },
-  });
-  if (!targetShift) {
-    throw new AppError(
-      `Shift '${cleanShiftName}' not found.`,
       StatusCodes.NOT_FOUND,
     );
   }
@@ -110,7 +100,7 @@ const studentReadmission = async (
         where: {
           roll_number,
           class_id: target_class_id,
-          shift_id: targetShift.id,
+          shift: cleanShiftName,
           academic_year_id: targetYear.id,
         },
       });
@@ -172,7 +162,7 @@ const studentReadmission = async (
           student: { connect: { id: student_id } },
           class: { connect: { id: activeClassID } },
           academic_year: { connect: { id: academicYear.id } },
-          shift: { connect: { id: existingShift?.id } },
+          shift: existingShift,
           roll_number: rollNumber,
           start_date: academicStartDate,
           end_date: academicEndDate,

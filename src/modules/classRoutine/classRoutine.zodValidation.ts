@@ -1,3 +1,4 @@
+import { Shift } from "#db-client";
 import z4 from "zod/v4";
 
 const uuid = (field: string) =>
@@ -145,7 +146,7 @@ const periodSelection = (
 const createClassRoutinePayload = z4
   .object({
     class_ids: classIds,
-    shift_id: uuid("shift"),
+    shift: z4.enum(Shift),
     teacher_ids: teacherIds,
     general_period_id: uuid("period").optional(),
     general_subject_ids: generalSubjectIds.default([]),
@@ -159,7 +160,7 @@ const createClassRoutinePayload = z4
 const updateClassRoutinePayload = z4
   .object({
     class_ids: classIds,
-    shift_id: uuid("shift"),
+    shift: z4.enum(Shift),
     general_period_id: uuid("period").optional(),
     quranic_period_id: uuid("Quranic period").optional(),
     teacher_ids: teacherIds,
@@ -176,7 +177,7 @@ const updateClassRoutineParamsZodSchema = z4.object({
 
 const updateClassRoutineSingleFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({ field: z4.literal("class_ids"), value: classIds }),
-  z4.object({ field: z4.literal("shift_id"), value: uuid("shift") }),
+  z4.object({ field: z4.literal("shift"), value: z4.enum(Shift) }),
   z4.object({ field: z4.literal("teacher_ids"), value: teacherIds }),
   z4.object({ field: z4.literal("general_period_id"), value: uuid("period") }),
   z4.object({

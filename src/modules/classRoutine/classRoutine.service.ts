@@ -1,4 +1,4 @@
-import { Prisma } from "#db-client";
+import { Prisma, Shift } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
@@ -37,7 +37,6 @@ const toMinutes = (value: string) => {
 
 const routineInclude = {
   class: true,
-  shift: true,
   general_period: true,
   quranic_period: true,
   arabic_period: true,
@@ -136,7 +135,6 @@ const validateRoutineReferences = async (
 ) => {
   const [
     classCount,
-    shift,
     teacherCount,
     generalSubjectCount,
     quranicSubjectCount,
@@ -144,10 +142,6 @@ const validateRoutineReferences = async (
     times,
   ] = await Promise.all([
     tx.class.count({ where: { id: { in: payload.class_ids } } }),
-    tx.shift.findUnique({
-      where: { id: payload.shift_id },
-      select: { id: true },
-    }),
     tx.academicStaff.count({ where: { id: { in: payload.teacher_ids } } }),
     payload.general_subject_ids.length === 0
       ? Promise.resolve(0)
@@ -177,9 +171,6 @@ const validateRoutineReferences = async (
       "One or more selected classes were not found.",
       StatusCodes.NOT_FOUND,
     );
-  }
-  if (!shift) {
-    throw new AppError("Selected shift was not found.", StatusCodes.NOT_FOUND);
   }
   if (teacherCount !== payload.teacher_ids.length) {
     throw new AppError(
@@ -212,7 +203,7 @@ const validateRoutineReferences = async (
 const assertNoScheduleOverlap = async (
   tx: DbTransaction,
   classIds: string[],
-  shiftId: string,
+  shift: Shift,
   teacherIds: string[],
   times: TimeRange[],
   excludeRoutineId?: string,
@@ -224,13 +215,13 @@ const assertNoScheduleOverlap = async (
         { teachers: { some: { id: { in: teacherIds } } } },
         {
           class: { some: { id: { in: classIds } } },
-          OR: [{ shift_id: shiftId }, { shift_id: null }],
+          OR: [{ shift }, { shift: null }],
         },
       ],
     },
     select: {
       id: true,
-      shift_id: true,
+      shift: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
       general_period_id: true,
@@ -277,7 +268,7 @@ const assertNoScheduleOverlap = async (
       teacherIdSet.has(teacher.id),
     );
     const hasClassConflict =
-      (routine.shift_id === shiftId || routine.shift_id === null) &&
+      (routine.shift === shift || routine.shift === null) &&
       routine.class.some((classRecord) => classIdSet.has(classRecord.id));
 
     if (
@@ -307,7 +298,7 @@ type RoutineAuditRecord = Prisma.ClassRoutineGetPayload<{
 const routineAuditValue = (routine: RoutineAuditRecord) => ({
   id: routine.id,
   class_ids: routine.class.map(({ id }) => id),
-  shift_id: routine.shift_id,
+  shift: routine.shift,
   general_period_id: routine.general_period_id,
   quranic_period_id: routine.quranic_period_id,
   arabic_period_id: routine.arabic_period_id,
@@ -330,7 +321,7 @@ const persistRoutineUpdate = async (
   await assertNoScheduleOverlap(
     tx,
     payload.class_ids,
-    payload.shift_id,
+    payload.shift,
     payload.teacher_ids,
     times,
     id,
@@ -342,7 +333,7 @@ const persistRoutineUpdate = async (
     where: { id },
     data: {
       class: { set: payload.class_ids.map((classId) => ({ id: classId })) },
-      shift: { connect: { id: payload.shift_id } },
+      shift: payload.shift,
       teachers: {
         set: payload.teacher_ids.map((teacherId) => ({ id: teacherId })),
       },
@@ -406,7 +397,7 @@ const createClassRoutine = async (
       await assertNoScheduleOverlap(
         tx,
         payload.class_ids,
-        payload.shift_id,
+        payload.shift,
         payload.teacher_ids,
         times,
       );
@@ -415,7 +406,7 @@ const createClassRoutine = async (
       const routine = await tx.classRoutine.create({
         data: {
           class: { connect: payload.class_ids.map((id) => ({ id })) },
-          shift: { connect: { id: payload.shift_id } },
+          shift: payload.shift,
           teachers: { connect: payload.teacher_ids.map((id) => ({ id })) },
           ...(payload.general_period_id
             ? { general_period: { connect: { id: payload.general_period_id } } }
@@ -532,9 +523,19 @@ const updateClassRoutineSingleField = async (
           StatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
+      const nextShift =
+        current.shift ??
+        (payload.field === "shift" ? payload.value : undefined);
+      if (!nextShift) {
+        throw new AppError(
+          "Assign a shift to this existing routine before updating it.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
       const next: TUpdateClassRoutinePayload = {
         class_ids: current.class.map(({ id: classId }) => classId),
-        shift_id: current.shift_id ?? "",
+        shift: nextShift,
         teacher_ids: current.teachers.map(({ id: teacherId }) => teacherId),
         general_period_id: current.general_period_id ?? undefined,
         quranic_period_id: current.quranic_period_id ?? undefined,
@@ -554,8 +555,8 @@ const updateClassRoutineSingleField = async (
         case "class_ids":
           next.class_ids = payload.value;
           break;
-        case "shift_id":
-          next.shift_id = payload.value;
+        case "shift":
+          next.shift = payload.value;
           break;
         case "teacher_ids":
           next.teacher_ids = payload.value;
@@ -609,13 +610,6 @@ const updateClassRoutineSingleField = async (
           next.quranic_subject_ids = [];
           next.arabic_subject_ids = payload.value;
           break;
-      }
-
-      if (!next.shift_id) {
-        throw new AppError(
-          "Assign a shift to this existing routine before updating it.",
-          StatusCodes.BAD_REQUEST,
-        );
       }
 
       return persistRoutineUpdate(tx, current, next, user, id);

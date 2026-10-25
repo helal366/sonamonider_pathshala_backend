@@ -1,4 +1,4 @@
-import { BloodGroup, Gender, Religion, Section, Version } from "#db-client";
+import { BloodGroup, Gender, Religion, Section, Shift, Version } from "#db-client";
 import z4 from "zod/v4";
 import {
   ACTIVE_STATUS_ENUM,
@@ -85,7 +85,7 @@ const userCreateZodSchema = z4
 
     active_class_id: z4.string().trim().optional(),
     year_name: z4.string().trim().optional(),
-    shift_name: z4.string().trim().optional(),
+    shift_name: z4.enum(Shift).optional(),
     section: z4.enum(Section).optional(),
     version: z4.enum(Version).optional(),
     roll_number: z4.coerce

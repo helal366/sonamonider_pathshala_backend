@@ -1,22 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 
 // =========================================================
-// SEED SHIFTS
-// =========================================================
-const seedShifts = async () => {
-  const shifts = ["MORNING", "DAY", "BOYS", "GIRLS"];
-
-  console.log("Seeding shifts...");
-  const data = shifts.map((shift) => ({ shift_name: shift }));
-
-  const result = await prisma.shift.createMany({
-    data,
-    skipDuplicates: true,
-  });
-  console.log(`Shifts done. Created ${result.count} entries.`);
-};
-
-// =========================================================
 // SEED CLASSES
 // =========================================================
 const seedClasses = async () => {
@@ -294,7 +278,6 @@ const seedArabicSubjects = async () => {
 // INITIAL EXECUTION HANDLER
 // ========================================================
 export const runInitialOthers = async () => {
-  await seedShifts();
   await seedClasses();
   await seedquranicSubjectes();
   await seedGeneralSubjects();

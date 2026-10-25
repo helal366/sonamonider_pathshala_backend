@@ -38,10 +38,10 @@ The modules provide create, full update, single-field update, delete, list, and 
 ## Validation and schedule behavior
 
 - Quranic period create/update validation accepts 12-hour AM/PM time strings and requires end time to be later than start time.
-- ClassRoutine request validation requires at least one class and teacher, exactly one of `period_id` or `quranic_period_id`, and unique class, teacher, and subject IDs. Request arrays are `class_ids`, `teacher_ids`, `subject_ids`, and `quranic_subject_ids`; `shift_id` is required for new/updated routines.
-- ClassRoutine create/update checks that referenced classes, teachers, shift, period, and both subject types exist.
+- ClassRoutine request validation requires at least one class and teacher, exactly one of `period_id` or `quranic_period_id`, and unique class, teacher, and subject IDs. Request arrays are `class_ids`, `teacher_ids`, `subject_ids`, and `quranic_subject_ids`; `shift` is required for new/updated routines and accepts the `Shift` enum.
+- ClassRoutine create/update checks that referenced classes, teachers, period, and both subject types exist, and validates `shift` against the Shift enum.
 - ClassRoutine create/update and period time changes check teacher overlaps across all shifts and class overlaps within a shift, across regular and Quranic periods.
-- The class-routine migration copies existing single-class and single-teacher links into join tables. Existing rows have no reliable shift assignment, so `shift_id` remains nullable for legacy data; update those rows with a shift before relying on class-overlap checks for them.
+- The class-routine migration copies existing single-class and single-teacher links into join tables. Existing rows have no reliable shift assignment, so `shift` remains nullable for legacy data; update those rows with a shift before relying on class-overlap checks for them.
 - Period names are unique (`GeneralPeriod.general_period_name` and `QuranicPeriod.quranic_period_name`). If one display name needs different time definitions, this uniqueness/design needs reconsideration.
 
 ## Verification completed

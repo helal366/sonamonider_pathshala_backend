@@ -6,7 +6,7 @@ const updateTeacherIds = async()=>{
 
 }
 
-const updateShiftId = async()=>{
+const updateShift = async()=>{
 
 }
 
@@ -16,6 +16,6 @@ const updatePeriodSubject = async()=>{
 export const updateSingleFieldService = {
     updateClassIds,
     updateTeacherIds,
-    updateShiftId,
+    updateShift,
     updatePeriodSubject
 }

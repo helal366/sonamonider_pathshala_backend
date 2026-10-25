@@ -4,8 +4,7 @@ model ClassRoutine {
 
   class Class[] @relation("class_routine_classes")
 
-  shift_id String?
-  shift    Shift?  @relation(fields: [shift_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  shift Shift?
 
   general_period_id String?
   general_period    GeneralPeriod?   @relation(fields: [general_period_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

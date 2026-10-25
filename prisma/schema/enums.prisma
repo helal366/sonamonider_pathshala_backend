@@ -154,6 +154,13 @@ enum ResultGrade {
   F
 }
 
+enum Shift {
+  MORNING
+  DAY
+  BOYS
+  GIRLS
+}
+
 enum ExamType {
   HALF_YEARLY
   ANNUAL

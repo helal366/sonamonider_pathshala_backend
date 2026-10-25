@@ -1,4 +1,4 @@
-import { Section, Version } from "#db-client";
+import { Section, Shift, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // ============================================================
@@ -20,15 +20,12 @@ export const studentReadmissionZodSchema = z4.object({
         ? "Target Class ID is required."
         : "Invalid Class ID format.",
   }),
-  target_shift_name: z4
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Shift name is required."
-          : "Invalid Shift format.",
-    })
-    .trim()
-    .toUpperCase(),
+  target_shift_name: z4.enum(Shift, {
+    error: (issue) =>
+      issue.input === undefined
+        ? "Shift name is required."
+        : "Invalid Shift format.",
+  }),
   target_year_name: z4
     .string({
       error: (issue) =>

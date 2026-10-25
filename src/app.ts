@@ -17,7 +17,6 @@ import { academicResultRouter } from "./modules/academicResults/academicResult.r
 import { classRouter } from "./modules/class/class.route.js";
 import { studentRouter } from "./modules/student/student.route.js";
 import { academicYearRouter } from "./modules/academicYear/academicYear.route.js";
-import { shiftRouter } from "./modules/shift/shift.route.js";
 import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route.js";
 import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
 import { quranicSubjectRouter } from "./modules/quranicSubject/quranicSubject.route.js";
@@ -50,7 +49,6 @@ app.use("/api/v1/smps/academic_result", academicResultRouter);
 app.use("/api/v1/smps/class", classRouter);
 app.use("/api/v1/smps/student", studentRouter);
 app.use("/api/v1/smps/academic_year", academicYearRouter);
-app.use("/api/v1/smps/shift", shiftRouter);
 app.use("/api/v1/smps/academic_staff", academicStaffRouter);
 app.use("/api/v1/smps/promotion_request", promotionRequestRouter);
 app.use("/api/v1/smps/quranic_subject", quranicSubjectRouter);

@@ -1,4 +1,4 @@
-import { ActiveStatus, BloodGroup, Gender, Prisma, Religion, Role, Section, Version } from "#db-client";
+import { ActiveStatus, BloodGroup, Gender, Prisma, Religion, Role, Section, Shift, Version } from "#db-client";
 
 // ==========================================
 // CREATE USER
@@ -143,7 +143,7 @@ export type UserDeleteValue =
 export interface IStudentRequirementsPayload {
   active_class_id: string | undefined;
   year_name: string | undefined;
-  shift_name: string | undefined;
+  shift_name: Shift | undefined;
   roll_number: number | undefined;
   section: Section;
   version: Version;

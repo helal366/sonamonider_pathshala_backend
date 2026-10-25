@@ -1,4 +1,4 @@
-import { Prisma } from "#db-client";
+import { Prisma, Shift } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
@@ -16,7 +16,7 @@ const ensureNoRoutineScheduleConflict = async (
     where: { quranic_period_id: quranicPeriodId },
     select: {
       id: true,
-      shift_id: true,
+      shift: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
     },
@@ -33,17 +33,17 @@ const ensureNoRoutineScheduleConflict = async (
   const shiftIds = [
     ...new Set(
       affectedRoutines
-        .map(({ shift_id }) => shift_id)
-        .filter((shiftId): shiftId is string => shiftId !== null),
+        .map(({ shift }) => shift)
+        .filter((shift): shift is Shift => shift !== null),
     ),
   ];
   const classOverlapFilter = affectedRoutines.some(
-    (routine) => routine.shift_id === null,
+    (routine) => routine.shift === null,
   )
     ? { class: { some: { id: { in: classIds } } } }
     : {
         class: { some: { id: { in: classIds } } },
-        OR: [{ shift_id: { in: shiftIds } }, { shift_id: null }],
+        OR: [{ shift: { in: shiftIds } }, { shift: null }],
       };
   const otherRoutines = await transaction.classRoutine.findMany({
     where: {
@@ -54,7 +54,7 @@ const ensureNoRoutineScheduleConflict = async (
     },
     select: {
       id: true,
-      shift_id: true,
+      shift: true,
       class: { select: { id: true } },
       teachers: { select: { id: true } },
       general_period: { select: { start_time: true, end_time: true } },
@@ -75,9 +75,9 @@ const ensureNoRoutineScheduleConflict = async (
         routine.teachers.some(({ id }) =>
           otherRoutine.teachers.some((teacher) => teacher.id === id),
         ) ||
-        ((routine.shift_id === null ||
-          otherRoutine.shift_id === null ||
-          routine.shift_id === otherRoutine.shift_id) &&
+        ((routine.shift === null ||
+          otherRoutine.shift === null ||
+          routine.shift === otherRoutine.shift) &&
           routine.class.some(({ id }) =>
             otherRoutine.class.some((classRecord) => classRecord.id === id),
           ));

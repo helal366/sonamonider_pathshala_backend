@@ -194,7 +194,7 @@ const createUser = async (
               student: { connect: { id: subProfileId } },
               class: { connect: { id: activeClassID } },
               academic_year: { connect: { id: academicYear.id } },
-              shift: { connect: { id: existingShift?.id } },
+              shift: existingShift,
               roll_number: rollNumber,
               start_date: academicStartDate,
               end_date: academicEndDate,

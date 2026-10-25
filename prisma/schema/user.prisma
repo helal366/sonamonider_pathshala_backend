@@ -76,9 +76,6 @@ model User {
   created_student_result StudentResult[] @relation("student_result_created_by")
   updated_student_result StudentResult[] @relation("student_result_updated_by")
 
-  created_shifts Shift[] @relation("shift_created_by")
-  updated_shifts Shift[] @relation("shift_updated_by")
-
   created_half_yearly_exam_mark HalfYearlyExamMark[] @relation("half_yearly_exam_mark_created_by")
   updated_half_yearly_exam_mark HalfYearlyExamMark[] @relation("half_yearly_exam_mark_updated_by")
 

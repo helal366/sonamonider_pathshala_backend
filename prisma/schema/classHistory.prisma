@@ -11,15 +11,14 @@ model ClassHistory {
   class_id String
   class    Class  @relation(fields: [class_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  shift_id String
-  shift    Shift  @relation(fields: [shift_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shift Shift
 
   academic_year_id String
   academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   roll_number Int
-  section Section
-  version Version
+  section     Section
+  version     Version
 
   quranic_subject_id String
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -35,7 +34,7 @@ model ClassHistory {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([roll_number, class_id, shift_id, academic_year_id], name: "roll_class_shift_year_unique")
+  @@unique([roll_number, class_id, shift, academic_year_id], name: "roll_class_shift_year_unique", map: "class_history_roll_number_class_id_shift_academic_year_key")
   @@index([start_date])
   @@index([end_date])
   @@index([student_id, end_date])

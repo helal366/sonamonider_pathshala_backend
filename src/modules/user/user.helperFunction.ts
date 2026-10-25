@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Prisma, Role, Section } from "#db-client";
+import { Prisma, Role, Section, Shift } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 
@@ -381,23 +381,21 @@ const checkStudentCreationRequirements = async (
   }
 
   // CHECK THE SHIFT NAME
-  const cleanShiftName = shift_name?.trim().toUpperCase();
-  const existingShift = await transaction.shift.findUnique({
-    where: { shift_name: cleanShiftName },
-    select: { id: true, shift_name: true },
-  });
+  const existingShift = Object.values(Shift).find(
+    (shift) => shift === shift_name?.trim().toUpperCase(),
+  );
   if (!existingShift) {
     throw new AppError(
-      `Provided shift ${cleanShiftName} is not found.`,
-      StatusCodes.NOT_FOUND,
+      `Provided shift ${shift_name} is invalid.`,
+      StatusCodes.BAD_REQUEST,
     );
   }
-  if (cleanShiftName === "MORNING" && section !== Section.MADRASHA) {
+  if (existingShift === Shift.MORNING && section !== Section.MADRASHA) {
     throw new AppError(
       "Morning shift only allows MADRASHA section.",
       StatusCodes.BAD_REQUEST,
     );
-  } else if (cleanShiftName === "DAY" && section !== Section.SCHOOL) {
+  } else if (existingShift === Shift.DAY && section !== Section.SCHOOL) {
     throw new AppError(
       "Day shift only allows SCHOOL section.",
       StatusCodes.BAD_REQUEST,
