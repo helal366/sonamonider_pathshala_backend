@@ -355,6 +355,12 @@ const checkStudentCreationRequirements = async (
     );
   }
   const cleanYearName = year_name.trim();
+  if (!/^\d{4}$/.test(cleanYearName)) {
+    throw new AppError(
+      "Academic year must be a four-digit year.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
   const academicStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
   const academicEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
 
@@ -403,8 +409,26 @@ const checkStudentCreationRequirements = async (
   }
 
   // CHECK ROLL NUMBER
-  if (!roll_number) {
-    throw new AppError("Roll number is required.", StatusCodes.NOT_FOUND);
+  if (!roll_number || !Number.isInteger(roll_number) || roll_number < 1) {
+    throw new AppError(
+      "Roll number must be a positive integer.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  const rollNumberConflict = await transaction.classHistory.findFirst({
+    where: {
+      roll_number,
+      class_id: active_class_id,
+      shift: existingShift,
+      academic_year_id: academicYear.id,
+    },
+    select: { id: true },
+  });
+  if (rollNumberConflict) {
+    throw new AppError(
+      `Roll number ${roll_number} is already occupied in this class, shift, and academic year.`,
+      StatusCodes.CONFLICT,
+    );
   }
 
   // CHECK QURANIC CLASS NAME
@@ -437,6 +461,12 @@ const checkStudentCreationRequirements = async (
     throw new AppError(
       `Minimum one quranic class period ID is required.`,
       StatusCodes.NOT_FOUND,
+    );
+  }
+  if (new Set(quranic_class_period_ids).size !== quranic_class_period_ids.length) {
+    throw new AppError(
+      "Quranic class period IDs must be unique.",
+      StatusCodes.BAD_REQUEST,
     );
   }
   await Promise.all(

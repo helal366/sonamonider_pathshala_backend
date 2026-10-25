@@ -29,6 +29,11 @@ import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js
 import { bookListRouter } from "./modules/bookList/bookList.route.js";
 import { arabicPeriodRouter } from "./modules/arabicPeriod/arabicPeriod.route.js";
 import { arabicSubjectRouter } from "./modules/arabicSubject/arabicSubject.route.js";
+import { coCurricularActivitiesMarkRouter } from "./modules/coCurricularActivitiesMark/coCurricularActivitiesMark.route.js";
+import { moralMannersEvaluationMarkRouter } from "./modules/moralMannersEvaluationMark/moralMannersEvaluationMark.route.js";
+import { monthlyExamMarkRouter } from "./modules/monthlyExamMark/monthlyExamMark.route.js";
+import { halfYearlyExamMarkRouter } from "./modules/halfYearlyExamMark/halfYearlyExamMark.route.js";
+import { annualExamMarkRouter } from "./modules/annualExamMark/annualExamMark.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -61,6 +66,17 @@ app.use("/api/v1/smps/staff_payment", staffPaymentRouter);
 app.use("/api/v1/smps/book_list", bookListRouter);
 app.use("/api/v1/smps/arabic_period", arabicPeriodRouter);
 app.use("/api/v1/smps/arabic_subject", arabicSubjectRouter);
+app.use(
+  "/api/v1/smps/co_curricular_activities_mark",
+  coCurricularActivitiesMarkRouter,
+);
+app.use(
+  "/api/v1/smps/moral_manners_evaluation_mark",
+  moralMannersEvaluationMarkRouter,
+);
+app.use("/api/v1/smps/monthly_exam_mark", monthlyExamMarkRouter);
+app.use("/api/v1/smps/half_yearly_exam_mark", halfYearlyExamMarkRouter);
+app.use("/api/v1/smps/annual_exam_mark", annualExamMarkRouter);
 
 // basic route
 app.get("/", (req: Request, res: Response) => {

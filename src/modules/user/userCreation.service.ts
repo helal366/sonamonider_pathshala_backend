@@ -215,9 +215,13 @@ const createUser = async (
             entity_name: "classHistory",
             old_value: Prisma.JsonNull,
             new_value: {
+              student_id: subProfileId,
               class_id: activeClassID,
+              academic_year_id: academicYear.id,
               start_date: academicStartDate.toISOString(),
               end_date: academicEndDate.toISOString(),
+              roll_number: rollNumber,
+              shift: existingShift,
               section,
               version,
               quranic_class_id: existingQuranicClass.id,

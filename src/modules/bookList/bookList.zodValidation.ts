@@ -1,4 +1,4 @@
-import { Section } from "#db-client";
+import { Section, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // =====================================================================
@@ -25,7 +25,18 @@ const createBookListZodSchema = z4.object({
     .trim()
     .min(1, "Publisher is required."),
   section: z4.enum(Section),
-  class_id: z4.uuid("Invalid class ID format."),
+  class_name: z4.string({
+    error: (issue)=>
+      issue.input === undefined
+    ? "Class name is required."
+    :"Invalid class name format."
+  }).trim().min(1, "Class name is required."),
+  version: z4.enum(Version, {
+    error: (issue) =>
+      issue.input === undefined
+        ? "Version is required."
+        : "Invalid version format.",
+  }),
 });
 export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;
 
@@ -49,20 +60,62 @@ export type TUpdateBookListSingleFieldParamsZodSchema = z4.infer<
   typeof updateBookListSingleFieldParamsZodSchema
 >;
 
-const BookListFields = ["book_name", "publisher"] as const;
-
-const updateBookListSingleFieldZodSchema = z4.object({
-  field: z4.enum(BookListFields, "Invalid book list field format."),
-  value: z4
-    .string({
+const updateBookListSingleFieldZodSchema = z4.discriminatedUnion("field", [
+  z4.object({
+    field: z4.literal("book_name"),
+    value: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Book name is required."
+            : "Invalid book name format.",
+      })
+      .trim()
+      .min(1, "Book name is required."),
+  }),
+  z4.object({
+    field: z4.literal("publisher"),
+    value: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Publisher is required."
+            : "Invalid publisher format.",
+      })
+      .trim()
+      .min(1, "Publisher is required."),
+  }),
+  z4.object({
+    field: z4.literal("class_name"),
+    value: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Class name is required."
+            : "Invalid class name format.",
+      })
+      .trim()
+      .min(1, "Class name is required."),
+  }),
+  z4.object({
+    field: z4.literal("section"),
+    value: z4.enum(Section, {
       error: (issue) =>
         issue.input === undefined
-          ? "Field value is required"
-          : "Invalid field value format.",
-    })
-    .trim()
-    .min(1, "Field value is required"),
-});
+          ? "Section is required."
+          : "Invalid section format.",
+    }),
+  }),
+  z4.object({
+    field: z4.literal("version"),
+    value: z4.enum(Version, {
+      error: (issue) =>
+        issue.input === undefined
+          ? "Version is required."
+          : "Invalid version format.",
+    }),
+  }),
+]);
 export type TUpdateBookListSingleFieldZodSchema = z4.infer<
   typeof updateBookListSingleFieldZodSchema
 >;

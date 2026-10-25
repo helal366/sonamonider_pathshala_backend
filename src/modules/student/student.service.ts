@@ -48,9 +48,6 @@ const studentReadmission = async (
     );
   }
 
-  // Calculate strict calendar dates using our utility helper
-  const targetStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
-  const targetEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
   return prisma.$transaction(
     async (transaction) => {
       const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
@@ -95,42 +92,7 @@ const studentReadmission = async (
         );
       }
 
-      // 3. Enforce bulletproof multi-admission database guardrails
-      const rollConflictCheck = await transaction.classHistory.findFirst({
-        where: {
-          roll_number,
-          class_id: target_class_id,
-          shift: cleanShiftName,
-          academic_year_id: targetYear.id,
-        },
-      });
-
-      if (rollConflictCheck) {
-        throw new AppError(
-          `Roll number ${roll_number} is already occupied in this class, shift, and academic year.`,
-          StatusCodes.CONFLICT,
-        );
-      }
-
-      // 4. STEP A: UPDATE TARGET CLASS POINTER ON THE ROOT STUDENT PROFILE
-      const updatedStudent = await transaction.student.update({
-        where: { id: student_id },
-        data: {
-          active_class_id: target_class_id,
-          updated_by_id: loggedInUser.user_id,
-        },
-      });
-
-      auditRecords.push({
-        entity_id: student_id,
-        entity_name: "student",
-        action: "UPDATE",
-        changed_by_id: loggedInUser.user_id,
-        old_value: { active_class_id: studentProfile.active_class_id },
-        new_value: { active_class_id: target_class_id },
-      });
-
-      // 5. STEP B: SPAWN FRESH NEW YEAR CLASS HISTORY TRACKING ROW
+      // Validate and normalize all class-history inputs before changing the student.
       const studentsRequirementPayload = {
         transaction,
         active_class_id: payload.target_class_id,
@@ -149,13 +111,30 @@ const studentReadmission = async (
         academicYear,
         existingShift,
         rollNumber,
-        section, 
+        section,
         version,
         existingQuranicClass,
         quranicClassPeriodIDs,
       } = await userHelperFunction.checkStudentCreationRequirements(
         studentsRequirementPayload,
       );
+
+      const updatedStudent = await transaction.student.update({
+        where: { id: student_id },
+        data: {
+          active_class_id: target_class_id,
+          updated_by_id: loggedInUser.user_id,
+        },
+      });
+
+      auditRecords.push({
+        entity_id: student_id,
+        entity_name: "student",
+        action: "UPDATE",
+        changed_by_id: loggedInUser.user_id,
+        old_value: { active_class_id: studentProfile.active_class_id },
+        new_value: { active_class_id: target_class_id },
+      });
 
       const freshClassHistory = await transaction.classHistory.create({
         data: {
@@ -184,9 +163,13 @@ const studentReadmission = async (
         entity_name: "classHistory",
         old_value: Prisma.JsonNull,
         new_value: {
+          student_id,
           class_id: activeClassID,
+          academic_year_id: academicYear.id,
           start_date: academicStartDate.toISOString(),
           end_date: academicEndDate.toISOString(),
+          roll_number: rollNumber,
+          shift: existingShift,
           section,
           version,
           quranic_class_id: existingQuranicClass.id,

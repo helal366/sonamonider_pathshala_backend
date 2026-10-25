@@ -84,19 +84,27 @@ const userCreateZodSchema = z4
       .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
 
     active_class_id: z4.string().trim().optional(),
-    year_name: z4.string().trim().optional(),
+    year_name: z4
+      .string()
+      .trim()
+      .regex(/^\d{4}$/, "Academic year must be a four-digit year.")
+      .optional(),
     shift_name: z4.enum(Shift).optional(),
     section: z4.enum(Section).optional(),
     version: z4.enum(Version).optional(),
     roll_number: z4.coerce
       .number("Invalid roll number.")
       .int("Roll number must be an integer.")
+      .min(1, "Roll number must be greater than 0.")
       .optional(),
     quranic_class_name: z4.string().trim().optional(),
     quranic_class_period_ids: z4
       .array(
         z4.uuid({ error: "Each period ID must be a valid UUID string format." })
       )
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: "Quranic class period IDs must be unique.",
+      })
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -146,6 +154,23 @@ const userCreateZodSchema = z4
           message: "Section is required for student",
           path: ["section"]
         })
+      }
+      if (
+        data.shift_name === Shift.MORNING &&
+        data.section !== Section.MADRASHA
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Morning shift only allows MADRASHA section.",
+          path: ["section"],
+        });
+      }
+      if (data.shift_name === Shift.DAY && data.section !== Section.SCHOOL) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Day shift only allows SCHOOL section.",
+          path: ["section"],
+        });
       }
       if(!data.quranic_class_name ||data.quranic_class_name.trim() === ""){
         ctx.addIssue({
