@@ -3,9 +3,12 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 import {
+  TAssignGradeGroupTeacherZodSchema,
+  TDisconnectGradeGroupTeacherZodSchema,
   TUpdateAcademicStaffFieldZodSchema,
   TUpdateSubjectForSubjectTeacherZodSchema,
 } from "./academicStaff.zodValidation";
+import { Prisma } from "#db-client";
 
 // ================================================
 // UPDATE SUBJECT FOR SUBJECT TEAHER SERVICE LAYER
@@ -164,7 +167,291 @@ const updateAcademicStaffField = async (
     return updated;
   });
 };
+
+// =============================================
+// ASSIGN GRADE GROUP TEACHER SERVICE LAYER
+// =============================================
+const assignGradeGroupTeacher = async (
+  payload: TAssignGradeGroupTeacherZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const { class_id, academicStaff_id } = payload;
+  return await prisma.$transaction(async (tx) => {
+    // FIND CLASS
+    const existingClass = await tx.class.findUnique({
+      where: { id: class_id },
+      select: {
+        class_name: true,
+        grade_group_teacher_id: true,
+        grade_group_teacher: {
+          include: {
+            user_primary_data: {
+              select: {
+                full_name: true,
+                mobile_number: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // CHECK CLASS EXISTANCE
+    if (!existingClass) {
+      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+    }
+    // CHECK GRADE OR GROUP TEACHER ASSIGNED TO THE CLASS OR NOT.
+    if (existingClass.grade_group_teacher_id) {
+      throw new AppError(
+        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.user_primary_data.full_name} (${existingClass.grade_group_teacher?.user_primary_data.mobile_number})`,
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    // FIND ACADEMIC STAFF
+    const existingAcademicStaff = await tx.academicStaff.findUnique({
+      where: { id: academicStaff_id },
+      select: {
+        grade_group_teacher_class: {
+          select: {
+            id: true,
+            class_name: true,
+          },
+        },
+        current_position: {
+          select: {
+            position_name: true,
+          },
+        },
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            active_status: true,
+            is_deleted: true,
+          },
+        },
+      },
+    });
+
+    // CHECK ACADEMIC STAFF EXISTANCE
+    if (!existingAcademicStaff) {
+      throw new AppError(`Teacher not found.`, StatusCodes.NOT_FOUND);
+    }
+    // CHECK ACADEMIC STAFF ACTIVITY
+    const isAcademicStaffActive =
+      existingAcademicStaff?.user_primary_data.active_status === "ACTIVE";
+    const isAcademicStaffDeleted =
+      existingAcademicStaff?.user_primary_data.is_deleted;
+    if (
+      !existingAcademicStaff ||
+      !isAcademicStaffActive ||
+      isAcademicStaffDeleted
+    ) {
+      throw new AppError(
+        `Teacher not available. Check activity.`,
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    // CHECK THE ACADEMIC STAFF IS TEACHER ASSISTANT OR NOT
+    if (
+      existingAcademicStaff.current_position?.position_name ===
+      "TEACHER_ASSISTANT"
+    ) {
+      throw new AppError(
+        `TEACHER_ASSISTANT can not assign as Grade or Group teacher.`,
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    // CHECK THE TEACHER IS ALREADY ASSIGNNED AS GRADE OR GROUP TEACHER
+    const assignedClass =
+      existingAcademicStaff.grade_group_teacher_class?.class_name;
+    if (existingAcademicStaff.grade_group_teacher_class) {
+      throw new AppError(
+        `Teacher is already assigned as Grade/Group Teacher of ${assignedClass} class.`,
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    // ASSIGN AS GRADE OR GROUP TEACHER
+    const assigned = await tx.class.update({
+      where: { id: class_id },
+      data: {
+        grade_group_teacher: { connect: { id: academicStaff_id } },
+        updated_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await tx.auditLog.createMany({
+      data: [
+        {
+          entity_id: class_id,
+          entity_name: "class",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            grade_group_teacher_id: academicStaff_id,
+            grade_group_teacher: {
+              full_name: existingAcademicStaff.user_primary_data.full_name,
+              mobile_number:
+                existingAcademicStaff.user_primary_data.mobile_number,
+            },
+          },
+        },
+        {
+          entity_id: academicStaff_id,
+          entity_name: "academicStaff",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            grade_group_teacher_class: {
+              id: class_id,
+              class_name: existingClass.class_name,
+            },
+          },
+        },
+      ],
+    });
+
+    return assigned;
+  });
+};
+
+// =============================================
+// DISCONNECT GRADE GROUP TEACHER SERVICE LAYER
+// =============================================
+const disconnectGradeGroupTeacher = async (
+  payload: TDisconnectGradeGroupTeacherZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+   const { class_id, academicStaff_id } = payload;
+   return await prisma.$transaction(async (tx) => {
+    // FIND CLASS
+    const existingClass = await tx.class.findUnique({
+      where: { id: class_id },
+      select: {
+        class_name: true,
+        grade_group_teacher_id: true,
+        grade_group_teacher: {
+          select: {
+            id: true,
+            user_primary_data: {
+              select: {
+                full_name: true,
+                mobile_number: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!existingClass) {
+      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+    }
+    // CHECK IF CLASS HAS A GRADE/GROUP TEACHER
+    if (!existingClass.grade_group_teacher_id) {
+      throw new AppError(
+        `No Grade or Group teacher is currently assigned to this class.`,
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    //CHECK WHETHER PROVIDED ACADEMIC STAFF IS THE CURRENT GRADE/GROUP TEACHER
+    if (existingClass.grade_group_teacher_id !== academicStaff_id) {
+      throw new AppError(
+        `The provided teacher is not in assign as Grade or Group teacher of this class.`,
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+// FIND ACADEMIC STAFF
+    const currentGradeGroupTeacher = await tx.academicStaff.findUnique({
+      where: { id: academicStaff_id },
+      select: {
+        id: true,
+        user_primary_data: {
+          select: {
+            full_name: true,
+            mobile_number: true,
+            active_status: true,
+            is_deleted: true,
+          },
+        },
+        grade_group_teacher_class: {
+          select: { id: true, class_name: true },
+        },
+      },
+    });
+    if (!currentGradeGroupTeacher) {
+      throw new AppError(
+        `Provided current Grade or Group teacher not found.`,
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    // CHECK ACTIVITY
+    const teacherActivity =
+      currentGradeGroupTeacher.user_primary_data.active_status === "ACTIVE";
+    const teacherIsDeleted =
+      currentGradeGroupTeacher.user_primary_data.is_deleted;
+    if (!teacherActivity || teacherIsDeleted) {
+      throw new AppError(
+        `The teacher is unauthorized. Check activity.`,
+        StatusCodes.UNAUTHORIZED,
+      );
+    };
+    // UPDATE CLASS
+    const updated = await tx.class.update({
+      where: { id: class_id },
+      data: {
+        grade_group_teacher_id: null,
+        updated_by_id: loggedInUser.user_id,
+      },
+    });
+
+    // CREATE AUDIT LOG
+    await tx.auditLog.createMany({
+      data: [
+        {
+          entity_id: class_id,
+          entity_name: "class",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: {
+            grade_group_teacher_id: academicStaff_id,
+            grade_group_teacher: {
+              full_name: currentGradeGroupTeacher.user_primary_data.full_name,
+              mobile_number:
+                currentGradeGroupTeacher.user_primary_data.mobile_number,
+            },
+          },
+          new_value: Prisma.JsonNull,
+        },
+        {
+          entity_id: academicStaff_id,
+          entity_name: "academicStaff",
+          changed_by_id: loggedInUser.user_id,
+          action: "UPDATE",
+          old_value: {
+            grade_group_teacher_class: {
+              id: class_id,
+              class_name: existingClass.class_name,
+            },
+          },
+          new_value: Prisma.JsonNull,
+        },
+      ],
+    });
+    return updated;
+   })
+};
 export const academicStaffServices = {
   updateSubjectForSubjectTeacher,
   updateAcademicStaffField,
+  assignGradeGroupTeacher,
+  disconnectGradeGroupTeacher,
 };

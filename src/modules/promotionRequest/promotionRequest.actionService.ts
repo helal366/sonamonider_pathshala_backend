@@ -865,6 +865,8 @@ const actionPromotionRequest = async (
       // Create audit log
       await tx.auditLog.createMany({ data: auditRecords });
     }
+  },{
+    timeout:30000
   });
 };
 export const promotionRequestActionServices = {

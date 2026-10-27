@@ -1226,58 +1226,6 @@
             }
           },
           "response": []
-        },
-        {
-          "name": "Assign Grade Group Teacher",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": "{{baseUrl}}/api/v1/smps/class/assign_grade_group_teacher",
-            "auth": {
-              "type": "noauth"
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Disconnect Grade Group Teacher",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": "{{baseUrl}}/api/v1/smps/classdisconnect_grade_group_teacher",
-            "auth": {
-              "type": "noauth"
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
         }
       ]
     },
@@ -1482,6 +1430,58 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"field\": \"teaching_experience_year\",\n  \"value\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/assign_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/disconnect_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

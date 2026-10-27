@@ -50,23 +50,4 @@ router.get(
   classController.getAllClassNames,
 );
 
-// =============================================
-// ASSIGN GRADE GROUP TEACHER ROUTE
-// =============================================
-router.patch(
-  "/assign_grade_group_teacher",
-  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodSchema(classZodSchema.assignGradeGroupTeacherZodSchema),
-  classController.assignGradeGroupTeacher,
-);
-
-// =============================================
-// DISCONNECT GRADE GROUP TEACHER ROUTE
-// =============================================
-router.patch(
-  "disconnect_grade_group_teacher",
-  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodSchema(classZodSchema.disconnectGradeGroupTeacherZodSchema),
-  classController.disconnectGradeGroupTeacher,
-);
 export const classRouter: Router = router;

@@ -82,6 +82,9 @@ const getAllClassNames = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// =============================================
+// ASSIGN GRADE GROUP TEACHER CONTROLLER
+// =============================================
 const assignGradeGroupTeacher = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);

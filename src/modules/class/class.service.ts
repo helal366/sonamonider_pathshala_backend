@@ -184,8 +184,6 @@ const assignGradeGroupTeacher = async (
     const existingAcademicStaff = await tx.academicStaff.findUnique({
       where: { id: academicStaff_id },
       select: {
-        full_name: true,
-        mobile_number: true,
         grade_group_teacher_class: {
           select: {
             id: true,
@@ -198,6 +196,8 @@ const assignGradeGroupTeacher = async (
         },
         user_primary_data: {
           select: {
+            full_name: true,
+            mobile_number: true,
             active_status: true,
             is_deleted: true,
           },
@@ -254,8 +254,9 @@ const assignGradeGroupTeacher = async (
           new_value: {
             grade_group_teacher_id: academicStaff_id,
             grade_group_teacher: {
-              full_name: existingAcademicStaff.full_name,
-              mobile_number: existingAcademicStaff.mobile_number,
+              full_name: existingAcademicStaff.user_primary_data.full_name,
+              mobile_number:
+                existingAcademicStaff.user_primary_data.mobile_number,
             },
           },
         },
@@ -297,8 +298,12 @@ const disconnectGradeGroupTeacher = async (
         grade_group_teacher: {
           select: {
             id: true,
-            full_name: true,
-            mobile_number: true,
+            user_primary_data: {
+              select: {
+                full_name: true,
+                mobile_number: true,
+              },
+            },
           },
         },
       },
@@ -327,10 +332,13 @@ const disconnectGradeGroupTeacher = async (
       where: { id: academicStaff_id },
       select: {
         id: true,
-        full_name: true,
-        mobile_number: true,
         user_primary_data: {
-          select: { active_status: true, is_deleted: true },
+          select: {
+            full_name: true,
+            mobile_number: true,
+            active_status: true,
+            is_deleted: true,
+          },
         },
         grade_group_teacher_class: {
           select: { id: true, class_name: true },
@@ -375,8 +383,9 @@ const disconnectGradeGroupTeacher = async (
           old_value: {
             grade_group_teacher_id: academicStaff_id,
             grade_group_teacher: {
-              full_name: currentGradeGroupTeacher.full_name,
-              mobile_number: currentGradeGroupTeacher.mobile_number,
+              full_name: currentGradeGroupTeacher.user_primary_data.full_name,
+              mobile_number:
+                currentGradeGroupTeacher.user_primary_data.mobile_number,
             },
           },
           new_value: Prisma.JsonNull,

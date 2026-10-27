@@ -5,10 +5,15 @@ import { academicStaffServices } from "./academicStaff.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
+    TAssignGradeGroupTeacherZodSchema,
+    TDisconnectGradeGroupTeacherZodSchema,
     TUpdateAcademicStaffFieldZodSchema,
     TUpdateSubjectForSubjectTeacherZodSchema,
 } from "./academicStaff.zodValidation";
 
+// ================================================
+// UPDATE SUBJECT FOR SUBJECT TEAHER CONTROLLER
+// ================================================
 const updateSubjectForSubjectTeacher = catchAsync(async(req: Request, res: Response)=>{
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TUpdateSubjectForSubjectTeacherZodSchema = req.body;
@@ -23,6 +28,9 @@ const updateSubjectForSubjectTeacher = catchAsync(async(req: Request, res: Respo
     })
 });
 
+// ================================================
+// UPDATE ACADEMIC STAFF FIELD CONTROLLER
+// ================================================
 const updateAcademicStaffField = catchAsync(async(req: Request, res: Response)=>{
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TUpdateAcademicStaffFieldZodSchema = req.body;
@@ -37,7 +45,44 @@ const updateAcademicStaffField = catchAsync(async(req: Request, res: Response)=>
     })
 });
 
+// =============================================
+// ASSIGN GRADE GROUP TEACHER CONTROLLER
+// =============================================
+const assignGradeGroupTeacher= catchAsync(async(req: Request, res: Response)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload: TAssignGradeGroupTeacherZodSchema = req.body;
+        const result = await academicStaffServices.assignGradeGroupTeacher(
+          payload,
+          loggedInUser,
+        );
+        sendResponse(res, {
+          success: true,
+          statusCode: StatusCodes.OK,
+          message: `Grade or Group teacher assigned successfully.`,
+          data: result,
+        });
+});
+
+// =============================================
+// DISCONNECT GRADE GROUP TEACHER CONTROLLER
+// =============================================
+const disconnectGradeGroupTeacher= catchAsync(async(req: Request, res: Response)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload: TDisconnectGradeGroupTeacherZodSchema = req.body;
+        const result = await academicStaffServices.disconnectGradeGroupTeacher(
+          payload,
+          loggedInUser,
+        );
+        sendResponse(res, {
+          success: true,
+          statusCode: StatusCodes.OK,
+          message: `Grade or Group teacher disconnected successfully.`,
+          data: result,
+        });
+});
 export const academicStaffController = {
     updateSubjectForSubjectTeacher,
     updateAcademicStaffField,
+    assignGradeGroupTeacher,
+    disconnectGradeGroupTeacher
 }
