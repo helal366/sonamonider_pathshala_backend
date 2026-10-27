@@ -62,4 +62,12 @@ await prisma.$transaction(async (tx) => {
 
 console.timeEnd("Total Transaction Time");
 ```
-
+## For Avro bangla
+```
+pkill code
+ibus engine                // ibus-avro
+echo $GTK_IM_MODULE
+echo $QT_IM_MODULE
+echo $XMODIFIERS
+/usr/bin/code
+```

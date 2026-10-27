@@ -26,7 +26,7 @@ const createUser = async (
     position_name,
     role_name,
     joining_date,
-    ...rest
+    gender,
   } = payload;
 
   const cleanRole = role_name.trim().toUpperCase() as TCleanRolesUserCreation;
@@ -73,9 +73,6 @@ const createUser = async (
         const { profileData, targetEntityName } =
           userHelperFunction.buildDynamicProfileData({
             cleanRole,
-            full_name,
-            mobile_number,
-            email,
             positionId: positionExists.id,
             loggedInUserId: loggedInUser.user_id,
             active_class_id: payload.active_class_id,
@@ -87,7 +84,31 @@ const createUser = async (
             mobile_number,
             email,
             user_name,
-            ...rest,
+            gender,
+            ...(payload.blood_group !== undefined && {
+              blood_group: payload.blood_group,
+            }),
+            ...(payload.date_of_birth !== undefined && {
+              date_of_birth: payload.date_of_birth,
+            }),
+            ...(payload.height_in_cm !== undefined && {
+              height_in_cm: payload.height_in_cm,
+            }),
+            ...(payload.weight_in_kg !== undefined && {
+              weight_in_kg: payload.weight_in_kg,
+            }),
+            ...(payload.religion !== undefined && {
+              religion: payload.religion,
+            }),
+            ...(payload.nationality !== undefined && {
+              nationality: payload.nationality,
+            }),
+            ...(payload.birth_certificate_number !== undefined && {
+              birth_certificate_number: payload.birth_certificate_number,
+            }),
+            ...(payload.nid_number !== undefined && {
+              nid_number: payload.nid_number,
+            }),
             ...profileData,
             current_role: cleanRole,
 

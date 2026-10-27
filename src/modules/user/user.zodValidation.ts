@@ -79,9 +79,14 @@ const userCreateZodSchema = z4
         error: (issue) =>
           issue.input === undefined
             ? "Promotion effective date is required."
-            : "Invalid date format. Expected an ISO string.",
+            : "Invalid date format. Expected YYYY-MM-DD or an ISO datetime.",
       })
-      .check(z4.iso.datetime("Invalid date format. Expected an ISO string.")),
+      .refine(
+        (value) =>
+          z4.iso.date().safeParse(value).success ||
+          z4.iso.datetime().safeParse(value).success,
+        "Invalid date format. Expected YYYY-MM-DD or an ISO datetime.",
+      ),
 
     active_class_id: z4.string().trim().optional(),
     year_name: z4

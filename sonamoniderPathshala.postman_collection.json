@@ -7,27 +7,102 @@
     "description": "API requests grouped by module. Set the token variable to the access token returned by the login request for protected routes."
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000" },
-    { "key": "token", "value": "" },
-    { "key": "userId", "value": "00000000-0000-4000-8000-000000000001" },
-    { "key": "classId", "value": "00000000-0000-4000-8000-000000000002" },
-    { "key": "academicYearId", "value": "00000000-0000-4000-8000-000000000003" },
-    { "key": "academicResultId", "value": "00000000-0000-4000-8000-000000000004" },
-    { "key": "staffId", "value": "00000000-0000-4000-8000-000000000005" },
-    { "key": "fatherDetailsId", "value": "00000000-0000-4000-8000-000000000006" },
-    { "key": "motherDetailsId", "value": "00000000-0000-4000-8000-000000000007" },
-    { "key": "shiftId", "value": "00000000-0000-4000-8000-000000000008" },
-    { "key": "studentId", "value": "00000000-0000-4000-8000-000000000009" },
-    { "key": "academicStaffId", "value": "00000000-0000-4000-8000-000000000010" },
-    { "key": "managementStaffId", "value": "00000000-0000-4000-8000-000000000014" },
-    { "key": "studentFeeRateId", "value": "00000000-0000-4000-8000-000000000015" },
-    { "key": "studentFeePaymentId", "value": "00000000-0000-4000-8000-000000000016" },
-    { "key": "staffSalaryRateId", "value": "00000000-0000-4000-8000-000000000017" },
-    { "key": "staffPaymentId", "value": "00000000-0000-4000-8000-000000000018" },
-    { "key": "quranicClassId", "value": "00000000-0000-4000-8000-000000000011" },
-    { "key": "quranicClassPeriodId", "value": "00000000-0000-4000-8000-000000000012" },
-    { "key": "promotionRequestId", "value": "00000000-0000-4000-8000-000000000013" },
-    { "key": "email", "value": "user@example.com" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "00000000-0000-4000-8000-000000000001"
+    },
+    {
+      "key": "classId",
+      "value": "00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "key": "academicYearId",
+      "value": "00000000-0000-4000-8000-000000000003"
+    },
+    {
+      "key": "academicResultId",
+      "value": "00000000-0000-4000-8000-000000000004"
+    },
+    {
+      "key": "staffId",
+      "value": "00000000-0000-4000-8000-000000000005"
+    },
+    {
+      "key": "fatherDetailsId",
+      "value": "00000000-0000-4000-8000-000000000006"
+    },
+    {
+      "key": "motherDetailsId",
+      "value": "00000000-0000-4000-8000-000000000007"
+    },
+    {
+      "key": "shiftId",
+      "value": "00000000-0000-4000-8000-000000000008"
+    },
+    {
+      "key": "studentId",
+      "value": "00000000-0000-4000-8000-000000000009"
+    },
+    {
+      "key": "academicStaffId",
+      "value": "00000000-0000-4000-8000-000000000010"
+    },
+    {
+      "key": "managementStaffId",
+      "value": "00000000-0000-4000-8000-000000000014"
+    },
+    {
+      "key": "studentFeeRateId",
+      "value": "00000000-0000-4000-8000-000000000015"
+    },
+    {
+      "key": "studentFeePaymentId",
+      "value": "00000000-0000-4000-8000-000000000016"
+    },
+    {
+      "key": "staffSalaryRateId",
+      "value": "00000000-0000-4000-8000-000000000017"
+    },
+    {
+      "key": "staffPaymentId",
+      "value": "00000000-0000-4000-8000-000000000018"
+    },
+    {
+      "key": "quranicClassId",
+      "value": "00000000-0000-4000-8000-000000000011"
+    },
+    {
+      "key": "quranicClassPeriodId",
+      "value": "00000000-0000-4000-8000-000000000012"
+    },
+    {
+      "key": "promotionRequestId",
+      "value": "00000000-0000-4000-8000-000000000013"
+    },
+    {
+      "key": "email",
+      "value": "user@example.com"
+    },
+    {
+      "key": "coCurricularActivitiesMarkId",
+      "value": "00000000-0000-4000-8000-000000000019"
+    },
+    {
+      "key": "moralMannersEvaluationMarkId",
+      "value": "00000000-0000-4000-8000-000000000020"
+    },
+    {
+      "key": "bookListId",
+      "value": "00000000-0000-4000-8000-000000000021"
+    }
   ],
   "item": [
     {
@@ -38,7 +113,10 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/"
+            "url": "{{baseUrl}}/",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
@@ -51,14 +129,25 @@
           "name": "Login",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_name\": \"USER_NAME_OR_MOBILE_NUMBER\",\n  \"user_password\": \"USER_PASSWORD\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/auth/login",
-            "auth": { "type": "noauth" }
+              "raw": "{\n  \"user_name\": \"01712345678\",\n  \"user_password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -66,14 +155,25 @@
           "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/auth/logout",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
               "raw": "{}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/auth/logout",
-            "auth": { "type": "noauth" }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
@@ -86,74 +186,129 @@
           "name": "Verify Email",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"123456\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/api/v1/smps/email/verify_email",
-            "auth": { "type": "noauth" }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Resend Email Verification OTP",
+          "name": "Resend Otp Email Verify",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/api/v1/smps/email/resend_otp_email_verify",
-            "auth": { "type": "noauth" }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Send Forgot Password OTP",
+          "name": "Send Otp Forget Password",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/api/v1/smps/email/send_otp_forget_password",
-            "auth": { "type": "noauth" }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Resend Forgot Password OTP",
+          "name": "Resend Otp Forget Password",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/api/v1/smps/email/resend_otp_forget_password",
-            "auth": { "type": "noauth" }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Verify Forgot Password Email",
+          "name": "Verify Email Forget Password",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/email/verify_email_forget_password",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"123456\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/email/verify_email_forget_password",
-            "auth": { "type": "noauth" }
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
@@ -161,22 +316,30 @@
     },
     {
       "name": "Users",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
       "item": [
         {
           "name": "Create User",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/create_user",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"gender\": \"MALE\",\n  \"email\": \"{{email}}\",\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\",\n  \"joining_date\": \"2026-01-01T00:00:00.000Z\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/create_user"
+              "raw": "{\n  \"full_name\": \"Test User\",\n  \"mobile_number\": \"01712345678\",\n  \"gender\": \"MALE\",\n  \"email\": \"test.user@example.com\",\n  \"position_name\": \"MANAGEMENT_STAFF\",\n  \"role_name\": \"MANAGEMENT\",\n  \"joining_date\": \"2026-10-27\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -184,71 +347,129 @@
           "name": "Change Password",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/change_password",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"current_password\": \"CURRENT_PASSWORD\",\n  \"new_password\": \"NEW_PASSWORD\",\n  \"confirm_password\": \"NEW_PASSWORD\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/change_password"
+              "raw": "{\n  \"current_password\": \"password123\",\n  \"new_password\": \"newpassword123\",\n  \"confirm_password\": \"newpassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Request Password Reset",
+          "name": "Forget Password",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{baseUrl}}/api/v1/smps/user/forget_password",
-            "auth": { "type": "noauth" }
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Change User Position",
+          "name": "Change Position",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/change_position",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"USER_FULL_NAME\",\n  \"mobile_number\": \"01712345678\",\n  \"position_name\": \"TEACHER\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/change_position"
+              "raw": "{\n  \"full_name\": \"Test User\",\n  \"mobile_number\": \"01712345678\",\n  \"position_name\": \"ACADEMIC_STAFF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update User Field as Admin",
+          "name": "Update User Single Field Admin",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_admin",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"full_name\",\n  \"value\": \"UPDATED_USER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_admin"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"field\": \"full_name\",\n  \"value\": \"Updated User\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update User Field as Super Admin",
-          "description": "The route currently validates this body with the admin-field schema; the payload shows the super-admin field shape expected by the endpoint.",
+          "name": "Update User Single Field Super Admin",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_super_admin",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"field\": \"active_status\",\n  \"value\": \"ACTIVE\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/update_user_single_field_super_admin"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"field\": \"is_mobile_verified\",\n  \"value\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -256,13 +477,25 @@
           "name": "Update User Name",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_name",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"user_name\": \"NEW_USER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/update_user_name"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"user_name\": \"01712345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -270,156 +503,190 @@
           "name": "Update User Password",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/update_user_password",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"user_password\": \"NEW_PASSWORD\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/update_user_password"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"user_password\": \"newpassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Users",
+          "name": "List Records",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/user"
+            "url": "{{baseUrl}}/api/v1/smps/user/",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Active Users",
+          "name": "Active Users",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/user/active_users"
+            "url": "{{baseUrl}}/api/v1/smps/user/active_users",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Inactive Users",
+          "name": "Inactive Users",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/user/inactive_users"
+            "url": "{{baseUrl}}/api/v1/smps/user/inactive_users",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Soft Deleted Users",
+          "name": "Soft Deleted Users",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/user/soft_deleted_users"
+            "url": "{{baseUrl}}/api/v1/smps/user/soft_deleted_users",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get User by ID",
+          "name": "Get Record",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/user/{{userId}}"
+            "url": "{{baseUrl}}/api/v1/smps/user/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Roles",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Address",
       "item": [
         {
-          "name": "Create Role",
+          "name": "Address/Create Address",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/address/create_address",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"role_name\": \"ACADEMIC\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/role/create_role"
+              "raw": "{\n  \"required_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"thana\": \"Dhanmondi\",\n  \"district\": \"Dhaka\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Role",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"current_role_name\": \"CURRENT_ROLE_NAME\",\n  \"new_role_name\": \"NEW_ROLE_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/role/update_role"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Role",
+          "name": "DELETE Address/Delete Address/Id",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"role_name\": \"ROLE_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/role/delete_role"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Roles",
+          "name": "PATCH Address/Update Address Field/Id",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/role/get_roles"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Role by ID",
-          "protocolProfileBehavior": { "disableBodyPruning": true },
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/address/update_address_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"id\": \"{{userId}}\"\n  }\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/role/get_role/{{userId}}"
+              "raw": "{\n  \"field\": \"thana\",\n  \"value\": \"Dhanmondi\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Positions",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Position",
       "item": [
         {
           "name": "Create Position",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/position/create_position",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"position_name\": \"TEACHER\",\n  \"role_name\": \"ACADEMIC\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/position/create_position"
+              "raw": "{\n  \"position_name\": \"ACADEMIC_STAFF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -427,13 +694,25 @@
           "name": "Update Position",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/position/update_position",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"present_position_name\": \"CURRENT_POSITION\",\n  \"update_position_name\": \"NEW_POSITION\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/position/update_position"
+              "raw": "{\n  \"present_position_name\": \"ACADEMIC_STAFF\",\n  \"update_position_name\": \"SENIOR_ACADEMIC_STAFF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -441,88 +720,40 @@
           "name": "Delete Position",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"position_name\": \"POSITION_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/position/delete_position"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/position/delete_position",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Positions",
+          "name": "Get Positions",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/position/get_positions"
+            "url": "{{baseUrl}}/api/v1/smps/position/get_positions",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Position by ID",
-          "protocolProfileBehavior": { "disableBodyPruning": true },
+          "name": "Get Record",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"params\": {\n    \"id\": \"{{userId}}\"\n  }\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/position/get_position/{{userId}}"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Addresses",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
-      "item": [
-        {
-          "name": "Create User Address",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"required_id\": \"{{userId}}\",\n  \"thana\": \"DHAKA\",\n  \"district\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/address/create_address"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete User Address",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address/{{userId}}"
-          },
-          "response": []
-        },
-        {
-          "name": "Update User Address Field",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"field\": \"district\",\n  \"value\": \"DHAKA\",\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/user/address/update_address_field/{{userId}}"
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/position/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
@@ -530,22 +761,30 @@
     },
     {
       "name": "Father Details",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
       "item": [
         {
           "name": "Create Father Details",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/father_details/create_father_details",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"father_name\": \"FATHER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/create_father_details"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"father_name\": \"Test Father\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -553,41 +792,68 @@
           "name": "Connect Father Details",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/father_details/connect_father_details",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"father_details_id\": \"{{fatherDetailsId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/connect_father_details"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"father_details_id\": \"00000000-0000-4000-8000-000000000006\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Disconnect Father Details",
+          "name": "PATCH Disconnect Father Details/Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/disconnect_father_details/{{userId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/father_details/disconnect_father_details/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Update Father Details Field",
+          "name": "Update Father Details Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/father_details/update_father_details_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"father_name\",\n  \"value\": \"FATHER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/father_details/update_father_details_field/{{userId}}"
+              "raw": "{\n  \"field\": \"father_name\",\n  \"value\": \"Updated Father\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
@@ -595,22 +861,30 @@
     },
     {
       "name": "Mother Details",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
       "item": [
         {
           "name": "Create Mother Details",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/create_mother_details",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"mother_name\": \"MOTHER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/create_mother_details"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"mother_name\": \"Test Mother\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -618,41 +892,68 @@
           "name": "Connect Mother Details",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/connect_mother_details",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"mother_details_id\": \"{{motherDetailsId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/connect_mother_details"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"mother_details_id\": \"00000000-0000-4000-8000-000000000007\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Mother Details Field",
+          "name": "Update Mother Details Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/update_mother_details_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"mother_name\",\n  \"value\": \"MOTHER_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/update_mother_details_field/{{userId}}"
+              "raw": "{\n  \"field\": \"mother_name\",\n  \"value\": \"Updated Mother\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Disconnect Mother Details",
+          "name": "PATCH Disconnect Mother Details/Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/mother_details/disconnect_mother_details/{{userId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/mother_details/disconnect_mother_details/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
@@ -660,100 +961,269 @@
     },
     {
       "name": "Spouse Information",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
       "item": [
         {
-          "name": "Create Spouse Information",
+          "name": "Create",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/create",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"full_name\": \"SPOUSE_FULL_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/spouse_information/create"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"full_name\": \"Test Spouse\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Spouse Information",
+          "name": "DELETE Delete/Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/spouse_information/delete/{{userId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/delete/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Update Spouse Information Field",
+          "name": "Update Spouse Information Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/spouse_information/update_spouse_information_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"full_name\",\n  \"value\": \"SPOUSE_FULL_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/spouse_information/update_spouse_information_field/{{userId}}"
+              "raw": "{\n  \"field\": \"full_name\",\n  \"value\": \"Updated Spouse\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Classes",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Academic Result",
       "item": [
         {
-          "name": "Create Class",
+          "name": "Create",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/create",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_name\": \"PLAYGROUP\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/class/create"
+              "raw": "{\n  \"required_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"role_name\": \"ACADEMIC\",\n  \"position_name\": \"ACADEMIC_STAFF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Class",
+          "name": "DELETE Delete/Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/class/delete/{{classId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Update Class Field",
+          "name": "Update Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"class_name\",\n  \"value\": \"NEW_CLASS_NAME\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/class/update/{{classId}}"
+              "raw": "{\n  \"field\": \"ssc_result\",\n  \"value\": \"GPA 5.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Classes",
+          "name": "List Records",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/class"
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET By Staff/Staff Id/:Staff Role Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/by_staff/{{staffId}}/TEACHER",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Class",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class/create",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_name\": \"Class One\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete/Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class/delete/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update/Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class/update/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"class_name\",\n  \"value\": \"Class Two\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class/",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
@@ -761,13 +1231,25 @@
           "name": "Assign Grade Group Teacher",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class/assign_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"academicStaff_id\": \"{{academicStaffId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/class/assign_grade_group_teacher"
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -775,36 +1257,56 @@
           "name": "Disconnect Grade Group Teacher",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/classdisconnect_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"academicStaff_id\": \"{{academicStaffId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/class/disconnect_grade_group_teacher"
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Students",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Student",
       "item": [
         {
-          "name": "Readmission",
+          "name": "Student Readmission",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student/student_readmission",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"target_class_id\": \"{{classId}}\",\n  \"target_shift_name\": \"MORNING\",\n  \"target_year_name\": \"2026-2027\",\n  \"roll_number\": 1,\n  \"arabic_literature\": false,\n  \"quranic_class_name\": \"BEGINNER\",\n  \"quranic_class_period_ids\": [\"{{quranicClassPeriodId}}\"]\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student/student_readmission"
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_class_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -812,150 +1314,123 @@
           "name": "Add Responsible Teacher",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student/add_responsible_teacher",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"teacher_full_name\": \"TEACHER_FULL_NAME\",\n  \"teacher_mobile_number\": \"01712345678\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student/add_responsible_teacher"
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"teacher_full_name\": \"Test Teacher\",\n  \"teacher_mobile_number\": \"01712345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Academic Years",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Academic Year",
       "item": [
         {
-          "name": "Create Academic Year",
+          "name": "Create",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/create",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_year_name\": \"2026-2027\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/create"
+              "raw": "{\n  \"academic_year_name\": \"2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Academic Year",
+          "name": "DELETE Delete/Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete/{{academicYearId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Update Academic Year Field",
+          "name": "Update Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"academic_year_name\",\n  \"value\": \"2027-2028\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field/{{academicYearId}}"
+              "raw": "{\n  \"field\": \"academic_year_name\",\n  \"value\": \"2027\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Academic Years",
+          "name": "List Records",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year"
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Academic Year by ID",
+          "name": "Get Record",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/{{academicYearId}}"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Academic Results",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
-      "item": [
-        {
-          "name": "Create Academic Result",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"required_id\": \"{{staffId}}\",\n  \"role_name\": \"ACADEMIC\",\n  \"position_name\": \"TEACHER\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/create"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Academic Result",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete/{{academicResultId}}"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Academic Result Field",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"field\": \"ssc_result\",\n  \"value\": \"A+\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field/{{academicResultId}}"
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Academic Results",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Academic Result by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{academicResultId}}"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Academic Result by Staff ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/by_staff/{{staffId}}/ACADEMIC"
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
@@ -963,298 +1438,848 @@
     },
     {
       "name": "Academic Staff",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
       "item": [
         {
-          "name": "Update Subject for Subject Teacher",
+          "name": "Update Subject/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"current_subject\": \"MATHEMATICS\",\n  \"new_subject\": \"SCIENCE\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject/{{academicStaffId}}"
+              "raw": "{\n  \"current_subject\": \"BENGALI\",\n  \"new_subject\": \"ENGLISH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Academic Staff Field",
+          "name": "Update Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"teaching_experience_year\",\n  \"value\": 5\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_field/{{academicStaffId}}"
+              "raw": "{\n  \"field\": \"teaching_experience_year\",\n  \"value\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Promotion Requests",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Promotion Request",
       "item": [
         {
           "name": "Create Promotion Request",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/create_promotion_request",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"old_position\": \"TEACHER\",\n  \"new_position\": \"SENIOR_TEACHER\",\n  \"old_role\": \"ACADEMIC\",\n  \"new_role\": \"ACADEMIC\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/create_promotion_request"
+              "raw": "{\n  \"user_id\": \"00000000-0000-4000-8000-000000000005\",\n  \"old_position\": \"ACADEMIC_STAFF\",\n  \"new_position\": \"SENIOR_ACADEMIC_STAFF\",\n  \"old_role\": \"ACADEMIC\",\n  \"new_role\": \"ACADEMIC\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Promotion Request",
+          "name": "Delete Promotion Request/:Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/delete_promotion_request/{{promotionRequestId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/delete_promotion_request/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Approve or Reject Promotion Request",
+          "name": "PATCH Action Promotion Request/Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/action_promotion_request/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"action_status\": \"APPROVED\",\n  \"effective_date\": \"2026-01-01T00:00:00.000Z\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/action_promotion_request/{{promotionRequestId}}"
+              "raw": "{\n  \"action_status\": \"APPROVED\",\n  \"effective_date\": \"2026-10-27T00:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Get Promotion Requests",
+          "name": "List Records",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request?page=1&limit=10&status=PENDING"
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Promotion Request by ID",
+          "name": "Get Record",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/promotion_request/{{promotionRequestId}}"
+            "url": "{{baseUrl}}/api/v1/smps/promotion_request/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Quranic Classes",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Quranic Subject",
       "item": [
         {
-          "name": "Create Quranic Class",
+          "name": "Create Quranic Subject",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/create_quranic_subject",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quranic_class_name\": \"BEGINNER\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class/create_quranic_class"
+              "raw": "{\n  \"quranic_subject_name\": \"Tajweed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Quranic Class",
+          "name": "Update Quranic Subject/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quranic_class_id\": \"{{quranicClassId}}\",\n  \"quranic_class_name\": \"INTERMEDIATE\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class/update_quranic_class"
+              "raw": "{\n  \"quranic_subject_name\": \"Updated Tajweed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Quranic Class",
+          "name": "Update Quranic Single Subject Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_single_subject_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"quranic_subject_name\",\n  \"value\": \"Updated Tajweed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Quranic Subject/:Id",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"quranic_class_id\": \"{{quranicClassId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class/delete_quranic_class"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/delete_quranic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Quranic Classes",
+          "name": "Get Quranic Subjects",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class/get_quranic_classes"
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/get_quranic_subjects",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Quranic Class by ID",
+          "name": "Get Quranic Subject/:Id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class/get_quranic_class/{{quranicClassId}}"
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/get_quranic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Quranic Class Periods",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Quranic Period",
       "item": [
         {
-          "name": "Create Quranic Class Period",
+          "name": "Create Quranic Period",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/create_quranic_period",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quranic_class_period_name\": \"MORNING\",\n  \"start_time\": \"6:00 AM\",\n  \"end_time\": \"8:00 AM\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/create_quranic_class_period"
+              "raw": "{\n  \"quranic_period_name\": \"Morning\",\n  \"start_time\": \"8:00 AM\",\n  \"end_time\": \"9:00 AM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Quranic Class Period",
+          "name": "Update Quranic Period/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\",\n  \"quranic_class_period_name\": \"MORNING\",\n  \"start_time\": \"6:00 AM\",\n  \"end_time\": \"8:00 AM\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_class_period"
+              "raw": "{\n  \"field\": \"quranic_period_name\",\n  \"value\": \"Updated Morning\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Quranic Class Period Field",
+          "name": "Update Quranic Single Period Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_single_period_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\",\n  \"field\": \"start_time\",\n  \"value\": \"6:30 AM\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/update_quranic_class_single_period_field"
+              "raw": "{\n  \"field\": \"quranic_period_name\",\n  \"value\": \"Updated Morning\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Quranic Class Period",
+          "name": "Update Record",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"quranic_class_period_id\": \"{{quranicClassPeriodId}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/delete_quranic_class_period"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get All Quranic Class Periods",
+          "name": "Get Quranic Periods",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_class_periods"
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_periods",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Get Quranic Class Period by ID",
+          "name": "Get Quranic Period/:Id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_class_period/{{quranicClassPeriodId}}"
+            "url": "{{baseUrl}}/api/v1/smps/quranic_class_period/get_quranic_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Student Fees",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Subject",
+      "item": [
+        {
+          "name": "Create Subject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/subject/create_subject",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"general_subject_name\": \"Mathematics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/subject/update_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"general_subject_name\": \"Updated Mathematics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Subject Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/subject/update_single_subject_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"general_subject_name\",\n  \"value\": \"Updated Mathematics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject/:Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/subject/delete_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subjects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/subject/get_subjects",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject/:Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/subject/get_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Period",
+      "item": [
+        {
+          "name": "Create Period",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/period/create_period",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"general_period_name\": \"Morning\",\n  \"start_time\": \"8:00 AM\",\n  \"end_time\": \"9:00 AM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Period/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/period/update_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"general_period_name\": \"Updated Morning\",\n  \"start_time\": \"9:00 AM\",\n  \"end_time\": \"10:00 AM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Period Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/period/update_single_period_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"general_period_name\",\n  \"value\": \"Updated Morning\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Period/:Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/period/delete_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Periods",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/period/get_periods",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Period/:Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/period/get_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Class Routine",
+      "item": [
+        {
+          "name": "Create Class Routine",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/create_class_routine",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_ids\": [\n    \"00000000-0000-4000-8000-000000000002\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"00000000-0000-4000-8000-000000000010\"\n  ],\n  \"general_period_id\": \"00000000-0000-4000-8000-000000000022\",\n  \"general_subject_ids\": [\n    \"00000000-0000-4000-8000-000000000023\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class Routine/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_class_routine/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_ids\": [\n    \"00000000-0000-4000-8000-000000000002\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"00000000-0000-4000-8000-000000000010\"\n  ],\n  \"general_period_id\": \"00000000-0000-4000-8000-000000000022\",\n  \"general_subject_ids\": [\n    \"00000000-0000-4000-8000-000000000023\"\n  ],\n  \"quranic_subject_ids\": [],\n  \"arabic_subject_ids\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Class Routine Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_single_class_routine_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"shift\",\n  \"value\": \"DAY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class Routine/:Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/delete_class_routine/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Routines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/get_class_routines",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Routine/:Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/get_class_routine/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student Fee",
       "item": [
         {
           "name": "Create Student Fee Rate",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_rate",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_rate"
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Student Fee Rate Field",
+          "name": "Update Student Fee Rate Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1200\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{studentFeeRateId}}"
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Student Fee Rate",
+          "name": "Delete Student Fee Rate/:Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{studentFeeRateId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
@@ -1262,119 +2287,1175 @@
           "name": "Create Student Fee Payment",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_payment",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"{{studentId}}\",\n  \"academic_year_id\": \"{{academicYearId}}\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_payment"
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"academic_year_id\": \"00000000-0000-4000-8000-000000000003\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Student Fee Payment Field",
+          "name": "Update Student Fee Payment Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_payment_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"receipt_number\",\n  \"value\": \"RECEIPT-001\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_payment_field/{{studentFeePaymentId}}"
+              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Student Fee Payment",
+          "name": "Delete Student Fee Payment/:Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_payment/{{studentFeePaymentId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_payment/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Staff Payments",
-      "auth": {
-        "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
-      },
+      "name": "Staff Payment",
       "item": [
         {
-          "name": "Create Staff Salary Rate",
+          "name": "Salary Rate",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/salary-rate",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_staff_id\": \"{{academicStaffId}}\",\n  \"monthly_salary\": 30000,\n  \"eid_bonus\": 15000,\n  \"change_type\": \"INITIAL\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/salary-rate"
+              "raw": "{\n  \"academic_staff_id\": \"00000000-0000-4000-8000-000000000010\",\n  \"monthly_salary\": 25000,\n  \"eid_bonus\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Staff Salary Rate Field",
+          "name": "Update Salary Rate Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_salary_rate_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"monthly_salary\",\n  \"value\": 32000\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_salary_rate_field/{{staffSalaryRateId}}"
+              "raw": "{\n  \"field\": \"monthly_salary\",\n  \"value\": 26000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Staff Salary Rate",
+          "name": "Delete Salary Rate/:Id",
           "request": {
             "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_salary_rate/{{staffSalaryRateId}}"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_salary_rate/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         },
         {
-          "name": "Create Staff Payment",
+          "name": "Payment",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/payment",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_staff_id\": \"{{academicStaffId}}\",\n  \"payment_type\": \"MONTHLY_SALARY\",\n  \"payment_period_key\": \"2026-10\",\n  \"amount\": 30000\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/payment"
+              "raw": "{\n  \"academic_staff_id\": \"00000000-0000-4000-8000-000000000010\",\n  \"payment_type\": \"MONTHLY_SALARY\",\n  \"payment_period_key\": \"2026-10\",\n  \"amount\": 25000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Update Staff Payment Field",
+          "name": "Update Payment Field/:Id",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_payment_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"receipt_number\",\n  \"value\": \"PAYMENT-001\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/update_payment_field/{{staffPaymentId}}"
+              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 25000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
         {
-          "name": "Delete Staff Payment",
+          "name": "Delete Payment/:Id",
           "request": {
             "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_payment/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Book List",
+      "item": [
+        {
+          "name": "Create Book List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/create_book_list",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"book_name\": \"Sample Textbook\",\n  \"publisher\": \"Sample Publisher\",\n  \"section\": \"SCHOOL\",\n  \"class_name\": \"Class One\",\n  \"version\": \"ENGLISH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book List/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/delete_book_list/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/update_single_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"book_name\",\n  \"value\": \"Updated Textbook\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/staff_payment/delete_payment/{{staffPaymentId}}"
+            "url": "{{baseUrl}}/api/v1/smps/book_list/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Book List By Class/Class Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/book_list_by_class/{{classId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Single Book List/Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/single_book_list/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Book List By Publusher",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/book_list/book_list_by_publusher",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Arabic Period",
+      "item": [
+        {
+          "name": "Create Arabic Period",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/create_arabic_period",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"arabic_period_name\": \"Morning\",\n  \"start_time\": \"8:00 AM\",\n  \"end_time\": \"9:00 AM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Arabic Period/:Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/delete_arabic_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quranic Period/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/update_quranic_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"arabic_period_name\",\n  \"value\": \"Updated Morning\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Single Arabic Period/Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/single_arabic_period/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Arabic Subject",
+      "item": [
+        {
+          "name": "Create Arabic Subject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/create_arabic_subject",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"arabic_subject_name\": \"Arabic Grammar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Arabic Subject/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"arabic_subject_name\": \"Updated Arabic Grammar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Arabic Single Subject Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_single_subject_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"arabic_subject_name\",\n  \"value\": \"Updated Arabic Grammar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Arabic Subject/:Id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/delete_arabic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Arabic Subjects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/get_arabic_subjects",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Arabic Subject/:Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/get_arabic_subject/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Co-curricular Activities Mark",
+      "item": [
+        {
+          "name": "Create Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"al_quran_grade\",\n  \"value\": \"A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Moral Manners Evaluation Mark",
+      "item": [
+        {
+          "name": "Create Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"cleanliness\",\n  \"value\": \"A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Monthly Exam Mark",
+      "item": [
+        {
+          "name": "Create Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"january_mark\",\n  \"value\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Half Yearly Exam Mark",
+      "item": [
+        {
+          "name": "Create Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"obtained_mark\",\n  \"value\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Annual Exam Mark",
+      "item": [
+        {
+          "name": "Create Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Field/:Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/update_field/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"obtained_mark\",\n  \"value\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Record",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }

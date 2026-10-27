@@ -15,9 +15,6 @@ export interface IUserCount {
 
 export interface IDynamicProfilePayload {
   cleanRole: string;
-  full_name: string;
-  mobile_number: string;
-  email: string;
   positionId: string;
   loggedInUserId: string;
   active_class_id?: string;

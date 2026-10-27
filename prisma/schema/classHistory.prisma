@@ -33,7 +33,7 @@ model ClassHistory {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([roll_number, class_id, shift, academic_year_id], name: "roll_class_shift_year_unique", map: "class_history_roll_number_class_id_shift_academic_year_key")
+  @@unique([roll_number, class_id, shift, academic_year_id, version], name: "roll_class_shift_year_unique", map: "class_history_roll_number_class_id_shift_academic_year_key")
   @@index([start_date])
   @@index([end_date])
   @@index([student_id, end_date])

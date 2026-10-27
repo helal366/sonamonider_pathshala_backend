@@ -179,9 +179,6 @@ const userCreationRolePostionCheck = (
 const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
   const {
     cleanRole,
-    full_name,
-    mobile_number,
-    email,
     positionId,
     loggedInUserId,
     active_class_id,
@@ -194,9 +191,6 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
     targetEntityName = "managementStaff";
     profileData.management_staff_profile = {
       create: {
-        full_name,
-        mobile_number,
-        email,
         current_position: { connect: { id: positionId } },
         current_role: cleanRole,
         created_by: { connect: { id: loggedInUserId } },
@@ -206,9 +200,6 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
     targetEntityName = "academicStaff";
     profileData.academic_staff_profile = {
       create: {
-        full_name,
-        mobile_number,
-        email,
         current_position: { connect: { id: positionId } },
         current_role: cleanRole,
         created_by: { connect: { id: loggedInUserId } },
@@ -224,9 +215,6 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
     targetEntityName = "student";
     profileData.student_profile = {
       create: {
-        full_name,
-        mobile_number,
-        email,
         active_class: { connect: { id: active_class_id } },
         created_by: { connect: { id: loggedInUserId } },
       },
@@ -235,9 +223,8 @@ const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
     targetEntityName = "governingBody";
     profileData.governing_body_profile = {
       create: {
-        full_name,
-        mobile_number,
-        email,
+        current_position: { connect: { id: positionId } },
+        current_role: cleanRole,
         created_by: { connect: { id: loggedInUserId } },
       },
     };

@@ -3,6 +3,7 @@ model Booklist {
 
   book_name String
   publisher String
+  isBookActive Boolean @default(true)
 
   class_id String
   class    Class  @relation(fields: [class_id], references: [id])
