@@ -18,8 +18,9 @@ import {
 } from "./email.helper.function.js";
 import { envVars } from "../../config/index.js";
 
-
+// ============================================================
 // VERIFY EMAIL WHILE REGISTRATION OR USER CREATION
+// ============================================================
 const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
   const normalizedEmail = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
@@ -121,7 +122,9 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
 
   await redisClient.del(otpKey);
 };
+// ============================================================
 // RESEND OTP EMAIL VERIFY
+// ============================================================
 const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
   const normalizedEmail = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
@@ -167,9 +170,9 @@ const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
   });
 };
 
-
-
+// ============================================================
 // SEND FORGET PASSWORD OTP
+// ============================================================
 const sendForgetPasswordOtp = async ({
   email,
 }: TResendOtpForgetPasswordPayload) => {

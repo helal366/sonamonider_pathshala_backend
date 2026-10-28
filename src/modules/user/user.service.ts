@@ -114,6 +114,8 @@ const changePassword = async (
         subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
         templateData: {
           name: user.full_name,
+          password: cleanNewPassword,
+          year: new Date().getFullYear(),
         },
       });
     },

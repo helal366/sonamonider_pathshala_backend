@@ -4,6 +4,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import { TActionPromotionRequestZodSchema } from "./promotionRequest.zodValidation";
 import { ActiveStatus, Prisma, Role } from "#db-client";
+import { sendVerificationResultEmail } from "../email/email.helper.function";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
@@ -69,6 +70,8 @@ const actionPromotionRequest = async (
         full_name: true,
         mobile_number: true,
         email: true,
+        current_role: true,
+        current_position: {select: {position_name: true}}
       },
     });
     if (!targetUser) {
@@ -865,6 +868,21 @@ const actionPromotionRequest = async (
       // Create audit log
       await tx.auditLog.createMany({ data: auditRecords });
     }
+
+    // SEND PROMOTION EMAIL TO STAFF
+    await sendVerificationResultEmail(
+      {to: targetUser.email,
+      templateName: `approve_promotion_congratulations_email.ejs`,
+      subject: `Congratulations on Your Promotion – SONAMONIDER PATHSHALA`,
+      templateData: {
+        name: targetUser.full_name,
+        previousPosition: promotionRequest.old_position.position_name,
+        presentPosition: promotionRequest.new_position.position_name,
+        previousRole: old_role,
+        presentRole: new_role
+      }
+    }
+    )
   },{
     timeout:30000
   });
