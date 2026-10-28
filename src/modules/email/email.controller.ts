@@ -3,12 +3,46 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { StatusCodes } from "http-status-codes";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { emailServices } from "./email.service.js";
+import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions.js";
 import type {
+  TChangePasswordPayload,
+  TForgetPasswordPayload,
   TResendOtpForgetPasswordPayload,
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
   TVerifyEmailPayload,
 } from "./email.zodValidation.js";
+
+const changePassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TChangePasswordPayload = req.body;
+    const loggedInUser = helperFunctions.requiredUser(req);
+
+    const result = await emailServices.changePassword(payload, loggedInUser);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: result.email_sent
+        ? "Password changed successfully."
+        : "Password changed successfully, but the notification email could not be sent.",
+    });
+  },
+);
+
+const forgetPassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload: TForgetPasswordPayload = req.body;
+    await emailServices.forgetPassword(payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message:
+        "A password reset verification code has been sent to your email address.",
+    });
+  },
+);
 
 const resendOtpEmailVerify = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -85,6 +119,8 @@ const resendOtpForgetPassword = catchAsync(
 );
 
 export const emailController = {
+  changePassword,
+  forgetPassword,
   sendForgetPasswordOtp,
   resendOtpEmailVerify,
   verifyEmail,

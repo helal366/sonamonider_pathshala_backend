@@ -6,6 +6,8 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import { redisClient } from "../../lib/redis.js";
 import type {
+  TChangePasswordPayload,
+  TForgetPasswordPayload,
   TResendOtpForgetPasswordPayload,
   TResendOtpEmailPayload,
   TVerifyForgetPasswordPayload,
@@ -17,6 +19,117 @@ import {
   sendVerificationResultEmail,
 } from "./email.helper.function.js";
 import { envVars } from "../../config/index.js";
+
+const changePassword = async (
+  payload: TChangePasswordPayload,
+  loggedInUser: NonNullable<Express.Request["user"]>,
+) => {
+  const { current_password, new_password, confirm_password } = payload;
+  const cleanCurrentPassword = current_password.trim();
+  const cleanNewPassword = new_password.trim();
+  const cleanConfirmPassword = confirm_password.trim();
+  const user = await prisma.user.findUnique({
+    where: { id: loggedInUser.user_id },
+    select: {
+      id: true,
+      user_password: true,
+      email: true,
+      full_name: true,
+    },
+  });
+
+  if (!user || !user.user_password) {
+    throw new AppError(
+      "User account or password was not found.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+  if (!user.email) {
+    throw new AppError(
+      "An email address is required to change the password.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  const isCurrentPasswordValid = await bcrypt.compare(
+    cleanCurrentPassword,
+    user.user_password,
+  );
+  if (!isCurrentPasswordValid) {
+    throw new AppError(
+      "Current password is incorrect.",
+      StatusCodes.UNAUTHORIZED,
+    );
+  }
+
+  if (cleanCurrentPassword === cleanNewPassword) {
+    throw new AppError(
+      "New password must be different from the current password.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  if (cleanNewPassword !== cleanConfirmPassword) {
+    throw new AppError(
+      "New password and Confirm password mismatch.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    cleanNewPassword,
+    Number(envVars.BCRYPT_SALT_ROUND),
+  );
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          user_password: hashedPassword,
+          updated_by: {
+            connect: { id: loggedInUser.user_id },
+          },
+        },
+      });
+
+      await tx.user.update({
+        where: { id: loggedInUser.user_id },
+        data: {
+          audit_logs: {
+            create: [
+              {
+                entity_id: user.id,
+                entity_name: "user",
+                old_value: Prisma.JsonNull,
+                new_value: { password_changed: true },
+                action: "UPDATE",
+              },
+            ],
+          },
+        },
+      });
+
+      await sendVerificationResultEmail({
+        to: user.email,
+        templateName: "change_password_success.ejs",
+        subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
+        templateData: {
+          name: user.full_name,
+          password: cleanNewPassword,
+          year: new Date().getFullYear(),
+        },
+      });
+    },
+    {
+      timeout: 30000,
+    },
+  );
+  return { email_sent: true };
+};
+
+const forgetPassword = async ({ email }: TForgetPasswordPayload) => {
+  await sendForgetPasswordOtp({ email });
+};
 
 // ============================================================
 // VERIFY EMAIL WHILE REGISTRATION OR USER CREATION
@@ -346,6 +459,8 @@ const resendOtpForgetPassword = async ({
 };
 
 export const emailServices = {
+  changePassword,
+  forgetPassword,
   resendOtpEmailVerify,
   verifyEmail,
   sendForgetPasswordOtp,

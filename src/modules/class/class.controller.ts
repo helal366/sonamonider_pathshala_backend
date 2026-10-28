@@ -96,7 +96,9 @@ const assignGradeGroupTeacher = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: `Grade or Group teacher assigned successfully.`,
+      message: result.email_sent
+        ? "Grade or Group teacher assigned successfully."
+        : "Grade or Group teacher assigned successfully, but the notification email could not be sent.",
       data: result,
     });
   },

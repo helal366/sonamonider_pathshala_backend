@@ -311,37 +311,6 @@
             }
           },
           "response": []
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "Create User",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": "{{baseUrl}}/api/v1/smps/user/create_user",
-            "auth": {
-              "type": "noauth"
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Test User\",\n  \"mobile_number\": \"01712345678\",\n  \"gender\": \"MALE\",\n  \"email\": \"test.user@example.com\",\n  \"position_name\": \"MANAGEMENT_STAFF\",\n  \"role_name\": \"MANAGEMENT\",\n  \"joining_date\": \"2026-10-27\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": []
         },
         {
           "name": "Change Password",
@@ -353,9 +322,16 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/user/change_password",
+            "url": "{{baseUrl}}/api/v1/smps/email/change_password",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",
@@ -379,13 +355,44 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/user/forget_password",
+            "url": "{{baseUrl}}/api/v1/smps/email/forget_password",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"user@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/user/create_user",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Test User\",\n  \"mobile_number\": \"01712345678\",\n  \"gender\": \"MALE\",\n  \"email\": \"test.user@example.com\",\n  \"position_name\": \"MANAGEMENT_STAFF\",\n  \"role_name\": \"MANAGEMENT\",\n  \"joining_date\": \"2026-10-27\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1397,7 +1404,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_subject/{{academicStaffId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1451,7 +1458,14 @@
             ],
             "url": "{{baseUrl}}/api/v1/smps/academic_staff/assign_grade_group_teacher",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",

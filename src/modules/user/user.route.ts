@@ -20,25 +20,6 @@ router.post(
   userController.createUser,
 );
 
-//================================================
-// CHANGE USER PASSWORD ROUTE
-//================================================
-router.patch(
-  "/change_password",
-  userAuth(),
-  validateZodSchema(userZodSchema.changePasswordZodSchema),
-  userController.changePassword,
-);
-
-//================================================
-// FORGET PASSWORD ROUTE
-//================================================
-router.post(
-  "/forget_password",
-  validateZodSchema(userZodSchema.forgetPasswordZodSchema),
-  userController.forgetPassword,
-);
-
 // ==========================================
 // CHANGE POSITION ROUTE
 // ==========================================

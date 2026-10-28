@@ -9,6 +9,7 @@ import {
   TDisconnectGradeGroupTeacherZodSchema,
 } from "./class.zodValidation";
 import { IUpdateClassField } from "./class.interface";
+import { academicStaffServices } from "../academicStaff/academicStaff.service";
 
 // =============================================
 // CREATE CLASS NAME SERVICE LAYER
@@ -150,134 +151,7 @@ const assignGradeGroupTeacher = async (
   payload: TAssignGradeGroupTeacherZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-  const { class_id, academicStaff_id } = payload;
-  return await prisma.$transaction(async (tx) => {
-    const existingClass = await tx.class.findUnique({
-      where: { id: class_id },
-      select: {
-        class_name: true,
-        grade_group_teacher_id: true,
-        grade_group_teacher: {
-          include: {
-            user_primary_data: {
-              select: {
-                full_name: true,
-                mobile_number: true
-              }
-            }
-          }
-        },
-      },
-    });
-
-    if (!existingClass) {
-      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-    }
-
-    if (existingClass.grade_group_teacher_id) {
-      throw new AppError(
-        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.user_primary_data.full_name} (${existingClass.grade_group_teacher?.user_primary_data.mobile_number})`,
-        StatusCodes.CONFLICT,
-      );
-    }
-
-    const existingAcademicStaff = await tx.academicStaff.findUnique({
-      where: { id: academicStaff_id },
-      select: {
-        grade_group_teacher_class: {
-          select: {
-            id: true,
-          },
-        },
-        current_position: {
-          select: {
-            position_name: true,
-          },
-        },
-        user_primary_data: {
-          select: {
-            full_name: true,
-            mobile_number: true,
-            active_status: true,
-            is_deleted: true,
-          },
-        },
-      },
-    });
-    const isAcademicStaffActive =
-      existingAcademicStaff?.user_primary_data.active_status === "ACTIVE";
-    const isAcademicStaffDeleted =
-      existingAcademicStaff?.user_primary_data.is_deleted;
-    if (
-      !existingAcademicStaff ||
-      !isAcademicStaffActive ||
-      isAcademicStaffDeleted
-    ) {
-      throw new AppError(
-        `Teacher not available. Check activity.`,
-        StatusCodes.NOT_FOUND,
-      );
-    }
-
-    if (
-      existingAcademicStaff.current_position?.position_name ===
-      "TEACHER_ASSISTANT"
-    ) {
-      throw new AppError(
-        `TEACHER_ASSISTANT can not assign as Grade or Group teacher.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-    if (existingAcademicStaff.grade_group_teacher_class) {
-      throw new AppError(
-        `Teacher is already assigned as Grade/Group Teacher of another class.`,
-        StatusCodes.CONFLICT,
-      );
-    }
-
-    const assigned = await tx.class.update({
-      where: { id: class_id },
-      data: {
-        grade_group_teacher: { connect: { id: academicStaff_id } },
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    await tx.auditLog.createMany({
-      data: [
-        {
-          entity_id: class_id,
-          entity_name: "class",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            grade_group_teacher_id: academicStaff_id,
-            grade_group_teacher: {
-              full_name: existingAcademicStaff.user_primary_data.full_name,
-              mobile_number:
-                existingAcademicStaff.user_primary_data.mobile_number,
-            },
-          },
-        },
-        {
-          entity_id: academicStaff_id,
-          entity_name: "academicStaff",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            grade_group_teacher_class: {
-              id: class_id,
-              class_name: existingClass.class_name,
-            },
-          },
-        },
-      ],
-    });
-
-    return assigned;
-  });
+  return academicStaffServices.assignGradeGroupTeacher(payload, loggedInUser);
 };
 
 // =============================================

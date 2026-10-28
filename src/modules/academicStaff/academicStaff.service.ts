@@ -9,6 +9,7 @@ import {
   TUpdateSubjectForSubjectTeacherZodSchema,
 } from "./academicStaff.zodValidation";
 import { Prisma } from "#db-client";
+import { sendVerificationResultEmail } from "../email/email.helper.function";
 
 // ================================================
 // UPDATE SUBJECT FOR SUBJECT TEAHER SERVICE LAYER
@@ -176,13 +177,12 @@ const assignGradeGroupTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { class_id, academicStaff_id } = payload;
-  return await prisma.$transaction(async (tx) => {
+  const { assigned, email } = await prisma.$transaction(async (tx) => {
     // FIND CLASS
     const existingClass = await tx.class.findUnique({
       where: { id: class_id },
       select: {
         class_name: true,
-        grade_group_teacher_id: true,
         grade_group_teacher: {
           include: {
             user_primary_data: {
@@ -201,9 +201,9 @@ const assignGradeGroupTeacher = async (
       throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
     }
     // CHECK GRADE OR GROUP TEACHER ASSIGNED TO THE CLASS OR NOT.
-    if (existingClass.grade_group_teacher_id) {
+    if (existingClass.grade_group_teacher) {
       throw new AppError(
-        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher: ${existingClass.grade_group_teacher?.user_primary_data.full_name} (${existingClass.grade_group_teacher?.user_primary_data.mobile_number})`,
+        `Grade/Group Teacher already assigned to ${existingClass.class_name}. Teacher name: ${existingClass.grade_group_teacher?.user_primary_data.full_name}, Teacher mobile number: (${existingClass.grade_group_teacher?.user_primary_data.mobile_number})`,
         StatusCodes.CONFLICT,
       );
     }
@@ -229,6 +229,7 @@ const assignGradeGroupTeacher = async (
             mobile_number: true,
             active_status: true,
             is_deleted: true,
+            email: true,
           },
         },
       },
@@ -318,8 +319,33 @@ const assignGradeGroupTeacher = async (
       ],
     });
 
-    return assigned;
-  });
+    const className = existingClass.class_name;
+    return {
+      assigned,
+      email: {
+        to: existingAcademicStaff.user_primary_data.email,
+        templateName: "assign_grade_group_teacher_email.ejs",
+        subject: `${className.toLowerCase().includes("grade") ? "Grade Teacher" : "Group Teacher"} Assignment Notification – SONAMONIDER PATHSHALA`,
+        templateData: {
+          name: existingAcademicStaff.user_primary_data.full_name,
+          className,
+          year: new Date().getFullYear(),
+        },
+      },
+    };
+  }, { timeout: 30000 });
+
+  let emailSent = true;
+  try {
+    await sendVerificationResultEmail(email);
+  } catch (error) {
+    if (!(error instanceof Error)) {
+      throw error;
+    }
+    emailSent = false;
+  }
+
+  return { ...assigned, email_sent: emailSent };
 };
 
 // =============================================
@@ -329,8 +355,8 @@ const disconnectGradeGroupTeacher = async (
   payload: TDisconnectGradeGroupTeacherZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
-   const { class_id, academicStaff_id } = payload;
-   return await prisma.$transaction(async (tx) => {
+  const { class_id, academicStaff_id } = payload;
+  return await prisma.$transaction(async (tx) => {
     // FIND CLASS
     const existingClass = await tx.class.findUnique({
       where: { id: class_id },
@@ -368,7 +394,7 @@ const disconnectGradeGroupTeacher = async (
         StatusCodes.BAD_REQUEST,
       );
     }
-// FIND ACADEMIC STAFF
+    // FIND ACADEMIC STAFF
     const currentGradeGroupTeacher = await tx.academicStaff.findUnique({
       where: { id: academicStaff_id },
       select: {
@@ -377,6 +403,7 @@ const disconnectGradeGroupTeacher = async (
           select: {
             full_name: true,
             mobile_number: true,
+            email: true,
             active_status: true,
             is_deleted: true,
           },
@@ -403,7 +430,7 @@ const disconnectGradeGroupTeacher = async (
         `The teacher is unauthorized. Check activity.`,
         StatusCodes.UNAUTHORIZED,
       );
-    };
+    }
     // UPDATE CLASS
     const updated = await tx.class.update({
       where: { id: class_id },
@@ -446,8 +473,19 @@ const disconnectGradeGroupTeacher = async (
         },
       ],
     });
+
+    await sendVerificationResultEmail({
+      to: currentGradeGroupTeacher.user_primary_data.email,
+      templateName: "disconnect_grade_group_teacher_email.ejs",
+      subject: `${existingClass.class_name.toLowerCase().includes("grade") ? "Grade Teacher" : "Group Teacher"} Assignment Removal Notification – SONAMONIDER PATHSHALA`,
+      templateData: {
+        name: currentGradeGroupTeacher.user_primary_data.full_name,
+        className: existingClass.class_name,
+        year: new Date().getFullYear(),
+      },
+    });
     return updated;
-   })
+  });
 };
 export const academicStaffServices = {
   updateSubjectForSubjectTeacher,

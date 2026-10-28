@@ -15,7 +15,7 @@ const actionPromotionRequest = async (
 ) => {
   const { action_status, rejection_reason, effective_date } = payload;
   const effectiveDate = effective_date ? new Date(effective_date) : new Date();
-  return prisma.$transaction(async (tx) => {
+  const transactionOutcome = await prisma.$transaction(async (tx) => {
     // Fetch promotion request and check existance
     const promotionRequest = await tx.promotionRequest.findUnique({
       where: { id: promotion_request_id },
@@ -105,7 +105,7 @@ const actionPromotionRequest = async (
           new_value: { promotion_request_status: "REJECTED", rejection_reason },
         },
       });
-      return updated;
+      return { result: updated, promotionEmail: null };
     }
 
     // Handle Approval
@@ -869,23 +869,30 @@ const actionPromotionRequest = async (
       await tx.auditLog.createMany({ data: auditRecords });
     }
 
-    // SEND PROMOTION EMAIL TO STAFF
-    await sendVerificationResultEmail(
-      {to: targetUser.email,
-      templateName: `approve_promotion_congratulations_email.ejs`,
-      subject: `Congratulations on Your Promotion – SONAMONIDER PATHSHALA`,
-      templateData: {
-        name: targetUser.full_name,
-        previousPosition: promotionRequest.old_position.position_name,
-        presentPosition: promotionRequest.new_position.position_name,
-        previousRole: old_role,
-        presentRole: new_role
-      }
-    }
-    )
+    return {
+      result: updatedPromotionRequest,
+      promotionEmail: {
+        to: targetUser.email,
+        templateName: "approve_promotion_congratulations_email.ejs",
+        subject: "Congratulations on Your Promotion – SONAMONIDER PATHSHALA",
+        templateData: {
+          name: targetUser.full_name,
+          previousPosition: promotionRequest.old_position.position_name,
+          presentPosition: promotionRequest.new_position.position_name,
+          previousRole: old_role,
+          presentRole: new_role,
+        },
+      },
+    };
   },{
     timeout:30000
   });
+
+  if (transactionOutcome.promotionEmail) {
+    await sendVerificationResultEmail(transactionOutcome.promotionEmail);
+  }
+
+  return transactionOutcome.result;
 };
 export const promotionRequestActionServices = {
   actionPromotionRequest,

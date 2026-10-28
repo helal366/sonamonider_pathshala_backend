@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { emailController } from "./email.controller.js";
 import { validateZodSchema } from "../../middlewares/validateZodSchema.js";
+import { userAuth } from "../../middlewares/userAuth.js";
 import {
+  changePasswordZodSchema,
+  forgetPasswordZodSchema,
   resendOtpEmailZodSchema,
   resendOtpForgetPasswordZodSchema,
   verifyForgetPasswordZodSchema,
@@ -9,6 +12,17 @@ import {
 } from "./email.zodValidation.js";
 
 const router = Router();
+router.patch(
+  "/change_password",
+  userAuth(),
+  validateZodSchema(changePasswordZodSchema),
+  emailController.changePassword,
+);
+router.post(
+  "/forget_password",
+  validateZodSchema(forgetPasswordZodSchema),
+  emailController.forgetPassword,
+);
 router.post(
   "/verify_email",
   validateZodSchema(verifyEmailZodSchema),

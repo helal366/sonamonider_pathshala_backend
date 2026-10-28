@@ -4,9 +4,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import {
-  TChangePasswordPayload,
   TChangeUserPositionZodSchema,
-  TForgetPasswordPayload,
   TUserCreateZodSchema,
   TUpdateSingleUserFieldAdminZodSchema,
   TUpdateSingleUserFieldSuperAdminZodSchema,
@@ -36,43 +34,6 @@ const createUser = catchAsync(
         ? "User created successfully."
         : "User created, but the verification email could not be sent. Request a resend.",
       data: result.user,
-    });
-  },
-);
-
-// ====================================
-// CHANGE PASSWORD CONTROLLER
-// ====================================
-const changePassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TChangePasswordPayload = req.body;
-    const loggedInUser = helperFunctions.requiredUser(req);
-
-    const result = await userServices.changePassword(payload, loggedInUser);
-
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: result.email_sent
-        ? "Password changed successfully."
-        : "Password changed successfully, but the notification email could not be sent.",
-    });
-  },
-);
-
-// ====================================
-// FORGET PASSWORD CONTROLLER
-// ====================================
-const forgetPassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const payload: TForgetPasswordPayload = req.body;
-    await userServices.forgetPassword(payload);
-
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message:
-        "A password reset verification code has been sent to your email address.",
     });
   },
 );
@@ -250,8 +211,6 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 export const userController = {
   createUser,
-  changePassword,
-  forgetPassword,
   changeUserPosition,
   updateSingleUserFieldAdmin,
   updateSingleUserFieldSuperAdmin,
