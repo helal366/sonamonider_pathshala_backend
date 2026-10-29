@@ -42,6 +42,14 @@ router.delete(
 );
 
 // ======================================================
+// GET ALL STUDENT FEE RATE ROUTE
+// ======================================================
+router.get(
+  "/",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
+  studentFeeController.getAllStudentFeeRates
+)
+// ======================================================
 // CREATE STUDENT FEE PAYMENT ROUTE
 // ======================================================
 router.post(

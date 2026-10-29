@@ -121,6 +121,9 @@ export type TStudentFeePaymentIdParamsZodSchema = z4.infer<
   typeof studentFeePaymentIdParamsZodSchema
 >;
 
+// ======================================================
+// GET STUDENT FEE RATE BY STUDENT ID ZOD SCHEMA
+// ======================================================
 export const studentFeeZodSchema = {
   createStudentFeeRateZodSchema,
   createStudentFeePaymentZodSchema,

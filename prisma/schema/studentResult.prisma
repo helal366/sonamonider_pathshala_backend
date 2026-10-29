@@ -8,14 +8,14 @@ model StudentResult {
   academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   monthly_exam_mark_id String
-  monthly_exam_marks    MonthlyExamMark @relation(fields: [monthly_exam_mark_id], references: [id])
+  monthly_exam_marks   MonthlyExamMark @relation(fields: [monthly_exam_mark_id], references: [id])
 
-  half_yearly_exam_mark HalfYearlyExamMark[] 
-  annual_exam_mark AnnualExamMark[] 
+  half_yearly_exam_mark HalfYearlyExamMark[]
+  annual_exam_mark      AnnualExamMark[]
 
-  cocurricular_activities_mark CoCurricularActivitiesMark[]
+  cocurricular_activities_mark  CoCurricularActivitiesMark[]
   moral_manners_evaluation_mark MoralMannersEvaluationMark[]
-  
+
   created_by_id String?
   created_by    User?   @relation("student_result_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 

@@ -1,17 +1,17 @@
 model Booklist {
   id String @id @default(uuid())
 
-  book_name String
-  publisher String
+  book_name    String
+  publisher    String
   isBookActive Boolean @default(true)
 
   class_id String
-  class    Class  @relation(fields: [class_id], references: [id])
-  section Section
-  version Version
+  class    Class   @relation(fields: [class_id], references: [id])
+  section  Section
+  version  Version
 
   half_yearly_exam_marks HalfYearlyExamMark[]
-  annual_exam_marks AnnualExamMark[]
+  annual_exam_marks      AnnualExamMark[]
 
   created_by_id String?
   created_by    User?   @relation("book_list_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

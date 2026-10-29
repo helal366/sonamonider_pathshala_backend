@@ -8,7 +8,7 @@ model Class {
   class_routines ClassRoutine[] @relation("class_routine_classes")
   book_list      Booklist[]
 
-  grade_group_teacher    AcademicStaff?
+  grade_group_teacher AcademicStaff?
 
   created_by_id String?
   created_by    User?   @relation("class_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

@@ -85,6 +85,19 @@ const deleteStudentFeeRate = catchAsync(
 );
 
 // ======================================================
+// GET ALL STUDENT FEE RATE CONTROLLER
+// ======================================================
+const getAllStudentFeeRates = catchAsync(async(req: Request, res: Response)=>{
+  const loggedInUser = helperFunctions.requiredUser(req);
+  const result = await studentFeeServices.getAllStudentFeeRates(loggedInUser);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "All student fee rate retrieved successfully.",
+    data : result
+  }) 
+})
+// ======================================================
 // CREATE STUDENT FEE PAYMENT CONTROLLER
 // ======================================================
 const createStudentFeePayment = catchAsync(
@@ -159,6 +172,7 @@ export const studentFeeController = {
   createStudentFeeRate,
   updateStudentFeeRateField,
   deleteStudentFeeRate,
+  getAllStudentFeeRates,
   createStudentFeePayment,
   updateStudentFeePaymentField,
   deleteStudentFeePayment,

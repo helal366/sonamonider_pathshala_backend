@@ -21,12 +21,13 @@ model MonthlyExamMark {
 
   @@map("monthly_exam_marks")
 }
+
 model HalfYearlyExamMark {
   id String @id @default(uuid())
 
-  full_mark Decimal @db.Decimal(10, 2)
-  highest_mark Decimal @db.Decimal(10, 2)
-  obtained_mark      Decimal @db.Decimal(10, 2)
+  full_mark     Decimal @db.Decimal(10, 2)
+  highest_mark  Decimal @db.Decimal(10, 2)
+  obtained_mark Decimal @db.Decimal(10, 2)
 
   student_result_id String
   student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -34,12 +35,11 @@ model HalfYearlyExamMark {
   book_list_id String
   book_list    Booklist @relation(fields: [book_list_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-
   created_by_id String?
-  created_by    User? @relation("half_yearly_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by    User?   @relation("half_yearly_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User? @relation("half_yearly_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by    User?   @relation("half_yearly_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -47,12 +47,13 @@ model HalfYearlyExamMark {
   @@unique([student_result_id, book_list_id])
   @@map("half_yearly_exam_marks")
 }
+
 model AnnualExamMark {
   id String @id @default(uuid())
 
-  full_mark Decimal @db.Decimal(10, 2)
-  highest_mark Decimal @db.Decimal(10, 2)
-  obtained_mark      Decimal @db.Decimal(10, 2)
+  full_mark     Decimal @db.Decimal(10, 2)
+  highest_mark  Decimal @db.Decimal(10, 2)
+  obtained_mark Decimal @db.Decimal(10, 2)
 
   student_result_id String
   student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -61,10 +62,10 @@ model AnnualExamMark {
   book_list    Booklist @relation(fields: [book_list_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User? @relation("annual_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by    User?   @relation("annual_exam_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User? @relation("annual_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by    User?   @relation("annual_exam_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -73,25 +74,25 @@ model AnnualExamMark {
   @@map("annual_exam_marks")
 }
 
-model CoCurricularActivitiesMark{
+model CoCurricularActivitiesMark {
   id String @id @default(uuid())
 
-  al_quran_grade ResultGrade
-  conversation ResultGrade
-  akhlake_hasanah ResultGrade
+  al_quran_grade      ResultGrade
+  conversation        ResultGrade
+  akhlake_hasanah     ResultGrade
   cultural_activities ResultGrade
-  sports_scouts ResultGrade
+  sports_scouts       ResultGrade
 
   exam_type ExamType
 
-  student_result_id String 
-  student_result StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  student_result_id String
+  student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User? @relation("co_curricular_activities_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by    User?   @relation("co_curricular_activities_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User? @relation("co_curricular_activities_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by    User?   @relation("co_curricular_activities_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -100,25 +101,25 @@ model CoCurricularActivitiesMark{
   @@map("co_curricular_activities")
 }
 
-model MoralMannersEvaluationMark{
+model MoralMannersEvaluationMark {
   id String @id @default(uuid())
 
-  cleanliness ResultGrade
-  class_performance ResultGrade
-  speaking_the_truth ResultGrade
+  cleanliness          ResultGrade
+  class_performance    ResultGrade
+  speaking_the_truth   ResultGrade
   speaking_the_correct ResultGrade
   salat_religious_work ResultGrade
 
   exam_type ExamType
 
-  student_result_id String 
-  student_result StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  student_result_id String
+  student_result    StudentResult @relation(fields: [student_result_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_by_id String?
-  created_by    User? @relation("moral_manners_evaluation_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by    User?   @relation("moral_manners_evaluation_mark_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User? @relation("moral_manners_evaluation_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by    User?   @relation("moral_manners_evaluation_mark_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt

@@ -15,7 +15,7 @@ model ClassHistory {
   academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   roll_number Int
-  shift Shift
+  shift       Shift
   section     Section
   version     Version
 

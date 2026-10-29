@@ -134,7 +134,7 @@ enum BillingFrequency {
 enum StaffPaymentType {
   MONTHLY_SALARY
   EID_UL_FITR_BONUS
-  EID_UL_ADHA_BONUS
+  EID_UL_AZHA_BONUS
   PERFORMANCE_BONUS
 }
 
