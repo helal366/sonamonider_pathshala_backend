@@ -47,8 +47,39 @@ router.delete(
 router.get(
   "/",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  studentFeeController.getAllStudentFeeRates
-)
+  studentFeeController.getAllStudentFeeRates,
+);
+
+// ======================================================
+// GET STUDENT FEE RATE BY STUDENT ID ROUTE
+// ======================================================
+router.get(
+  "/get_student_fee_by_student_id/:student_id",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
+  validateZodParams(
+    studentFeeZodSchema.studentIdParamsZodSchema,
+  ),
+  studentFeeController.getStudentFeeRateByStudentId,
+);
+
+// ======================================================
+// GET ALL STUDENT FEE PAYMENT ROUTE
+// ======================================================
+router.get(
+  "/get_all_student_fee_payments",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
+  studentFeeController.getAllStudentFeePayments,
+);
+
+// ======================================================
+// GET STUDENT FEE PAYMENTS BY STUDENT ID ROUTE
+// ======================================================
+router.get(
+  "/get_student_fee_payments_by_student_id/:student_id",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
+  validateZodParams(studentFeeZodSchema.studentIdParamsZodSchema),
+  studentFeeController.getStudentFeePaymentsByStudentId,
+);
 // ======================================================
 // CREATE STUDENT FEE PAYMENT ROUTE
 // ======================================================

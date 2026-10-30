@@ -122,8 +122,12 @@ export type TStudentFeePaymentIdParamsZodSchema = z4.infer<
 >;
 
 // ======================================================
-// GET STUDENT FEE RATE BY STUDENT ID ZOD SCHEMA
+// GET STUDENT FEES BY STUDENT ID ZOD SCHEMA
 // ======================================================
+const studentIdParamsZodSchema = z4.object({
+  student_id: z4.uuid("Invalid student ID."),
+});
+export type TStudentIdParamsZodSchema = z4.infer<typeof studentIdParamsZodSchema>;
 export const studentFeeZodSchema = {
   createStudentFeeRateZodSchema,
   createStudentFeePaymentZodSchema,
@@ -131,4 +135,5 @@ export const studentFeeZodSchema = {
   updateStudentFeePaymentFieldZodSchema,
   studentFeeRateIdParamsZodSchema,
   studentFeePaymentIdParamsZodSchema,
+  studentIdParamsZodSchema,
 };

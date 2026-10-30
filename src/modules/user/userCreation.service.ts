@@ -8,7 +8,6 @@ import { TUserCreateZodSchema } from "./user.zodValidation";
 import { prisma } from "../../lib/prisma";
 import { Prisma, Role } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
-import { redisClient } from "../../lib/redis";
 import crypto from "crypto";
 
 // ======================================
@@ -63,9 +62,8 @@ const createUser = async (
   const user_name =
     userCount === 0 ? mobile_number : `${mobile_number}-${userCount}`;
 
-  // 6. Create DB records and deliver the verification email atomically.
+  // 6. Create DB records atomically.
   const otpKey = `new_user_welcome_otp:${email}`;
-  let otpIssued = false;
   const newUser = await prisma
     .$transaction(
       async (transaction) => {
@@ -270,38 +268,37 @@ const createUser = async (
         // Bulk resolve tracking inputs
         await transaction.auditLog.createMany({ data: auditRecords });
 
-        // Async email notification verification rules distribution step
-        const expirationSeconds = 5 * 60;
-        const otpValue = crypto.randomInt(100000, 1000000).toString();
-        await issueOtpAndSendEmail({
-          key: otpKey,
-          otp: otpValue,
-          expirationSeconds,
-          to: email,
-          templateName: "create_user_email_verify.ejs",
-          subject:
-            "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
-          templateData: {
-            name: full_name,
-            user_name,
-            OTP: otpValue,
-            year: new Date().getFullYear(),
-          },
-        });
-        otpIssued = true;
-
         return createdUser;
       },
       { timeout: 30000 },
-    )
-    .catch(async (error: unknown) => {
-      if (otpIssued) {
-        await redisClient.del(otpKey).catch(() => undefined);
-      }
-      throw error;
-    });
+    );
 
-  return { user: newUser, email_sent: true };
+  let emailSent = true;
+  try {
+    const expirationSeconds = 5 * 60;
+    const otpValue = crypto.randomInt(100000, 1000000).toString();
+    await issueOtpAndSendEmail({
+      key: otpKey,
+      otp: otpValue,
+      expirationSeconds,
+      to: email,
+      templateName: "create_user_email_verify.ejs",
+      subject: "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
+      templateData: {
+        name: full_name,
+        user_name,
+        OTP: otpValue,
+        year: new Date().getFullYear(),
+      },
+    });
+  } catch (error) {
+    if (!(error instanceof Error)) {
+      throw error;
+    }
+    emailSent = false;
+  }
+
+  return { user: newUser, email_sent: emailSent };
 };
 
 export const createUserServices = {

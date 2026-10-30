@@ -167,9 +167,68 @@ const getAllStudentFeeRates= async(
 )=>{
   assertManagementAccountant(loggedInUser);
   return prisma.studentFeeRate.findMany({
-  orderBy: [{ effective_from: "desc" }, { id: "asc" }],
-});
-}
+    orderBy: [{ effective_from: "desc" }, { id: "asc" }],
+  });
+};
+
+// ======================================================
+// GET STUDENT FEE RATE BY STUDENT ID SERVICE LAYER
+// ======================================================
+const getStudentFeeRateByStudentId = async (
+  loggedInUser: TLoggedInUser,
+  student_id: string,
+) => {
+  assertManagementAccountant(loggedInUser);
+
+  const student = await prisma.student.findUnique({
+    where: { id: student_id },
+    select: {
+      fee_rates: {
+        orderBy: [{ effective_from: "desc" }, { id: "asc" }],
+      },
+    },
+  });
+  if (!student) {
+    throw new AppError("Student not found.", StatusCodes.NOT_FOUND);
+  }
+
+  return student.fee_rates;
+};
+
+// ======================================================
+// GET ALL STUDENT FEE PAYMENT SERVICE LAYER
+// ======================================================
+const getAllStudentFeePayments = async (loggedInUser: TLoggedInUser) => {
+  assertManagementAccountant(loggedInUser);
+  return prisma.studentFeePayment.findMany({
+    orderBy: [{ paid_at: "desc" }, { id: "asc" }],
+  });
+};
+
+// ======================================================
+// GET STUDENT FEE PAYMENTS BY STUDENT ID SERVICE LAYER
+// ======================================================
+const getStudentFeePaymentsByStudentId = async (
+  loggedInUser: TLoggedInUser,
+  student_id: string,
+) => {
+  assertManagementAccountant(loggedInUser);
+
+  const student = await prisma.student.findUnique({
+    where: { id: student_id },
+    select: {
+      fee_payments: {
+        orderBy: [{ paid_at: "desc" }, { id: "asc" }],
+      },
+    },
+  });
+  if (!student) {
+    throw new AppError("Student not found.", StatusCodes.NOT_FOUND);
+  }
+
+  return student.fee_payments;
+};
+
 // ======================================================
 // CREATE STUDENT FEE PAYMENT SERVICE LAYER
 // ======================================================
@@ -316,6 +375,9 @@ export const studentFeeServices = {
   updateStudentFeeRateField,
   deleteStudentFeeRate,
   getAllStudentFeeRates,
+  getStudentFeeRateByStudentId,
+  getAllStudentFeePayments,
+  getStudentFeePaymentsByStudentId,
   createStudentFeePayment,
   updateStudentFeePaymentField,
   deleteStudentFeePayment,

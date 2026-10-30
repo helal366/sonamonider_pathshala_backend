@@ -1,10 +1,4 @@
 import z4 from "zod/v4";
-const AcademicStaffFields = [
-  "teaching_experience_year",
-  "teaching_experience_month",
-  "alternative_contact_no",
-  "extra_curricular_activities",
-] as const;
 
 const academicStaffParamsZodSchema = z4.object({
   id: z4.uuid("Invalid academic staff ID format."),

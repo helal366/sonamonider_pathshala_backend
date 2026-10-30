@@ -59,8 +59,8 @@ const assignGradeGroupTeacher= catchAsync(async(req: Request, res: Response)=>{
           success: true,
           statusCode: StatusCodes.OK,
           message: result.email_sent
-            ? "Grade or Group teacher assigned successfully."
-            : "Grade or Group teacher assigned successfully, but the notification email could not be sent.",
+            ? `${result.teacherType} teacher assigned successfully.`
+            : `${result.teacherType} teacher assigned successfully, but the notification email could not be sent.`,
           data: result,
         });
 });
@@ -78,7 +78,11 @@ const disconnectGradeGroupTeacher= catchAsync(async(req: Request, res: Response)
         sendResponse(res, {
           success: true,
           statusCode: StatusCodes.OK,
-          message: `Grade or Group teacher disconnected successfully.`,
+          message: result.email_skipped
+            ? `${result.teacherType} teacher disconnected successfully. Notification email was skipped because the teacher account is inactive or deleted.`
+            : result.email_sent
+              ? `${result.teacherType} teacher disconnected successfully.`
+              : `${result.teacherType} teacher disconnected successfully, but the notification email could not be sent.`,
           data: result,
         });
 });

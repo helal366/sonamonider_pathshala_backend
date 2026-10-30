@@ -9,6 +9,7 @@ import {
   TCreateStudentFeeRateZodSchema,
   TStudentFeePaymentIdParamsZodSchema,
   TStudentFeeRateIdParamsZodSchema,
+  TStudentIdParamsZodSchema,
   TUpdateStudentFeePaymentFieldZodSchema,
   TUpdateStudentFeeRateFieldZodSchema,
 } from "./studentFee.zodValidation.js";
@@ -96,7 +97,67 @@ const getAllStudentFeeRates = catchAsync(async(req: Request, res: Response)=>{
     message: "All student fee rate retrieved successfully.",
     data : result
   }) 
-})
+});
+
+// ======================================================
+// GET STUDENT FEE RATE BY STUDENT ID CONTROLLER
+// ======================================================
+const getStudentFeeRateByStudentId = catchAsync(
+  async (
+    req: Request<TStudentIdParamsZodSchema>,
+    res: Response,
+  ) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const { student_id } = req.params;
+    const result = await studentFeeServices.getStudentFeeRateByStudentId(
+      loggedInUser,
+      student_id,
+    );
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Student fee rates retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
+// ======================================================
+// GET ALL STUDENT FEE PAYMENT CONTROLLER
+// ======================================================
+const getAllStudentFeePayments = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await studentFeeServices.getAllStudentFeePayments(loggedInUser);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "All student fee payments retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
+// ======================================================
+// GET STUDENT FEE PAYMENTS BY STUDENT ID CONTROLLER
+// ======================================================
+const getStudentFeePaymentsByStudentId = catchAsync(
+  async (req: Request<TStudentIdParamsZodSchema>, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const { student_id } = req.params;
+    const result = await studentFeeServices.getStudentFeePaymentsByStudentId(
+      loggedInUser,
+      student_id,
+    );
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Student fee payments retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
 // ======================================================
 // CREATE STUDENT FEE PAYMENT CONTROLLER
 // ======================================================
@@ -173,6 +234,9 @@ export const studentFeeController = {
   updateStudentFeeRateField,
   deleteStudentFeeRate,
   getAllStudentFeeRates,
+  getStudentFeeRateByStudentId,
+  getAllStudentFeePayments,
+  getStudentFeePaymentsByStudentId,
   createStudentFeePayment,
   updateStudentFeePaymentField,
   deleteStudentFeePayment,
