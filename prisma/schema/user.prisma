@@ -36,6 +36,20 @@ model User {
   academic_staff_profile   AcademicStaff?   @relation("academic_staff_profile")
   student_profile          Student?         @relation("student_profile")
   governing_body_profile   GoverningBody?   @relation("governing_body_profile")
+  
+  father_details_id String?
+  father_details    FatherDetails? @relation("user_father_details", fields: [father_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  mother_details_id String?
+  mother_details    MotherDetails? @relation("user_mother_details", fields: [mother_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  spouse_information SpouseInformation?
+
+  permanent_address_id String?
+  permanent_address PermanentAddress? @relation(fields: [permanent_address_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  present_address_id String?
+  present_address   PresentAddress? @relation(fields: [present_address_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   created_management_staffs ManagementStaff[] @relation("management_staff_created_by")
   updated_management_staffs ManagementStaff[] @relation("management_staff_updated_by")
@@ -147,16 +161,6 @@ model User {
   created_staff_payments StaffPayment[] @relation("staff_payment_created_by")
   updated_staff_payments StaffPayment[] @relation("staff_payment_updated_by")
 
-  father_details_id String?
-  father_details    FatherDetails? @relation("user_father_details", fields: [father_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  mother_details_id String?
-  mother_details    MotherDetails? @relation("user_mother_details", fields: [mother_details_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
-
-  spouse_information SpouseInformation?
-
-  permanent_address PermanentAddress?
-  present_address   PresentAddress?
 
   created_by_id String?
   created_by    User?   @relation("user_created_by", fields: [created_by_id], references: [id])

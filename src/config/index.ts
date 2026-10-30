@@ -27,7 +27,9 @@ interface IEnvVariables {
   SUPER_ADMIN_PASSWORD: string;
   SUPER_ADMIN_MOBILE_NO:string;
   SUPER_ADMIN_EMAIL:string;
-  SUPER_ADMIN_NAME: string
+  SUPER_ADMIN_NAME: string;
+  SSL_COMMERZ_STORE_ID:string;
+  SSL_COMMERZ_STORE_PASSWORD: string;
 }
 const loadEnvVariables = (): IEnvVariables => {
   const envVars: string[] = [
@@ -56,7 +58,9 @@ const loadEnvVariables = (): IEnvVariables => {
     "SUPER_ADMIN_PASSWORD",
     "SUPER_ADMIN_MOBILE_NO",
     "SUPER_ADMIN_EMAIL",
-    "SUPER_ADMIN_NAME"
+    "SUPER_ADMIN_NAME",
+    "SSL_COMMERZ_STORE_ID",
+    "SSL_COMMERZ_STORE_PASSWORD",
   ];
   for (const varName of envVars) {
     if (!process.env[varName]) {
@@ -89,7 +93,9 @@ const loadEnvVariables = (): IEnvVariables => {
     SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
     SUPER_ADMIN_MOBILE_NO:process.env.SUPER_ADMIN_MOBILE_NO as string,
     SUPER_ADMIN_EMAIL:process.env.SUPER_ADMIN_EMAIL as string,
-    SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME as string
+    SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME as string,
+    SSL_COMMERZ_STORE_ID:process.env.SSL_COMMERZ_STORE_ID as string,
+    SSL_COMMERZ_STORE_PASSWORD: process.env.SSL_COMMERZ_STORE_PASSWORD as string
   };
 };
 export const envVars = loadEnvVariables();

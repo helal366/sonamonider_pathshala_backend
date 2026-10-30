@@ -18,6 +18,11 @@ const toMinutes = (time: string): number => {
 
   return hours24 * 60 + minutes!;
 };
+
+const backendUrlVercel = "https://sonamoniderpathshalabackend.vercel.app/";
+const backendUrlLocal = "http://localhost:5000/";
+export const BACKEND_URL = backendUrlLocal;
+export const FRONTEND_URL = "";
 export const helperFunctions = {
   requiredUser,
   toMinutes

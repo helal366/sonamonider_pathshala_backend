@@ -79,6 +79,10 @@ app.use("/api/v1/smps/half_yearly_exam_mark", halfYearlyExamMarkRouter);
 app.use("/api/v1/smps/annual_exam_mark", annualExamMarkRouter);
 
 // basic route
+app.get("/favicon.ico", (_req: Request, res: Response) => {
+  res.status(204).end();
+});
+
 app.get("/", (req: Request, res: Response) => {
   res.send(html);
 });

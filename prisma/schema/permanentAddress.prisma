@@ -14,9 +14,8 @@ model PermanentAddress {
   district      String
   country       String  @default("Bangladesh")
 
-  user_id String? @unique
-  user    User?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
+  user    User[] 
+  
   spouse_id String?            @unique
   spouse    SpouseInformation? @relation(fields: [spouse_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

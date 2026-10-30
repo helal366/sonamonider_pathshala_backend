@@ -174,7 +174,7 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 
 ## STAFF SALARY:
 - monthly_salary
-- eid_bonus [eid_ul_fitr and eid_ul_adha]
+- eid_bonus [eid_ul_fitr and eid_ul_azha]
 - performance_bonus [yearly]
 - increment
 
