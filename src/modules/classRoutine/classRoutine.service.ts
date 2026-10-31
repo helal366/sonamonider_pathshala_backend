@@ -135,14 +135,25 @@ const validateRoutineReferences = async (
 ) => {
   const [
     classCount,
-    teacherCount,
+    teachers,
     generalSubjectCount,
     quranicSubjectCount,
     arabicSubjectCount,
     times,
   ] = await Promise.all([
     tx.class.count({ where: { id: { in: payload.class_ids } } }),
-    tx.academicStaff.count({ where: { id: { in: payload.teacher_ids } } }),
+    tx.academicStaff.findMany({
+      where: { id: { in: payload.teacher_ids } },
+      select: {
+        id: true,
+        user_primary_data: {
+          select: {
+            active_status: true,
+            is_deleted: true,
+          },
+        },
+      },
+    }),
     payload.general_subject_ids.length === 0
       ? Promise.resolve(0)
       : tx.generalSubject.count({
@@ -172,10 +183,22 @@ const validateRoutineReferences = async (
       StatusCodes.NOT_FOUND,
     );
   }
-  if (teacherCount !== payload.teacher_ids.length) {
+  if (teachers.length !== payload.teacher_ids.length) {
     throw new AppError(
       "One or more selected teachers were not found.",
       StatusCodes.NOT_FOUND,
+    );
+  }
+  if (
+    teachers.some(
+      (teacher) =>
+        teacher.user_primary_data.active_status !== "ACTIVE" ||
+        teacher.user_primary_data.is_deleted,
+    )
+  ) {
+    throw new AppError(
+      "One or more selected teachers are inactive or deleted.",
+      StatusCodes.BAD_REQUEST,
     );
   }
   if (generalSubjectCount !== payload.general_subject_ids.length) {
@@ -386,7 +409,9 @@ const persistRoutineUpdate = async (
   });
   return updated;
 };
-
+// ==============================================================
+// CREATE CLASS ROUTINE SERVICE LAYER
+// ==============================================================
 const createClassRoutine = async (
   payload: TCreateClassRoutinePayload,
   user: LoggedInUser,
@@ -448,6 +473,9 @@ const createClassRoutine = async (
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
 
+// ==============================================================
+// UPDATE CLASS ROUTINE SERVICE LAYER
+// ==============================================================
 const updateClassRoutine = async (
   payload: TUpdateClassRoutinePayload,
   user: LoggedInUser,
@@ -468,6 +496,9 @@ const updateClassRoutine = async (
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
 
+// ==============================================================
+// UPDATE CLASS ROUTINE SINGLE FIELD SERVICE LAYER
+// ==============================================================
 const updateClassRoutineSingleField = async (
   payload: TUpdateClassRoutineSingleFieldPayload,
   user: LoggedInUser,
@@ -565,16 +596,31 @@ const updateClassRoutineSingleField = async (
           next.general_period_id = payload.value;
           next.quranic_period_id = undefined;
           next.arabic_period_id = undefined;
+          if (currentPeriodType !== "general") {
+            next.general_subject_ids = [];
+            next.quranic_subject_ids = [];
+            next.arabic_subject_ids = [];
+          }
           break;
         case "quranic_period_id":
           next.general_period_id = undefined;
           next.quranic_period_id = payload.value;
           next.arabic_period_id = undefined;
+          if (currentPeriodType !== "quranic") {
+            next.general_subject_ids = [];
+            next.quranic_subject_ids = [];
+            next.arabic_subject_ids = [];
+          }
           break;
         case "arabic_period_id":
           next.general_period_id = undefined;
           next.quranic_period_id = undefined;
           next.arabic_period_id = payload.value;
+          if (currentPeriodType !== "arabic") {
+            next.general_subject_ids = [];
+            next.quranic_subject_ids = [];
+            next.arabic_subject_ids = [];
+          }
           break;
         case "general_subject_ids":
           if (currentPeriodType !== "general") {
@@ -617,6 +663,9 @@ const updateClassRoutineSingleField = async (
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
   );
 
+// ==============================================================
+// DELETE CLASS ROUTINE SERVICE LAYER
+// ==============================================================
 const deleteClassRoutine = async (id: string, user: LoggedInUser) =>
   prisma.$transaction(async (tx) => {
     const current = await tx.classRoutine.findUnique({
@@ -641,12 +690,18 @@ const deleteClassRoutine = async (id: string, user: LoggedInUser) =>
     return deleted;
   });
 
+// ==============================================================
+// GET ALL CLASS ROUTINE SERVICE LAYER
+// ==============================================================
 const getAllClassRoutines = () =>
   prisma.classRoutine.findMany({
     orderBy: { created_at: "desc" },
     include: routineInclude,
   });
 
+// ==============================================================
+// GET SINGLE CLASS ROUTINE SERVICE LAYER
+// ==============================================================
 const getSingleClassRoutine = async (id: string) => {
   const routine = await prisma.classRoutine.findUnique({
     where: { id },

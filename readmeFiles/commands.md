@@ -7,6 +7,7 @@
 * pnpm dlx vercel env import .env
 * pnpm dlx vercel env add
 * pnpm dlx vercel env ls
+* pnpm dlx vercel env pull .env.vercel
 * pnpm dlx vercel --prod
 * pnpm vercel env rm DATABASE_URL
 * pnpm vercel env rm DATABASE_URL_DIRECT
@@ -71,3 +72,32 @@ echo $QT_IM_MODULE
 echo $XMODIFIERS
 /usr/bin/code
 ```
+## SSLCommerz test credit card numbers are :
+* Test Credit Card Account Numbers
+* VISA
+- Card Number: 4111111111111111
+- Exp: 12/25
+- CVV: 111
+
+* Mastercard
+- Card Number: 5111111111111111
+- Exp: 12/25
+- CVV: 111
+
+* American Express
+- Card Number: 371111111111111
+- Exp: 12/25
+- CVV: 111
+
+* Mobile OTP
+- 111111 or 123456
+
+## SSLCommerz product profile
+* product_profile
+- general
+- physical-goods
+- non-physical-goods
+- airline-tickets
+- travel-vertical
+- telecom-vertical
+

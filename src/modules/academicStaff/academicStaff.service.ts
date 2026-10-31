@@ -373,7 +373,6 @@ const disconnectGradeGroupTeacher = async (
       where: { id: class_id },
       select: {
         class_name: true,
-        grade_group_teacher_id: true,
         grade_group_teacher: {
           select: {
             id: true,
@@ -398,14 +397,14 @@ const disconnectGradeGroupTeacher = async (
       : "Group";
 
     // CHECK IF CLASS HAS A GRADE/GROUP TEACHER
-    if (!existingClass.grade_group_teacher_id) {
+    if (!existingClass.grade_group_teacher) {
       throw new AppError(
         `No ${teacherType} teacher is currently assigned to this class.`,
         StatusCodes.BAD_REQUEST,
       );
     }
     //CHECK WHETHER PROVIDED ACADEMIC STAFF IS THE CURRENT GRADE/GROUP TEACHER
-    if (existingClass.grade_group_teacher_id !== academicStaff_id) {
+    if (existingClass.grade_group_teacher.id !== academicStaff_id) {
       throw new AppError(
         `The provided teacher is not assigned as ${teacherType} teacher of this class.`,
         StatusCodes.BAD_REQUEST,
@@ -438,10 +437,10 @@ const disconnectGradeGroupTeacher = async (
     }
 
     // UPDATE CLASS
-    const updated = await tx.class.update({
-      where: { id: class_id },
+    const updated = await tx.academicStaff.update({
+      where: { id: academicStaff_id },
       data: {
-        grade_group_teacher_id: null,
+        grade_group_teacher_class_id: null,
         updated_by_id: loggedInUser.user_id,
       },
     });
@@ -455,14 +454,13 @@ const disconnectGradeGroupTeacher = async (
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: {
-            grade_group_teacher_id: academicStaff_id,
             grade_group_teacher: {
-              full_name: currentGradeGroupTeacher.user_primary_data.full_name,
-              mobile_number:
-                currentGradeGroupTeacher.user_primary_data.mobile_number,
+              id: currentGradeGroupTeacher.id,
             },
           },
-          new_value: Prisma.JsonNull,
+          new_value: {
+            grade_group_teacher: null
+          }
         },
         {
           entity_id: academicStaff_id,

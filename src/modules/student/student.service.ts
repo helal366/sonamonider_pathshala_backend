@@ -4,10 +4,12 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import {
   TAddResponsibleTeacherZodSchema,
+  TDisconnectResponsibleTeacherZodSchema,
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
 import { Prisma } from "#db-client";
 import { userHelperFunction } from "../user/user.helperFunction";
+import { sendVerificationResultEmail } from "../email/email.helper.function";
 
 // =============================================
 // STUDENT READMISSION SERVICE LAYER
@@ -195,7 +197,8 @@ const addResponsibleTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { student_id, teacher_full_name, teacher_mobile_number } = payload;
-  return await prisma.$transaction(async (transaction) => {
+  const { assignedResponsibleTeacher, studentEmail, teacherEmail } =
+    await prisma.$transaction(async (transaction) => {
     const existingTeacher = await transaction.academicStaff.findFirst({
       where: {
         user_primary_data: {
@@ -205,10 +208,11 @@ const addResponsibleTeacher = async (
       },
       select: {
         id: true,
-        full_name: true,
-        mobile_number: true,
         user_primary_data: {
           select: {
+            full_name: true,
+            mobile_number: true,
+            email: true,
             active_status: true,
             is_deleted: true,
           },
@@ -229,8 +233,6 @@ const addResponsibleTeacher = async (
       where: { id: student_id },
       select: {
         id: true,
-        full_name: true,
-        mobile_number: true,
         responsible_teacher_id: true,
         responsible_teacher: {
           include: {
@@ -244,8 +246,16 @@ const addResponsibleTeacher = async (
         },
         user_primary_data: {
           select: {
+            full_name: true,
+            mobile_number: true,
+            email: true,
             active_status: true,
             is_deleted: true,
+          },
+        },
+        active_class: {
+          select: {
+            class_name: true,
           },
         },
       },
@@ -271,6 +281,7 @@ const addResponsibleTeacher = async (
       where: { id: student_id },
       data: {
         responsible_teacher: { connect: { id: existingTeacher.id } },
+        updated_by: { connect: { id: loggedInUser.user_id } },
       },
     });
 
@@ -284,17 +295,211 @@ const addResponsibleTeacher = async (
         new_value: {
           responsible_teacher_id: existingTeacher.id,
           responsible_teacher: {
-            full_name: existingTeacher.full_name,
-            mobile_number: existingTeacher.mobile_number,
+            full_name: existingTeacher.user_primary_data.full_name,
+            mobile_number: existingTeacher.user_primary_data.mobile_number,
           },
         },
       },
     });
-    return assignedResponsibleTeacher;
+    return {
+      assignedResponsibleTeacher,
+      studentEmail: {
+        to: existingStudent.user_primary_data.email,
+        templateName: "student_responsible_teacher_assigned_email.ejs" as const,
+        subject: "Your Responsible Teacher – SONAMONIDER PATHSHALA",
+        templateData: {
+          studentName: existingStudent.user_primary_data.full_name,
+          teacherName: existingTeacher.user_primary_data.full_name,
+          teacherMobile: existingTeacher.user_primary_data.mobile_number,
+          className: existingStudent.active_class.class_name,
+          year: new Date().getFullYear(),
+        },
+      },
+      teacherEmail: {
+        to: existingTeacher.user_primary_data.email,
+        templateName: "teacher_responsible_student_assigned_email.ejs" as const,
+        subject: "New Student in Your Responsibility – SONAMONIDER PATHSHALA",
+        templateData: {
+          teacherName: existingTeacher.user_primary_data.full_name,
+          studentName: existingStudent.user_primary_data.full_name,
+          studentMobile: existingStudent.user_primary_data.mobile_number,
+          className: existingStudent.active_class.class_name,
+          year: new Date().getFullYear(),
+        },
+      },
+    };
   });
+
+  const sendNotificationEmail = async (
+    email: {
+      to: string;
+      templateName: string;
+      subject: string;
+      templateData: Record<string, string | number>;
+    },
+  ): Promise<boolean> => {
+    try {
+      await sendVerificationResultEmail(email);
+      return true;
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+      return false;
+    }
+  };
+
+  const [studentEmailSent, teacherEmailSent] = await Promise.all([
+    sendNotificationEmail(studentEmail),
+    sendNotificationEmail(teacherEmail),
+  ]);
+
+  return {
+    ...assignedResponsibleTeacher,
+    student_email_sent: studentEmailSent,
+    teacher_email_sent: teacherEmailSent,
+  };
+};
+
+// =============================================
+// DISCONNECT RESPONSIBLE TEACHER SERVICE LAYER
+// =============================================
+const disconnectResponsibleTeacher = async (
+  payload: TDisconnectResponsibleTeacherZodSchema,
+  loggedInUser: TLoggedInUser,
+) => {
+  const { student_id } = payload;
+  const { updatedStudent, studentEmail, teacherEmail } =
+    await prisma.$transaction(async (transaction) => {
+      const existingStudent = await transaction.student.findUnique({
+        where: { id: student_id },
+        select: {
+          id: true,
+          responsible_teacher_id: true,
+          user_primary_data: {
+            select: {
+              full_name: true,
+              mobile_number: true,
+              email: true,
+            },
+          },
+          active_class: {
+            select: {
+              class_name: true,
+            },
+          },
+          responsible_teacher: {
+            select: {
+              id: true,
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!existingStudent) {
+        throw new AppError("Student not found.", StatusCodes.NOT_FOUND);
+      }
+
+      if (!existingStudent.responsible_teacher) {
+        throw new AppError(
+          "No responsible teacher is currently assigned to this student.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
+      const currentTeacher = existingStudent.responsible_teacher;
+      const updatedStudent = await transaction.student.update({
+        where: { id: student_id },
+        data: {
+          responsible_teacher: { disconnect: true },
+          updated_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+
+      await transaction.auditLog.create({
+        data: {
+          entity_id: student_id,
+          entity_name: "student",
+          changed_by: { connect: { id: loggedInUser.user_id } },
+          action: "UPDATE",
+          old_value: {
+            responsible_teacher_id: currentTeacher.id,
+            responsible_teacher: {
+              full_name: currentTeacher.user_primary_data.full_name,
+              mobile_number: currentTeacher.user_primary_data.mobile_number,
+            },
+          },
+          new_value: Prisma.JsonNull,
+        },
+      });
+
+      return {
+        updatedStudent,
+        studentEmail: {
+          to: existingStudent.user_primary_data.email,
+          templateName:
+            "student_responsible_teacher_disconnected_email.ejs" as const,
+          subject: "Responsible Teacher Assignment Removed – SONAMONIDER PATHSHALA",
+          templateData: {
+            studentName: existingStudent.user_primary_data.full_name,
+            teacherName: currentTeacher.user_primary_data.full_name,
+            className: existingStudent.active_class.class_name,
+            year: new Date().getFullYear(),
+          },
+        },
+        teacherEmail: {
+          to: currentTeacher.user_primary_data.email,
+          templateName:
+            "teacher_responsible_student_disconnected_email.ejs" as const,
+          subject: "Student Responsibility Assignment Removed – SONAMONIDER PATHSHALA",
+          templateData: {
+            teacherName: currentTeacher.user_primary_data.full_name,
+            studentName: existingStudent.user_primary_data.full_name,
+            className: existingStudent.active_class.class_name,
+            year: new Date().getFullYear(),
+          },
+        },
+      };
+    });
+
+  const sendNotificationEmail = async (email: {
+    to: string;
+    templateName: string;
+    subject: string;
+    templateData: Record<string, string | number>;
+  }): Promise<boolean> => {
+    try {
+      await sendVerificationResultEmail(email);
+      return true;
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+      return false;
+    }
+  };
+
+  const [studentEmailSent, teacherEmailSent] = await Promise.all([
+    sendNotificationEmail(studentEmail),
+    sendNotificationEmail(teacherEmail),
+  ]);
+
+  return {
+    ...updatedStudent,
+    student_email_sent: studentEmailSent,
+    teacher_email_sent: teacherEmailSent,
+  };
 };
 
 export const studentServices = {
   studentReadmission,
   addResponsibleTeacher,
+  disconnectResponsibleTeacher,
 };

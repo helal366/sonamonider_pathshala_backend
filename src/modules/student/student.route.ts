@@ -28,4 +28,14 @@ router.patch(
   validateZodSchema(studentZodSchema.addResponsibleTeacherZodSchema),
   studentController.addResponsibleTeacher,
 );
+
+// =============================================
+// DISCONNECT RESPONSIBLE TEACHER ROUTE
+// =============================================
+router.patch(
+  "/disconnect_responsible_teacher",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  validateZodSchema(studentZodSchema.disconnectResponsibleTeacherZodSchema),
+  studentController.disconnectResponsibleTeacher,
+);
 export const studentRouter: Router = router;

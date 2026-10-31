@@ -9,7 +9,8 @@ model UserPosition {
   current_students          Student[]         @relation("student_current_position")
   current_governing_bodies  GoverningBody[]   @relation("governing_bodies_current_position")
 
-  promotion_history              PromotionHistory[]
+  promotion_history_previous_position   PromotionHistory[] @relation("previous_position_promotion_history")
+  promotion_history_current_position    PromotionHistory[] @relation("current_position_promotion_history")
   promotion_request_old_position PromotionRequest[] @relation("promotion_request_old_position")
   promotion_request_new_position PromotionRequest[] @relation("promotion_request_new_position")
 

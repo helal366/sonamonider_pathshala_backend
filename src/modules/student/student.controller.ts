@@ -38,15 +38,57 @@ const addResponsibleTeacher = catchAsync(
       payload,
       loggedInUser,
     );
+    const bothEmailsSent =
+      result.student_email_sent && result.teacher_email_sent;
+    const neitherEmailSent =
+      !result.student_email_sent && !result.teacher_email_sent;
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: `Responsible teacher added successfully.`,
+      message: bothEmailsSent
+        ? "Responsible teacher added successfully. Both notification emails were sent."
+        : neitherEmailSent
+          ? "Responsible teacher added successfully, but neither notification email could be sent."
+          : `Responsible teacher added successfully, but the ${
+              result.student_email_sent ? "teacher" : "student"
+            } notification email could not be sent.`,
       data: result,
     });
   },
 );
+
+// =============================================
+// DISCONNECT RESPONSIBLE TEACHER CONTROLLER
+// =============================================
+const disconnectResponsibleTeacher = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await studentServices.disconnectResponsibleTeacher(
+      req.body,
+      loggedInUser,
+    );
+    const bothEmailsSent =
+      result.student_email_sent && result.teacher_email_sent;
+    const neitherEmailSent =
+      !result.student_email_sent && !result.teacher_email_sent;
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: bothEmailsSent
+        ? "Responsible teacher disconnected successfully. Both notification emails were sent."
+        : neitherEmailSent
+          ? "Responsible teacher disconnected successfully, but neither notification email could be sent."
+          : `Responsible teacher disconnected successfully, but the ${
+              result.student_email_sent ? "teacher" : "student"
+            } notification email could not be sent.`,
+      data: result,
+    });
+  },
+);
+
 export const studentController = {
   studentReadmission,
   addResponsibleTeacher,
+  disconnectResponsibleTeacher,
 };

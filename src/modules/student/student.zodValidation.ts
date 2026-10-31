@@ -102,7 +102,19 @@ const addResponsibleTeacherZodSchema = z4.object({
 export type TAddResponsibleTeacherZodSchema = z4.infer<
   typeof addResponsibleTeacherZodSchema
 >;
+
+// =============================================
+// DISCONNECT RESPONSIBLE TEACHER ZOD SCHEMA
+// =============================================
+const disconnectResponsibleTeacherZodSchema = z4.object({
+  student_id: z4.uuid("Invalid Student ID format."),
+});
+export type TDisconnectResponsibleTeacherZodSchema = z4.infer<
+  typeof disconnectResponsibleTeacherZodSchema
+>;
+
 export const studentZodSchema = {
   studentReadmissionZodSchema,
   addResponsibleTeacherZodSchema,
+  disconnectResponsibleTeacherZodSchema,
 };

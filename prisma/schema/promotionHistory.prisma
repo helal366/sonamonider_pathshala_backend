@@ -8,8 +8,11 @@ model PromotionHistory {
   academic_staff_id String?
   academic_staff    AcademicStaff? @relation(fields: [academic_staff_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  position_id String
-  position    UserPosition @relation(fields: [position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  previous_position_id String
+  previous_position UserPosition @relation("previous_position_promotion_history",fields: [previous_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  current_position_id String
+  current_position    UserPosition @relation("current_position_promotion_history",fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   student_id String?
   student    Student? @relation(fields: [student_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -17,7 +20,8 @@ model PromotionHistory {
   governing_body_id String?
   governing_body    GoverningBody? @relation(fields: [governing_body_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  role       Role
+  previous_role   Role
+  current_role       Role
   // Metadata Fields
   start_date DateTime  @default(now())
   end_date   DateTime?
@@ -33,6 +37,6 @@ model PromotionHistory {
 
   @@index([management_staff_id])
   @@index([academic_staff_id])
-  @@index([position_id])
+  @@index([current_position_id])
   @@map("promotion_histories")
 }

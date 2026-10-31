@@ -82,52 +82,9 @@ const getAllClassNames = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// =============================================
-// ASSIGN GRADE GROUP TEACHER CONTROLLER
-// =============================================
-const assignGradeGroupTeacher = catchAsync(
-  async (req: Request, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body;
-    const result = await classServices.assignGradeGroupTeacher(
-      payload,
-      loggedInUser,
-    );
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: result.email_sent
-        ? "Grade or Group teacher assigned successfully."
-        : "Grade or Group teacher assigned successfully, but the notification email could not be sent.",
-      data: result,
-    });
-  },
-);
-
-// =============================================
-// DISCONNECT GRADE GROUP TEACHER CONTROLLER
-// =============================================
-const disconnectGradeGroupTeacher = catchAsync(
-  async (req: Request, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body;
-    const result = await classServices.disconnectGradeGroupTeacher(
-      payload,
-      loggedInUser,
-    );
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: `Grade or Group teacher assigned successfully.`,
-      data: result,
-    });
-  },
-);
 export const classController = {
   createClassName,
   deleteClassName,
   updateClassField,
   getAllClassNames,
-  assignGradeGroupTeacher,
-  disconnectGradeGroupTeacher,
 };
