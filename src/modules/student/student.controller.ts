@@ -4,18 +4,20 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { studentServices } from "./student.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TStudentReadmissionZodSchema } from "./student.zodValidation";
+import { TOldStudentAdmissionParamsZodSchema, TOldStudentAdmissionZodSchema, TStudentDeactivateZodSchema, TStudentReadmissionParamsZodSchema, TStudentReadmissionZodSchema } from "./student.zodValidation";
 
-// =============================================
+// ========================================================
 // STUDENT READMISSION CONTROLLER
-// =============================================
+// ========================================================
 const studentReadmission = catchAsync(async (req: Request, res: Response) => {
   const payload: TStudentReadmissionZodSchema = req.body;
+  const {student_id} = req.params as unknown as TStudentReadmissionParamsZodSchema
   const loggedInUser = helperFunctions.requiredUser(req);
 
   const result = await studentServices.studentReadmission(
     payload,
     loggedInUser,
+    student_id
   );
 
   sendResponse(res, {
@@ -27,14 +29,15 @@ const studentReadmission = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// =============================================
+// ========================================================
 // STUDENT DEACTIVATE CONTROLLER
-// =============================================
+// ========================================================
 const deactivateNotReadmittedStudents = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
+    const payload: TStudentDeactivateZodSchema = req.body;
     const result = await studentServices.deactivateNotReadmittedStudents(
-      loggedInUser,
+      loggedInUser, payload
     );
 
     sendResponse(res, {
@@ -46,9 +49,28 @@ const deactivateNotReadmittedStudents = catchAsync(
   },
 );
 
-// =============================================
+// ========================================================
+// OLD STUDENT ADMISSION CONTROLLER
+// ========================================================
+const oldStudentAdmission = catchAsync(async (req: Request, res: Response) => {
+      const loggedInUser = helperFunctions.requiredUser(req);
+      const {student_id} = req.params as unknown as TOldStudentAdmissionParamsZodSchema;
+    const payload: TOldStudentAdmissionZodSchema = req.body;
+    const result = await studentServices.oldStudentAdmission(
+      loggedInUser, payload, student_id
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Student admission successful.`,
+      data: result
+    })
+})
+
+// ========================================================
 // ADD RESPONSIBLE TEACHER CONTROLLER
-// =============================================
+// ========================================================
 const addResponsibleTeacher = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
@@ -76,9 +98,9 @@ const addResponsibleTeacher = catchAsync(
   },
 );
 
-// =============================================
+// ========================================================
 // DISCONNECT RESPONSIBLE TEACHER CONTROLLER
-// =============================================
+// ========================================================
 const disconnectResponsibleTeacher = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
@@ -109,6 +131,7 @@ const disconnectResponsibleTeacher = catchAsync(
 export const studentController = {
   studentReadmission,
   deactivateNotReadmittedStudents,
+  oldStudentAdmission,
   addResponsibleTeacher,
   disconnectResponsibleTeacher,
 };

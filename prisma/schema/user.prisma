@@ -149,6 +149,9 @@ model User {
   created_roles Role[]
   updated_roles Role[]
 
+  created_assigned_student_fee_rates AssignedStudentFeeRate[] @relation("assigned_student_fee_created_by")
+  updated_assigned_student_fee_rates AssignedStudentFeeRate[] @relation("assigned_student_fee_updated_by")
+
   created_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_created_by")
   updated_student_fee_rates StudentFeeRate[] @relation("student_fee_rate_updated_by")
 

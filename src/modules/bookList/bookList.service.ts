@@ -15,7 +15,14 @@ const createBookList = async (
   LoggedInUser: TLoggedInUser,
   payload: TCreateBookListZodSchema,
 ) => {
-  const { class_name, book_name, publisher, section, version } = payload;
+  const {
+    class_name,
+    book_name,
+    publisher,
+    isBookMain,
+    section,
+    version,
+  } = payload;
 
   return await prisma.$transaction(async (transaction) => {
     // Find class by name
@@ -33,6 +40,7 @@ const createBookList = async (
         class_id: classExists.id,
         book_name,
         publisher,
+        isBookMain,
         section,
         version,
       },
@@ -51,6 +59,7 @@ const createBookList = async (
         class_id: classExists.id,
         book_name,
         publisher,
+        isBookMain,
         section,
         version,
         created_by_id: LoggedInUser.user_id,
@@ -161,6 +170,14 @@ const updateBookListSingleField = async (
         updateData = { publisher: value };
         oldValue = { publisher: bookList.publisher };
         newValue = { publisher: value };
+        break;
+      case "isBookMain":
+        if (bookList.isBookMain === value) {
+          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+        }
+        updateData = { isBookMain: value };
+        oldValue = { isBookMain: bookList.isBookMain };
+        newValue = { isBookMain: value };
         break;
       case "class_name": {
         const targetClass = await transaction.class.findUnique({

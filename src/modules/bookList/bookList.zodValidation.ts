@@ -24,6 +24,12 @@ const createBookListZodSchema = z4.object({
     })
     .trim()
     .min(1, "Publisher is required."),
+  isBookMain: z4.boolean({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Main book status is required."
+        : "Main book status must be a boolean.",
+  }),
   section: z4.enum(Section),
   class_name: z4.string({
     error: (issue)=>
@@ -84,6 +90,12 @@ const updateBookListSingleFieldZodSchema = z4.discriminatedUnion("field", [
       })
       .trim()
       .min(1, "Publisher is required."),
+  }),
+  z4.object({
+    field: z4.literal("isBookMain"),
+    value: z4.boolean({
+      error: "Main book status must be a boolean.",
+    }),
   }),
   z4.object({
     field: z4.literal("class_name"),

@@ -4,14 +4,22 @@ import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
 import { bookListServices } from "./bookList.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
-import { TDeleteBookListParamsZodSchema, TGetBookListByPublisherZodSchema, TGetBookListsByClassIdParamsZodSchema, TGetSingleBookListParamsZodSchema, TUpdateBookListSingleFieldParamsZodSchema } from "./bookList.zodValidation";
+import {
+  TCreateBookListZodSchema,
+  TDeleteBookListParamsZodSchema,
+  TGetBookListByPublisherZodSchema,
+  TGetBookListsByClassIdParamsZodSchema,
+  TGetSingleBookListParamsZodSchema,
+  TUpdateBookListSingleFieldParamsZodSchema,
+  TUpdateBookListSingleFieldZodSchema,
+} from "./bookList.zodValidation";
 
 // =====================================================================
 // CREATE BOOK LIST CONTROLLER
 // =====================================================================
 const createBookList = catchAsync(async(req:Request, res: Response)=>{
     const LoggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body;
+    const payload = req.body as TCreateBookListZodSchema;
     const result =await bookListServices.createBookList(LoggedInUser, payload);
     sendResponse(res, {
         success: true,
@@ -42,7 +50,7 @@ const deleteBookList = catchAsync(async(req:Request, res: Response)=>{
 const updateBookListSingleField = catchAsync(async(req:Request, res: Response)=>{
     const LoggedInUser = helperFunctions.requiredUser(req);
     const {id} = req.params as unknown as TUpdateBookListSingleFieldParamsZodSchema;
-    const payload = req.body;
+    const payload = req.body as TUpdateBookListSingleFieldZodSchema;
     const result = await bookListServices.updateBookListSingleField(LoggedInUser, payload, id);
     sendResponse(res, {
         success: true,

@@ -26,7 +26,7 @@ CREATE TYPE "ActiveStatus" AS ENUM ('ACTIVE', 'INACTIVE');
 CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 
 -- CreateEnum
-CREATE TYPE "SubjectForSubjectTeacher" AS ENUM ('QURAN', 'BENGALI', 'ARABIC', 'ENGLISH', 'MATHEMATICS');
+CREATE TYPE "SubjectForSubjectTeacher" AS ENUM ('QURAN', 'BANGLA', 'ARABIC', 'ENGLISH', 'MATHEMATICS');
 
 -- CreateEnum
 CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', 'MSC', 'M_COM', 'M_ARTS', 'PHD', 'ALIM', 'DAKHIL', 'KAMIL', 'FAZIL', 'OTHERS');
@@ -35,13 +35,13 @@ CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', '
 CREATE TYPE "PromotionRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION', 'SESSION_ADMISSION', 'MONTHLY_ACADEMIC_EVALUATION', 'EXAM', 'INTENSIVE_CARE', 'REGISTRATION_FORM_FILL_UP', 'ACADEMIC_MATERIAL_UNIFORM', 'EXTRA_CURRICULAR_ACTIVITY', 'LABORATORY_LIBRARY', 'WINTER_FESTIVAL', 'SUMMER_FESTIVAL', 'BOOK_EXERCISE_BOOK', 'QURAN_HIFZ_MONTHLY', 'CERTIFICATION', 'RESIDENTIAL_DAYCARE_ESTABLISHMENT');
+CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION_FEE', 'SESSION_FEE', 'ADMISSION_FEE', 'MONTHLY_ACADEMIC_EVALUATION_FEE', 'HALF_YEARLY_EXAM_FEE', 'ANNUAL_EXAM_FEE', 'INTENSIVE_CARE_FEE', 'REGISTRATION_FORM_FILL_UP_FEE', 'ACADEMIC_MATERIAL_UNIFORM_FEE', 'EXTRA_CURRICULAR_ACTIVITY_FEE', 'LABORATORY_LIBRARY_FEE', 'WINTER_FESTIVAL_FEE', 'SUMMER_FESTIVAL_FEE', 'BOOK_EXERCISE_BOOK_FEE', 'QURAN_HIFZ_MONTHLY_FEE', 'CERTIFICATION_FEE', 'RESIDENTIAL_DAYCARE_ESTABLISHMENT_FEE');
 
 -- CreateEnum
 CREATE TYPE "BillingFrequency" AS ENUM ('MONTHLY', 'HALF_YEARLY', 'YEARLY', 'ONE_TIME');
 
 -- CreateEnum
-CREATE TYPE "StaffPaymentType" AS ENUM ('MONTHLY_SALARY', 'EID_UL_FITR_BONUS', 'EID_UL_ADHA_BONUS', 'PERFORMANCE_BONUS');
+CREATE TYPE "StaffPaymentType" AS ENUM ('MONTHLY_SALARY', 'EID_UL_FITR_BONUS', 'EID_UL_AZHA_BONUS', 'PERFORMANCE_BONUS');
 
 -- CreateEnum
 CREATE TYPE "SalaryChangeType" AS ENUM ('INITIAL', 'INCREMENT', 'ADJUSTMENT');
@@ -89,6 +89,7 @@ CREATE TABLE "academic_staffs" (
     "current_position_id" TEXT,
     "current_role" "Role",
     "subject_as_subject_teacher" TEXT,
+    "grade_group_teacher_class_id" TEXT,
     "teaching_experience_year" INTEGER,
     "teaching_experience_month" INTEGER,
     "alternative_contact_no" TEXT[],
@@ -160,6 +161,7 @@ CREATE TABLE "book_list" (
     "book_name" TEXT NOT NULL,
     "publisher" TEXT NOT NULL,
     "isBookActive" BOOLEAN NOT NULL DEFAULT true,
+    "isBookMain" BOOLEAN NOT NULL,
     "class_id" TEXT NOT NULL,
     "section" "Section" NOT NULL,
     "version" "Version" NOT NULL,
@@ -176,7 +178,6 @@ CREATE TABLE "classes" (
     "id" TEXT NOT NULL,
     "class_name" TEXT NOT NULL,
     "is_active_class" BOOLEAN NOT NULL DEFAULT true,
-    "grade_group_teacher_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -431,7 +432,6 @@ CREATE TABLE "permanent_addresses" (
     "thana" TEXT NOT NULL,
     "district" TEXT NOT NULL,
     "country" TEXT NOT NULL DEFAULT 'Bangladesh',
-    "user_id" TEXT,
     "spouse_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -457,7 +457,6 @@ CREATE TABLE "present_addresses" (
     "thana" TEXT NOT NULL,
     "district" TEXT NOT NULL,
     "country" TEXT NOT NULL DEFAULT 'Bangladesh',
-    "user_id" TEXT,
     "spouse_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -472,10 +471,12 @@ CREATE TABLE "promotion_histories" (
     "id" TEXT NOT NULL,
     "management_staff_id" TEXT,
     "academic_staff_id" TEXT,
-    "position_id" TEXT NOT NULL,
+    "previous_position_id" TEXT,
+    "current_position_id" TEXT NOT NULL,
     "student_id" TEXT,
     "governing_body_id" TEXT,
-    "role" "Role" NOT NULL,
+    "previous_role" "Role",
+    "current_role" "Role" NOT NULL,
     "start_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "end_date" TIMESTAMP(3),
     "created_by_id" TEXT,
@@ -615,8 +616,6 @@ CREATE TABLE "student_fee_rates" (
     "fee_type" "StudentFeeType" NOT NULL,
     "billing_frequency" "BillingFrequency" NOT NULL,
     "amount" DECIMAL(10,2) NOT NULL,
-    "effective_from" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "effective_to" TIMESTAMP(3),
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -642,6 +641,23 @@ CREATE TABLE "student_fee_payments" (
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "student_fee_payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "assigned_student_fee" (
+    "id" TEXT NOT NULL,
+    "fee_type" "StudentFeeType" NOT NULL,
+    "billing_frequency" "BillingFrequency" NOT NULL,
+    "amount" DECIMAL(10,2) NOT NULL,
+    "class_id" TEXT NOT NULL,
+    "section" "Section" NOT NULL,
+    "version" "Version" NOT NULL,
+    "created_by_id" TEXT,
+    "updated_by_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "assigned_student_fee_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -682,10 +698,12 @@ CREATE TABLE "users" (
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "current_role" "Role",
     "current_position_id" TEXT,
-    "created_roles" "Role"[],
-    "updated_roles" "Role"[],
     "father_details_id" TEXT,
     "mother_details_id" TEXT,
+    "permanent_address_id" TEXT,
+    "present_address_id" TEXT,
+    "created_roles" "Role"[],
+    "updated_roles" "Role"[],
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -764,6 +782,9 @@ CREATE UNIQUE INDEX "academic_results_academic_staff_id_key" ON "academic_result
 CREATE UNIQUE INDEX "academic_results_governing_body_id_key" ON "academic_results"("governing_body_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "academic_staffs_grade_group_teacher_class_id_key" ON "academic_staffs"("grade_group_teacher_class_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "academic_staffs_user_id_key" ON "academic_staffs"("user_id");
 
 -- CreateIndex
@@ -786,9 +807,6 @@ CREATE INDEX "audit_logs_entity_name_entity_id_created_at_idx" ON "audit_logs"("
 
 -- CreateIndex
 CREATE UNIQUE INDEX "classes_class_name_key" ON "classes"("class_name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "classes_grade_group_teacher_id_key" ON "classes"("grade_group_teacher_id");
 
 -- CreateIndex
 CREATE INDEX "class_history_start_date_idx" ON "class_history"("start_date");
@@ -836,13 +854,7 @@ CREATE UNIQUE INDEX "governing_bodies_user_id_key" ON "governing_bodies"("user_i
 CREATE UNIQUE INDEX "management_staffs_user_id_key" ON "management_staffs"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "permanent_addresses_user_id_key" ON "permanent_addresses"("user_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "permanent_addresses_spouse_id_key" ON "permanent_addresses"("spouse_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "present_addresses_user_id_key" ON "present_addresses"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "present_addresses_spouse_id_key" ON "present_addresses"("spouse_id");
@@ -854,7 +866,7 @@ CREATE INDEX "promotion_histories_management_staff_id_idx" ON "promotion_histori
 CREATE INDEX "promotion_histories_academic_staff_id_idx" ON "promotion_histories"("academic_staff_id");
 
 -- CreateIndex
-CREATE INDEX "promotion_histories_position_id_idx" ON "promotion_histories"("position_id");
+CREATE INDEX "promotion_histories_current_position_id_idx" ON "promotion_histories"("current_position_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "quranic_periods_quranic_period_name_key" ON "quranic_periods"("quranic_period_name");
@@ -896,10 +908,7 @@ CREATE UNIQUE INDEX "staff_payments_management_staff_id_payment_type_payment_per
 CREATE UNIQUE INDEX "students_user_id_key" ON "students"("user_id");
 
 -- CreateIndex
-CREATE INDEX "student_fee_rates_student_id_fee_type_effective_from_idx" ON "student_fee_rates"("student_id", "fee_type", "effective_from");
-
--- CreateIndex
-CREATE UNIQUE INDEX "student_fee_rates_student_id_fee_type_billing_frequency_eff_key" ON "student_fee_rates"("student_id", "fee_type", "billing_frequency", "effective_from");
+CREATE UNIQUE INDEX "student_fee_rates_student_id_fee_type_billing_frequency_key" ON "student_fee_rates"("student_id", "fee_type", "billing_frequency");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "student_fee_payments_receipt_number_key" ON "student_fee_payments"("receipt_number");
@@ -959,6 +968,9 @@ ALTER TABLE "academic_results" ADD CONSTRAINT "academic_results_updated_by_id_fk
 ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_grade_group_teacher_class_id_fkey" FOREIGN KEY ("grade_group_teacher_class_id") REFERENCES "classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "academic_staffs" ADD CONSTRAINT "academic_staffs_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -996,9 +1008,6 @@ ALTER TABLE "book_list" ADD CONSTRAINT "book_list_created_by_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "book_list" ADD CONSTRAINT "book_list_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "classes" ADD CONSTRAINT "classes_grade_group_teacher_id_fkey" FOREIGN KEY ("grade_group_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1142,9 +1151,6 @@ ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_created_by_id_fkey" 
 ALTER TABLE "mother_details" ADD CONSTRAINT "mother_details_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_spouse_id_fkey" FOREIGN KEY ("spouse_id") REFERENCES "spouse_infromation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1152,9 +1158,6 @@ ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_created_by
 
 -- AddForeignKey
 ALTER TABLE "permanent_addresses" ADD CONSTRAINT "permanent_addresses_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "present_addresses" ADD CONSTRAINT "present_addresses_spouse_id_fkey" FOREIGN KEY ("spouse_id") REFERENCES "spouse_infromation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1172,7 +1175,10 @@ ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_management
 ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_academic_staff_id_fkey" FOREIGN KEY ("academic_staff_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_previous_position_id_fkey" FOREIGN KEY ("previous_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "promotion_histories" ADD CONSTRAINT "promotion_histories_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1298,6 +1304,15 @@ ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_created_
 ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "student_results" ADD CONSTRAINT "student_results_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1320,6 +1335,12 @@ ALTER TABLE "users" ADD CONSTRAINT "users_father_details_id_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_mother_details_id_fkey" FOREIGN KEY ("mother_details_id") REFERENCES "mother_details"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_permanent_address_id_fkey" FOREIGN KEY ("permanent_address_id") REFERENCES "permanent_addresses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_present_address_id_fkey" FOREIGN KEY ("present_address_id") REFERENCES "present_addresses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

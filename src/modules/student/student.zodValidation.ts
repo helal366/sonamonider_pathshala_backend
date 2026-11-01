@@ -1,16 +1,127 @@
 import { Section, Shift, Version } from "#db-client";
 import z4 from "zod/v4";
 
-// =========================================================
+// ========================================================
 // STUDENT READMISSION VALIDATION SCHEMA
-// =========================================================
-export const studentReadmissionZodSchema = z4.object({
+// ========================================================
+const studentReadmissionParamsZodSchema = z4.object({
+  student_id: z4.uuid({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Student ID is required."
+          : "Invalid Student ID format.",
+    }),
+});
+export type TStudentReadmissionParamsZodSchema =z4.infer<
+  typeof studentReadmissionParamsZodSchema
+>;
+
+const studentReadmissionZodSchema = z4
+  .object({
+    target_class_id: z4.uuid({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Target Class ID is required."
+          : "Invalid Class ID format.",
+    }),
+    target_shift_name: z4.enum(Shift, {
+      error: (issue) =>
+        issue.input === undefined
+          ? "Shift name is required."
+          : "Invalid Shift format.",
+    }),
+    target_year_name: z4
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Target Academic Year name is required."
+            : "Invalid Academic Year format.",
+      })
+      .trim()
+      .regex(/^\d{4}$/, "Academic year must be a four-digit year."),
+    roll_number: z4.coerce
+      .number({ error: (issue) => "Roll number must be an integer." })
+      .int()
+      .min(1, "Roll number must be greater than 0"),
+    section: z4.enum(Section, "Invalid section format."),
+    version: z4.enum(Version, "Invalid version format."),
+    quranic_class_name: z4
+      .string()
+      .trim()
+      .min(1, "Quranic class name is required."),
+    quranic_class_period_ids: z4
+      .array(
+        z4.uuid({
+          error: "Each period ID must be a valid UUID string format.",
+        }),
+      )
+      .min(1, "At least one Quranic class period is required.")
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: "Quranic class period IDs must be unique.",
+      }),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.target_shift_name === Shift.MORNING &&
+      data.section !== Section.MADRASHA
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["section"],
+        message: "Morning shift only allows MADRASHA section.",
+      });
+    }
+    if (
+      data.target_shift_name === Shift.DAY &&
+      data.section !== Section.SCHOOL
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["section"],
+        message: "Day shift only allows SCHOOL section.",
+      });
+    }
+  });
+
+export type TStudentReadmissionZodSchema = z4.infer<
+  typeof studentReadmissionZodSchema
+>;
+
+// ========================================================
+// STUDENT DEACTIVATE SERVICE LAYER
+// ========================================================
+const studentDeactivateZodSchema = z4.object({
+  targetYear: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Target Academic Year name is required."
+          : "Invalid Academic Year format.",
+    })
+    .trim()
+    .regex(/^\d{4}$/, "Academic year must be a four-digit year.")
+    .min(1, "Target Academic Year name is required."),
+});
+export type TStudentDeactivateZodSchema = z4.infer<
+  typeof studentDeactivateZodSchema
+>;
+
+// ========================================================
+// OLD STUDENT ADMISSION ROUTE
+// ========================================================
+const oldStudentAdmissionParamsZodSchema = z4.object({
   student_id: z4.uuid({
     error: (issue) =>
       issue.input === undefined
         ? "Student ID is required."
         : "Invalid Student ID format.",
   }),
+});
+export type TOldStudentAdmissionParamsZodSchema = z4.infer<
+  typeof oldStudentAdmissionParamsZodSchema
+>;
+
+const oldStudentAdmissionZodSchema = z4.object({
   target_class_id: z4.uuid({
     error: (issue) =>
       issue.input === undefined
@@ -38,7 +149,10 @@ export const studentReadmissionZodSchema = z4.object({
     .min(1, "Roll number must be greater than 0"),
   section: z4.enum(Section, "Invalid section format."),
   version: z4.enum(Version, "Invalid version format."),
-  quranic_class_name: z4.string().trim().min(1, "Quranic class name is required."),
+  quranic_class_name: z4
+    .string()
+    .trim()
+    .min(1, "Quranic class name is required."),
   quranic_class_period_ids: z4
     .array(
       z4.uuid({ error: "Each period ID must be a valid UUID string format." }),
@@ -47,30 +161,13 @@ export const studentReadmissionZodSchema = z4.object({
     .refine((ids) => new Set(ids).size === ids.length, {
       message: "Quranic class period IDs must be unique.",
     }),
-}).superRefine((data, ctx) => {
-  if (data.target_shift_name === Shift.MORNING && data.section !== Section.MADRASHA) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["section"],
-      message: "Morning shift only allows MADRASHA section.",
-    });
-  }
-  if (data.target_shift_name === Shift.DAY && data.section !== Section.SCHOOL) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["section"],
-      message: "Day shift only allows SCHOOL section.",
-    });
-  }
 });
-
-export type TStudentReadmissionZodSchema = z4.infer<
-  typeof studentReadmissionZodSchema
+export type TOldStudentAdmissionZodSchema = z4.infer<
+  typeof oldStudentAdmissionZodSchema
 >;
-
-// =============================================
+// ========================================================
 // ADD RESPONSIBLE TEACHER ZOD SCHEMA
-// =============================================
+// ========================================================
 const addResponsibleTeacherZodSchema = z4.object({
   student_id: z4.uuid("Invalid Student ID format."),
   teacher_full_name: z4
@@ -100,9 +197,9 @@ export type TAddResponsibleTeacherZodSchema = z4.infer<
   typeof addResponsibleTeacherZodSchema
 >;
 
-// =============================================
+// ========================================================
 // DISCONNECT RESPONSIBLE TEACHER ZOD SCHEMA
-// =============================================
+// ========================================================
 const disconnectResponsibleTeacherZodSchema = z4.object({
   student_id: z4.uuid("Invalid Student ID format."),
 });
@@ -111,7 +208,11 @@ export type TDisconnectResponsibleTeacherZodSchema = z4.infer<
 >;
 
 export const studentZodSchema = {
+  studentReadmissionParamsZodSchema,
   studentReadmissionZodSchema,
+  studentDeactivateZodSchema,
+  oldStudentAdmissionParamsZodSchema,
+  oldStudentAdmissionZodSchema,
   addResponsibleTeacherZodSchema,
   disconnectResponsibleTeacherZodSchema,
 };

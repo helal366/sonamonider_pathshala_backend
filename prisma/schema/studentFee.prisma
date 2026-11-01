@@ -49,3 +49,28 @@ model StudentFeePayment {
   @@index([student_id, paid_at])
   @@map("student_fee_payments")
 }
+
+model AssignedStudentFeeRate {
+  id String @id @default(uuid())
+  
+  fee_type           StudentFeeType
+  billing_frequency  BillingFrequency 
+  amount             Decimal          @db.Decimal(10, 2)
+  
+  class_id String
+  class Class @relation(fields: [class_id], references: [id])
+
+  section Section
+  version Version
+
+  created_by_id String?
+  created_by    User?   @relation("assigned_student_fee_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("assigned_student_fee_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("assigned_student_fee")
+}

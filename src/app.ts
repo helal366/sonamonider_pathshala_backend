@@ -15,16 +15,19 @@ import { spouseInformationRouter } from "./modules/spouseInformation/spouseInfor
 import { userAddressRouter } from "./modules/address/address.route.js";
 import { academicResultRouter } from "./modules/academicResults/academicResult.route.js";
 import { classRouter } from "./modules/class/class.route.js";
+import { classHistoryRouter } from "./modules/classHistory/classHistory.route.js";
 import { studentRouter } from "./modules/student/student.route.js";
 import { academicYearRouter } from "./modules/academicYear/academicYear.route.js";
 import { academicStaffRouter } from "./modules/academicStaff/academicStaff.route.js";
 import { promotionRequestRouter } from "./modules/promotionRequest/promotionRequest.route.js";
+import { promotionHistoryRouter } from "./modules/promotionHistory/promotionHistory.route.js";
 import { quranicSubjectRouter } from "./modules/quranicSubject/quranicSubject.route.js";
 import { quranicPeriodRouter } from "./modules/quranicPeriod/quranicPeriod.route.js";
 import { subjectRouter } from "./modules/generalSubject/generalSubject.route.js";
 import { periodRouter } from "./modules/generalPeriod/generalPeriod.route.js";
 import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
 import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
+import { assignedStudentFeeRateRouter } from "./modules/assignedStudentFeeRate/assignedStudentFeeRate.route.js";
 import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js";
 import { bookListRouter } from "./modules/bookList/bookList.route.js";
 import { arabicPeriodRouter } from "./modules/arabicPeriod/arabicPeriod.route.js";
@@ -52,16 +55,22 @@ app.use("/api/v1/smps/mother_details", motherDetailsRouter);
 app.use("/api/v1/smps/spouse_information", spouseInformationRouter);
 app.use("/api/v1/smps/academic_result", academicResultRouter);
 app.use("/api/v1/smps/class", classRouter);
+app.use("/api/v1/smps/class_history", classHistoryRouter);
 app.use("/api/v1/smps/student", studentRouter);
 app.use("/api/v1/smps/academic_year", academicYearRouter);
 app.use("/api/v1/smps/academic_staff", academicStaffRouter);
 app.use("/api/v1/smps/promotion_request", promotionRequestRouter);
+app.use("/api/v1/smps/promotion_history", promotionHistoryRouter);
 app.use("/api/v1/smps/quranic_subject", quranicSubjectRouter);
 app.use("/api/v1/smps/quranic_class_period", quranicPeriodRouter);
 app.use("/api/v1/smps/subject", subjectRouter);
 app.use("/api/v1/smps/period", periodRouter);
 app.use("/api/v1/smps/class_routine", classRoutineRouter);
 app.use("/api/v1/smps/student_fee", studentFeeRouter);
+app.use(
+  "/api/v1/smps/assigned_student_fee_rate",
+  assignedStudentFeeRateRouter,
+);
 app.use("/api/v1/smps/staff_payment", staffPaymentRouter);
 app.use("/api/v1/smps/book_list", bookListRouter);
 app.use("/api/v1/smps/arabic_period", arabicPeriodRouter);

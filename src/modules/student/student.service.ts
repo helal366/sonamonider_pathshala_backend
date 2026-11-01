@@ -5,21 +5,23 @@ import { prisma } from "../../lib/prisma";
 import {
   TAddResponsibleTeacherZodSchema,
   TDisconnectResponsibleTeacherZodSchema,
+  TOldStudentAdmissionZodSchema,
+  TStudentDeactivateZodSchema,
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
 import { ActiveStatus, Prisma, Role } from "#db-client";
 import { userHelperFunction } from "../user/user.helperFunction";
 import { sendVerificationResultEmail } from "../email/email.helper.function";
 
-// =============================================
+// ========================================================
 // STUDENT READMISSION SERVICE LAYER
-// =============================================
+// ========================================================
 const studentReadmission = async (
   payload: TStudentReadmissionZodSchema,
   loggedInUser: TLoggedInUser,
+  student_id: string,
 ) => {
   const {
-    student_id,
     target_class_id,
     target_shift_name,
     target_year_name,
@@ -86,11 +88,11 @@ const studentReadmission = async (
             take: 1,
           },
           user_primary_data: {
-           select:{
-            is_deleted: true,
-            active_status: true
-           }
-          }
+            select: {
+              is_deleted: true,
+              active_status: true,
+            },
+          },
         },
       });
 
@@ -106,19 +108,22 @@ const studentReadmission = async (
           `Student was not enrolled for the previous academic year '${lastYear}' and cannot be readmitted.`,
           StatusCodes.CONFLICT,
         );
-      };
+      }
 
       // Check activity
-      if(studentProfile.user_primary_data.is_deleted){
-        throw new AppError(`Student profile is deleted. Contact to SUPER ADMIN.`, StatusCodes.UNAUTHORIZED)
+      if (studentProfile.user_primary_data.is_deleted) {
+        throw new AppError(
+          `Student profile is deleted. Contact to SUPER ADMIN.`,
+          StatusCodes.UNAUTHORIZED,
+        );
       }
-      if(studentProfile.user_primary_data.active_status === "INACTIVE"){
+      if (studentProfile.user_primary_data.active_status === "INACTIVE") {
         const updatedUser = await transaction.user.update({
-          where: {id: studentProfile.user_id},
+          where: { id: studentProfile.user_id },
           data: {
             active_status: "ACTIVE",
-            updated_by_id: loggedInUser.user_id
-          }
+            updated_by_id: loggedInUser.user_id,
+          },
         });
         await transaction.auditLog.create({
           data: {
@@ -130,17 +135,17 @@ const studentReadmission = async (
               active_status: studentProfile.user_primary_data.active_status,
             },
             new_value: {
-              active_status: updatedUser.active_status
-            }
-          }
-        })
+              active_status: updatedUser.active_status,
+            },
+          },
+        });
       }
       // Validate and normalize all class-history inputs before changing the student.
       const studentsRequirementPayload = {
         transaction,
         active_class_id: payload.target_class_id,
         year_name: payload.target_year_name,
-        shift_name: cleanShiftName,   //payload.target_shift_name,
+        shift_name: cleanShiftName, //payload.target_shift_name,
         roll_number: roll_number,
         section: payload.section,
         version: payload.version,
@@ -231,15 +236,22 @@ const studentReadmission = async (
   );
 };
 
-// =============================================
+// ========================================================
 // STUDENT DEACTIVATE SERVICE LAYER
-// =============================================
+// ========================================================
 const deactivateNotReadmittedStudents = async (
   loggedInUser: TLoggedInUser,
+  payload: TStudentDeactivateZodSchema,
 ) => {
-  const checkedAt = new Date();
-  const currentYear = checkedAt.getFullYear().toString();
-  const previousYear = (checkedAt.getFullYear() - 1).toString();
+  const { targetYear } = payload;
+  const academicYear = await prisma.academicYear.findUnique({
+    where: {academic_year_name: targetYear}
+  });
+  if(!academicYear){
+    throw new AppError(`Provided target academic year not found.`, StatusCodes.NOT_FOUND)
+  }
+  const currentYear = targetYear;
+  const previousYear = (Number(targetYear) - 1).toString();
 
   return prisma.$transaction(
     async (transaction) => {
@@ -326,16 +338,226 @@ const deactivateNotReadmittedStudents = async (
         students: deactivatedUsers,
         current_academic_year: currentYear,
         required_previous_academic_year: previousYear,
-        checked_at: checkedAt.toISOString(),
       };
     },
     { timeout: 25000 },
   );
 };
 
-// =============================================
+// ========================================================
+// OLD STUDENT ADMISSION CONTROLLER
+// ========================================================
+const oldStudentAdmission = async (
+  loggedInUser: TLoggedInUser,
+  payload: TOldStudentAdmissionZodSchema,
+  student_id: string,
+) => {
+  const {
+    target_class_id,
+    target_shift_name,
+    target_year_name,
+    roll_number,
+    quranic_class_name,
+    quranic_class_period_ids,
+  } = payload;
+  const targetYear = target_year_name;
+  const cleanShiftName = target_shift_name;
+  // Find target year
+  const academicYear = await prisma.academicYear.findUnique({
+    where: { academic_year_name: targetYear },
+  });
+  // Check existance target year
+  if (!academicYear) {
+    throw new AppError(
+      `Provided academic year not found.`,
+      StatusCodes.NOT_FOUND,
+    );
+  }
+  // Find student
+  const student = await prisma.student.findUnique({
+    where: { id: student_id },
+    include: {
+      class_history: {
+        include: {
+          academic_year: {
+            select: {
+              academic_year_name: true,
+            },
+          },
+        },
+      },
+      user_primary_data: {
+        select: {
+          is_deleted: true,
+          active_status: true,
+        },
+      },
+    },
+  });
+  // Check Existance
+  if (!student) {
+    throw new AppError(`Student not found.`, StatusCodes.NOT_FOUND);
+  }
+  // Check is deleted
+  if (student.user_primary_data.is_deleted) {
+    throw new AppError(
+      `Student activity unthorized. Please contact Super Admin.`,
+      StatusCodes.UNAUTHORIZED,
+    );
+  }
+  // Check class history length zero or not.
+  if (student.class_history.length === 0) {
+    throw new AppError(
+      `Student has no previous class history.`,
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  // Check target year class history
+  const targetYearClassHistory = student.class_history.some(
+    (ch) => ch.academic_year.academic_year_name === targetYear,
+  );
+  if (targetYearClassHistory) {
+    throw new AppError(
+      `Student already admitted for the academic year ${targetYear}`,
+      StatusCodes.CONFLICT,
+    );
+  }
+
+  // Check class history for one year previous of target year
+  const lastYearClassHistory = student.class_history.some(
+    (ch) =>
+      ch.academic_year.academic_year_name ===
+      (Number(targetYear) - 1).toString(),
+  );
+  if (lastYearClassHistory) {
+    throw new AppError(
+      `Student has class history for academic year ${Number(targetYear) - 1}`,
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  return prisma.$transaction(async (transaction) => {
+    const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
+    const studentsRequirementPayload = {
+      transaction,
+      active_class_id: payload.target_class_id,
+      year_name: payload.target_year_name,
+      shift_name: cleanShiftName, //payload.target_shift_name,
+      roll_number: roll_number,
+      section: payload.section,
+      version: payload.version,
+      quranic_class_name: quranic_class_name,
+      quranic_class_period_ids: quranic_class_period_ids,
+    };
+
+    const {
+      activeClassID,
+      academicStartDate,
+      academicEndDate,
+      academicYear,
+      existingShift,
+      rollNumber,
+      section,
+      version,
+      existingQuranicClass,
+      quranicClassPeriodIDs,
+    } = await userHelperFunction.checkStudentCreationRequirements(
+      studentsRequirementPayload,
+    );
+
+    if (student.user_primary_data.active_status === "INACTIVE") {
+      const updatedUser = await transaction.user.update({
+        where: { id: student.user_id },
+        data: {
+          active_status: "ACTIVE",
+          updated_by_id: loggedInUser.user_id,
+        },
+      });
+      await transaction.auditLog.create({
+        data: {
+          entity_id: student.user_id,
+          entity_name: "user",
+          action: "UPDATE",
+          changed_by_id: loggedInUser.user_id,
+          old_value: {
+            active_status: student.user_primary_data.active_status,
+          },
+          new_value: {
+            active_status: updatedUser.active_status,
+          },
+        },
+      });
+    }
+
+    const updatedStudent = await transaction.student.update({
+      where: { id: student_id },
+      data: {
+        active_class_id: target_class_id,
+        updated_by_id: loggedInUser.user_id,
+      },
+    });
+
+    auditRecords.push({
+      entity_id: student_id,
+      entity_name: "student",
+      action: "UPDATE",
+      changed_by_id: loggedInUser.user_id,
+      old_value: { active_class_id: student.active_class_id },
+      new_value: { active_class_id: target_class_id },
+    });
+
+    const freshClassHistory = await transaction.classHistory.create({
+        data: {
+          student: { connect: { id: student_id } },
+          class: { connect: { id: activeClassID } },
+          academic_year: { connect: { id: academicYear.id } },
+          shift: existingShift,
+          roll_number: rollNumber,
+          start_date: academicStartDate,
+          end_date: academicEndDate,
+          section,
+          version,
+          quranic_subject: { connect: { id: existingQuranicClass.id } },
+          class_history_quranic_periods: {
+            create: quranicClassPeriodIDs.map((id: string) => ({
+              quranic_period: { connect: { id } },
+            })),
+          },
+          created_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+      auditRecords.push({
+        entity_id: freshClassHistory.id,
+        entity_name: "classHistory",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          student_id,
+          class_id: activeClassID,
+          academic_year_id: academicYear.id,
+          start_date: academicStartDate.toISOString(),
+          end_date: academicEndDate.toISOString(),
+          roll_number: rollNumber,
+          shift: existingShift,
+          section,
+          version,
+          quranic_class_id: existingQuranicClass.id,
+          quranic_class_period_ids: quranicClassPeriodIDs,
+        },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
+
+      // 7. STEP D: BULK ATOMIC COMMIT OF TRACKED AUDIT ENTRIES
+      await transaction.auditLog.createMany({ data: auditRecords });
+
+      return updatedStudent;
+  });
+};
+
+// ========================================================
 // ADD RESPONSIBLE TEACHER SERVICE LAYER
-// =============================================
+// ========================================================
 const addResponsibleTeacher = async (
   payload: TAddResponsibleTeacherZodSchema,
   loggedInUser: TLoggedInUser,
@@ -507,9 +729,9 @@ const addResponsibleTeacher = async (
   };
 };
 
-// =============================================
+// ========================================================
 // DISCONNECT RESPONSIBLE TEACHER SERVICE LAYER
-// =============================================
+// ========================================================
 const disconnectResponsibleTeacher = async (
   payload: TDisconnectResponsibleTeacherZodSchema,
   loggedInUser: TLoggedInUser,
@@ -649,6 +871,7 @@ const disconnectResponsibleTeacher = async (
 export const studentServices = {
   studentReadmission,
   deactivateNotReadmittedStudents,
+  oldStudentAdmission,
   addResponsibleTeacher,
   disconnectResponsibleTeacher,
 };

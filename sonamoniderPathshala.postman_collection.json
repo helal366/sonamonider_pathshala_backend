@@ -24,6 +24,10 @@
       "value": "00000000-0000-4000-8000-000000000002"
     },
     {
+      "key": "classHistoryId",
+      "value": "00000000-0000-4000-8000-000000000025"
+    },
+    {
       "key": "academicYearId",
       "value": "00000000-0000-4000-8000-000000000003"
     },
@@ -102,6 +106,18 @@
     {
       "key": "bookListId",
       "value": "00000000-0000-4000-8000-000000000021"
+    },
+    {
+      "key": "assignedStudentFeeRateId",
+      "value": "00000000-0000-4000-8000-000000000022"
+    },
+    {
+      "key": "promotionHistoryId",
+      "value": "00000000-0000-4000-8000-000000000023"
+    },
+    {
+      "key": "governingBodyId",
+      "value": "00000000-0000-4000-8000-000000000024"
     }
   ],
   "item": [
@@ -1237,6 +1253,106 @@
       ]
     },
     {
+      "name": "Class History",
+      "item": [
+        {
+          "name": "Get All Class Histories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_history/",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class History By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_history/{{classHistoryId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Histories By Student Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_history/get_by_student_id/{{studentId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Histories By Class Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_history/get_by_class_id/{{classId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Histories By Academic Year Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/class_history/get_by_academic_year_id/{{academicYearId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Student",
       "item": [
         {
@@ -1278,6 +1394,32 @@
             "url": "{{baseUrl}}/api/v1/smps/student/deactivate_not_readmitted_students",
             "auth": {
               "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Old Student Admission",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student/old_student_admission/{{studentId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_class_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []
@@ -1557,6 +1699,125 @@
             "url": "{{baseUrl}}/api/v1/smps/promotion_request/{{userId}}",
             "auth": {
               "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Promotion History",
+      "item": [
+        {
+          "name": "Get All Promotion Histories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion History By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/{{promotionHistoryId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion History By Management Staff Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/get_by_management_staff_id/{{managementStaffId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion History By Academic Staff Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/get_by_academic_staff_id/{{academicStaffId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion History By Student Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/get_by_student_id/{{studentId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion History By Governing Body Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/promotion_history/get_by_governing_body_id/{{governingBodyId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             }
           },
           "response": []
@@ -2278,7 +2539,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2347,7 +2608,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"academic_year_id\": \"00000000-0000-4000-8000-000000000003\",\n  \"fee_type\": \"MONTHLY_TUITION\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"academic_year_id\": \"00000000-0000-4000-8000-000000000003\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2396,6 +2657,134 @@
             "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_payment/{{userId}}",
             "auth": {
               "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assigned Student Fee Rate",
+      "item": [
+        {
+          "name": "Get All Assigned Student Fee Rates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assigned Student Fee Rates By Class Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/get_assigned_student_fee_rates_by_class_id/{{classId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Assigned Student Fee Rate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/create_assigned_student_fee_rate",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000,\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assigned Student Fee Rate Field",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/update_assigned_student_fee_rate_field/{{assignedStudentFeeRateId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1200\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assigned Student Fee Rate",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/delete_assigned_student_fee_rate/{{assignedStudentFeeRateId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             }
           },
           "response": []
@@ -2564,7 +2953,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"book_name\": \"Sample Textbook\",\n  \"publisher\": \"Sample Publisher\",\n  \"section\": \"SCHOOL\",\n  \"class_name\": \"Class One\",\n  \"version\": \"ENGLISH\"\n}",
+              "raw": "{\n  \"book_name\": \"Sample Textbook\",\n  \"publisher\": \"Sample Publisher\",\n  \"isBookMain\": true,\n  \"section\": \"SCHOOL\",\n  \"class_name\": \"Class One\",\n  \"version\": \"ENGLISH\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2607,7 +2996,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"book_name\",\n  \"value\": \"Updated Textbook\"\n}",
+              "raw": "{\n  \"field\": \"isBookMain\",\n  \"value\": false\n}",
               "options": {
                 "raw": {
                   "language": "json"

@@ -1,0 +1,5 @@
+I found two remaining correctness issues in the reviewed workflows:
+
+Medium — duplicate admission can slip through concurrent requests. Readmission checks for an existing student/year enrollment before creating history, but the database schema has no uniqueness constraint on (student_id, academic_year_id). Two concurrent readmission requests can both pass the check and create separate history records if their class/roll details differ. Old-student admission has the same risk, and its history checks happen before its transaction. See student.service.ts, oldStudentAdmission, and classHistory.prisma. A database constraint or equivalent concurrency-safe enforcement would prevent this.
+
+Medium — student username generation can conflict across roles. Usernames are globally unique, but the count used to generate them is scoped to the requested role. If a student shares a mobile number with an existing user of another role, the student count can be zero and the service will try to use the same mobile number as that user’s username. See userCreation.service.ts, userCount, and user.prisma.

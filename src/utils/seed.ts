@@ -84,32 +84,7 @@ const createPrincipal = async () => {
   }
 };
 
-const createAdminPosition = async () => {
 
-
-    // Check PRINCIPAL position
-    let CoOrdinatorPosition = await prisma.userPosition.findUnique({
-      where: {
-        position_name: "CO_ORDINATOR",
-      },
-    });
-    // Create position only if it doesn't exist
-    if (!CoOrdinatorPosition) {
-      CoOrdinatorPosition = await prisma.userPosition.create({
-        data: {
-          position_name: "CO_ORDINATOR",
-        },
-      });
-      console.log("CO_ORDINATOR position created.");
-    } else {
-      console.log("CO_ORDINATOR position already exists.");
-    }
-  
-};
-
-const createCoOrdinator = async()=>{
-  
-}
 export const runInitialSeed = async () => {
   await seedPositions();
 
