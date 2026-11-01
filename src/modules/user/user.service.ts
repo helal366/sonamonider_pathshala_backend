@@ -57,10 +57,7 @@ const changeUserPosition = async (
     },
   });
 
-  if (
-    !targetStaff ||
-    !targetStaff.current_role
-  ) {
+  if (!targetStaff || !targetStaff.current_role) {
     throw new AppError(
       "The requested user does not exist.",
       StatusCodes.NOT_FOUND,
@@ -381,7 +378,8 @@ const updateUserName = async (
       await sendVerificationResultEmail({
         to: user.email,
         templateName: "update_user_name_by_superadmin.ejs",
-        subject: "Your SONAMONIDER PATHSHALA User Name is Updated.",
+        subject:
+          "Your SONAMONIDER PATHSHALA & HIGH SCHOOL User Name is Updated.",
         templateData: {
           name: user.full_name,
           updated_user_name: updatedUser.user_name ?? "",
@@ -456,7 +454,8 @@ const updateUserPassword = async (
       await sendVerificationResultEmail({
         to: user.email,
         templateName: "update_user_password_by_super_admin.ejs",
-        subject: "Your SONAMONIDER PATHSHALA Password Was Updated.",
+        subject:
+          "Your SONAMONIDER PATHSHALA & HIGH SCHOOL Password Was Updated.",
         templateData: {
           name: user.full_name,
           updated_user_password: user_password,

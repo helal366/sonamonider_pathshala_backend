@@ -28,6 +28,25 @@ const studentReadmission = catchAsync(async (req: Request, res: Response) => {
 });
 
 // =============================================
+// STUDENT DEACTIVATE CONTROLLER
+// =============================================
+const deactivateNotReadmittedStudents = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await studentServices.deactivateNotReadmittedStudents(
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `${result.deactivated_count} student account(s) deactivated because their enrollment period has ended.`,
+      data: result,
+    });
+  },
+);
+
+// =============================================
 // ADD RESPONSIBLE TEACHER CONTROLLER
 // =============================================
 const addResponsibleTeacher = catchAsync(
@@ -89,6 +108,7 @@ const disconnectResponsibleTeacher = catchAsync(
 
 export const studentController = {
   studentReadmission,
+  deactivateNotReadmittedStudents,
   addResponsibleTeacher,
   disconnectResponsibleTeacher,
 };

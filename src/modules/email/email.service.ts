@@ -112,7 +112,8 @@ const changePassword = async (
       await sendVerificationResultEmail({
         to: user.email,
         templateName: "change_password_success.ejs",
-        subject: "SONAMONIDER PATHSHALA Password Changed Successfully",
+        subject:
+          "SONAMONIDER PATHSHALA & HIGH SCHOOL - Password Changed Successfully",
         templateData: {
           name: user.full_name,
           password: cleanNewPassword,
@@ -168,7 +169,7 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
     await sendVerificationResultEmail({
       to: normalizedEmail,
       templateName: "reject_email_verify.ejs",
-      subject: "SONAMONIDER PATHSHALA Email Verification Failed",
+      subject: "SONAMONIDER PATHSHALA & HIGH SCHOOL - Email Verification Failed",
       templateData: {
         name: user.full_name,
       },
@@ -181,7 +182,10 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
 
   console.log(Number(envVars.BCRYPT_SALT_ROUND));
   const temporaryPassword = createTemporaryPassword();
-  const hashedPassword = await bcrypt.hash(temporaryPassword, Number(envVars.BCRYPT_SALT_ROUND));
+  const hashedPassword = await bcrypt.hash(
+    temporaryPassword,
+    Number(envVars.BCRYPT_SALT_ROUND),
+  );
 
   await prisma.$transaction(
     async (transaction) => {
@@ -222,7 +226,8 @@ const verifyEmail = async ({ email, otp }: TVerifyEmailPayload) => {
       await sendVerificationResultEmail({
         to: normalizedEmail,
         templateName: "success_email_verify.ejs",
-        subject: "SONAMONIDER PATHSHALA Email Verified Successfully",
+        subject:
+          "SONAMONIDER PATHSHALA & HIGH SCHOOL - Email Verified Successfully",
         templateData: {
           name: user.full_name,
           user_name: user.user_name ?? "",
@@ -273,7 +278,7 @@ const resendOtpEmailVerify = async ({ email }: TResendOtpEmailPayload) => {
     expirationSeconds,
     to: normalizedEmail,
     templateName: "resend_otp_email_verify.ejs",
-    subject: "Your New SONAMONIDER PATHSHALA Verification Code",
+    subject: "Your New SONAMONIDER PATHSHALA & HIGH SCHOOL Verification Code",
     templateData: {
       name: user.full_name,
       user_name: user.user_name ?? "",
@@ -322,7 +327,8 @@ const sendForgetPasswordOtp = async ({
     expirationSeconds,
     to: normalizedEmail,
     templateName: "forget_password_otp.ejs",
-    subject: "SONAMONIDER PATHSHALA Password Reset Verification Code",
+    subject:
+      "SONAMONIDER PATHSHALA & HIGH SCHOOL - Password Reset Verification Code",
     templateData: {
       name: user.full_name,
       OTP: otpValue,
@@ -369,7 +375,7 @@ const verifyEmailForgetPassword = async ({
     await sendVerificationResultEmail({
       to: normalizedEmail,
       templateName: "forget_password_reject.ejs",
-      subject: "SONAMONIDER PATHSHALA Password Reset Failed",
+      subject: "SONAMONIDER PATHSHALA & HIGH SCHOOL Password Reset Failed",
       templateData: { name: user.full_name },
     });
     throw new AppError(
@@ -413,7 +419,8 @@ const verifyEmailForgetPassword = async ({
       await sendVerificationResultEmail({
         to: normalizedEmail,
         templateName: "forget_password_success.ejs",
-        subject: "SONAMONIDER PATHSHALA Password Reset Successful",
+        subject:
+          "SONAMONIDER PATHSHALA & HIGH SCHOOL - Password Reset Successful",
         templateData: {
           name: user.full_name,
           password: newPassword,

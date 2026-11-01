@@ -1266,6 +1266,23 @@
           "response": []
         },
         {
+          "name": "Deactivate Not Readmitted Students",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student/deactivate_not_readmitted_students",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Add Responsible Teacher",
           "request": {
             "method": "PATCH",

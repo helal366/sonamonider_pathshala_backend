@@ -7,7 +7,7 @@ import {
   TDisconnectResponsibleTeacherZodSchema,
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
-import { Prisma } from "#db-client";
+import { ActiveStatus, Prisma, Role } from "#db-client";
 import { userHelperFunction } from "../user/user.helperFunction";
 import { sendVerificationResultEmail } from "../email/email.helper.function";
 
@@ -35,7 +35,7 @@ const studentReadmission = async (
   });
   if (!targetYear) {
     throw new AppError(
-      `Academic Year '${cleanYearName}' not found.`,
+      `Academic Year '${cleanYearName}' not found. Create New Academic year for student readmission.`,
       StatusCodes.NOT_FOUND,
     );
   }
@@ -64,7 +64,7 @@ const studentReadmission = async (
 
       if (alreadyEnrolled) {
         throw new AppError(
-          `Student is already admitted/enrolled for academic year '${cleanYearName}'.`,
+          `Student is already admitted for academic year '${cleanYearName}'.`,
           StatusCodes.CONFLICT,
         );
       }
@@ -72,6 +72,7 @@ const studentReadmission = async (
       // 2. Fetch the target Student Profile with their current active timeline block
       const lastYear = (Number(target_year_name) - 1).toString();
       const lastYearEndDate = new Date(`${lastYear}-12-31T23:59:59.999Z`);
+      // const academicEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
       const studentProfile = await transaction.student.findUnique({
         where: { id: student_id },
         include: {
@@ -84,6 +85,12 @@ const studentReadmission = async (
             },
             take: 1,
           },
+          user_primary_data: {
+           select:{
+            is_deleted: true,
+            active_status: true
+           }
+          }
         },
       });
 
@@ -94,17 +101,51 @@ const studentReadmission = async (
         );
       }
 
+      if (studentProfile.class_history.length === 0) {
+        throw new AppError(
+          `Student was not enrolled for the previous academic year '${lastYear}' and cannot be readmitted.`,
+          StatusCodes.CONFLICT,
+        );
+      };
+
+      // Check activity
+      if(studentProfile.user_primary_data.is_deleted){
+        throw new AppError(`Student profile is deleted. Contact to SUPER ADMIN.`, StatusCodes.UNAUTHORIZED)
+      }
+      if(studentProfile.user_primary_data.active_status === "INACTIVE"){
+        const updatedUser = await transaction.user.update({
+          where: {id: studentProfile.user_id},
+          data: {
+            active_status: "ACTIVE",
+            updated_by_id: loggedInUser.user_id
+          }
+        });
+        await transaction.auditLog.create({
+          data: {
+            entity_id: studentProfile.user_id,
+            entity_name: "user",
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+            old_value: {
+              active_status: studentProfile.user_primary_data.active_status,
+            },
+            new_value: {
+              active_status: updatedUser.active_status
+            }
+          }
+        })
+      }
       // Validate and normalize all class-history inputs before changing the student.
       const studentsRequirementPayload = {
         transaction,
         active_class_id: payload.target_class_id,
         year_name: payload.target_year_name,
-        shift_name: payload.target_shift_name,
-        roll_number: payload.roll_number,
+        shift_name: cleanShiftName,   //payload.target_shift_name,
+        roll_number: roll_number,
         section: payload.section,
         version: payload.version,
-        quranic_class_name: payload.quranic_class_name,
-        quranic_class_period_ids: payload.quranic_class_period_ids,
+        quranic_class_name: quranic_class_name,
+        quranic_class_period_ids: quranic_class_period_ids,
       };
       const {
         activeClassID,
@@ -189,6 +230,109 @@ const studentReadmission = async (
     { timeout: 25000 },
   );
 };
+
+// =============================================
+// STUDENT DEACTIVATE SERVICE LAYER
+// =============================================
+const deactivateNotReadmittedStudents = async (
+  loggedInUser: TLoggedInUser,
+) => {
+  const checkedAt = new Date();
+  const currentYear = checkedAt.getFullYear().toString();
+  const previousYear = (checkedAt.getFullYear() - 1).toString();
+
+  return prisma.$transaction(
+    async (transaction) => {
+      const eligibleUsers = await transaction.user.findMany({
+        where: {
+          current_role: Role.STUDENT,
+          active_status: ActiveStatus.ACTIVE,
+          is_deleted: false,
+          student_profile: {
+            is: {
+              class_history: {
+                some: {
+                  academic_year: { academic_year_name: previousYear },
+                },
+                none: {
+                  academic_year: { academic_year_name: currentYear },
+                },
+              },
+            },
+          },
+        },
+        select: { id: true },
+      });
+
+      if (eligibleUsers.length === 0) {
+        throw new AppError(
+          `No active, non-deleted students found for deactivation from academic year '${previousYear}' to '${currentYear}'.`,
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      const deactivatedUsers = await transaction.user.updateManyAndReturn({
+        where: {
+          current_role: Role.STUDENT,
+          active_status: ActiveStatus.ACTIVE,
+          is_deleted: false,
+          student_profile: {
+            is: {
+              class_history: {
+                some: {
+                  academic_year: { academic_year_name: previousYear },
+                },
+                none: {
+                  academic_year: { academic_year_name: currentYear },
+                },
+              },
+            },
+          },
+        },
+        data: {
+          active_status: ActiveStatus.INACTIVE,
+          updated_by_id: loggedInUser.user_id,
+        },
+        select: {
+          id: true,
+          full_name: true,
+          mobile_number: true,
+          student_profile: {
+            select: {
+              id: true,
+              active_class: {
+                select: { class_name: true },
+              },
+            },
+          },
+        },
+      });
+
+      if (deactivatedUsers.length > 0) {
+        await transaction.auditLog.createMany({
+          data: deactivatedUsers.map(({ id }) => ({
+            entity_id: id,
+            entity_name: "user",
+            old_value: { active_status: ActiveStatus.ACTIVE },
+            new_value: { active_status: ActiveStatus.INACTIVE },
+            action: "UPDATE",
+            changed_by_id: loggedInUser.user_id,
+          })),
+        });
+      }
+
+      return {
+        deactivated_count: deactivatedUsers.length,
+        students: deactivatedUsers,
+        current_academic_year: currentYear,
+        required_previous_academic_year: previousYear,
+        checked_at: checkedAt.toISOString(),
+      };
+    },
+    { timeout: 25000 },
+  );
+};
+
 // =============================================
 // ADD RESPONSIBLE TEACHER SERVICE LAYER
 // =============================================
@@ -199,145 +343,147 @@ const addResponsibleTeacher = async (
   const { student_id, teacher_full_name, teacher_mobile_number } = payload;
   const { assignedResponsibleTeacher, studentEmail, teacherEmail } =
     await prisma.$transaction(async (transaction) => {
-    const existingTeacher = await transaction.academicStaff.findFirst({
-      where: {
-        user_primary_data: {
-          full_name: teacher_full_name,
-          mobile_number: teacher_mobile_number,
-        },
-      },
-      select: {
-        id: true,
-        user_primary_data: {
-          select: {
-            full_name: true,
-            mobile_number: true,
-            email: true,
-            active_status: true,
-            is_deleted: true,
+      const existingTeacher = await transaction.academicStaff.findFirst({
+        where: {
+          user_primary_data: {
+            full_name: teacher_full_name,
+            mobile_number: teacher_mobile_number,
           },
         },
-      },
-    });
-    const isActiveTeacher =
-      existingTeacher?.user_primary_data.active_status === "ACTIVE";
-    const isTeacherDeleted = existingTeacher?.user_primary_data.is_deleted;
-    if (!existingTeacher || !isActiveTeacher || isTeacherDeleted) {
-      throw new AppError(
-        `Teacher is not assignable. Check activity.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-
-    const existingStudent = await transaction.student.findUnique({
-      where: { id: student_id },
-      select: {
-        id: true,
-        responsible_teacher_id: true,
-        responsible_teacher: {
-          include: {
-            user_primary_data: {
-              select: {
-                full_name: true,
-                mobile_number: true,
-              },
+        select: {
+          id: true,
+          user_primary_data: {
+            select: {
+              full_name: true,
+              mobile_number: true,
+              email: true,
+              active_status: true,
+              is_deleted: true,
             },
           },
         },
-        user_primary_data: {
-          select: {
-            full_name: true,
-            mobile_number: true,
-            email: true,
-            active_status: true,
-            is_deleted: true,
-          },
-        },
-        active_class: {
-          select: {
-            class_name: true,
-          },
-        },
-      },
-    });
-    const isActiveStudent =
-      existingStudent?.user_primary_data.active_status === "ACTIVE";
-    const isStudentDeleted = existingStudent?.user_primary_data.is_deleted;
+      });
+      const isActiveTeacher =
+        existingTeacher?.user_primary_data.active_status === "ACTIVE";
+      const isTeacherDeleted = existingTeacher?.user_primary_data.is_deleted;
+      if (!existingTeacher || !isActiveTeacher || isTeacherDeleted) {
+        throw new AppError(
+          `Teacher is not assignable. Check activity.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
 
-    if (!existingStudent || !isActiveStudent || isStudentDeleted) {
-      throw new AppError(
-        `The student is not ready for responsible teacher. Check activity.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-    if (existingStudent.responsible_teacher_id) {
-      throw new AppError(
-        `Responsible teacher is already assigned. Responsible teacher is: ${existingStudent.responsible_teacher?.user_primary_data.full_name} with a mobile number ${existingStudent.responsible_teacher?.user_primary_data.mobile_number}`,
-        StatusCodes.CONFLICT,
-      );
-    }
-
-    const assignedResponsibleTeacher = await transaction.student.update({
-      where: { id: student_id },
-      data: {
-        responsible_teacher: { connect: { id: existingTeacher.id } },
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
-
-    await transaction.auditLog.create({
-      data: {
-        entity_id: student_id,
-        entity_name: "student",
-        changed_by: { connect: { id: loggedInUser.user_id } },
-        action: "UPDATE",
-        old_value: Prisma.JsonNull,
-        new_value: {
-          responsible_teacher_id: existingTeacher.id,
+      const existingStudent = await transaction.student.findUnique({
+        where: { id: student_id },
+        select: {
+          id: true,
+          responsible_teacher_id: true,
           responsible_teacher: {
-            full_name: existingTeacher.user_primary_data.full_name,
-            mobile_number: existingTeacher.user_primary_data.mobile_number,
+            include: {
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                },
+              },
+            },
+          },
+          user_primary_data: {
+            select: {
+              full_name: true,
+              mobile_number: true,
+              email: true,
+              active_status: true,
+              is_deleted: true,
+            },
+          },
+          active_class: {
+            select: {
+              class_name: true,
+            },
           },
         },
-      },
-    });
-    return {
-      assignedResponsibleTeacher,
-      studentEmail: {
-        to: existingStudent.user_primary_data.email,
-        templateName: "student_responsible_teacher_assigned_email.ejs" as const,
-        subject: "Your Responsible Teacher – SONAMONIDER PATHSHALA",
-        templateData: {
-          studentName: existingStudent.user_primary_data.full_name,
-          teacherName: existingTeacher.user_primary_data.full_name,
-          teacherMobile: existingTeacher.user_primary_data.mobile_number,
-          className: existingStudent.active_class.class_name,
-          year: new Date().getFullYear(),
-        },
-      },
-      teacherEmail: {
-        to: existingTeacher.user_primary_data.email,
-        templateName: "teacher_responsible_student_assigned_email.ejs" as const,
-        subject: "New Student in Your Responsibility – SONAMONIDER PATHSHALA",
-        templateData: {
-          teacherName: existingTeacher.user_primary_data.full_name,
-          studentName: existingStudent.user_primary_data.full_name,
-          studentMobile: existingStudent.user_primary_data.mobile_number,
-          className: existingStudent.active_class.class_name,
-          year: new Date().getFullYear(),
-        },
-      },
-    };
-  });
+      });
+      const isActiveStudent =
+        existingStudent?.user_primary_data.active_status === "ACTIVE";
+      const isStudentDeleted = existingStudent?.user_primary_data.is_deleted;
 
-  const sendNotificationEmail = async (
-    email: {
-      to: string;
-      templateName: string;
-      subject: string;
-      templateData: Record<string, string | number>;
-    },
-  ): Promise<boolean> => {
+      if (!existingStudent || !isActiveStudent || isStudentDeleted) {
+        throw new AppError(
+          `The student is not ready for responsible teacher. Check activity.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      if (existingStudent.responsible_teacher_id) {
+        throw new AppError(
+          `Responsible teacher is already assigned. Responsible teacher is: ${existingStudent.responsible_teacher?.user_primary_data.full_name} with a mobile number ${existingStudent.responsible_teacher?.user_primary_data.mobile_number}`,
+          StatusCodes.CONFLICT,
+        );
+      }
+
+      const assignedResponsibleTeacher = await transaction.student.update({
+        where: { id: student_id },
+        data: {
+          responsible_teacher: { connect: { id: existingTeacher.id } },
+          updated_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+
+      await transaction.auditLog.create({
+        data: {
+          entity_id: student_id,
+          entity_name: "student",
+          changed_by: { connect: { id: loggedInUser.user_id } },
+          action: "UPDATE",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            responsible_teacher_id: existingTeacher.id,
+            responsible_teacher: {
+              full_name: existingTeacher.user_primary_data.full_name,
+              mobile_number: existingTeacher.user_primary_data.mobile_number,
+            },
+          },
+        },
+      });
+      return {
+        assignedResponsibleTeacher,
+        studentEmail: {
+          to: existingStudent.user_primary_data.email,
+          templateName:
+            "student_responsible_teacher_assigned_email.ejs" as const,
+          subject:
+            "Your Responsible Teacher – SONAMONIDER PATHSHALA & HIGH SCHOOL",
+          templateData: {
+            studentName: existingStudent.user_primary_data.full_name,
+            teacherName: existingTeacher.user_primary_data.full_name,
+            teacherMobile: existingTeacher.user_primary_data.mobile_number,
+            className: existingStudent.active_class.class_name,
+            year: new Date().getFullYear(),
+          },
+        },
+        teacherEmail: {
+          to: existingTeacher.user_primary_data.email,
+          templateName:
+            "teacher_responsible_student_assigned_email.ejs" as const,
+          subject:
+            "New Student in Your Responsibility – SONAMONIDER PATHSHALA & HIGH SCHOOL",
+          templateData: {
+            teacherName: existingTeacher.user_primary_data.full_name,
+            studentName: existingStudent.user_primary_data.full_name,
+            studentMobile: existingStudent.user_primary_data.mobile_number,
+            className: existingStudent.active_class.class_name,
+            year: new Date().getFullYear(),
+          },
+        },
+      };
+    });
+
+  const sendNotificationEmail = async (email: {
+    to: string;
+    templateName: string;
+    subject: string;
+    templateData: Record<string, string | number>;
+  }): Promise<boolean> => {
     try {
       await sendVerificationResultEmail(email);
       return true;
@@ -446,7 +592,8 @@ const disconnectResponsibleTeacher = async (
           to: existingStudent.user_primary_data.email,
           templateName:
             "student_responsible_teacher_disconnected_email.ejs" as const,
-          subject: "Responsible Teacher Assignment Removed – SONAMONIDER PATHSHALA",
+          subject:
+            "Responsible Teacher Assignment Removed – SONAMONIDER PATHSHALA & HIGH SCHOOL",
           templateData: {
             studentName: existingStudent.user_primary_data.full_name,
             teacherName: currentTeacher.user_primary_data.full_name,
@@ -458,7 +605,8 @@ const disconnectResponsibleTeacher = async (
           to: currentTeacher.user_primary_data.email,
           templateName:
             "teacher_responsible_student_disconnected_email.ejs" as const,
-          subject: "Student Responsibility Assignment Removed – SONAMONIDER PATHSHALA",
+          subject:
+            "Student Responsibility Assignment Removed – SONAMONIDER PATHSHALA & HIGH SCHOOL",
           templateData: {
             teacherName: currentTeacher.user_primary_data.full_name,
             studentName: existingStudent.user_primary_data.full_name,
@@ -500,6 +648,7 @@ const disconnectResponsibleTeacher = async (
 
 export const studentServices = {
   studentReadmission,
+  deactivateNotReadmittedStudents,
   addResponsibleTeacher,
   disconnectResponsibleTeacher,
 };

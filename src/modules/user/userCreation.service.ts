@@ -64,214 +64,213 @@ const createUser = async (
 
   // 6. Create DB records atomically.
   const otpKey = `new_user_welcome_otp:${email}`;
-  const newUser = await prisma
-    .$transaction(
-      async (transaction) => {
-        // CALLING THE HELPER FUNCTION HERE
-        const { profileData, targetEntityName } =
-          userHelperFunction.buildDynamicProfileData({
-            cleanRole,
-            positionId: positionExists.id,
-            loggedInUserId: loggedInUser.user_id,
-            active_class_id: payload.active_class_id,
-          });
-        // A) Create the User and nested ManagementStaff profile
-        const createdUser = await transaction.user.create({
-          data: {
-            full_name,
-            mobile_number,
-            email,
-            user_name,
-            gender,
-            ...(payload.blood_group !== undefined && {
-              blood_group: payload.blood_group,
-            }),
-            ...(payload.date_of_birth !== undefined && {
-              date_of_birth: payload.date_of_birth,
-            }),
-            ...(payload.height_in_cm !== undefined && {
-              height_in_cm: payload.height_in_cm,
-            }),
-            ...(payload.weight_in_kg !== undefined && {
-              weight_in_kg: payload.weight_in_kg,
-            }),
-            ...(payload.religion !== undefined && {
-              religion: payload.religion,
-            }),
-            ...(payload.nationality !== undefined && {
-              nationality: payload.nationality,
-            }),
-            ...(payload.birth_certificate_number !== undefined && {
-              birth_certificate_number: payload.birth_certificate_number,
-            }),
-            ...(payload.nid_number !== undefined && {
-              nid_number: payload.nid_number,
-            }),
-            ...profileData,
-            current_role: cleanRole,
-
-            current_position: {
-              connect: { id: positionExists.id },
-            },
-
-            created_by: {
-              connect: { id: loggedInUser.user_id },
-            },
-          },
-          include: {
-            management_staff_profile: true,
-            academic_staff_profile: true,
-            student_profile: true,
-            governing_body_profile: true,
-          },
-          omit: {
-            user_password: true,
-          },
-        });
-
-        // Extract specific entity profile ID for audit log linking rules
-        const subProfileId = userHelperFunction.findSubProfileId({
+  const newUser = await prisma.$transaction(
+    async (transaction) => {
+      // CALLING THE HELPER FUNCTION HERE
+      const { profileData, targetEntityName } =
+        userHelperFunction.buildDynamicProfileData({
           cleanRole,
-          createdUser,
-          targetEntityName,
+          positionId: positionExists.id,
+          loggedInUserId: loggedInUser.user_id,
+          active_class_id: payload.active_class_id,
         });
-
-        const buildAuditRecordsPayload = {
-          userId: createdUser.id,
-          subProfileId,
-          targetEntityName,
+      // A) Create the User and nested ManagementStaff profile
+      const createdUser = await transaction.user.create({
+        data: {
           full_name,
           mobile_number,
           email,
-          cleanRole,
-          cleanPosition,
-          positionId: positionExists.id,
-          loggedInUserId: loggedInUser.user_id,
-        };
-        // Initialized array sets for scalable audit insertions
-        const auditRecords: Prisma.AuditLogCreateManyInput[] =
-          userHelperFunction.buildInitialAuditRecords(buildAuditRecordsPayload);
+          user_name,
+          gender,
+          ...(payload.blood_group !== undefined && {
+            blood_group: payload.blood_group,
+          }),
+          ...(payload.date_of_birth !== undefined && {
+            date_of_birth: payload.date_of_birth,
+          }),
+          ...(payload.height_in_cm !== undefined && {
+            height_in_cm: payload.height_in_cm,
+          }),
+          ...(payload.weight_in_kg !== undefined && {
+            weight_in_kg: payload.weight_in_kg,
+          }),
+          ...(payload.religion !== undefined && {
+            religion: payload.religion,
+          }),
+          ...(payload.nationality !== undefined && {
+            nationality: payload.nationality,
+          }),
+          ...(payload.birth_certificate_number !== undefined && {
+            birth_certificate_number: payload.birth_certificate_number,
+          }),
+          ...(payload.nid_number !== undefined && {
+            nid_number: payload.nid_number,
+          }),
+          ...profileData,
+          current_role: cleanRole,
 
-        // Seed Promotion History blocks (Only valid for Staff profiles)
-        if (cleanRole === Role.MANAGEMENT || cleanRole === Role.ACADEMIC) {
-          await transaction.promotionHistory.create({
-            data: {
-              management_staff_id:
-                cleanRole === Role.MANAGEMENT ? subProfileId : undefined,
-              academic_staff_id:
-                cleanRole === Role.ACADEMIC ? subProfileId : undefined,
-              position_id: positionExists.id,
-              role: cleanRole,
-              start_date: effectiveJoiningDate,
-              created_by_id: loggedInUser.user_id,
-            },
-          });
+          current_position: {
+            connect: { id: positionExists.id },
+          },
+
+          created_by: {
+            connect: { id: loggedInUser.user_id },
+          },
+        },
+        include: {
+          management_staff_profile: true,
+          academic_staff_profile: true,
+          student_profile: true,
+          governing_body_profile: true,
+        },
+        omit: {
+          user_password: true,
+        },
+      });
+
+      // Extract specific entity profile ID for audit log linking rules
+      const subProfileId = userHelperFunction.findSubProfileId({
+        cleanRole,
+        createdUser,
+        targetEntityName,
+      });
+
+      const buildAuditRecordsPayload = {
+        userId: createdUser.id,
+        subProfileId,
+        targetEntityName,
+        full_name,
+        mobile_number,
+        email,
+        cleanRole,
+        cleanPosition,
+        positionId: positionExists.id,
+        loggedInUserId: loggedInUser.user_id,
+      };
+      // Initialized array sets for scalable audit insertions
+      const auditRecords: Prisma.AuditLogCreateManyInput[] =
+        userHelperFunction.buildInitialAuditRecords(buildAuditRecordsPayload);
+
+      // Seed Promotion History blocks (Only valid for Staff profiles)
+      if (cleanRole === Role.MANAGEMENT || cleanRole === Role.ACADEMIC) {
+        await transaction.promotionHistory.create({
+          data: {
+            management_staff_id:
+              cleanRole === Role.MANAGEMENT ? subProfileId : undefined,
+            academic_staff_id:
+              cleanRole === Role.ACADEMIC ? subProfileId : undefined,
+            current_position_id: positionExists.id,
+            current_role: cleanRole,
+            start_date: effectiveJoiningDate,
+            created_by_id: loggedInUser.user_id,
+          },
+        });
+      }
+      // ======================
+      // STUDENT CREATION
+      // ======================
+      if (cleanRole === Role.STUDENT && subProfileId) {
+        // CHECK SECTION
+        if (!payload.section) {
+          throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
         }
-        // ======================
-        // STUDENT CREATION
-        // ======================
-        if (cleanRole === Role.STUDENT && subProfileId) {
-          // CHECK SECTION
-          if (!payload.section) {
-            throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
-          }
 
-          // CHECK VERSION
-          if (!payload.version) {
-            throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
-          }
-          // MAKE STUDENT REQUIREMENTS PAYLOAD
-          const studentsRequirementPayload = {
-            transaction,
-            active_class_id: payload.active_class_id,
-            year_name: payload.year_name,
-            shift_name: payload.shift_name,
-            roll_number: payload.roll_number,
-            section: payload.section,
-            version: payload.version,
-            quranic_class_name: payload.quranic_class_name,
-            quranic_class_period_ids: payload.quranic_class_period_ids,
-          };
-          // CHECK ALL REQUIREMENTS
-          const {
-            activeClassID,
-            academicStartDate,
-            academicEndDate,
-            academicYear,
-            existingShift,
-            rollNumber,
+        // CHECK VERSION
+        if (!payload.version) {
+          throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+        }
+        // MAKE STUDENT REQUIREMENTS PAYLOAD
+        const studentsRequirementPayload = {
+          transaction,
+          active_class_id: payload.active_class_id,
+          year_name: payload.year_name,
+          shift_name: payload.shift_name,
+          roll_number: payload.roll_number,
+          section: payload.section,
+          version: payload.version,
+          quranic_class_name: payload.quranic_class_name,
+          quranic_class_period_ids: payload.quranic_class_period_ids,
+        };
+        // CHECK ALL REQUIREMENTS
+        const {
+          activeClassID,
+          academicStartDate,
+          academicEndDate,
+          academicYear,
+          existingShift,
+          rollNumber,
+          section,
+          version,
+          existingQuranicClass,
+          quranicClassPeriodIDs,
+        } = await userHelperFunction.checkStudentCreationRequirements(
+          studentsRequirementPayload,
+        );
+
+        const classHistory = await transaction.classHistory.create({
+          data: {
+            student: { connect: { id: subProfileId } },
+            class: { connect: { id: activeClassID } },
+            academic_year: { connect: { id: academicYear.id } },
+            shift: existingShift,
+            roll_number: rollNumber,
+            start_date: academicStartDate,
+            end_date: academicEndDate,
+            quranic_subject: { connect: { id: existingQuranicClass.id } },
             section,
             version,
-            existingQuranicClass,
-            quranicClassPeriodIDs,
-          } = await userHelperFunction.checkStudentCreationRequirements(
-            studentsRequirementPayload,
-          );
-
-          const classHistory = await transaction.classHistory.create({
-            data: {
-              student: { connect: { id: subProfileId } },
-              class: { connect: { id: activeClassID } },
-              academic_year: { connect: { id: academicYear.id } },
-              shift: existingShift,
-              roll_number: rollNumber,
-              start_date: academicStartDate,
-              end_date: academicEndDate,
-              quranic_subject: { connect: { id: existingQuranicClass.id } },
-              section,
-              version,
-              class_history_quranic_periods: {
-                create: quranicClassPeriodIDs.map((id: string) => ({
-                  quranic_period: { connect: { id } },
-                })),
-              },
-              created_by: { connect: { id: loggedInUser.user_id } },
+            class_history_quranic_periods: {
+              create: quranicClassPeriodIDs.map((id: string) => ({
+                quranic_period: { connect: { id } },
+              })),
             },
-          });
+            created_by: { connect: { id: loggedInUser.user_id } },
+          },
+        });
 
-          auditRecords.push({
-            entity_id: classHistory.id,
-            entity_name: "classHistory",
-            old_value: Prisma.JsonNull,
-            new_value: {
-              student_id: subProfileId,
-              class_id: activeClassID,
-              academic_year_id: academicYear.id,
-              start_date: academicStartDate.toISOString(),
-              end_date: academicEndDate.toISOString(),
-              roll_number: rollNumber,
-              shift: existingShift,
-              section,
-              version,
-              quranic_class_id: existingQuranicClass.id,
-              quranic_class_period_ids: quranicClassPeriodIDs,
-            },
-            action: "CREATE",
-            changed_by_id: loggedInUser.user_id,
-          });
-        }
-        // Add additional tracking metadata audit line item
         auditRecords.push({
-          entity_id: subProfileId,
-          entity_name: "promotionHistory",
+          entity_id: classHistory.id,
+          entity_name: "classHistory",
           old_value: Prisma.JsonNull,
           new_value: {
-            role: cleanRole,
-            position_id: positionExists.id,
-            start_date: effectiveJoiningDate.toISOString(),
-            end_date: null,
+            student_id: subProfileId,
+            class_id: activeClassID,
+            academic_year_id: academicYear.id,
+            start_date: academicStartDate.toISOString(),
+            end_date: academicEndDate.toISOString(),
+            roll_number: rollNumber,
+            shift: existingShift,
+            section,
+            version,
+            quranic_class_id: existingQuranicClass.id,
+            quranic_class_period_ids: quranicClassPeriodIDs,
           },
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
         });
+      }
+      // Add additional tracking metadata audit line item
+      auditRecords.push({
+        entity_id: subProfileId,
+        entity_name: "promotionHistory",
+        old_value: Prisma.JsonNull,
+        new_value: {
+          role: cleanRole,
+          position_id: positionExists.id,
+          start_date: effectiveJoiningDate.toISOString(),
+          end_date: null,
+        },
+        action: "CREATE",
+        changed_by_id: loggedInUser.user_id,
+      });
 
-        // Bulk resolve tracking inputs
-        await transaction.auditLog.createMany({ data: auditRecords });
+      // Bulk resolve tracking inputs
+      await transaction.auditLog.createMany({ data: auditRecords });
 
-        return createdUser;
-      },
-      { timeout: 30000 },
-    );
+      return createdUser;
+    },
+    { timeout: 30000 },
+  );
 
   let emailSent = true;
   try {
@@ -283,7 +282,8 @@ const createUser = async (
       expirationSeconds,
       to: email,
       templateName: "create_user_email_verify.ejs",
-      subject: "Welcome To SONAMONIDER PATHSHALA. Verify Your Email Address",
+      subject:
+        "Welcome To SONAMONIDER PATHSHALA & HIGH SCHOOL. Verify Your Email Address",
       templateData: {
         name: full_name,
         user_name,

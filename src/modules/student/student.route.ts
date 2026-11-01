@@ -6,9 +6,16 @@ import { studentZodSchema } from "./student.zodValidation";
 import { Role } from "#db-client";
 
 // =============================================
-// STUDENT READMISSION ROUTE
+// STUDENT DEACTIVATE ROUTE
 // =============================================
 const router = Router();
+// Deactivate all students whose enrollment period has ended.
+router.post(
+  "/deactivate_not_readmitted_students",
+  userAuth(Role.SUPER_ADMIN),
+  studentController.deactivateNotReadmittedStudents,
+);
+
 // =========================================================
 // STUDENT READMISSION ROUTE
 // =========================================================

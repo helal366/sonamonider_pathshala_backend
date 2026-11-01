@@ -177,174 +177,177 @@ const assignGradeGroupTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { class_id, academicStaff_id } = payload;
-  const { assigned, email, teacherType } = await prisma.$transaction(async (tx) => {
-    // FIND CLASS
-    const existingClass = await tx.class.findUnique({
-      where: { id: class_id },
-      select: {
-        class_name: true,
-        grade_group_teacher: {
-          include: {
-            user_primary_data: {
-              select: {
-                full_name: true,
-                mobile_number: true,
+  const { assigned, email, teacherType } = await prisma.$transaction(
+    async (tx) => {
+      // FIND CLASS
+      const existingClass = await tx.class.findUnique({
+        where: { id: class_id },
+        select: {
+          class_name: true,
+          grade_group_teacher: {
+            include: {
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    // CHECK CLASS EXISTANCE
-    if (!existingClass) {
-      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-    }
-    const teacherType = existingClass.class_name
-      .toLowerCase()
-      .includes("grade")
-      ? "Grade"
-      : "Group";
-
-    // CHECK GRADE OR GROUP TEACHER ASSIGNED TO THE CLASS OR NOT.
-    if (existingClass.grade_group_teacher) {
-      throw new AppError(
-        `${teacherType} teacher already assigned to ${existingClass.class_name}. Teacher name: ${existingClass.grade_group_teacher.user_primary_data.full_name}, Teacher mobile number: (${existingClass.grade_group_teacher.user_primary_data.mobile_number})`,
-        StatusCodes.CONFLICT,
-      );
-    }
-
-    // FIND ACADEMIC STAFF
-    const existingAcademicStaff = await tx.academicStaff.findUnique({
-      where: { id: academicStaff_id },
-      select: {
-        grade_group_teacher_class: {
-          select: {
-            id: true,
-            class_name: true,
-          },
-        },
-        current_position: {
-          select: {
-            position_name: true,
-          },
-        },
-        user_primary_data: {
-          select: {
-            full_name: true,
-            mobile_number: true,
-            active_status: true,
-            is_deleted: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    // CHECK ACADEMIC STAFF EXISTANCE
-    if (!existingAcademicStaff) {
-      throw new AppError(`Teacher not found.`, StatusCodes.NOT_FOUND);
-    }
-    // CHECK ACADEMIC STAFF ACTIVITY
-    const isAcademicStaffActive =
-      existingAcademicStaff?.user_primary_data.active_status === "ACTIVE";
-    const isAcademicStaffDeleted =
-      existingAcademicStaff?.user_primary_data.is_deleted;
-    if (
-      !existingAcademicStaff ||
-      !isAcademicStaffActive ||
-      isAcademicStaffDeleted
-    ) {
-      throw new AppError(
-        `Teacher not available. Check activity.`,
-        StatusCodes.NOT_FOUND,
-      );
-    }
-
-    // CHECK THE ACADEMIC STAFF IS TEACHER ASSISTANT OR NOT
-    if (
-      existingAcademicStaff.current_position?.position_name ===
-      "TEACHER_ASSISTANT"
-    ) {
-      throw new AppError(
-        `TEACHER_ASSISTANT cannot be assigned as a ${teacherType} teacher.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-
-    // CHECK THE TEACHER IS ALREADY ASSIGNNED AS GRADE OR GROUP TEACHER
-    const assignedClass =
-      existingAcademicStaff.grade_group_teacher_class?.class_name;
-    if (existingAcademicStaff.grade_group_teacher_class) {
-      const assignedTeacherType = assignedClass
-        ?.toLowerCase()
+      // CHECK CLASS EXISTANCE
+      if (!existingClass) {
+        throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+      }
+      const teacherType = existingClass.class_name
+        .toLowerCase()
         .includes("grade")
         ? "Grade"
         : "Group";
-      throw new AppError(
-        `Teacher is already assigned as a ${assignedTeacherType} teacher of ${assignedClass} class.`,
-        StatusCodes.CONFLICT,
-      );
-    }
 
-    // ASSIGN AS GRADE OR GROUP TEACHER
-    const assigned = await tx.class.update({
-      where: { id: class_id },
-      data: {
-        grade_group_teacher: { connect: { id: academicStaff_id } },
-        updated_by: { connect: { id: loggedInUser.user_id } },
-      },
-    });
+      // CHECK GRADE OR GROUP TEACHER ASSIGNED TO THE CLASS OR NOT.
+      if (existingClass.grade_group_teacher) {
+        throw new AppError(
+          `${teacherType} teacher already assigned to ${existingClass.class_name}. Teacher name: ${existingClass.grade_group_teacher.user_primary_data.full_name}, Teacher mobile number: (${existingClass.grade_group_teacher.user_primary_data.mobile_number})`,
+          StatusCodes.CONFLICT,
+        );
+      }
 
-    // CREATE AUDIT LOG
-    await tx.auditLog.createMany({
-      data: [
-        {
-          entity_id: class_id,
-          entity_name: "class",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            grade_group_teacher_id: academicStaff_id,
-            grade_group_teacher: {
-              full_name: existingAcademicStaff.user_primary_data.full_name,
-              mobile_number:
-                existingAcademicStaff.user_primary_data.mobile_number,
+      // FIND ACADEMIC STAFF
+      const existingAcademicStaff = await tx.academicStaff.findUnique({
+        where: { id: academicStaff_id },
+        select: {
+          grade_group_teacher_class: {
+            select: {
+              id: true,
+              class_name: true,
+            },
+          },
+          current_position: {
+            select: {
+              position_name: true,
+            },
+          },
+          user_primary_data: {
+            select: {
+              full_name: true,
+              mobile_number: true,
+              active_status: true,
+              is_deleted: true,
+              email: true,
             },
           },
         },
-        {
-          entity_id: academicStaff_id,
-          entity_name: "academicStaff",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: Prisma.JsonNull,
-          new_value: {
-            grade_group_teacher_class: {
-              id: class_id,
-              class_name: existingClass.class_name,
+      });
+
+      // CHECK ACADEMIC STAFF EXISTANCE
+      if (!existingAcademicStaff) {
+        throw new AppError(`Teacher not found.`, StatusCodes.NOT_FOUND);
+      }
+      // CHECK ACADEMIC STAFF ACTIVITY
+      const isAcademicStaffActive =
+        existingAcademicStaff?.user_primary_data.active_status === "ACTIVE";
+      const isAcademicStaffDeleted =
+        existingAcademicStaff?.user_primary_data.is_deleted;
+      if (
+        !existingAcademicStaff ||
+        !isAcademicStaffActive ||
+        isAcademicStaffDeleted
+      ) {
+        throw new AppError(
+          `Teacher not available. Check activity.`,
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      // CHECK THE ACADEMIC STAFF IS TEACHER ASSISTANT OR NOT
+      if (
+        existingAcademicStaff.current_position?.position_name ===
+        "TEACHER_ASSISTANT"
+      ) {
+        throw new AppError(
+          `TEACHER_ASSISTANT cannot be assigned as a ${teacherType} teacher.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
+      // CHECK THE TEACHER IS ALREADY ASSIGNNED AS GRADE OR GROUP TEACHER
+      const assignedClass =
+        existingAcademicStaff.grade_group_teacher_class?.class_name;
+      if (existingAcademicStaff.grade_group_teacher_class) {
+        const assignedTeacherType = assignedClass
+          ?.toLowerCase()
+          .includes("grade")
+          ? "Grade"
+          : "Group";
+        throw new AppError(
+          `Teacher is already assigned as a ${assignedTeacherType} teacher of ${assignedClass} class.`,
+          StatusCodes.CONFLICT,
+        );
+      }
+
+      // ASSIGN AS GRADE OR GROUP TEACHER
+      const assigned = await tx.class.update({
+        where: { id: class_id },
+        data: {
+          grade_group_teacher: { connect: { id: academicStaff_id } },
+          updated_by: { connect: { id: loggedInUser.user_id } },
+        },
+      });
+
+      // CREATE AUDIT LOG
+      await tx.auditLog.createMany({
+        data: [
+          {
+            entity_id: class_id,
+            entity_name: "class",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              grade_group_teacher_id: academicStaff_id,
+              grade_group_teacher: {
+                full_name: existingAcademicStaff.user_primary_data.full_name,
+                mobile_number:
+                  existingAcademicStaff.user_primary_data.mobile_number,
+              },
             },
           },
-        },
-      ],
-    });
+          {
+            entity_id: academicStaff_id,
+            entity_name: "academicStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              grade_group_teacher_class: {
+                id: class_id,
+                class_name: existingClass.class_name,
+              },
+            },
+          },
+        ],
+      });
 
-    return {
-      assigned,
-      teacherType,
-      email: {
-        to: existingAcademicStaff.user_primary_data.email,
-        templateName: "assign_grade_group_teacher_email.ejs" as const,
-        subject: `${teacherType} Teacher Assignment Notification – SONAMONIDER PATHSHALA`,
-        templateData: {
-          name: existingAcademicStaff.user_primary_data.full_name,
-          className: existingClass.class_name,
-          year: new Date().getFullYear(),
+      return {
+        assigned,
+        teacherType,
+        email: {
+          to: existingAcademicStaff.user_primary_data.email,
+          templateName: "assign_grade_group_teacher_email.ejs" as const,
+          subject: `${teacherType} Teacher Assignment Notification – SONAMONIDER PATHSHALA & HIGH SCHOOL`,
+          templateData: {
+            name: existingAcademicStaff.user_primary_data.full_name,
+            className: existingClass.class_name,
+            year: new Date().getFullYear(),
+          },
         },
-      },
-    };
-  }, { timeout: 30000 });
+      };
+    },
+    { timeout: 30000 },
+  );
 
   let emailSent = true;
   try {
@@ -367,135 +370,136 @@ const disconnectGradeGroupTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { class_id, academicStaff_id } = payload;
-  const { updated, email, shouldSendEmail, teacherType } = await prisma.$transaction(async (tx) => {
-    // FIND CLASS
-    const existingClass = await tx.class.findUnique({
-      where: { id: class_id },
-      select: {
-        class_name: true,
-        grade_group_teacher: {
-          select: {
-            id: true,
-            user_primary_data: {
-              select: {
-                full_name: true,
-                mobile_number: true,
+  const { updated, email, shouldSendEmail, teacherType } =
+    await prisma.$transaction(async (tx) => {
+      // FIND CLASS
+      const existingClass = await tx.class.findUnique({
+        where: { id: class_id },
+        select: {
+          class_name: true,
+          grade_group_teacher: {
+            select: {
+              id: true,
+              user_primary_data: {
+                select: {
+                  full_name: true,
+                  mobile_number: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    if (!existingClass) {
-      throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
-    }
-    const teacherType = existingClass.class_name
-      .toLowerCase()
-      .includes("grade")
-      ? "Grade"
-      : "Group";
+      if (!existingClass) {
+        throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+      }
+      const teacherType = existingClass.class_name
+        .toLowerCase()
+        .includes("grade")
+        ? "Grade"
+        : "Group";
 
-    // CHECK IF CLASS HAS A GRADE/GROUP TEACHER
-    if (!existingClass.grade_group_teacher) {
-      throw new AppError(
-        `No ${teacherType} teacher is currently assigned to this class.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-    //CHECK WHETHER PROVIDED ACADEMIC STAFF IS THE CURRENT GRADE/GROUP TEACHER
-    if (existingClass.grade_group_teacher.id !== academicStaff_id) {
-      throw new AppError(
-        `The provided teacher is not assigned as ${teacherType} teacher of this class.`,
-        StatusCodes.BAD_REQUEST,
-      );
-    }
-    // FIND ACADEMIC STAFF
-    const currentGradeGroupTeacher = await tx.academicStaff.findUnique({
-      where: { id: academicStaff_id },
-      select: {
-        id: true,
-        user_primary_data: {
-          select: {
-            full_name: true,
-            mobile_number: true,
-            email: true,
-            active_status: true,
-            is_deleted: true,
-          },
-        },
-        grade_group_teacher_class: {
-          select: { id: true, class_name: true },
-        },
-      },
-    });
-    if (!currentGradeGroupTeacher) {
-      throw new AppError(
-        `Provided current ${teacherType} teacher not found.`,
-        StatusCodes.NOT_FOUND,
-      );
-    }
-
-    // UPDATE CLASS
-    const updated = await tx.academicStaff.update({
-      where: { id: academicStaff_id },
-      data: {
-        grade_group_teacher_class_id: null,
-        updated_by_id: loggedInUser.user_id,
-      },
-    });
-
-    // CREATE AUDIT LOG
-    await tx.auditLog.createMany({
-      data: [
-        {
-          entity_id: class_id,
-          entity_name: "class",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: {
-            grade_group_teacher: {
-              id: currentGradeGroupTeacher.id,
+      // CHECK IF CLASS HAS A GRADE/GROUP TEACHER
+      if (!existingClass.grade_group_teacher) {
+        throw new AppError(
+          `No ${teacherType} teacher is currently assigned to this class.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      //CHECK WHETHER PROVIDED ACADEMIC STAFF IS THE CURRENT GRADE/GROUP TEACHER
+      if (existingClass.grade_group_teacher.id !== academicStaff_id) {
+        throw new AppError(
+          `The provided teacher is not assigned as ${teacherType} teacher of this class.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      // FIND ACADEMIC STAFF
+      const currentGradeGroupTeacher = await tx.academicStaff.findUnique({
+        where: { id: academicStaff_id },
+        select: {
+          id: true,
+          user_primary_data: {
+            select: {
+              full_name: true,
+              mobile_number: true,
+              email: true,
+              active_status: true,
+              is_deleted: true,
             },
           },
-          new_value: {
-            grade_group_teacher: null
-          }
+          grade_group_teacher_class: {
+            select: { id: true, class_name: true },
+          },
         },
-        {
-          entity_id: academicStaff_id,
-          entity_name: "academicStaff",
-          changed_by_id: loggedInUser.user_id,
-          action: "UPDATE",
-          old_value: {
-            grade_group_teacher_class: {
-              id: class_id,
-              class_name: existingClass.class_name,
+      });
+      if (!currentGradeGroupTeacher) {
+        throw new AppError(
+          `Provided current ${teacherType} teacher not found.`,
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      // UPDATE CLASS
+      const updated = await tx.academicStaff.update({
+        where: { id: academicStaff_id },
+        data: {
+          grade_group_teacher_class_id: null,
+          updated_by_id: loggedInUser.user_id,
+        },
+      });
+
+      // CREATE AUDIT LOG
+      await tx.auditLog.createMany({
+        data: [
+          {
+            entity_id: class_id,
+            entity_name: "class",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: {
+              grade_group_teacher: {
+                id: currentGradeGroupTeacher.id,
+              },
+            },
+            new_value: {
+              grade_group_teacher: null,
             },
           },
-          new_value: Prisma.JsonNull,
-        },
-      ],
-    });
+          {
+            entity_id: academicStaff_id,
+            entity_name: "academicStaff",
+            changed_by_id: loggedInUser.user_id,
+            action: "UPDATE",
+            old_value: {
+              grade_group_teacher_class: {
+                id: class_id,
+                class_name: existingClass.class_name,
+              },
+            },
+            new_value: Prisma.JsonNull,
+          },
+        ],
+      });
 
-    return {
-      updated,
-      shouldSendEmail:
-        currentGradeGroupTeacher.user_primary_data.active_status === "ACTIVE" &&
-        !currentGradeGroupTeacher.user_primary_data.is_deleted,
-      email: {
-        to: currentGradeGroupTeacher.user_primary_data.email,
-        templateName: "disconnect_grade_group_teacher_email.ejs" as const,
-        subject: `${teacherType} Teacher Assignment Removal Notification – SONAMONIDER PATHSHALA`,
-        templateData: {
-          name: currentGradeGroupTeacher.user_primary_data.full_name,
-          className: existingClass.class_name,
-          year: new Date().getFullYear(),
+      return {
+        updated,
+        shouldSendEmail:
+          currentGradeGroupTeacher.user_primary_data.active_status ===
+            "ACTIVE" && !currentGradeGroupTeacher.user_primary_data.is_deleted,
+        email: {
+          to: currentGradeGroupTeacher.user_primary_data.email,
+          templateName: "disconnect_grade_group_teacher_email.ejs" as const,
+          subject: `${teacherType} Teacher Assignment Removal Notification – SONAMONIDER PATHSHALA & HIGH SCHOOL`,
+          templateData: {
+            name: currentGradeGroupTeacher.user_primary_data.full_name,
+            className: existingClass.class_name,
+            year: new Date().getFullYear(),
+          },
         },
-      },
-      teacherType,
-    };
-  });
+        teacherType,
+      };
+    });
 
   let emailSent = false;
   if (shouldSendEmail) {
@@ -513,7 +517,7 @@ const disconnectGradeGroupTeacher = async (
     ...updated,
     email_sent: emailSent,
     email_skipped: !shouldSendEmail,
-    teacherType
+    teacherType,
   };
 };
 export const academicStaffServices = {
