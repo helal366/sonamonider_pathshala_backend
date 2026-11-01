@@ -69,8 +69,6 @@ const createStudentFeeRate = async (
           fee_type: created.fee_type,
           billing_frequency: created.billing_frequency,
           amount: created.amount.toString(),
-          effective_from: created.effective_from.toISOString(),
-          effective_to: created.effective_to?.toISOString() ?? null,
         },
       },
     });
@@ -148,8 +146,6 @@ const deleteStudentFeeRate = async (
           fee_type: existing.fee_type,
           billing_frequency: existing.billing_frequency,
           amount: existing.amount.toString(),
-          effective_from: existing.effective_from.toISOString(),
-          effective_to: existing.effective_to?.toISOString() ?? null,
         },
         new_value: Prisma.JsonNull,
       },
@@ -167,7 +163,7 @@ const getAllStudentFeeRates= async(
 )=>{
   assertManagementAccountant(loggedInUser);
   return prisma.studentFeeRate.findMany({
-    orderBy: [{ effective_from: "desc" }, { id: "asc" }],
+    orderBy: [{ created_at: "desc" }, { id: "asc" }],
   });
 };
 
@@ -184,7 +180,7 @@ const getStudentFeeRateByStudentId = async (
     where: { id: student_id },
     select: {
       fee_rates: {
-        orderBy: [{ effective_from: "desc" }, { id: "asc" }],
+        orderBy: [{ created_at: "desc" }, { id: "asc" }],
       },
     },
   });

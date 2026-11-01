@@ -9,8 +9,6 @@ const createStudentFeeRateZodSchema = z4.object({
   fee_type: z4.enum(StudentFeeType, "Invalid student fee type."),
   billing_frequency: z4.enum(BillingFrequency, "Invalid billing frequency."),
   amount: z4.number().nonnegative("Amount cannot be negative."),
-  effective_from: z4.coerce.date().optional(),
-  effective_to: z4.coerce.date().nullable().optional(),
 });
 
 export type TCreateStudentFeeRateZodSchema = z4.infer<
@@ -50,14 +48,6 @@ const updateStudentFeeRateFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
     field: z4.literal("amount"),
     value: z4.number().nonnegative("Amount cannot be negative."),
-  }),
-  z4.object({
-    field: z4.literal("effective_from"),
-    value: z4.coerce.date(),
-  }),
-  z4.object({
-    field: z4.literal("effective_to"),
-    value: z4.coerce.date().nullable(),
   }),
 ]);
 

@@ -6,9 +6,7 @@ model StudentFeeRate {
 
   fee_type          StudentFeeType
   billing_frequency BillingFrequency
-  amount            Decimal          @db.Decimal(10, 2)
-  effective_from    DateTime         @default(now())
-  effective_to      DateTime?
+  amount            Decimal           @db.Decimal(10, 2)
 
   created_by_id String?
   created_by    User?   @relation("student_fee_rate_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -19,8 +17,7 @@ model StudentFeeRate {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([student_id, fee_type, billing_frequency, effective_from])
-  @@index([student_id, fee_type, effective_from])
+  @@unique([student_id, fee_type, billing_frequency])
   @@map("student_fee_rates")
 }
 
