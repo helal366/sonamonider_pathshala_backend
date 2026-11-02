@@ -644,7 +644,7 @@ CREATE TABLE "student_fee_payments" (
 );
 
 -- CreateTable
-CREATE TABLE "assigned_student_fee" (
+CREATE TABLE "standard_student_fee_rates" (
     "id" TEXT NOT NULL,
     "fee_type" "StudentFeeType" NOT NULL,
     "billing_frequency" "BillingFrequency" NOT NULL,
@@ -657,7 +657,7 @@ CREATE TABLE "assigned_student_fee" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
-    CONSTRAINT "assigned_student_fee_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "standard_student_fee_rates_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -1304,13 +1304,13 @@ ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_created_
 ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "standard_student_fee_rates" ADD CONSTRAINT "standard_student_fee_rates_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "standard_student_fee_rates" ADD CONSTRAINT "standard_student_fee_rates_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "assigned_student_fee" ADD CONSTRAINT "assigned_student_fee_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "standard_student_fee_rates" ADD CONSTRAINT "standard_student_fee_rates_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_results" ADD CONSTRAINT "student_results_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;

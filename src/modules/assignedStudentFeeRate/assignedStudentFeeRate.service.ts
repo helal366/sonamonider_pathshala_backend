@@ -43,7 +43,7 @@ const createAssignedStudentFeeRate = async (
   return prisma.$transaction(async (tx) => {
     await findClassOrThrow(payload.class_id, tx);
 
-    const created = await tx.assignedStudentFeeRate.create({
+    const created = await tx.standardStudentFeeRate.create({
       data: {
         ...payload,
         created_by_id: loggedInUser.user_id,
@@ -81,7 +81,7 @@ const updateAssignedStudentFeeRateField = async (
   assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
-    const existing = await tx.assignedStudentFeeRate.findUnique({
+    const existing = await tx.standardStudentFeeRate.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -96,7 +96,7 @@ const updateAssignedStudentFeeRateField = async (
       await findClassOrThrow(value, tx);
     }
 
-    const data: Prisma.AssignedStudentFeeRateUpdateInput = {
+    const data: Prisma.StandardStudentFeeRateUpdateInput = {
       updated_by: { connect: { id: loggedInUser.user_id } },
     };
     switch (field) {
@@ -120,7 +120,7 @@ const updateAssignedStudentFeeRateField = async (
         break;
     }
 
-    const updated = await tx.assignedStudentFeeRate.update({
+    const updated = await tx.standardStudentFeeRate.update({
       where: { id },
       data,
     });
@@ -147,7 +147,7 @@ const deleteAssignedStudentFeeRate = async (
   assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
-    const existing = await tx.assignedStudentFeeRate.findUnique({
+    const existing = await tx.standardStudentFeeRate.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -157,7 +157,7 @@ const deleteAssignedStudentFeeRate = async (
       );
     }
 
-    const deleted = await tx.assignedStudentFeeRate.delete({ where: { id } });
+    const deleted = await tx.standardStudentFeeRate.delete({ where: { id } });
 
     await tx.auditLog.create({
       data: {
@@ -187,7 +187,7 @@ const getAllAssignedStudentFeeRates = async (
 ) => {
   assertManagementAccountant(loggedInUser);
 
-  return prisma.assignedStudentFeeRate.findMany({
+  return prisma.standardStudentFeeRate.findMany({
     orderBy: [{ created_at: "desc" }, { id: "asc" }],
   });
 };
@@ -205,7 +205,7 @@ const getAssignedStudentFeeRatesByClassId = async (
     throw new AppError("Class not found.", StatusCodes.NOT_FOUND);
   }
 
-  return prisma.assignedStudentFeeRate.findMany({
+  return prisma.standardStudentFeeRate.findMany({
     where: { class_id: classId },
     orderBy: [
       { section: "asc" },

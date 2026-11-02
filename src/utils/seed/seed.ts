@@ -1,6 +1,6 @@
 import { Role } from "#db-client";
-import { envVars } from "../config/index.js";
-import { prisma } from "../lib/prisma.js";
+import { envVars } from "../../config/index.js";
+import { prisma } from "../../lib/prisma.js";
 import bcrypt from "bcryptjs";
 
 const seedPositions = async () => {
@@ -40,7 +40,6 @@ const seedPositions = async () => {
 
   console.log(`Positions seeding done. Created ${result.count} new positions.`);
 };
-
 
 const createPrincipal = async () => {
   // Check SUPER_ADMIN user
@@ -83,7 +82,6 @@ const createPrincipal = async () => {
     console.log("SUPER_ADMIN user already exists.");
   }
 };
-
 
 export const runInitialSeed = async () => {
   await seedPositions();

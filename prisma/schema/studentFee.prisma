@@ -50,7 +50,7 @@ model StudentFeePayment {
   @@map("student_fee_payments")
 }
 
-model AssignedStudentFeeRate {
+model StandardStudentFeeRate {
   id String @id @default(uuid())
   
   fee_type           StudentFeeType
@@ -72,5 +72,5 @@ model AssignedStudentFeeRate {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@map("assigned_student_fee")
+  @@map("standard_student_fee_rates")
 }

@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../../lib/prisma.js";
 
 // =========================================================
 // SEED CLASSES
@@ -7,6 +7,7 @@ const seedClasses = async () => {
   const classes = [
     "PLAYGROUP",
     "NURSERY",
+    "KINDERGARTEN",
     "GRADE_NURANI",
     "GRADE_NAZERA",
     "GRADE_HIFZ",
