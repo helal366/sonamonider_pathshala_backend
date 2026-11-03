@@ -71,9 +71,9 @@ router.get(
 // GET BOOK LIST BY PUBLISHER ROUTE
 // =====================================================================
 router.get(
-    "/book_list_by_publusher",
+    "/book_list_by_publusher/:publisher",
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
-    validateZodSchema(bookListZodSchema.getBookListByPublisherZodSchema),
+    validateZodParams(bookListZodSchema.getBookListByPublisherParamsZodSchema),
     bookListController.getBookListPublisher
 )
 export const bookListRouter: Router = router;

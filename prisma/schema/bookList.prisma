@@ -23,5 +23,6 @@ model Booklist {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
+  @@unique([book_name, publisher, class_id, section, version])
   @@map("book_list")
 }

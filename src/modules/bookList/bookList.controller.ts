@@ -7,7 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import {
   TCreateBookListZodSchema,
   TDeleteBookListParamsZodSchema,
-  TGetBookListByPublisherZodSchema,
+  TGetBookListByPublisherParamsZodSchema,
   TGetBookListsByClassIdParamsZodSchema,
   TGetSingleBookListParamsZodSchema,
   TUpdateBookListSingleFieldParamsZodSchema,
@@ -109,7 +109,7 @@ const getSingleBookList = catchAsync(async(req:Request, res: Response)=>{
 // =====================================================================
 const getBookListPublisher = catchAsync(async(req:Request, res: Response)=>{
     helperFunctions.requiredUser(req);
-    const {publisher} = req.body as TGetBookListByPublisherZodSchema
+    const {publisher} = req.params as unknown as TGetBookListByPublisherParamsZodSchema
     const result = await bookListServices.getBookListPublisher(publisher)
     sendResponse(res, {
         success: true,

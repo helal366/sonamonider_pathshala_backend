@@ -31,12 +31,15 @@ const createBookListZodSchema = z4.object({
         : "Main book status must be a boolean.",
   }),
   section: z4.enum(Section),
-  class_name: z4.string({
-    error: (issue)=>
-      issue.input === undefined
-    ? "Class name is required."
-    :"Invalid class name format."
-  }).trim().min(1, "Class name is required."),
+  class_name: z4
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Class name is required."
+          : "Invalid class name format.",
+    })
+    .trim()
+    .min(1, "Class name is required."),
   version: z4.enum(Version, {
     error: (issue) =>
       issue.input === undefined
@@ -155,7 +158,7 @@ export type TGetSingleBookListParamsZodSchema = z4.infer<
 // =====================================================================
 // GET BOOK LIST BY PUBLISHER ROUTE
 // =====================================================================
-const getBookListByPublisherZodSchema = z4.object({
+const getBookListByPublisherParamsZodSchema = z4.object({
   publisher: z4
     .string({
       error: (issue) =>
@@ -166,8 +169,9 @@ const getBookListByPublisherZodSchema = z4.object({
     .trim()
     .min(1, "Publisher is required"),
 });
-export type TGetBookListByPublisherZodSchema =z4.infer<typeof getBookListByPublisherZodSchema>;
-
+export type TGetBookListByPublisherParamsZodSchema = z4.infer<
+  typeof getBookListByPublisherParamsZodSchema
+>;
 
 export const bookListZodSchema = {
   createBookListZodSchema,
@@ -176,5 +180,5 @@ export const bookListZodSchema = {
   updateBookListSingleFieldParamsZodSchema,
   getBookListsByClassIdParamsZodSchema,
   getSingleBookListParamsZodSchema,
-  getBookListByPublisherZodSchema
+  getBookListByPublisherParamsZodSchema,
 };
