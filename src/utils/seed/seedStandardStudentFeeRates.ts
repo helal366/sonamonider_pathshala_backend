@@ -354,7 +354,7 @@ const standardQuranicEveningFeeRate = [
     fee_type: "QURAN_EVENING_MONTHLY_FEE",
     billing_frequency: "MONTHLY",
     amount: 1000,
-    qc_duration_hrs: 2.00,
+    qc_duration_hrs: 2.0,
     class_names: [
       "PLAYGROUP",
       "NURSERY",
@@ -383,7 +383,7 @@ const standardQuranicNightFeeRate = [
     fee_type: "QURAN_NIGHT_MONTHLY_FEE",
     billing_frequency: "MONTHLY",
     amount: 1000,
-    qc_duration_hrs: 2.00,
+    qc_duration_hrs: 2.0,
     class_names: [
       "PLAYGROUP",
       "NURSERY",
@@ -463,10 +463,94 @@ const standardOtherCertificateFeeRate = [
   },
 ];
 
+const standardResidentialFeeRate = [
+  {
+    fee_type: "RESIDENTIAL_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 6500,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
 const standardAdmissionFeeRate = [
   {
     fee_type: "ADMISSION_FEE",
     billing_frequency: "YEARLY",
+    amount: 5000,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardDayCareFeeRate = [
+  {
+    fee_type: "DAYCARE_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 5500,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardEstablishmentFeeRate = [
+  {
+    fee_type: "ESTABLISHMENT_FEE",
+    billing_frequency: "ONE_TIME",
     amount: 5000,
     class_names: [
       "PLAYGROUP",

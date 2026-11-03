@@ -37,6 +37,7 @@ import { moralMannersEvaluationMarkRouter } from "./modules/moralMannersEvaluati
 import { monthlyExamMarkRouter } from "./modules/monthlyExamMark/monthlyExamMark.route.js";
 import { halfYearlyExamMarkRouter } from "./modules/halfYearlyExamMark/halfYearlyExamMark.route.js";
 import { annualExamMarkRouter } from "./modules/annualExamMark/annualExamMark.route.js";
+import { prisma } from "./lib/prisma.js";
 
 const app: Application = express();
 app.use(cors());
@@ -98,6 +99,28 @@ app.get("/health", (_req: Request, res: Response) => {
     message: "Server is running",
     timestamp: new Date().toISOString(),
   });
+});
+// Database health check
+app.get("/health/db", async (_req: Request, res: Response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+
+    return res.status(200).json({
+      success: true,
+      message: "Database connection is healthy",
+      database: "connected",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Database health check failed:", error);
+
+    return res.status(503).json({
+      success: false,
+      message: "Database connection failed",
+      database: "disconnected",
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 // 
 app.get("/", (req: Request, res: Response) => {

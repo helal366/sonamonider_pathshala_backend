@@ -653,6 +653,7 @@ CREATE TABLE "standard_student_fee_rates" (
     "fee_type" "StudentFeeType" NOT NULL,
     "billing_frequency" "BillingFrequency" NOT NULL,
     "amount" DECIMAL(10,2) NOT NULL,
+    "ic_registration_fee" DECIMAL(10,2),
     "ic_duration_hrs" DECIMAL(10,2),
     "qc_duration_hrs" DECIMAL(10,2),
     "section" "Section" NOT NULL,
