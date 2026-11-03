@@ -91,7 +91,15 @@ app.use("/api/v1/smps/annual_exam_mark", annualExamMarkRouter);
 app.get("/favicon.ico", (_req: Request, res: Response) => {
   res.status(204).end();
 });
-
+// health
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+// 
 app.get("/", (req: Request, res: Response) => {
   res.send(html);
 });

@@ -1,5 +1,3 @@
-import { Section, Version } from "#db-client";
-
 const standardMonthlyTuitionFeeRate = [
   {
     fee_type: "MONTHLY_TUITION_FEE",
@@ -9,8 +7,8 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: [""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
 
   {
@@ -21,8 +19,8 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: ["", "", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
@@ -32,8 +30,8 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
@@ -43,8 +41,8 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
@@ -54,8 +52,8 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: ["", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: "SCIENCE",
   },
   {
@@ -66,13 +64,14 @@ const standardMonthlyTuitionFeeRate = [
     class_ids: ["", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: {
       in: ["ARTS", "COMMERCE"], // Matches either department
     },
   },
 ];
+
 const standardsessionFeeRate = [
   {
     fee_type: "SESSION_FEE",
@@ -82,8 +81,8 @@ const standardsessionFeeRate = [
     class_ids: [""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "SESSION_FEE",
@@ -106,10 +105,11 @@ const standardsessionFeeRate = [
     class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
 ];
+
 const standardMonthlyAcademicEvaluationFeeRate = [
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
@@ -119,8 +119,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: [""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
@@ -130,8 +130,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: ["", "", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
@@ -141,8 +141,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
@@ -152,8 +152,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
@@ -163,8 +163,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: ["", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: "SCIENCE",
   },
   {
@@ -175,8 +175,8 @@ const standardMonthlyAcademicEvaluationFeeRate = [
     class_ids: ["", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: {
       in: ["ARTS", "COMMERCE"], // Matches either department
     },
@@ -192,8 +192,8 @@ const standardLaboratoryLibraryFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: "LABORATORY_LIBRARY_FEE",
@@ -203,8 +203,8 @@ const standardLaboratoryLibraryFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: "SCIENCE",
   },
   {
@@ -215,8 +215,8 @@ const standardLaboratoryLibraryFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
     department: {
       in: ["ARTS", "COMMERCE"],
     },
@@ -234,8 +234,8 @@ const standardExamFeeRate = [
     class_ids: ["", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: {
@@ -253,8 +253,8 @@ const standardExamFeeRate = [
     class_ids: ["", "", "", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
   {
     fee_type: {
@@ -263,16 +263,230 @@ const standardExamFeeRate = [
     billing_frequency: "HALF_YEARLY",
     amount: 900,
     class_names: [
-    "GRADE_SIX",
-    "GRADE_SEVEN",
-    "GRADE_EIGHT",
-    "GRADE_NINE",
-    "GRADE_TEN",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
     ],
     class_ids: ["", "", "", "", ""],
     version: "BANGLA",
     section: {
-        in: ["MADRASHA", "SCHOOL",]
-    }, 
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardIntensiveCareFeeRate = [
+  {
+    fee_type: "INTENSIVE_CARE_FEE",
+    billing_frequency: "MONTHLY",
+    ic_duration_hrs: 2.0,
+    amount: 1000,
+    ic_registration_fee: 500,
+    class_names: ["GRADE_ONE", "GRADE_TWO"],
+    class_ids: ["", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "INTENSIVE_CARE_FEE",
+    billing_frequency: "MONTHLY",
+    ic_duration_hrs: 2.0,
+    amount: 1200,
+    ic_registration_fee: 500,
+    class_names: ["GRADE_THREE", "GRADE_FOUR"],
+    class_ids: ["", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "INTENSIVE_CARE_FEE",
+    billing_frequency: "MONTHLY",
+    ic_duration_hrs: 3.0,
+    amount: 1500,
+    ic_registration_fee: 500,
+    class_names: ["GRADE_FIVE", "GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
+    class_ids: ["", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "INTENSIVE_CARE_FEE",
+    billing_frequency: "MONTHLY",
+    ic_duration_hrs: 4.0,
+    amount: 2500,
+    ic_registration_fee: 500,
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    class_ids: ["", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+    department: "SCIENCE",
+  },
+  {
+    fee_type: "INTENSIVE_CARE_FEE",
+    billing_frequency: "MONTHLY",
+    ic_duration_hrs: 3.0,
+    amount: 2000,
+    ic_registration_fee: 500,
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    class_ids: ["", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+    department: {
+      in: ["ARTS", "COMMERCE"],
+    },
+  },
+];
+
+const standardQuranicEveningFeeRate = [
+  {
+    fee_type: "QURAN_EVENING_MONTHLY_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 1000,
+    qc_duration_hrs: 2.00,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardQuranicNightFeeRate = [
+  {
+    fee_type: "QURAN_NIGHT_MONTHLY_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 1000,
+    qc_duration_hrs: 2.00,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardTransferCertificateFeeRate = [
+  {
+    fee_type: "TRANSFER_CERTIFICATION_FEE",
+    billing_frequency: "ONE_TIME",
+    amount: 500,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardOtherCertificateFeeRate = [
+  {
+    fee_type: "OTHER_CERTIFICATE_FEE",
+    billing_frequency: "ONE_TIME",
+    amount: 300,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+];
+
+const standardAdmissionFeeRate = [
+  {
+    fee_type: "ADMISSION_FEE",
+    billing_frequency: "YEARLY",
+    amount: 5000,
+    class_names: [
+      "PLAYGROUP",
+      "NURSERY",
+      "KINDERGARTEN",
+      "GRADE_ONE",
+      "GRADE_TWO",
+      "GRADE_THREE",
+      "GRADE_FOUR",
+      "GRADE_FIVE",
+      "GRADE_SIX",
+      "GRADE_SEVEN",
+      "GRADE_EIGHT",
+      "GRADE_NINE",
+      "GRADE_TEN",
+    ],
+    class_ids: ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    version: "BANGLA",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
   },
 ];

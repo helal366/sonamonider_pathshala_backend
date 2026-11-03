@@ -35,10 +35,19 @@ CREATE TYPE "EducationDegree" AS ENUM ('SSC', 'HSC', 'BSC', 'B_COM', 'B_ARTS', '
 CREATE TYPE "PromotionRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION_FEE', 'SESSION_FEE', 'ADMISSION_FEE', 'MONTHLY_ACADEMIC_EVALUATION_FEE', 'HALF_YEARLY_EXAM_FEE', 'ANNUAL_EXAM_FEE', 'INTENSIVE_CARE_FEE', 'ACADEMIC_MATERIAL_FEE', 'EXTRA_CURRICULAR_ACTIVITY_FEE', 'LABORATORY_LIBRARY_FEE', 'QURAN_EVENING_MONTHLY_FEE', 'QURAN_NIGHT_MONTHLY_FEE', 'TRANSFER_CERTIFICATION_FEE', 'OTHER_CERTIFICATE_FEE', 'RESIDENTIAL_FEE', 'DAYCARE_FEE', 'ESTABLISHMENT_FEE');
+CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION_FEE', 'SESSION_FEE', 'ADMISSION_FEE', 'MONTHLY_ACADEMIC_EVALUATION_FEE', 'HALF_YEARLY_EXAM_FEE', 'ANNUAL_EXAM_FEE', 'INTENSIVE_CARE_FEE', 'ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE', 'LABORATORY_LIBRARY_FEE', 'QURAN_EVENING_MONTHLY_FEE', 'QURAN_NIGHT_MONTHLY_FEE', 'TRANSFER_CERTIFICATION_FEE', 'OTHER_CERTIFICATE_FEE', 'RESIDENTIAL_FEE', 'DAYCARE_FEE', 'ESTABLISHMENT_FEE');
 
 -- CreateEnum
 CREATE TYPE "BillingFrequency" AS ENUM ('MONTHLY', 'HALF_YEARLY', 'YEARLY', 'ONE_TIME');
+
+-- CreateEnum
+CREATE TYPE "Section" AS ENUM ('MADRASHA', 'SCHOOL');
+
+-- CreateEnum
+CREATE TYPE "Version" AS ENUM ('BANGLA', 'ENGLISH');
+
+-- CreateEnum
+CREATE TYPE "Department" AS ENUM ('SCIENCE', 'ARTS', 'COMMERCE');
 
 -- CreateEnum
 CREATE TYPE "StaffPaymentType" AS ENUM ('MONTHLY_SALARY', 'EID_UL_FITR_BONUS', 'EID_UL_AZHA_BONUS', 'PERFORMANCE_BONUS');
@@ -54,15 +63,6 @@ CREATE TYPE "Shift" AS ENUM ('MORNING', 'DAY', 'BOYS', 'GIRLS');
 
 -- CreateEnum
 CREATE TYPE "ExamType" AS ENUM ('HALF_YEARLY', 'ANNUAL');
-
--- CreateEnum
-CREATE TYPE "Section" AS ENUM ('MADRASHA', 'SCHOOL');
-
--- CreateEnum
-CREATE TYPE "Version" AS ENUM ('BANGLA', 'ENGLISH');
-
--- CreateEnum
-CREATE TYPE "Department" AS ENUM ('SCIENCE', 'ARTS', 'COMMERCE');
 
 -- CreateTable
 CREATE TABLE "academic_results" (
@@ -667,6 +667,16 @@ CREATE TABLE "standard_student_fee_rates" (
 );
 
 -- CreateTable
+CREATE TABLE "class_standard_student_fee_rates" (
+    "id" TEXT NOT NULL,
+    "class_id" TEXT NOT NULL,
+    "standard_student_fee_rate_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "class_standard_student_fee_rates_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "student_results" (
     "id" TEXT NOT NULL,
     "student_id" TEXT NOT NULL,
@@ -752,16 +762,6 @@ CREATE TABLE "_class_routine_classes" (
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_class_routine_classes_AB_pkey" PRIMARY KEY ("A","B")
-);
-
--- CreateTable
-CREATE TABLE "class_standard_student_fee_rates" (
-    "id" TEXT NOT NULL,
-    "class_id" TEXT NOT NULL,
-    "standard_student_fee_rate_id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "class_standard_student_fee_rates_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -936,6 +936,9 @@ CREATE INDEX "student_fee_payments_student_id_paid_at_idx" ON "student_fee_payme
 CREATE UNIQUE INDEX "student_fee_payments_student_id_fee_type_billing_frequency__key" ON "student_fee_payments"("student_id", "fee_type", "billing_frequency", "academic_year_id", "billing_period_key");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "class_standard_student_fee_rates_class_id_standard_student__key" ON "class_standard_student_fee_rates"("class_id", "standard_student_fee_rate_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
@@ -955,9 +958,6 @@ CREATE INDEX "_ArabicSubjectToClassRoutine_B_index" ON "_ArabicSubjectToClassRou
 
 -- CreateIndex
 CREATE INDEX "_class_routine_classes_B_index" ON "_class_routine_classes"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "class_standard_student_fee_rates_class_id_standard_student_fee_rate_id_key" ON "class_standard_student_fee_rates"("class_id", "standard_student_fee_rate_id");
 
 -- CreateIndex
 CREATE INDEX "_ClassRoutineToStudent_B_index" ON "_ClassRoutineToStudent"("B");
@@ -1329,6 +1329,12 @@ ALTER TABLE "standard_student_fee_rates" ADD CONSTRAINT "standard_student_fee_ra
 ALTER TABLE "standard_student_fee_rates" ADD CONSTRAINT "standard_student_fee_rates_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_standard_student_fee_rate_fkey" FOREIGN KEY ("standard_student_fee_rate_id") REFERENCES "standard_student_fee_rates"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "student_results" ADD CONSTRAINT "student_results_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1387,12 +1393,6 @@ ALTER TABLE "_class_routine_classes" ADD CONSTRAINT "_class_routine_classes_A_fk
 
 -- AddForeignKey
 ALTER TABLE "_class_routine_classes" ADD CONSTRAINT "_class_routine_classes_B_fkey" FOREIGN KEY ("B") REFERENCES "class_routines"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_class_id_fkey" FOREIGN KEY ("class_id") REFERENCES "classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_standard_student_fee_rate_id_fkey" FOREIGN KEY ("standard_student_fee_rate_id") REFERENCES "standard_student_fee_rates"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ClassRoutineToStudent" ADD CONSTRAINT "_ClassRoutineToStudent_A_fkey" FOREIGN KEY ("A") REFERENCES "class_routines"("id") ON DELETE CASCADE ON UPDATE CASCADE;
