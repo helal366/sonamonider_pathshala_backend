@@ -7,7 +7,7 @@ model Class {
   class_history  ClassHistory[]
   class_routines ClassRoutine[] @relation("class_routine_classes")
   book_list      Booklist[]
-  assigned_student_fee StandardStudentFeeRate[]
+  standard_student_fee ClassStandardStudentFeeRate[]
 
   grade_group_teacher AcademicStaff?
 
@@ -22,3 +22,5 @@ model Class {
 
   @@map("classes")
 }
+
+

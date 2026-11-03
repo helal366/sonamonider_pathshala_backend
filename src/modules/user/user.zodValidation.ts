@@ -1,4 +1,4 @@
-import { BloodGroup, Gender, Religion, Section, Shift, Version } from "#db-client";
+import { BloodGroup, Department, Gender, Religion, Section, Shift, Version } from "#db-client";
 import z4 from "zod/v4";
 import {
   ACTIVE_STATUS_ENUM,
@@ -111,6 +111,7 @@ const userCreateZodSchema = z4
         message: "Quranic class period IDs must be unique.",
       })
       .optional(),
+    department: z4.enum(Department).optional().nullable()
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -193,7 +194,7 @@ const userCreateZodSchema = z4
         });
       }
     }
-  });
+  })
 export type TUserCreateZodSchema = z4.infer<typeof userCreateZodSchema>;
 // ===========================================
 // UPDATE USER POSITION ZOD SCHEMA

@@ -27,7 +27,7 @@ import { subjectRouter } from "./modules/generalSubject/generalSubject.route.js"
 import { periodRouter } from "./modules/generalPeriod/generalPeriod.route.js";
 import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
 import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
-import { assignedStudentFeeRateRouter } from "./modules/assignedStudentFeeRate/assignedStudentFeeRate.route.js";
+import { standardStudentFeeRateRouter } from "./modules/standardStudentFeeRate/standardStudentFeeRate.route.js";
 import { staffPaymentRouter } from "./modules/staffPayment/staffPayment.route.js";
 import { bookListRouter } from "./modules/bookList/bookList.route.js";
 import { arabicPeriodRouter } from "./modules/arabicPeriod/arabicPeriod.route.js";
@@ -69,7 +69,7 @@ app.use("/api/v1/smps/class_routine", classRoutineRouter);
 app.use("/api/v1/smps/student_fee", studentFeeRouter);
 app.use(
   "/api/v1/smps/assigned_student_fee_rate",
-  assignedStudentFeeRateRouter,
+  standardStudentFeeRateRouter,
 );
 app.use("/api/v1/smps/staff_payment", staffPaymentRouter);
 app.use("/api/v1/smps/book_list", bookListRouter);

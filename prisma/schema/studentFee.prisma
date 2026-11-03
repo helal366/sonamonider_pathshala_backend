@@ -56,12 +56,14 @@ model StandardStudentFeeRate {
   fee_type           StudentFeeType
   billing_frequency  BillingFrequency 
   amount             Decimal          @db.Decimal(10, 2)
+  ic_duration_hrs    Decimal?          @db.Decimal(10, 2)
+  qc_duration_hrs    Decimal?          @db.Decimal(10, 2)
   
-  class_id String
-  class Class @relation(fields: [class_id], references: [id])
+  assigned_classes ClassStandardStudentFeeRate[]
 
   section Section
   version Version
+  department Department?
 
   created_by_id String?
   created_by    User?   @relation("assigned_student_fee_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -73,4 +75,20 @@ model StandardStudentFeeRate {
   updated_at DateTime? @updatedAt
 
   @@map("standard_student_fee_rates")
+}
+
+model ClassStandardStudentFeeRate {
+  id String @id @default(uuid())
+
+  class_id String
+  class    Class @relation(fields: [class_id], references: [id], onDelete: Cascade)
+
+  standard_student_fee_rate_id String
+  standard_student_fee_rate StandardStudentFeeRate @relation(fields: [standard_student_fee_rate_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@unique([class_id, standard_student_fee_rate_id])
+
+  @@map("class_standard_student_fee_rates")
 }

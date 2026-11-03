@@ -18,9 +18,9 @@ import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { createUserServices } from "./userCreation.service.js";
 import { userGetServices } from "./user.getService.js";
 
-//=============================================
+//====================================================
 // CREATE USER CONTROLLER
-//=============================================
+//====================================================
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = helperFunctions.requiredUser(req);
@@ -38,9 +38,9 @@ const createUser = catchAsync(
   },
 );
 
-// =====================================
+// ===================================================
 // CHANGE USER POSITION CONTROLLER
-// =====================================
+// ===================================================
 const changeUserPosition = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TChangeUserPositionZodSchema = req.body;

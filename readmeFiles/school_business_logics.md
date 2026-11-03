@@ -64,9 +64,9 @@
 ## STUDENT READMISSION (model Student and model ClassHistory)
 - Suppose, A student is going for readmission. 
 - He will readmit at November'26 and now at Grade One. 
-- He will readmit for Grade Two. 
-- When his readmission will create, the Grade One admission will close with adding a end_date to ClassHistory and Grade Two ClassHistory will open. 
+- He will readmit for Grade Two AT ACADEMIC YEAR 2027. 
+- When his readmission will create, it should check that the student was admitted in 2026 with his class history. if yes then Grade Two ClassHistory will open. 
 - Grade One admission ClassHistory will receive an end_date at 31st December 2026. and Grade Two readmission will receive a start_date at 1st Jan'27. 
 - But the readmission entry date is suppose 3rd Nov'26. 
 - So after entry the active_class of Student model will not change. 
-- Rather it will change at 1st january 2027.
+- Rather it will change with the willings of Super admin and a route has created to inactive the not readmitted students.

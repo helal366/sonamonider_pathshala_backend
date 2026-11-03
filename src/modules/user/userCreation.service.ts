@@ -219,6 +219,7 @@ const createUser = async (
             quranic_subject: { connect: { id: existingQuranicClass.id } },
             section,
             version,
+            department: payload?.department ?? null,
             class_history_quranic_periods: {
               create: quranicClassPeriodIDs.map((id: string) => ({
                 quranic_period: { connect: { id } },
@@ -242,6 +243,7 @@ const createUser = async (
             shift: existingShift,
             section,
             version,
+            department: payload?.department ?? null,
             quranic_class_id: existingQuranicClass.id,
             quranic_class_period_ids: quranicClassPeriodIDs,
           },

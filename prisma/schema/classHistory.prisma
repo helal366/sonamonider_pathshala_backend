@@ -18,6 +18,7 @@ model ClassHistory {
   shift       Shift
   section     Section
   version     Version
+  department  Department?
 
   quranic_subject_id String
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

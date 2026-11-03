@@ -1,4 +1,4 @@
-import { Section, Shift, Version } from "#db-client";
+import { Department, Section, Shift, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // ========================================================
@@ -45,6 +45,7 @@ const studentReadmissionZodSchema = z4
       .min(1, "Roll number must be greater than 0"),
     section: z4.enum(Section, "Invalid section format."),
     version: z4.enum(Version, "Invalid version format."),
+    department: z4.enum(Department, "Invalid department format.").optional().nullable(),
     quranic_class_name: z4
       .string()
       .trim()
@@ -149,6 +150,7 @@ const oldStudentAdmissionZodSchema = z4.object({
     .min(1, "Roll number must be greater than 0"),
   section: z4.enum(Section, "Invalid section format."),
   version: z4.enum(Version, "Invalid version format."),
+  department: z4.enum(Department, "Invalid department format.").optional().nullable(),
   quranic_class_name: z4
     .string()
     .trim()

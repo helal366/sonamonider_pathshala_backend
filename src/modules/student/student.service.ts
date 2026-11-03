@@ -195,6 +195,7 @@ const studentReadmission = async (
           end_date: academicEndDate,
           section,
           version,
+          department: payload?.department ?? null,
           quranic_subject: { connect: { id: existingQuranicClass.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
@@ -220,6 +221,7 @@ const studentReadmission = async (
           shift: existingShift,
           section,
           version,
+          department: payload?.department ?? null,
           quranic_class_id: existingQuranicClass.id,
           quranic_class_period_ids: quranicClassPeriodIDs,
         },
@@ -518,6 +520,7 @@ const oldStudentAdmission = async (
           end_date: academicEndDate,
           section,
           version,
+          department: payload?.department ?? null,
           quranic_subject: { connect: { id: existingQuranicClass.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
@@ -541,6 +544,7 @@ const oldStudentAdmission = async (
           shift: existingShift,
           section,
           version,
+          department: payload?.department ?? null,
           quranic_class_id: existingQuranicClass.id,
           quranic_class_period_ids: quranicClassPeriodIDs,
         },
