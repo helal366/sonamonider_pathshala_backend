@@ -206,7 +206,7 @@ const seedGeneralPeriods = async () => {
 // SEED GENERAL SUBJECTS
 // ========================================================
 const generalSubjects = [
-  "BANGLA",
+  "BENGALI",
   "ENGLISH",
   "MATH",
   "QURAN",

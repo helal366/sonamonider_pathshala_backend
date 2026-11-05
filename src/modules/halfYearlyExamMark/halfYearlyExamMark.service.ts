@@ -15,48 +15,48 @@ const auditValues = (record: {
   highest_mark: Prisma.Decimal;
   obtained_mark: Prisma.Decimal;
   student_result_id: string;
-  book_list_id: string;
+  exam_subject_id: string;
 }) => ({
   full_mark: record.full_mark.toNumber(),
   highest_mark: record.highest_mark.toNumber(),
   obtained_mark: record.obtained_mark.toNumber(),
   student_result_id: record.student_result_id,
-  book_list_id: record.book_list_id,
+  exam_subject_id: record.exam_subject_id,
 });
 
 const ensureRelationsAndUnique = async (
   transaction: Prisma.TransactionClient,
   studentResultId: string,
-  bookListId: string,
+  examSubjectId: string,
   excludedId?: string,
 ) => {
-  const [studentResult, bookList] = await Promise.all([
+  const [studentResult, examSubject] = await Promise.all([
     transaction.studentResult.findUnique({
       where: { id: studentResultId },
       select: { id: true },
     }),
-    transaction.booklist.findUnique({
-      where: { id: bookListId },
+    transaction.examSubject.findUnique({
+      where: { id: examSubjectId },
       select: { id: true },
     }),
   ]);
   if (!studentResult) {
     throw new AppError("Student result not found.", StatusCodes.NOT_FOUND);
   }
-  if (!bookList) {
-    throw new AppError("Book list not found.", StatusCodes.NOT_FOUND);
+  if (!examSubject) {
+    throw new AppError("Exam subject not found.", StatusCodes.NOT_FOUND);
   }
   const duplicate = await transaction.halfYearlyExamMark.findFirst({
     where: {
       student_result_id: studentResultId,
-      book_list_id: bookListId,
+      exam_subject_id: examSubjectId,
       ...(excludedId && { id: { not: excludedId } }),
     },
     select: { id: true },
   });
   if (duplicate) {
     throw new AppError(
-      "A half-yearly mark already exists for this student result and book.",
+      "A half-yearly mark already exists for this student result and exam subject.",
       StatusCodes.CONFLICT,
     );
   }
@@ -70,7 +70,7 @@ const createHalfYearlyExamMark = async (
     await ensureRelationsAndUnique(
       transaction,
       payload.student_result_id,
-      payload.book_list_id,
+      payload.exam_subject_id,
     );
     const created = await transaction.halfYearlyExamMark.create({
       data: { ...payload, created_by_id: loggedInUser.user_id },
@@ -128,7 +128,7 @@ const updateHalfYearlyExamMark = async (
     await ensureRelationsAndUnique(
       transaction,
       payload.student_result_id,
-      payload.book_list_id,
+      payload.exam_subject_id,
       id,
     );
     const updated = await transaction.halfYearlyExamMark.update({
@@ -173,9 +173,49 @@ const updateHalfYearlyExamMarkField = async (
       payload.field === "student_result_id"
         ? payload.value
         : existing.student_result_id;
-    const bookListId =
-      payload.field === "book_list_id" ? payload.value : existing.book_list_id;
-    await ensureRelationsAndUnique(transaction, studentResultId, bookListId, id);
+    const examSubjectId =
+      payload.field === "exam_subject_id"
+        ? payload.value
+        : existing.exam_subject_id;
+    await ensureRelationsAndUnique(transaction, studentResultId, examSubjectId, id);
+
+    if (
+      payload.field === "full_mark" ||
+      payload.field === "highest_mark" ||
+      payload.field === "obtained_mark"
+    ) {
+      const fullMark =
+        payload.field === "full_mark"
+          ? payload.value
+          : existing.full_mark.toNumber();
+      const highestMark =
+        payload.field === "highest_mark"
+          ? payload.value
+          : existing.highest_mark.toNumber();
+      const obtainedMark =
+        payload.field === "obtained_mark"
+          ? payload.value
+          : existing.obtained_mark.toNumber();
+
+      if (highestMark > fullMark) {
+        throw new AppError(
+          `Highest mark cannot exceed the full mark (${fullMark}).`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      if (obtainedMark > fullMark) {
+        throw new AppError(
+          `Obtained mark cannot exceed the full mark (${fullMark}).`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+      if (obtainedMark > highestMark) {
+        throw new AppError(
+          `Obtained mark cannot exceed the highest mark (${highestMark}).`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+    }
 
     let data: Prisma.HalfYearlyExamMarkUncheckedUpdateInput;
     switch (payload.field) {
@@ -191,8 +231,8 @@ const updateHalfYearlyExamMarkField = async (
       case "student_result_id":
         data = { student_result_id: payload.value };
         break;
-      case "book_list_id":
-        data = { book_list_id: payload.value };
+      case "exam_subject_id":
+        data = { exam_subject_id: payload.value };
         break;
     }
     const updated = await transaction.halfYearlyExamMark.update({
@@ -219,14 +259,14 @@ const updateHalfYearlyExamMarkField = async (
 
 const getAllHalfYearlyExamMarks = () =>
   prisma.halfYearlyExamMark.findMany({
-    include: { student_result: true, book_list: true },
+    include: { student_result: true, exam_subject: true },
     orderBy: { created_at: "desc" },
   });
 
 const getHalfYearlyExamMarkById = async (id: string) => {
   const mark = await prisma.halfYearlyExamMark.findUnique({
     where: { id },
-    include: { student_result: true, book_list: true },
+    include: { student_result: true, exam_subject: true },
   });
   if (!mark) {
     throw new AppError("Half-yearly exam mark not found.", StatusCodes.NOT_FOUND);

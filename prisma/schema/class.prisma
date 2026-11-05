@@ -11,6 +11,8 @@ model Class {
 
   grade_group_teacher AcademicStaff?
 
+  exam_Subjects ExamSubject[]
+
   created_by_id String?
   created_by    User?   @relation("class_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 

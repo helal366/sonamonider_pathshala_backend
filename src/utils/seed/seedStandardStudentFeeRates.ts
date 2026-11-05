@@ -28,7 +28,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["PLAYGROUP"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -39,7 +39,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2500,
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -49,7 +49,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2700,
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -59,7 +59,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 3000,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -69,7 +69,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 3500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -80,7 +80,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 3200,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -96,7 +96,7 @@ const standardsessionFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 5000,
     class_names: ["PLAYGROUP"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -119,20 +119,20 @@ const standardsessionFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
   },
 ]);
 
-const standardMonthlyAcademicEvaluationFeeRate = defineRates([
+const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
     billing_frequency: "MONTHLY",
     amount: 1000,
     class_names: ["PLAYGROUP"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -142,7 +142,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1200,
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -152,7 +152,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1500,
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -162,7 +162,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -172,7 +172,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -183,7 +183,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -199,7 +199,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -209,7 +209,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 1000,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -220,7 +220,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -235,10 +235,10 @@ const standardExamFeeRate = defineRates([
     fee_type: {
       in: ["HALF_YEARLY_EXAM_FEE", "ANNUAL_EXAM_FEE"],
     },
-    billing_frequency: "HALF_YEARLY",
+    billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["PLAYGROUP", "NURSERY", "KINDERGARTEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -256,7 +256,7 @@ const standardExamFeeRate = defineRates([
       "GRADE_FOUR",
       "GRADE_FIVE",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -274,7 +274,7 @@ const standardExamFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -289,7 +289,7 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1000,
     ic_registration_fee: 500,
     class_names: ["GRADE_ONE", "GRADE_TWO"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -301,7 +301,7 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1200,
     ic_registration_fee: 500,
     class_names: ["GRADE_THREE", "GRADE_FOUR"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -313,7 +313,7 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1500,
     ic_registration_fee: 500,
     class_names: ["GRADE_FIVE", "GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -325,7 +325,7 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 2500,
     ic_registration_fee: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -338,7 +338,7 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 2000,
     ic_registration_fee: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -369,7 +369,7 @@ const standardQuranicEveningFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -397,7 +397,7 @@ const standardQuranicNightFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -424,7 +424,7 @@ const standardTransferCertificateFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -451,7 +451,7 @@ const standardOtherCertificateFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -478,7 +478,7 @@ const standardResidentialFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -505,7 +505,7 @@ const standardAdmissionFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -532,7 +532,7 @@ const standardDayCareFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
@@ -559,36 +559,76 @@ const standardEstablishmentFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BANGLA",
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
     },
   },
 ]);
 
-const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
+const standardMonthlyAcademicEvaluationFeeRate = defineRates([
   {
     fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
-    billing_frequency: "YEARLY",
+    billing_frequency: "MONTHLY",
     amount: 1000,
-    class_names: [
-      "PLAYGROUP",
-      "NURSERY",
-      "KINDERGARTEN",
-      "GRADE_ONE",
-      "GRADE_TWO",
-      "GRADE_THREE",
-      "GRADE_FOUR",
-      "GRADE_FIVE",
-      "GRADE_SIX",
-      "GRADE_SEVEN",
-      "GRADE_EIGHT",
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BANGLA",
+    class_names: ["PLAYGROUP"],
+    version: "BENGALI",
     section: {
       in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 1200,
+    class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
+    version: "BENGALI",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 1500,
+    class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
+    version: "BENGALI",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 2000,
+    class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
+    version: "BENGALI",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+  },
+  {
+    fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 2500,
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: "BENGALI",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+    department: "SCIENCE",
+  },
+  {
+    fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
+    billing_frequency: "MONTHLY",
+    amount: 2000,
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: "BENGALI",
+    section: {
+      in: ["MADRASHA", "SCHOOL"],
+    },
+    department: {
+      in: ["ARTS", "COMMERCE"], // Matches either department
     },
   },
 ]);

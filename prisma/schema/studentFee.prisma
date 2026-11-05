@@ -35,6 +35,8 @@ model StudentFeePayment {
   amount             Decimal          @db.Decimal(10, 2)
   paid_at            DateTime         @default(now())
   receipt_number     String?          @unique
+  online_payment_gateway    String?
+  online_tran_id String? @unique
 
   created_by_id String?
   created_by    User?   @relation("student_fee_payment_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

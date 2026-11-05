@@ -5,15 +5,16 @@ import { BACKEND_URL } from "../../helperFunctions/helpers/helperFunctions.js";
 import { findData } from "./findData.js";
 import { BillingFrequency, StudentFeeType } from "#db-client";
 interface ISSLCOMMERZ_INIT_PAYLOAD {
-    student_id: string, 
-    amount: number, 
-    fee_name: StudentFeeType,
-    fee_frequency:BillingFrequency
+    student_id: string;
+    amount: number; 
+    fee_name: StudentFeeType;
+    fee_frequency:BillingFrequency;
+    academic_year_name: string;
 }
 
-export const sslCommerzInit = async ({student_id, amount, fee_name, fee_frequency}:ISSLCOMMERZ_INIT_PAYLOAD) => {
-  const {studentName, studentEmail, studentMobileNmber, postCode, address, thana, district, country} =
-    await findData(student_id);
+export const sslCommerzInit = async ({student_id, academic_year_name,amount, fee_name, fee_frequency}:ISSLCOMMERZ_INIT_PAYLOAD) => {
+  const {studentClassHistory, studentName, studentEmail, studentMobileNmber, postCode, address, thana, district, country} =
+    await findData({student_id, academic_year_name});
   const currentBackendUrl = BACKEND_URL;  //backend rul
   const store_id = envVars.SSL_COMMERZ_STORE_ID;
   const store_passwd = envVars.SSL_COMMERZ_STORE_PASSWORD;

@@ -60,9 +60,31 @@
 * User will verify email with that OTP .
 * After successful email verification, a random password will create and update to database and send to user email.
 
+## MANAGEMENT STAFF CREATION 
+- Creating management staff is a part of creating user. 
+- When a user will create, the person should be a management staff or academic staff or governing body or student.
+- If the person is a management staff then first user will create and then management staff will create.
+
+## ACADEMIC STAFF CREATION 
+- Creating academic staff is a part of creating user. 
+- When a user will create, the person should be a management staff or academic staff or governing body or student.
+- If the person is a academic staff then first user will create and then academic staff will create.
+
+## GOVERNING BODY CREATION 
+- Creating governing body is a part of creating user. 
+- When a user will create, the person should be a management staff or academic staff or governing body or student.
+- If the person is a governing body then first user will create and then governing body will create.
+
+## STUDENT CREATION (NEW ADMISSION model User, model Student and model ClassHistory and model)
+- Creating student is a part of creating user. 
+- When a user will create, the person should be a management staff or academic staff or governing body or student.
+- If the person is a student then first user will create and then student will create.
+- For new students, user profile will create and he has to pay both admission fee and session fee.
 
 ## STUDENT READMISSION (model Student and model ClassHistory)
 - Suppose, A student is going for readmission. 
+- The main readmission condition is the student have to continue. The student have to be a student of the previous year of his readmission academic year.
+- Student will only pay session fee for the readmission.
 - He will readmit at November'26 and now at Grade One. 
 - He will readmit for Grade Two AT ACADEMIC YEAR 2027. 
 - When his readmission will create, it should check that the student was admitted in 2026 with his class history. if yes then Grade Two ClassHistory will open. 
@@ -70,3 +92,10 @@
 - But the readmission entry date is suppose 3rd Nov'26. 
 - So after entry the active_class of Student model will not change. 
 - Rather it will change with the willings of Super admin and a route has created to inactive the not readmitted students.
+
+
+## OLD STUDENT ADMISSION 
+- For old student, if the student is not admit to the previous year of the target admission academic year, the student does not need to create user profile. The student has already the user profile.
+- Suppose a student is going to admit at academic year 2027.
+- The student was admited before. But he was not a student of this institute in academic year 2026. 
+- At this situation, he will have to pay both admission fee and session fee.
