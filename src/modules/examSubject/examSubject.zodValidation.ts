@@ -11,7 +11,7 @@ export type TExamSubjectIdParamsZodSchema = z4.infer<
 >;
 
 const examSubjectFields = {
-    class_id: z4.uuid("Invalid class ID format."),
+  class_id: z4.uuid("Invalid class ID format."),
   section: z4.enum(Section, "Invalid section."),
   version: z4.enum(Version, "Invalid version"),
   department: z4
@@ -19,12 +19,21 @@ const examSubjectFields = {
     .optional()
     .default("GENERAL"),
   exam_subject_name: z4.enum(ExamSubjectName, "Invalid exam subject name"),
-  is_active: z4.boolean().optional().default(true)
-}
+  is_active: z4.boolean().optional().default(true),
+};
 // ===================================================================
 // CREATE EXAM SUBJECT ZOD SCHEMA
 // ===================================================================
-const createExamSubjectZodSchema = z4.object(examSubjectFields);
+const createExamSubjectZodSchema = z4.object({
+  class_id: z4.uuid("Invalid class ID format."),
+  section: z4.enum(Section, "Invalid section."),
+  version: z4.enum(Version, "Invalid version"),
+  department: z4
+    .enum(Department, "Invalid department")
+    .optional()
+    .default("GENERAL"),
+  exam_subject_name: z4.enum(ExamSubjectName, "Invalid exam subject name"),
+});
 export type TCreateExamSubjectZodSchema = z4.infer<
   typeof createExamSubjectZodSchema
 >;
@@ -32,9 +41,16 @@ export type TCreateExamSubjectZodSchema = z4.infer<
 // ===================================================================
 // UPDATE EXAM SUBJECT ZOD SCHEMA
 // ===================================================================
-const updateExamSubjectZodSchema = z4.object(examSubjectFields);
+const updateExamSubjectZodSchema = z4.object({
+  class_id: z4.uuid("Invalid class ID format."),
+  section: z4.enum(Section, "Invalid section."),
+  version: z4.enum(Version, "Invalid version"),
+  department: z4.enum(Department, "Invalid department"),
+  exam_subject_name: z4.enum(ExamSubjectName, "Invalid exam subject name"),
+  is_active: z4.boolean(),
+});
 export type TUpdateExamSubjectZodSchema = z4.infer<
-typeof updateExamSubjectZodSchema
+  typeof updateExamSubjectZodSchema
 >;
 
 export const examSubjectZodSchema = {
