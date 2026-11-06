@@ -4,7 +4,8 @@ model Booklist {
   book_name    String
   publisher    String
   isBookActive Boolean @default(true)
-  isBookMain Boolean 
+  isBookMain Boolean
+  subject_group ExamSubjectName? 
 
   class_id String
   class    Class   @relation(fields: [class_id], references: [id])

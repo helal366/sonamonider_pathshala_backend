@@ -136,16 +136,22 @@ model ExamSubject {
 
   section Section
   version Version
-  department Department?
+  department Department @default(GENERAL)
   exam_subject_name ExamSubjectName
+  isActive Boolean @default(true)
 
   half_yearly_exam_marks HalfYearlyExamMark[]
   annual_exam_marks AnnualExamMark[]
 
+  created_by_id String?
+  created_by    User?   @relation("exam_subject_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  updated_by_id String?
+  updated_by    User?   @relation("exam_subject_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
-  @@unique([class_id, section, version, exam_subject_name])
-  @@unique([class_id, section, version, department, exam_subject_name])
+  @@unique([class_id, section, version, exam_subject_name, department])
   @@map("exam_subjects")
 }

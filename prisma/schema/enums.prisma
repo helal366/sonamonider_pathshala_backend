@@ -167,6 +167,7 @@ enum Department {
   SCIENCE
   ARTS
   COMMERCE
+  GENERAL
 }
 enum StaffPaymentType {
   EID_UL_FITR_BONUS

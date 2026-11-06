@@ -38,6 +38,7 @@ import { monthlyExamMarkRouter } from "./modules/monthlyExamMark/monthlyExamMark
 import { halfYearlyExamMarkRouter } from "./modules/halfYearlyExamMark/halfYearlyExamMark.route.js";
 import { annualExamMarkRouter } from "./modules/annualExamMark/annualExamMark.route.js";
 import { prisma } from "./lib/prisma.js";
+import { examSubjectRouter } from "./modules/examSubject/examSubject.route.js";
 
 const app: Application = express();
 app.use(cors());
@@ -87,6 +88,7 @@ app.use(
 app.use("/api/v1/smps/monthly_exam_mark", monthlyExamMarkRouter);
 app.use("/api/v1/smps/half_yearly_exam_mark", halfYearlyExamMarkRouter);
 app.use("/api/v1/smps/annual_exam_mark", annualExamMarkRouter);
+app.use("/api/v1/smps/exam_subject", examSubjectRouter);
 
 // basic route
 app.get("/favicon.ico", (_req: Request, res: Response) => {
