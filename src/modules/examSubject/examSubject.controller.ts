@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions"
-import { TCreateExamSubjectZodSchema, TDeleteExamSubjectParamsZodSchema } from "./examSubject.zodValidation";
+import { TCreateExamSubjectZodSchema, TExamSubjectIdParamsZodSchema, TUpdateExamSubjectZodSchema } from "./examSubject.zodValidation";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { examSubjectServices } from "./examSubject.service";
@@ -19,7 +19,7 @@ const createExamSubject = catchAsync(async(req:Request, res:Response)=>{
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.CREATED,
-        message: `Exam subject created.`,
+        message: `Exam subject created successfully.`,
         data: result
     })
 });
@@ -29,7 +29,7 @@ const createExamSubject = catchAsync(async(req:Request, res:Response)=>{
 // ===================================================================
 const deleteExamSubject = catchAsync(async(req:Request, res:Response)=>{
     const loggerInUser = helperFunctions.requiredUser(req);
-    const {exam_subject_id} = req.params as unknown as TDeleteExamSubjectParamsZodSchema;
+    const {exam_subject_id} = req.params as unknown as TExamSubjectIdParamsZodSchema;
 
     const result = await examSubjectServices.deleteExamSubject(
         loggerInUser, exam_subject_id
@@ -37,11 +37,31 @@ const deleteExamSubject = catchAsync(async(req:Request, res:Response)=>{
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,
-        message: `Exam subject deleted.`,
+        message: `Exam subject deleted successfully.`,
+        data: result
+    })
+});
+
+// ===================================================================
+// UPDATE EXAM SUBJECT CONTROLLER
+// ===================================================================
+const updateExamSubject = catchAsync(async(req:Request, res:Response)=>{
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const {exam_subject_id} = req.params as unknown as TExamSubjectIdParamsZodSchema;
+    const payload = req.body as TUpdateExamSubjectZodSchema;
+
+    const result = await examSubjectServices.updateExamSubject(
+        loggedInUser, payload, exam_subject_id
+    );
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Exam subject updated successfully.`,
         data: result
     })
 })
 export const examSubjectController = {
     createExamSubject,
-    deleteExamSubject
+    deleteExamSubject,
+    updateExamSubject
 }

@@ -138,7 +138,7 @@ model ExamSubject {
   version Version
   department Department @default(GENERAL)
   exam_subject_name ExamSubjectName
-  isActive Boolean @default(true)
+  is_active Boolean @default(true)
 
   half_yearly_exam_marks HalfYearlyExamMark[]
   annual_exam_marks AnnualExamMark[]

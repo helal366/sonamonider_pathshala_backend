@@ -22,7 +22,18 @@ router.post(
 router.delete(
     "/delete_exam_subject/:exam_subject_id",
     userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-    validateZodParams(examSubjectZodSchema.deleteExamSubjectParamsZodSchema),
+    validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
     examSubjectController.deleteExamSubject
+);
+
+// ===================================================================
+// UPDATE EXAM SUBJECT ROUTE
+// ===================================================================
+router.patch(
+    "/update_exam_subject/:exam_subject_id",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
+    validateZodSchema(examSubjectZodSchema.updateExamSubjectZodSchema),
+    examSubjectController.updateExamSubject
 )
 export const examSubjectRouter:Router = router;
