@@ -35,5 +35,35 @@ router.patch(
     validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
     validateZodSchema(examSubjectZodSchema.updateExamSubjectZodSchema),
     examSubjectController.updateExamSubject
+);
+
+// ===================================================================
+// UPDATE EXAM SUBJECT SINGLE FIELD ROUTE
+// ===================================================================
+router.patch(
+    "/update_single_field/:exam_subject_id",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
+    validateZodSchema(examSubjectZodSchema.updateExamSubjectSingleFieldZodSchema),
+    examSubjectController.updateSingleFieldExamSubject
+);
+
+// ===================================================================
+// GET ALL EXAM SUBJECTS ROUTE
+// ===================================================================
+router.get(
+    "/",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    examSubjectController.getAllExamSubjects
+);
+
+// ===================================================================
+// GET EXAM SUBJECT BY ID ROUTE
+// ===================================================================
+router.get(
+    "/:exam_subject_id",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
+    examSubjectController.getExamSubjectById
 )
 export const examSubjectRouter:Router = router;

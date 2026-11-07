@@ -4,9 +4,11 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import {
   TCreateExamSubjectZodSchema,
+  TUpdateExamSubjectSingleFieldZodSchema,
   TUpdateExamSubjectZodSchema,
 } from "./examSubject.zodValidation";
 import { Prisma } from "#db-client";
+import { checkDuplicateExamSubject } from "./examSubject.helperFunction";
 
 const throwDuplicateExamSubjectConflict = (error: unknown): never => {
   if (
@@ -25,7 +27,7 @@ const createExamSubject = async (
   loggedInUser: TLoggedInUser,
   payload: TCreateExamSubjectZodSchema,
 ) => {
-  const { class_id, section, version, department, exam_subject_name} = payload;
+  const { class_id, section, version, department, exam_subject_name } = payload;
   //   Find class and check existance
   const findClass = await prisma.class.findUnique({
     where: { id: class_id },
@@ -145,7 +147,14 @@ const updateExamSubject = async (
   payload: TUpdateExamSubjectZodSchema,
   exam_subject_id: string,
 ) => {
-  const { class_id, section, version, department, exam_subject_name, is_active } = payload;
+  const {
+    class_id,
+    section,
+    version,
+    department,
+    exam_subject_name,
+    is_active,
+  } = payload;
   try {
     return await prisma.$transaction(async (transaction) => {
       const examSubject = await transaction.examSubject.findUnique({
@@ -235,8 +244,100 @@ const updateExamSubject = async (
     throwDuplicateExamSubjectConflict(error);
   }
 };
+
+// ===================================================================
+// UPDATE EXAM SUBJECT SINGLE SERVICE LAYER
+// ===================================================================
+const updateSingleFieldExamSubject = async (
+  loggedInUser: TLoggedInUser,
+  payload: TUpdateExamSubjectSingleFieldZodSchema,
+  exam_subject_id: string,
+) => {
+  const { field, value } = payload;
+
+  return prisma.$transaction(async (transaction) => {
+    // Find exam subject and check existance
+    const examSubject = await transaction.examSubject.findUnique({
+      where: { id: exam_subject_id },
+    });
+    if (!examSubject) {
+      throw new AppError(`Exam subject not found.`, StatusCodes.NOT_FOUND);
+    }
+
+    if (field !== "is_active" && !examSubject.is_active) {
+      throw new AppError(
+        `This exam subject update is unauthorized. Please contact to Super Admin.`,
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+
+    // Find duplicate
+    await checkDuplicateExamSubject(payload, examSubject, transaction);
+
+    // Update field
+    const updated = await transaction.examSubject.update({
+      where: { id: exam_subject_id },
+      data: {
+        [field]: value,
+        updated_by_id: loggedInUser.user_id,
+      },
+    });
+    await transaction.auditLog.create({
+      data: {
+        entity_id: exam_subject_id,
+        entity_name: "examSubject",
+        changed_by_id: loggedInUser.user_id,
+        action: "UPDATE",
+        old_value: {
+          [field]: examSubject[field as keyof typeof examSubject],
+        },
+        new_value: {
+          [field]: value,
+        },
+      },
+    });
+    return updated;
+  });
+};
+
+// ===================================================================
+// GET ALL EXAM SUBJECTS SERVICE LAYER
+// ===================================================================
+const getAllExamSubjects = async () => {
+  const examSubjects = await prisma.examSubject.findMany();
+  return examSubjects;
+};
+
+// ===================================================================
+// GET EXAM SUBJECT BY ID SERVICE LAYER
+// ===================================================================
+const getExamSubjectById = async (exam_subject_id: string) => {
+  const examSubject = await prisma.examSubject.findUnique({
+    where: { id: exam_subject_id },
+    include: {
+      half_yearly_exam_marks: {
+        select: {
+          full_mark: true,
+          highest_mark: true,
+          obtained_mark: true,
+        },
+      },
+      annual_exam_marks: {
+        select: {
+          full_mark: true,
+          highest_mark: true,
+          obtained_mark: true,
+        },
+      },
+    },
+  });
+  return examSubject
+};
 export const examSubjectServices = {
   createExamSubject,
   deleteExamSubject,
   updateExamSubject,
+  updateSingleFieldExamSubject,
+  getAllExamSubjects,
+  getExamSubjectById,
 };

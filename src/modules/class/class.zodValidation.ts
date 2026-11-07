@@ -23,7 +23,7 @@ export type TCreateClassZodSchema = z4.infer<typeof createClassZodSchema>;
 // DELETE CLASS NAME ZOD SCHEMA
 // =============================================
 const classIdParamsZodSchema = z4.object({
-  id: z4.uuid({
+  class_id: z4.uuid({
     error: (issue) =>
       issue.input === undefined
         ? "Class ID is required."

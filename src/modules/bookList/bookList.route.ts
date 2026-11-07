@@ -21,9 +21,9 @@ router.post(
 // DELETE BOOK LIST ROUTE
 // =====================================================================
 router.patch(
-    "/delete_book_list/:id",
+    "/delete_book_list/:book_list_id",
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
-    validateZodParams(bookListZodSchema.deleteBookListParamsZodSchema),
+    validateZodParams(bookListZodSchema.bookListIdParamsZodSchema),
     bookListController.deleteBookList
 );
 
@@ -31,9 +31,9 @@ router.patch(
 // UPDATE BOOK LIST SINGLE FIELD ROUTE
 // =====================================================================
 router.patch(
-    "/update_single_field/:id",
+    "/update_single_field/:book_list_id",
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
-    validateZodParams(bookListZodSchema.updateBookListSingleFieldParamsZodSchema),
+    validateZodParams(bookListZodSchema.bookListIdParamsZodSchema),
     validateZodSchema(bookListZodSchema.updateBookListSingleFieldZodSchema),
     bookListController.updateBookListSingleField
 );
@@ -61,9 +61,9 @@ router.get(
 // GET SINGLE BOOK LIST ROUTE
 // =====================================================================
 router.get(
-    "/single_book_list/:id",
+    "/single_book_list/:book_list_id",
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
-    validateZodParams(bookListZodSchema.getSingleBookListParamsZodSchema),
+    validateZodParams(bookListZodSchema.bookListIdParamsZodSchema),
     bookListController.getSingleBookList
 );
 

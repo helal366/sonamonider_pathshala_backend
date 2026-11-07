@@ -30,7 +30,7 @@ const createClassName = catchAsync(async (req: Request, res: Response) => {
 // =============================================
 const deleteClassName = catchAsync(async (req: Request<TClassIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const { id: class_id } = req.params;
+  const { class_id } = req.params;
 
   const result = await classServices.deleteClassName(class_id, loggedInUser);
 
@@ -47,7 +47,7 @@ const deleteClassName = catchAsync(async (req: Request<TClassIdParamsZodSchema>,
 // =============================================
 const updateClassField = catchAsync(async (req: Request<TClassIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const { id: class_id } = req.params;
+  const {class_id } = req.params;
   const { field, value } = req.body as TUpdateClassFieldZodSchema;
   const updatePayload = {
     class_id,

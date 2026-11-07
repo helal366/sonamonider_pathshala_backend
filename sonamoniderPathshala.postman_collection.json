@@ -108,6 +108,10 @@
       "value": "00000000-0000-4000-8000-000000000021"
     },
     {
+      "key": "examSubjectId",
+      "value": "00000000-0000-4000-8000-000000000026"
+    },
+    {
       "key": "assignedStudentFeeRateId",
       "value": "00000000-0000-4000-8000-000000000022"
     },
@@ -1012,7 +1016,7 @@
           "response": []
         },
         {
-          "name": "DELETE Delete/Id",
+          "name": "DELETE Delete/Class Id",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1205,7 +1209,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/class/delete/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class/delete/{{classId}}",
             "auth": {
               "type": "noauth"
             }
@@ -1213,7 +1217,7 @@
           "response": []
         },
         {
-          "name": "PATCH Update/Id",
+          "name": "PATCH Update/Class Id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1222,7 +1226,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/class/update/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class/update/{{classId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2973,7 +2977,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/book_list/delete_book_list/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/book_list/delete_book_list/{{bookListId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2990,7 +2994,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/book_list/update_single_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/book_list/update_single_field/{{bookListId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3035,7 +3039,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/book_list/single_book_list/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/book_list/single_book_list/{{bookListId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3048,6 +3052,125 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/v1/smps/book_list/book_list_by_publusher",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Exam Subject",
+      "item": [
+        {
+          "name": "Create Exam Subject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/create_exam_subject",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"department\": \"GENERAL\",\n  \"exam_subject_name\": \"MATHEMATICS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Exam Subject/:Exam Subject Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/delete_exam_subject/{{examSubjectId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Exam Subject/:Exam Subject Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/update_exam_subject/{{examSubjectId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"{{classId}}\",\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"department\": \"GENERAL\",\n  \"exam_subject_name\": \"ENGLISH\",\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Field Exam Subject/:Exam Subject Id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/update_single_field/{{examSubjectId}}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": \"exam_subject_name\",\n  \"value\": \"ENGLISH\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Exam Subjects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Exam Subject By Id/:Exam Subject Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/{{examSubjectId}}",
             "auth": {
               "type": "noauth"
             }

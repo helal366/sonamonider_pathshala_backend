@@ -6,11 +6,9 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
   TCreateBookListZodSchema,
-  TDeleteBookListParamsZodSchema,
+  TBookListIdParamsZodSchema,
   TGetBookListByPublisherParamsZodSchema,
   TGetBookListsByClassIdParamsZodSchema,
-  TGetSingleBookListParamsZodSchema,
-  TUpdateBookListSingleFieldParamsZodSchema,
   TUpdateBookListSingleFieldZodSchema,
 } from "./bookList.zodValidation";
 
@@ -34,8 +32,8 @@ const createBookList = catchAsync(async(req:Request, res: Response)=>{
 // =====================================================================
 const deleteBookList = catchAsync(async(req:Request, res: Response)=>{
     const LoggedInUser = helperFunctions.requiredUser(req);
-    const {id} = req.params as unknown as TDeleteBookListParamsZodSchema;
-    const result = await bookListServices.deleteBookList(LoggedInUser, id);
+    const {book_list_id} = req.params as unknown as TBookListIdParamsZodSchema;
+    const result = await bookListServices.deleteBookList(LoggedInUser, book_list_id);
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,
@@ -49,9 +47,9 @@ const deleteBookList = catchAsync(async(req:Request, res: Response)=>{
 // =====================================================================
 const updateBookListSingleField = catchAsync(async(req:Request, res: Response)=>{
     const LoggedInUser = helperFunctions.requiredUser(req);
-    const {id} = req.params as unknown as TUpdateBookListSingleFieldParamsZodSchema;
+    const {book_list_id} = req.params as unknown as TBookListIdParamsZodSchema;
     const payload = req.body as TUpdateBookListSingleFieldZodSchema;
-    const result = await bookListServices.updateBookListSingleField(LoggedInUser, payload, id);
+    const result = await bookListServices.updateBookListSingleField(LoggedInUser, payload, book_list_id);
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,
@@ -94,8 +92,8 @@ const getBookListByClass = catchAsync(async(req:Request, res: Response)=>{
 // =====================================================================
 const getSingleBookList = catchAsync(async(req:Request, res: Response)=>{
     helperFunctions.requiredUser(req);
-    const {id} = req.params as unknown as TGetSingleBookListParamsZodSchema;
-    const result = await bookListServices.getSingleBookList(id);
+    const {book_list_id} = req.params as unknown as TBookListIdParamsZodSchema;
+    const result = await bookListServices.getSingleBookList(book_list_id);
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,

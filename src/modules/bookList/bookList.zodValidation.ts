@@ -2,6 +2,15 @@ import { Section, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // =====================================================================
+// BOOK LIST ID PARAMS ZOD SCHEMA
+// =====================================================================
+const bookListIdParamsZodSchema = z4.object({
+  book_list_id: z4.uuid("Invalid book list ID format."),
+});
+export type TBookListIdParamsZodSchema = z4.infer<
+  typeof bookListIdParamsZodSchema
+>;
+// =====================================================================
 // CREATE BOOK LIST ZOD SCHEMA
 // =====================================================================
 const createBookListZodSchema = z4.object({
@@ -49,26 +58,10 @@ const createBookListZodSchema = z4.object({
 });
 export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;
 
-// =====================================================================
-// DELETE BOOK LIST ZOD SCHEMA
-// =====================================================================
-const deleteBookListParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid book list ID format."),
-});
-export type TDeleteBookListParamsZodSchema = z4.infer<
-  typeof deleteBookListParamsZodSchema
->;
 
 // =====================================================================
 // UPDATE BOOK LIST SINGLE FIELD ZOD SCHEMA
 // =====================================================================
-const updateBookListSingleFieldParamsZodSchema = z4.object({
-  id: z4.uuid("Book list ID is required."),
-});
-export type TUpdateBookListSingleFieldParamsZodSchema = z4.infer<
-  typeof updateBookListSingleFieldParamsZodSchema
->;
-
 const updateBookListSingleFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
     field: z4.literal("book_name"),
@@ -145,15 +138,6 @@ export type TGetBookListsByClassIdParamsZodSchema = z4.infer<
   typeof getBookListsByClassIdParamsZodSchema
 >;
 
-// =====================================================================
-// GET SINGLE BOOK LIST ZOD SCHEMA
-// =====================================================================
-const getSingleBookListParamsZodSchema = z4.object({
-  id: z4.uuid("Book list ID is required."),
-});
-export type TGetSingleBookListParamsZodSchema = z4.infer<
-  typeof getSingleBookListParamsZodSchema
->;
 
 // =====================================================================
 // GET BOOK LIST BY PUBLISHER ROUTE
@@ -174,11 +158,9 @@ export type TGetBookListByPublisherParamsZodSchema = z4.infer<
 >;
 
 export const bookListZodSchema = {
+  bookListIdParamsZodSchema,
   createBookListZodSchema,
-  deleteBookListParamsZodSchema,
   updateBookListSingleFieldZodSchema,
-  updateBookListSingleFieldParamsZodSchema,
   getBookListsByClassIdParamsZodSchema,
-  getSingleBookListParamsZodSchema,
   getBookListByPublisherParamsZodSchema,
 };

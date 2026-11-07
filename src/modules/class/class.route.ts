@@ -24,7 +24,7 @@ router.post(
 // DELETE CLASS NAME ROUTE
 // =============================================
 router.delete(
-  "/delete/:id",
+  "/delete/:class_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(classZodSchema.classIdParamsZodSchema),
   classController.deleteClassName,
@@ -34,7 +34,7 @@ router.delete(
 // UPDATE CLASS FIELD ROUTE
 // =============================================
 router.patch(
-  "/update/:id",
+  "/update/:class_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(classZodSchema.classIdParamsZodSchema),
   validateZodSchema(classZodSchema.updateClassFieldZodSchema),
