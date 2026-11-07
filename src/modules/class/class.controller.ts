@@ -92,7 +92,7 @@ const getSingleClassByClassId = catchAsync(async (req: Request, res: Response) =
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: `Class names retrieved successfully.`,
+    message: "Class details retrieved successfully.",
     data: result,
   });
 })

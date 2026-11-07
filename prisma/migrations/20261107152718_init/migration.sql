@@ -202,6 +202,7 @@ CREATE TABLE "class_history" (
     "student_id" TEXT NOT NULL,
     "class_id" TEXT NOT NULL,
     "academic_year_id" TEXT NOT NULL,
+    "student_result_id" TEXT,
     "roll_number" INTEGER NOT NULL,
     "shift" "Shift" NOT NULL,
     "section" "Section" NOT NULL,
@@ -704,8 +705,7 @@ CREATE TABLE "class_standard_student_fee_rates" (
 -- CreateTable
 CREATE TABLE "student_results" (
     "id" TEXT NOT NULL,
-    "student_id" TEXT NOT NULL,
-    "academic_year_id" TEXT NOT NULL,
+    "class_history_id" TEXT,
     "monthly_exam_mark_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -853,6 +853,9 @@ CREATE UNIQUE INDEX "book_list_book_name_publisher_class_id_section_version_key"
 CREATE UNIQUE INDEX "classes_class_name_key" ON "classes"("class_name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "class_history_student_result_id_key" ON "class_history"("student_result_id");
+
+-- CreateIndex
 CREATE INDEX "class_history_start_date_idx" ON "class_history"("start_date");
 
 -- CreateIndex
@@ -973,6 +976,9 @@ CREATE UNIQUE INDEX "student_fee_payments_student_id_fee_type_billing_frequency_
 CREATE UNIQUE INDEX "class_standard_student_fee_rates_class_id_standard_student__key" ON "class_standard_student_fee_rates"("class_id", "standard_student_fee_rate_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "student_results_class_history_id_key" ON "student_results"("class_history_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
@@ -1076,6 +1082,9 @@ ALTER TABLE "class_history" ADD CONSTRAINT "class_history_class_id_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "academic_years"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "class_history" ADD CONSTRAINT "class_history_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_quranic_subject_id_fkey" FOREIGN KEY ("quranic_subject_id") REFERENCES "quranic_subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -1376,12 +1385,6 @@ ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_st
 
 -- AddForeignKey
 ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_standard_student_fee_rate_fkey" FOREIGN KEY ("standard_student_fee_rate_id") REFERENCES "standard_student_fee_rates"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "student_results" ADD CONSTRAINT "student_results_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "student_results" ADD CONSTRAINT "student_results_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "academic_years"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_results" ADD CONSTRAINT "student_results_monthly_exam_mark_id_fkey" FOREIGN KEY ("monthly_exam_mark_id") REFERENCES "monthly_exam_marks"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
