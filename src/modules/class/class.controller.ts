@@ -82,9 +82,24 @@ const getAllClassNames = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// =============================================
+// GET SINGLE CLASS NAME CONTROLLER
+// =============================================
+const getSingleClassByClassId = catchAsync(async (req: Request, res: Response) => {
+  helperFunctions.requiredUser(req);
+  const {class_id} = req.params as unknown as TClassIdParamsZodSchema
+  const result = await classServices.getSingleClassByClassId(class_id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: `Class names retrieved successfully.`,
+    data: result,
+  });
+})
 export const classController = {
   createClassName,
   deleteClassName,
   updateClassField,
   getAllClassNames,
+  getSingleClassByClassId
 };

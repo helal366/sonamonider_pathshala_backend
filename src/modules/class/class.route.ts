@@ -50,4 +50,13 @@ router.get(
   classController.getAllClassNames,
 );
 
+// =============================================
+// GET SINGLE CLASS NAME ROUTE
+// =============================================
+router.get(
+  "/:class_id",
+  userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+  validateZodParams(classZodSchema.classIdParamsZodSchema),
+  classController.getSingleClassByClassId,
+)
 export const classRouter: Router = router;

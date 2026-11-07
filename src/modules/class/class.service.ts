@@ -133,7 +133,7 @@ const updateClassField = async (
 // GET ALL CLASS NAME SERVICE LAYER
 // =============================================
 const getAllClassNames = async () => {
-  return await prisma.class.findMany({
+  const classes = await prisma.class.findMany({
     select: {
       id: true,
       class_name: true,
@@ -141,9 +141,49 @@ const getAllClassNames = async () => {
   });
 };
 
+// =============================================
+// GET SINGLE CLASS NAME SERVICE LAYER
+// =============================================
+const getSingleClassByClassId = async(class_id:string)=>{
+  const classById = await prisma.class.findUnique({
+    where: {id: class_id},
+    include: {
+      grade_group_teacher: {
+        select: {
+          user_primary_data: {
+           select: {
+            full_name: true,
+            mobile_number: true, 
+            current_role: true,
+            current_position: {
+              select: {
+                position_name: true
+              }
+            }
+           }
+          }
+        }
+      },
+      book_list: {
+       select: {
+        book_name: true,
+        publisher: true,
+        section: true, 
+        version: true,
+        department: true
+       }
+      }
+    }
+  });
+  if(!classById){
+    throw new AppError(`The class does not found.`, StatusCodes.NOT_FOUND)
+  };
+  return classById
+}
 export const classServices = {
   createClassName,
   deleteClassName,
   updateClassField,
   getAllClassNames,
+  getSingleClassByClassId
 };
