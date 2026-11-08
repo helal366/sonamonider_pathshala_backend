@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import {
   BillingFrequency,
   Department,
@@ -699,84 +700,108 @@ export const runStandardStudentFeeRateSeed = async () => {
 
   let createdCount = 0;
   let skippedCount = 0;
-  await prisma.$transaction(async (tx) => {
-    const existingRates = await tx.standardStudentFeeRate.findMany({
-      include: {
-        assigned_classes: { select: { class_id: true } },
-      },
+  const existingRates = await prisma.standardStudentFeeRate.findMany({
+    include: {
+      assigned_classes: { select: { class_id: true } },
+    },
+  });
+  const existingRateKeys = new Set(
+    existingRates.map((rate) =>
+      getRateKey({
+        ...rate,
+        class_ids: rate.assigned_classes.map(({ class_id }) => class_id),
+      }),
+    ),
+  );
+  const ratesToCreate: {
+    id: string;
+    fee_type: StudentFeeType;
+    billing_frequency: BillingFrequency;
+    amount: number;
+    ic_registration_fee?: number;
+    ic_duration_hrs?: number;
+    qc_duration_hrs?: number;
+    section: Section;
+    version: Version;
+    department: Department | null;
+  }[] = [];
+  const classAssociationsToCreate: {
+    class_id: string;
+    standard_student_fee_rate_id: string;
+  }[] = [];
+
+  for (const rate of rateGroups) {
+    const classIds = rate.class_names.map((className) => {
+      const classId = classIdByName.get(className);
+      if (!classId) {
+        throw new Error(
+          `Class not found while seeding fee rates: ${className}`,
+        );
+      }
+      return classId;
     });
-    const existingRateKeys = new Set(
-      existingRates.map((rate) =>
-        getRateKey({
-          ...rate,
-          class_ids: rate.assigned_classes.map(({ class_id }) => class_id),
-        }),
-      ),
-    );
 
-    for (const rate of rateGroups) {
-      const classIds = rate.class_names.map((className) => {
-        const classId = classIdByName.get(className);
-        if (!classId) {
-          throw new Error(
-            `Class not found while seeding fee rates: ${className}`,
-          );
-        }
-        return classId;
-      });
+    const feeTypes = expandSelection(rate.fee_type);
+    const sections = expandSelection(rate.section);
+    const departments =
+      rate.department === undefined
+        ? [null]
+        : expandSelection(rate.department);
 
-      const feeTypes = expandSelection(rate.fee_type);
-      const sections = expandSelection(rate.section);
-      const departments =
-        rate.department === undefined
-          ? [null]
-          : expandSelection(rate.department);
-
-      for (const feeType of feeTypes) {
-        for (const section of sections) {
-          for (const department of departments) {
-            const rateKey = getRateKey({
-              fee_type: feeType,
-              billing_frequency: rate.billing_frequency,
-              amount: rate.amount,
-              ic_registration_fee: rate.ic_registration_fee,
-              ic_duration_hrs: rate.ic_duration_hrs,
-              qc_duration_hrs: rate.qc_duration_hrs,
-              section,
-              version: rate.version,
-              department,
-              class_ids: classIds,
-            });
-            if (existingRateKeys.has(rateKey)) {
-              skippedCount += 1;
-              continue;
-            }
-
-            await tx.standardStudentFeeRate.create({
-              data: {
-                fee_type: feeType,
-                billing_frequency: rate.billing_frequency,
-                amount: rate.amount,
-                ic_registration_fee: rate.ic_registration_fee,
-                ic_duration_hrs: rate.ic_duration_hrs,
-                qc_duration_hrs: rate.qc_duration_hrs,
-                section,
-                version: rate.version,
-                department,
-                assigned_classes: {
-                  create: classIds.map((classId) => ({
-                    class: { connect: { id: classId } },
-                  })),
-                },
-              },
-            });
-            existingRateKeys.add(rateKey);
-            createdCount += 1;
+    for (const feeType of feeTypes) {
+      for (const section of sections) {
+        for (const department of departments) {
+          const rateKey = getRateKey({
+            fee_type: feeType,
+            billing_frequency: rate.billing_frequency,
+            amount: rate.amount,
+            ic_registration_fee: rate.ic_registration_fee,
+            ic_duration_hrs: rate.ic_duration_hrs,
+            qc_duration_hrs: rate.qc_duration_hrs,
+            section,
+            version: rate.version,
+            department,
+            class_ids: classIds,
+          });
+          if (existingRateKeys.has(rateKey)) {
+            skippedCount += 1;
+            continue;
           }
+
+          const id = randomUUID();
+          ratesToCreate.push({
+            id,
+            fee_type: feeType,
+            billing_frequency: rate.billing_frequency,
+            amount: rate.amount,
+            ic_registration_fee: rate.ic_registration_fee,
+            ic_duration_hrs: rate.ic_duration_hrs,
+            qc_duration_hrs: rate.qc_duration_hrs,
+            section,
+            version: rate.version,
+            department,
+          });
+          classAssociationsToCreate.push(
+            ...classIds.map((class_id) => ({
+              class_id,
+              standard_student_fee_rate_id: id,
+            })),
+          );
+          existingRateKeys.add(rateKey);
+          createdCount += 1;
         }
       }
     }
-  });
+  }
+
+  if (ratesToCreate.length > 0) {
+    await prisma.$transaction([
+      prisma.standardStudentFeeRate.createMany({ data: ratesToCreate }),
+      prisma.classStandardStudentFeeRate.createMany({
+        data: classAssociationsToCreate,
+      }),
+    ]);
+  }
 
   console.log(
     `Standard student fee rates seeded. Created ${createdCount} entries; skipped ${skippedCount} existing entries.`,

@@ -16,7 +16,7 @@
     "postinstall": "prisma generate",
     "vercel-build": "pnpm prisma generate && tsup",
     "db:migrate": "prisma migrate dev",
-    "seed": "pnpm exec tsx src/utils/runSeed.ts",
+    "seed": "pnpm exec tsx src/utils/seed/runSeed.ts",
     "db:push": "prisma db push --force-reset",
     "db:reset": "rm -rf prisma/migrations && prisma db push --force-reset && prisma migrate reset --force"
   },

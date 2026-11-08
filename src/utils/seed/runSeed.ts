@@ -13,7 +13,7 @@ const main = async () => {
 
   await runStandardStudentFeeRateSeed();
 
-  await runBookList();
+  // await runBookList();
 };
 
 main()
