@@ -2,6 +2,7 @@ import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth";
 import {
   validateZodParams,
+  validateZodQuery,
   validateZodSchema,
 } from "../../middlewares/validateZodSchema";
 import { promotionRequestsZodSchema } from "./promotionRequest.zodValidation";
@@ -23,7 +24,7 @@ router.post(
 // DELETE PROMOTION REQUEST ROUTE
 // =========================================================
 router.delete(
-  "/delete_promotion_request/:id",
+  "/delete_promotion_request/:promotion_request_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
@@ -35,7 +36,7 @@ router.delete(
 // ACTION PROMOTION REQUEST ROUTE
 // =========================================================
 router.patch(
-  "/action_promotion_request/:id",
+  "/action_promotion_request/:promotion_request_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
@@ -50,7 +51,7 @@ router.patch(
 router.get(
   "/",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodSchema(promotionRequestsZodSchema.getPromotionRequestsZodSchema),
+  validateZodQuery(promotionRequestsZodSchema.getPromotionRequestsQueryZodSchema),
   promotionRequestController.getAllPromotionRequests,
 );
 
@@ -61,7 +62,7 @@ router.get(
   "/:id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
-    promotionRequestsZodSchema.getSinglePromotionRequestZodSchema,
+    promotionRequestsZodSchema.promotionRequestIdParamsZodSchema,
   ), // Parses req.params
   promotionRequestController.getSinglePromotionRequest,
 );

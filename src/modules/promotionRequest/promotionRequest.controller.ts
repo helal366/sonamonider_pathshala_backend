@@ -3,7 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import {
   TActionPromotionRequestZodSchema,
   TCreatePromotionRequestZodSchema,
-  TGetPromotionRequestsZodSchema,
+  TGetPromotionRequestsQueryZodSchema,
   TPromotionRequestIdParamsZodSchema,
 } from "./promotionRequest.zodValidation";
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions";
@@ -42,7 +42,7 @@ const deletePromotionRequest = catchAsync(
   async (req: Request<TPromotionRequestIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const result = await promotionRequestServices.deletePromotionRequest(
-      req.params.id,
+      req.params.promotion_request_id,
       loggedInUser,
     );
 
@@ -69,7 +69,7 @@ const actionPromotionRequest = catchAsync(
     const result = await promotionRequestActionServices.actionPromotionRequest(
       payload,
       loggedInUser,
-      req.params.id,
+      req.params.promotion_request_id,
     );
 
     sendResponse(res, {
@@ -87,7 +87,7 @@ const actionPromotionRequest = catchAsync(
 const getAllPromotionRequests = catchAsync(
   async (req: Request, res: Response) => {
     helperFunctions.requiredUser(req);
-    const payload = req.query as unknown as TGetPromotionRequestsZodSchema;
+    const payload = req.query as unknown as TGetPromotionRequestsQueryZodSchema;
     const result =
       await promotionRequestGetServices.getPromotionRequests(payload);
     const { meta, data } = result;
@@ -107,16 +107,16 @@ const getAllPromotionRequests = catchAsync(
 // GET SINGLE PROMOTION REQUEST CONTROLLER
 // =========================================================
 const getSinglePromotionRequest = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TPromotionRequestIdParamsZodSchema>, res: Response) => {
     helperFunctions.requiredUser(req);
 
     // Cast and capture safely from route path parameters
-    const { id } =
-      req.params as unknown as TPromotionRequestIdParamsZodSchema;
+    const { promotion_request_id } =
+      req.params;
 
     const result =
       await promotionRequestGetServices.getPromotionRequestById(
-        id,
+        promotion_request_id,
       );
 
     sendResponse(res, {

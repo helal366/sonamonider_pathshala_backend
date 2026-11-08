@@ -1,4 +1,4 @@
-import { Prisma, Section, Version } from "#db-client";
+import { ExamSubjectName, Prisma, Section, Version } from "#db-client";
 import { prisma } from "../../lib/prisma";
 
 const classIdCache = new Map<string, Promise<string>>();
@@ -45,6 +45,7 @@ const bookListPlaygroupSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book -I)",
@@ -52,7 +53,8 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book - 0",
@@ -60,7 +62,7 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - A",
@@ -69,6 +71,7 @@ const bookListPlaygroupSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "How to Draw and Colour - A",
@@ -76,7 +79,7 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ১",
@@ -84,7 +87,8 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "আমার বর্ণমালা B - I",
@@ -93,6 +97,7 @@ const bookListPlaygroupSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি - ১",
@@ -100,7 +105,8 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "কায়দা - তাজবীদুল কুরআন",
@@ -108,7 +114,7 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি-১",
@@ -116,7 +122,7 @@ const bookListPlaygroupSchool = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
 ];
 const seedBookListPlaygroupSchool = async () => {
@@ -132,6 +138,7 @@ const bookListPlaygroupMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book -I)",
@@ -139,7 +146,8 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book - 0",
@@ -147,7 +155,7 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - A",
@@ -156,6 +164,7 @@ const bookListPlaygroupMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "Teaching of Islam - A",
@@ -164,6 +173,7 @@ const bookListPlaygroupMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC
   },
   {
     book_name: "How to Draw and Colour - A",
@@ -171,7 +181,7 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ১",
@@ -179,7 +189,8 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "আমার বর্ণমালা B - I",
@@ -188,6 +199,7 @@ const bookListPlaygroupMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি - ১",
@@ -195,7 +207,8 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "কায়দা - তাজবীদুল কুরআন",
@@ -203,7 +216,7 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি-১",
@@ -211,7 +224,7 @@ const bookListPlaygroupMadrasha = [
     class_name: "PLAYGROUP",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
 ];
 const seedBookListPlaygroupMadrasha = async () => {
@@ -227,6 +240,7 @@ const bookListNurserySchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book -II)",
@@ -234,7 +248,8 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book - 0",
@@ -242,7 +257,7 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - B",
@@ -251,6 +266,7 @@ const bookListNurserySchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "How to Draw and Colour - B",
@@ -258,7 +274,7 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ২",
@@ -266,7 +282,8 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "আমার সহজ বাংলা পড়া B-2",
@@ -275,6 +292,7 @@ const bookListNurserySchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি-২",
@@ -282,7 +300,8 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "কায়দা- তাজবীদুল কুরআন",
@@ -290,7 +309,7 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
@@ -298,7 +317,7 @@ const bookListNurserySchool = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
 ];
 const seedBoolListNurserySchool = async () => {
@@ -314,6 +333,7 @@ const bookListNurseryMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book -II)",
@@ -321,7 +341,8 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book - 0",
@@ -329,7 +350,7 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - B",
@@ -338,6 +359,7 @@ const bookListNurseryMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "How to Draw and Colour - B",
@@ -345,7 +367,7 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ২",
@@ -353,7 +375,8 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "আমার সহজ বাংলা পড়া B-2",
@@ -362,6 +385,7 @@ const bookListNurseryMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি-২",
@@ -369,7 +393,7 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "কায়দা- তাজবীদুল কুরআন",
@@ -377,7 +401,7 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
@@ -385,7 +409,7 @@ const bookListNurseryMadrasha = [
     class_name: "NURSERY",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Teaching of Islam- A",
@@ -394,6 +418,7 @@ const bookListNurseryMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC
   },
 ];
 const seedBoolListNurseryMadrasha = async () => {
@@ -409,6 +434,7 @@ const bookListKindergartenSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book- III)",
@@ -416,7 +442,8 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book- 0",
@@ -424,7 +451,7 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead- I",
@@ -433,6 +460,7 @@ const bookListKindergartenSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "How to Draw and Colour- C",
@@ -440,7 +468,7 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
@@ -448,7 +476,8 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "শিশুদের সহজ বাংলা পড়া B- III",
@@ -457,6 +486,7 @@ const bookListKindergartenSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি- ৩",
@@ -465,6 +495,7 @@ const bookListKindergartenSchool = [
     version: Version.BENGALI,
     section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
@@ -472,7 +503,7 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
@@ -480,7 +511,7 @@ const bookListKindergartenSchool = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
 ];
 const seedBoolListKindergartenSchool = async () => {
@@ -496,6 +527,7 @@ const bookListKindergartenMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "My Handwriting (Book- III)",
@@ -503,7 +535,8 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH
   },
   {
     book_name: "Spoken English Work Book- 0",
@@ -511,7 +544,7 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead- I",
@@ -520,6 +553,7 @@ const bookListKindergartenMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "How to Draw and Colour- C",
@@ -527,7 +561,7 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
@@ -536,6 +570,7 @@ const bookListKindergartenMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS
   },
   {
     book_name: "শিশুদের সহজ বাংলা পড়া B- III",
@@ -544,6 +579,7 @@ const bookListKindergartenMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "এসো লেখা শিখি- ৩",
@@ -551,7 +587,8 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
@@ -559,7 +596,7 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
@@ -567,7 +604,7 @@ const bookListKindergartenMadrasha = [
     class_name: "KINDERGARTEN",
     version: Version.BENGALI,
     section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Teaching of Islam- B",
@@ -576,6 +613,7 @@ const bookListKindergartenMadrasha = [
     version: Version.BENGALI,
     section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC
   },
 ];
 const seedBoolListKindergartenMadrasha = async () => {

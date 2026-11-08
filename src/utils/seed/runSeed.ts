@@ -1,6 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
 import { runInitialSeed } from "./seed.js";
-import { runBookList } from "./seedBookList.js";
 import { runInitialOthers } from "./seedOthers.js";
 import { runStandardStudentFeeRateSeed } from "./seedStandardStudentFeeRates.js";
 
@@ -12,8 +11,6 @@ const main = async () => {
   await runInitialOthers();
 
   await runStandardStudentFeeRateSeed();
-
-  // await runBookList();
 };
 
 main()

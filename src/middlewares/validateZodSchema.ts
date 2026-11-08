@@ -4,7 +4,9 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../helperFunctions/globalError/globalErrorHelperFunction.js";
 
+// =================================================================
 // BODY
+// =================================================================
 export const validateZodSchema = (zodSchema: z4.ZodType) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -24,8 +26,9 @@ export const validateZodSchema = (zodSchema: z4.ZodType) => {
   });
 };
 
-
+// =================================================================
 // PARAMS
+// =================================================================
 export const validateZodParams = <T>(
   zodSchema: z4.ZodType<T>,
 ) => {
@@ -39,6 +42,25 @@ export const validateZodParams = <T>(
     }
 
     req.params = result.data as any;
+    next();
+  });
+};
+
+// =================================================================
+// QUERY
+// =================================================================
+export const validateZodQuery = <T>(zodSchema: z4.ZodType<T>) => {
+  return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await zodSchema.safeParseAsync(req.query);
+
+    if (!result.success) {
+      throw new AppError(
+        result.error.issues[0]?.message ?? "Invalid query parameters.",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    req.query = result.data as any;
     next();
   });
 };

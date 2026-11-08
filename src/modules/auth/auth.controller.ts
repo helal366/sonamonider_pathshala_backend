@@ -5,8 +5,9 @@ import { authServices } from "./auth.service.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { StatusCodes } from "http-status-codes";
 import { envVars } from "../../config/index.js";
-
+// =====================================================
 // USER LOGIN
+// =====================================================
 const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const payload: TLoginZodSchema = req.body;
@@ -35,7 +36,9 @@ const login = catchAsync(
   },
 );
 
+// =====================================================
 // USER LOGOUT
+// =====================================================
 const logout = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const isProduction = envVars.NODE_ENV === "production";

@@ -58,10 +58,10 @@ export type TCreatePromotionRequestZodSchema = z4.infer<
 >;
 
 // =========================================================
-// DELETE PROMOTION REQUEST ZOD SCHEMA
+// PROMOTION REQUEST ID PARAMS ZOD SCHEMA
 // =========================================================
 const promotionRequestIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid promotion request ID format."),
+  promotion_request_id: z4.uuid("Invalid promotion request ID format."),
 });
 export type TPromotionRequestIdParamsZodSchema = z4.infer<
   typeof promotionRequestIdParamsZodSchema
@@ -97,33 +97,46 @@ export type TActionPromotionRequestZodSchema = z4.infer<
 >;
 
 // =========================================================
-// GET PROMOTION REQUESTS FILTER ZOD SCHEMA
+// GET PROMOTION REQUESTS QUERY ZOD SCHEMA
 // =========================================================
-const getPromotionRequestsZodSchema = z4.object({
-  page: z4.coerce.number().int().min(1).default(1),
-  limit: z4.coerce.number().int().min(1).max(100).default(10),
-  status: z4.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
-  full_name: z4.string("Invalid full name format.").trim().optional(), // Explicit name input
-  mobile_number: z4.string("Invalid mobile number format.").trim().optional(), // Explicit mobile number input
+const getPromotionRequestsQueryZodSchema = z4.object({
+  page: z4.coerce
+    .number()
+    .int("Page must be an integer.")
+    .min(1, "Page must be at least 1.")
+    .default(1),
+
+  limit: z4.coerce
+    .number()
+    .int("Limit must be an integer.")
+    .min(1, "Limit must be at least 1.")
+    .max(100, "Limit cannot exceed 100.")
+    .default(10),
+
+  status: z4
+    .enum(["PENDING", "APPROVED", "REJECTED"])
+    .optional(),
+
+  full_name: z4.string().trim().min(1, "Full name cannot be empty.").optional(),
+
+  mobile_number: z4
+    .string()
+    .trim()
+    .length(
+      11,
+      "Mobile number must be 11 digit Bangladeshi number start with 01.",
+    )
+    .regex(/^01\d{9}$/, "Invalid Bangladeshi mobile number.")
+    .optional(),
 });
 
-export type TGetPromotionRequestsZodSchema = z4.infer<
-  typeof getPromotionRequestsZodSchema
+export type TGetPromotionRequestsQueryZodSchema = z4.infer<
+  typeof getPromotionRequestsQueryZodSchema
 >;
-
-// =========================================================
-// GET SINGLE PROMOTION REQUEST ZOD SCHEMA
-// =========================================================
-const getSinglePromotionRequestZodSchema = z4.object({
-  id: z4.uuid("Invalid promotion request ID parameter format."),
-});
-
-export type TGetSinglePromotionRequestZodSchema = z4.infer<typeof getSinglePromotionRequestZodSchema>;
 
 export const promotionRequestsZodSchema = {
   createPromotionRequestZodSchema,
   promotionRequestIdParamsZodSchema,
   actionPromotionRequestZodSchema,
-  getPromotionRequestsZodSchema,
-  getSinglePromotionRequestZodSchema
+  getPromotionRequestsQueryZodSchema,
 };

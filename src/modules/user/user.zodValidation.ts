@@ -309,7 +309,7 @@ const adminFieldsUnion = z4.discriminatedUnion("field", [
 
   // 5. Blood Group Enum (Nullable)
   z4.object({
-    user_id: z4.string().trim().toUpperCase(),
+    user_id: z4.string().trim(),
     field: z4.literal("blood_group"),
     value: z4.enum(BLOOD_GROUP_ENUM, "Invalid Blood group.").nullable(),
   }),

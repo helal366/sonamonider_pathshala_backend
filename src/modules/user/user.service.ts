@@ -150,6 +150,9 @@ const updateSingleUserFieldAdmin = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { user_id, field, value } = payload;
+  console.log({user_id})
+  console.log({field})
+  console.log({value})
 
   // PROTECT REQUIRED FIELD FROM NULL
   if ((field === "full_name" || field === "gender") && !value) {

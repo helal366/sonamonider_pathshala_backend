@@ -8,7 +8,7 @@ import { sendVerificationResultEmail } from "../email/email.helper.function";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
-const actionPromotionRequest = async (
+const actionPromotionRequest = async (              
   payload: TActionPromotionRequestZodSchema,
   loggedInUser: TLoggedInUser,
   promotion_request_id: string,
