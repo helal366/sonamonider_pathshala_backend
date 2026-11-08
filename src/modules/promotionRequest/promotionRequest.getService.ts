@@ -5,10 +5,12 @@ import { Prisma } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
-import { TGetPromotionRequestsZodSchema } from "./promotionRequest.zodValidation";
+import { TGetPromotionRequestsQueryZodSchema } from "./promotionRequest.zodValidation";
 
 // ========================================================
-const getPromotionRequests = async (query: TGetPromotionRequestsZodSchema) => {
+const getPromotionRequests = async (
+  query: TGetPromotionRequestsQueryZodSchema,
+) => {
   const { page, limit, status, full_name, mobile_number } = query;
   const skip = (page - 1) * limit;
 

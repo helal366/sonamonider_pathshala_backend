@@ -8,6 +8,7 @@ const mark = z4.coerce
   .multipleOf(0.01, "Mark can have at most two decimal places.");
 
 const monthlyFields = {
+  class_history_id: z4.uuid("Invalid class history ID format."),
   january_mark: mark,
   february_mark: mark,
   march_mark: mark,
@@ -19,19 +20,20 @@ const monthlyFields = {
 };
 const createMonthlyExamMarkZodSchema = z4.object(monthlyFields);
 const updateMonthlyExamMarkZodSchema = z4.object(monthlyFields);
-const updateMonthlyExamMarkFieldZodSchema = z4.object({
-  field: z4.enum([
-    "january_mark",
-    "february_mark",
-    "march_mark",
-    "april_mark",
-    "july_mark",
-    "august_mark",
-    "september_mark",
-    "october_mark",
-  ]),
-  value: mark,
-});
+const updateMonthlyExamMarkFieldZodSchema = z4.discriminatedUnion("field", [
+  z4.object({
+    field: z4.literal("class_history_id"),
+    value: z4.uuid("Invalid class history ID format."),
+  }),
+  z4.object({ field: z4.literal("january_mark"), value: mark }),
+  z4.object({ field: z4.literal("february_mark"), value: mark }),
+  z4.object({ field: z4.literal("march_mark"), value: mark }),
+  z4.object({ field: z4.literal("april_mark"), value: mark }),
+  z4.object({ field: z4.literal("july_mark"), value: mark }),
+  z4.object({ field: z4.literal("august_mark"), value: mark }),
+  z4.object({ field: z4.literal("september_mark"), value: mark }),
+  z4.object({ field: z4.literal("october_mark"), value: mark }),
+]);
 const monthlyExamMarkIdParamsZodSchema = z4.object({
   id: z4.uuid("Invalid monthly exam mark ID format."),
 });

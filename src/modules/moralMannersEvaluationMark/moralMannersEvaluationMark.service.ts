@@ -11,36 +11,30 @@ import {
 
 const entityName = "moralMannersEvaluationMark";
 
-const ensureStudentResultExists = async (
+const ensureClassHistoryAvailable = async (
   transaction: Prisma.TransactionClient,
-  studentResultId: string,
+  classHistoryId: string,
+  examType: ExamType,
+  markId?: string,
 ) => {
-  const result = await transaction.studentResult.findUnique({
-    where: { id: studentResultId },
+  const history = await transaction.classHistory.findUnique({
+    where: { id: classHistoryId },
     select: { id: true },
   });
-  if (!result) {
-    throw new AppError("Student result not found.", StatusCodes.NOT_FOUND);
+  if (!history) {
+    throw new AppError("Class history not found.", StatusCodes.NOT_FOUND);
   }
-};
-
-const ensureUniqueResultExam = async (
-  transaction: Prisma.TransactionClient,
-  studentResultId: string,
-  examType: ExamType,
-  excludedId?: string,
-) => {
   const duplicate = await transaction.moralMannersEvaluationMark.findFirst({
     where: {
-      student_result_id: studentResultId,
+      class_history_id: classHistoryId,
       exam_type: examType,
-      ...(excludedId && { id: { not: excludedId } }),
+      ...(markId && { id: { not: markId } }),
     },
     select: { id: true },
   });
   if (duplicate) {
     throw new AppError(
-      "A moral manners evaluation mark already exists for this student result and exam type.",
+      "A moral manners evaluation mark already exists for this class history and exam type.",
       StatusCodes.CONFLICT,
     );
   }
@@ -51,16 +45,17 @@ const createMoralMannersEvaluationMark = async (
   loggedInUser: TLoggedInUser,
 ) =>
   prisma.$transaction(async (transaction) => {
-    await ensureStudentResultExists(transaction, payload.student_result_id);
-    await ensureUniqueResultExam(
+    await ensureClassHistoryAvailable(
       transaction,
-      payload.student_result_id,
+      payload.class_history_id,
       payload.exam_type,
     );
 
+    const { class_history_id, ...markData } = payload;
     const created = await transaction.moralMannersEvaluationMark.create({
       data: {
-        ...payload,
+        ...markData,
+        class_history_id,
         created_by_id: loggedInUser.user_id,
       },
     });
@@ -85,6 +80,7 @@ const deleteMoralMannersEvaluationMark = async (
     const existing =
       await transaction.moralMannersEvaluationMark.findUnique({
         where: { id },
+        include: { class_history: true },
       });
     if (!existing) {
       throw new AppError(
@@ -101,7 +97,10 @@ const deleteMoralMannersEvaluationMark = async (
         entity_name: entityName,
         action: "DELETE",
         changed_by_id: loggedInUser.user_id,
-        old_value: existing,
+        old_value: {
+          ...existing,
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: Prisma.JsonNull,
       },
     });
@@ -117,6 +116,7 @@ const updateMoralMannersEvaluationMark = async (
     const existing =
       await transaction.moralMannersEvaluationMark.findUnique({
         where: { id },
+        include: { class_history: true },
       });
     if (!existing) {
       throw new AppError(
@@ -124,16 +124,17 @@ const updateMoralMannersEvaluationMark = async (
         StatusCodes.NOT_FOUND,
       );
     }
-    await ensureStudentResultExists(transaction, payload.student_result_id);
-    await ensureUniqueResultExam(
+    await ensureClassHistoryAvailable(
       transaction,
-      payload.student_result_id,
+      payload.class_history_id,
       payload.exam_type,
       id,
     );
 
+    const { class_history_id, ...markData } = payload;
     const data: Prisma.MoralMannersEvaluationMarkUncheckedUpdateInput = {
-      ...payload,
+      ...markData,
+      class_history_id,
       updated_by_id: loggedInUser.user_id,
     };
     const updated = await transaction.moralMannersEvaluationMark.update({
@@ -146,7 +147,10 @@ const updateMoralMannersEvaluationMark = async (
         entity_name: entityName,
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
-        old_value: existing,
+        old_value: {
+          ...existing,
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: payload,
       },
     });
@@ -162,6 +166,7 @@ const updateMoralMannersEvaluationMarkField = async (
     const existing =
       await transaction.moralMannersEvaluationMark.findUnique({
         where: { id },
+        include: { class_history: true },
       });
     if (!existing) {
       throw new AppError(
@@ -170,19 +175,52 @@ const updateMoralMannersEvaluationMarkField = async (
       );
     }
 
-    const currentValue = existing[payload.field];
+    let currentValue: ExamType | string;
+    switch (payload.field) {
+      case "class_history_id":
+        currentValue = existing.class_history?.id ?? "";
+        break;
+      case "exam_type":
+        currentValue = existing.exam_type;
+        break;
+      case "cleanliness":
+        currentValue = existing.cleanliness;
+        break;
+      case "class_performance":
+        currentValue = existing.class_performance;
+        break;
+      case "speaking_the_truth":
+        currentValue = existing.speaking_the_truth;
+        break;
+      case "speaking_the_correct":
+        currentValue = existing.speaking_the_correct;
+        break;
+      case "salat_religious_work":
+        currentValue = existing.salat_religious_work;
+        break;
+    }
     if (currentValue === payload.value) {
       throw new AppError("Field value already exists.", StatusCodes.CONFLICT);
     }
 
-    const studentResultId =
-      payload.field === "student_result_id"
+    const classHistoryId =
+      payload.field === "class_history_id"
         ? payload.value
-        : existing.student_result_id;
+        : existing.class_history?.id;
+    if (!classHistoryId) {
+      throw new AppError(
+        "Moral manners evaluation mark is not linked to a class history.",
+        StatusCodes.CONFLICT,
+      );
+    }
     const examType =
       payload.field === "exam_type" ? payload.value : existing.exam_type;
-    await ensureStudentResultExists(transaction, studentResultId);
-    await ensureUniqueResultExam(transaction, studentResultId, examType, id);
+    await ensureClassHistoryAvailable(
+      transaction,
+      classHistoryId,
+      examType,
+      id,
+    );
 
     let data: Prisma.MoralMannersEvaluationMarkUncheckedUpdateInput;
     switch (payload.field) {
@@ -204,8 +242,8 @@ const updateMoralMannersEvaluationMarkField = async (
       case "exam_type":
         data = { exam_type: payload.value };
         break;
-      case "student_result_id":
-        data = { student_result_id: payload.value };
+      case "class_history_id":
+        data = { class_history_id: payload.value };
         break;
     }
     const updated = await transaction.moralMannersEvaluationMark.update({

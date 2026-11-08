@@ -16,11 +16,11 @@ const examType = z4.enum(ExamType, {
       : "Invalid exam type format.",
 });
 
-const studentResultId = z4.uuid({
+const classHistoryId = z4.uuid({
   error: (issue) =>
     issue.input === undefined
-      ? "Student result ID is required."
-      : "Invalid student result ID format.",
+      ? "Class history ID is required."
+      : "Invalid class history ID format.",
 });
 
 const coCurricularActivitiesMarkFields = {
@@ -30,7 +30,7 @@ const coCurricularActivitiesMarkFields = {
   cultural_activities: grade("Cultural activities grade"),
   sports_scouts: grade("Sports and scouts grade"),
   exam_type: examType,
-  student_result_id: studentResultId,
+  class_history_id: classHistoryId,
 };
 
 const createCoCurricularActivitiesMarkZodSchema = z4.object(
@@ -53,8 +53,8 @@ const updateCoCurricularActivitiesMarkFieldZodSchema = z4.discriminatedUnion(
     z4.object({ field: z4.literal("sports_scouts"), value: grade("Sports and scouts grade") }),
     z4.object({ field: z4.literal("exam_type"), value: examType }),
     z4.object({
-      field: z4.literal("student_result_id"),
-      value: studentResultId,
+      field: z4.literal("class_history_id"),
+      value: classHistoryId,
     }),
   ],
 );

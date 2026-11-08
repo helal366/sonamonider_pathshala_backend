@@ -14,8 +14,11 @@ model ClassHistory {
   academic_year_id String
   academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  student_result_id String? @unique
-  student_result StudentResult? @relation(fields: [student_result_id], references: [id])
+  monthly_exam_marks   MonthlyExamMark?
+  half_yearly_exam_mark HalfYearlyExamMark[]
+  annual_exam_mark      AnnualExamMark[]
+  cocurricular_activities_mark  CoCurricularActivitiesMark[]
+  moral_manners_evaluation_mark MoralMannersEvaluationMark[]
   
   roll_number Int
   shift       Shift

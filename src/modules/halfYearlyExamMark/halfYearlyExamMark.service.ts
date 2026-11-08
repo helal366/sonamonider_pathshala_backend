@@ -14,25 +14,23 @@ const auditValues = (record: {
   full_mark: Prisma.Decimal;
   highest_mark: Prisma.Decimal;
   obtained_mark: Prisma.Decimal;
-  student_result_id: string;
   exam_subject_id: string;
 }) => ({
   full_mark: record.full_mark.toNumber(),
   highest_mark: record.highest_mark.toNumber(),
   obtained_mark: record.obtained_mark.toNumber(),
-  student_result_id: record.student_result_id,
   exam_subject_id: record.exam_subject_id,
 });
 
 const ensureRelationsAndUnique = async (
   transaction: Prisma.TransactionClient,
-  studentResultId: string,
+  classHistoryId: string,
   examSubjectId: string,
   excludedId?: string,
 ) => {
-  const [studentResult, examSubject] = await Promise.all([
-    transaction.studentResult.findUnique({
-      where: { id: studentResultId },
+  const [classHistory, examSubject] = await Promise.all([
+    transaction.classHistory.findUnique({
+      where: { id: classHistoryId },
       select: { id: true },
     }),
     transaction.examSubject.findUnique({
@@ -40,15 +38,15 @@ const ensureRelationsAndUnique = async (
       select: { id: true },
     }),
   ]);
-  if (!studentResult) {
-    throw new AppError("Student result not found.", StatusCodes.NOT_FOUND);
+  if (!classHistory) {
+    throw new AppError("Class history not found.", StatusCodes.NOT_FOUND);
   }
   if (!examSubject) {
     throw new AppError("Exam subject not found.", StatusCodes.NOT_FOUND);
   }
   const duplicate = await transaction.halfYearlyExamMark.findFirst({
     where: {
-      student_result_id: studentResultId,
+      class_history_id: classHistoryId,
       exam_subject_id: examSubjectId,
       ...(excludedId && { id: { not: excludedId } }),
     },
@@ -56,7 +54,7 @@ const ensureRelationsAndUnique = async (
   });
   if (duplicate) {
     throw new AppError(
-      "A half-yearly mark already exists for this student result and exam subject.",
+      "A half-yearly mark already exists for this class history and exam subject.",
       StatusCodes.CONFLICT,
     );
   }
@@ -69,11 +67,16 @@ const createHalfYearlyExamMark = async (
   prisma.$transaction(async (transaction) => {
     await ensureRelationsAndUnique(
       transaction,
-      payload.student_result_id,
+      payload.class_history_id,
       payload.exam_subject_id,
     );
+    const { class_history_id, ...markData } = payload;
     const created = await transaction.halfYearlyExamMark.create({
-      data: { ...payload, created_by_id: loggedInUser.user_id },
+      data: {
+        ...markData,
+        class_history_id,
+        created_by_id: loggedInUser.user_id,
+      },
     });
     await transaction.auditLog.create({
       data: {
@@ -95,6 +98,7 @@ const deleteHalfYearlyExamMark = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.halfYearlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Half-yearly exam mark not found.", StatusCodes.NOT_FOUND);
@@ -106,7 +110,10 @@ const deleteHalfYearlyExamMark = async (
         entity_name: entityName,
         action: "DELETE",
         changed_by_id: loggedInUser.user_id,
-        old_value: auditValues(existing),
+        old_value: {
+          ...auditValues(existing),
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: Prisma.JsonNull,
       },
     });
@@ -121,19 +128,25 @@ const updateHalfYearlyExamMark = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.halfYearlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Half-yearly exam mark not found.", StatusCodes.NOT_FOUND);
     }
     await ensureRelationsAndUnique(
       transaction,
-      payload.student_result_id,
+      payload.class_history_id,
       payload.exam_subject_id,
       id,
     );
+    const { class_history_id, ...markData } = payload;
     const updated = await transaction.halfYearlyExamMark.update({
       where: { id },
-      data: { ...payload, updated_by_id: loggedInUser.user_id },
+      data: {
+        ...markData,
+        class_history_id,
+        updated_by_id: loggedInUser.user_id,
+      },
     });
     await transaction.auditLog.create({
       data: {
@@ -141,7 +154,10 @@ const updateHalfYearlyExamMark = async (
         entity_name: entityName,
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
-        old_value: auditValues(existing),
+        old_value: {
+          ...auditValues(existing),
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: payload,
       },
     });
@@ -156,11 +172,29 @@ const updateHalfYearlyExamMarkField = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.halfYearlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Half-yearly exam mark not found.", StatusCodes.NOT_FOUND);
     }
-    const currentValue = existing[payload.field];
+    let currentValue: Prisma.Decimal | string;
+    switch (payload.field) {
+      case "class_history_id":
+        currentValue = existing.class_history?.id ?? "";
+        break;
+      case "full_mark":
+        currentValue = existing.full_mark;
+        break;
+      case "highest_mark":
+        currentValue = existing.highest_mark;
+        break;
+      case "obtained_mark":
+        currentValue = existing.obtained_mark;
+        break;
+      case "exam_subject_id":
+        currentValue = existing.exam_subject_id;
+        break;
+    }
     if (
       currentValue instanceof Prisma.Decimal
         ? currentValue.toNumber() === payload.value
@@ -169,15 +203,21 @@ const updateHalfYearlyExamMarkField = async (
       throw new AppError("Field value already exists.", StatusCodes.CONFLICT);
     }
 
-    const studentResultId =
-      payload.field === "student_result_id"
+    const classHistoryId =
+      payload.field === "class_history_id"
         ? payload.value
-        : existing.student_result_id;
+        : existing.class_history?.id;
     const examSubjectId =
       payload.field === "exam_subject_id"
         ? payload.value
         : existing.exam_subject_id;
-    await ensureRelationsAndUnique(transaction, studentResultId, examSubjectId, id);
+    if (!classHistoryId) {
+      throw new AppError(
+        "Half-yearly exam mark is not linked to a class history.",
+        StatusCodes.CONFLICT,
+      );
+    }
+    await ensureRelationsAndUnique(transaction, classHistoryId, examSubjectId, id);
 
     if (
       payload.field === "full_mark" ||
@@ -228,8 +268,8 @@ const updateHalfYearlyExamMarkField = async (
       case "obtained_mark":
         data = { obtained_mark: payload.value };
         break;
-      case "student_result_id":
-        data = { student_result_id: payload.value };
+      case "class_history_id":
+        data = { class_history_id: payload.value };
         break;
       case "exam_subject_id":
         data = { exam_subject_id: payload.value };
@@ -259,14 +299,14 @@ const updateHalfYearlyExamMarkField = async (
 
 const getAllHalfYearlyExamMarks = () =>
   prisma.halfYearlyExamMark.findMany({
-    include: { student_result: true, exam_subject: true },
+    include: { class_history: true, exam_subject: true },
     orderBy: { created_at: "desc" },
   });
 
 const getHalfYearlyExamMarkById = async (id: string) => {
   const mark = await prisma.halfYearlyExamMark.findUnique({
     where: { id },
-    include: { student_result: true, exam_subject: true },
+    include: { class_history: true, exam_subject: true },
   });
   if (!mark) {
     throw new AppError("Half-yearly exam mark not found.", StatusCodes.NOT_FOUND);

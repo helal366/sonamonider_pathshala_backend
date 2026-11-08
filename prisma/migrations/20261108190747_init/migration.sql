@@ -41,7 +41,7 @@ CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION_FEE', 'SESSION_FEE', 'ADM
 CREATE TYPE "BillingFrequency" AS ENUM ('MONTHLY', 'HALF_YEARLY', 'YEARLY', 'ONE_TIME');
 
 -- CreateEnum
-CREATE TYPE "ExamSubjectName" AS ENUM ('AGRICULTURE', 'ARABIC', 'ARABIC_1ST', 'ARABIC_2ND', 'AQUAEED_AND_FIQH', 'BANGLADESH_AND_GLOBAL_STUDIES', 'BENGALI', 'BENGALI_1ST', 'BENGALI_2ND', 'ELEMENTARY_MATHEMATICS', 'ICT', 'MATHEMATICS', 'ELEMENTARY_SCIENCE', 'HOME_SCIENCE', 'SCIENCE', 'ENGLISH', 'ENGLISH_1ST', 'ENGLISH_2ND', 'TEACHING_OF_ISLAM');
+CREATE TYPE "ExamSubjectName" AS ENUM ('AGRICULTURE', 'ARABIC', 'ARABIC_1ST', 'ARABIC_2ND', 'AQUAEED_AND_FIQH', 'BANGLADESH_AND_GLOBAL_STUDIES', 'BENGALI', 'BENGALI_1ST', 'BENGALI_2ND', 'ELEMENTARY_MATHEMATICS', 'ICT', 'MATHEMATICS', 'ELEMENTARY_SCIENCE', 'HOME_SCIENCE', 'SCIENCE', 'ENGLISH', 'ENGLISH_1ST', 'ENGLISH_2ND', 'TEACHING_OF_ISLAM', 'RELIGION', 'VOCATIONAL_EDUCATION', 'LEARNING_WITH_HAPPINESS');
 
 -- CreateEnum
 CREATE TYPE "Section" AS ENUM ('MADRASHA', 'SCHOOL');
@@ -202,7 +202,6 @@ CREATE TABLE "class_history" (
     "student_id" TEXT NOT NULL,
     "class_id" TEXT NOT NULL,
     "academic_year_id" TEXT NOT NULL,
-    "student_result_id" TEXT,
     "roll_number" INTEGER NOT NULL,
     "shift" "Shift" NOT NULL,
     "section" "Section" NOT NULL,
@@ -245,6 +244,7 @@ CREATE TABLE "class_routines" (
 -- CreateTable
 CREATE TABLE "monthly_exam_marks" (
     "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "january_mark" DECIMAL(10,2) NOT NULL,
     "february_mark" DECIMAL(10,2) NOT NULL,
     "march_mark" DECIMAL(10,2) NOT NULL,
@@ -264,10 +264,10 @@ CREATE TABLE "monthly_exam_marks" (
 -- CreateTable
 CREATE TABLE "half_yearly_exam_marks" (
     "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "full_mark" DECIMAL(10,2) NOT NULL,
     "highest_mark" DECIMAL(10,2) NOT NULL,
     "obtained_mark" DECIMAL(10,2) NOT NULL,
-    "student_result_id" TEXT NOT NULL,
     "exam_subject_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -280,10 +280,10 @@ CREATE TABLE "half_yearly_exam_marks" (
 -- CreateTable
 CREATE TABLE "annual_exam_marks" (
     "id" TEXT NOT NULL,
+    "class_history_id" TEXT,
     "full_mark" DECIMAL(10,2) NOT NULL,
     "highest_mark" DECIMAL(10,2) NOT NULL,
     "obtained_mark" DECIMAL(10,2) NOT NULL,
-    "student_result_id" TEXT NOT NULL,
     "exam_subject_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -296,13 +296,13 @@ CREATE TABLE "annual_exam_marks" (
 -- CreateTable
 CREATE TABLE "co_curricular_activities" (
     "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "al_quran_grade" "ResultGrade" NOT NULL,
     "conversation" "ResultGrade" NOT NULL,
     "akhlake_hasanah" "ResultGrade" NOT NULL,
     "cultural_activities" "ResultGrade" NOT NULL,
     "sports_scouts" "ResultGrade" NOT NULL,
     "exam_type" "ExamType" NOT NULL,
-    "student_result_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -314,13 +314,13 @@ CREATE TABLE "co_curricular_activities" (
 -- CreateTable
 CREATE TABLE "moral_manners_evaluation" (
     "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "cleanliness" "ResultGrade" NOT NULL,
     "class_performance" "ResultGrade" NOT NULL,
     "speaking_the_truth" "ResultGrade" NOT NULL,
     "speaking_the_correct" "ResultGrade" NOT NULL,
     "salat_religious_work" "ResultGrade" NOT NULL,
     "exam_type" "ExamType" NOT NULL,
-    "student_result_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -703,19 +703,6 @@ CREATE TABLE "class_standard_student_fee_rates" (
 );
 
 -- CreateTable
-CREATE TABLE "student_results" (
-    "id" TEXT NOT NULL,
-    "class_history_id" TEXT,
-    "monthly_exam_mark_id" TEXT NOT NULL,
-    "created_by_id" TEXT,
-    "updated_by_id" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3),
-
-    CONSTRAINT "student_results_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
@@ -853,9 +840,6 @@ CREATE UNIQUE INDEX "book_list_book_name_publisher_class_id_section_version_key"
 CREATE UNIQUE INDEX "classes_class_name_key" ON "classes"("class_name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "class_history_student_result_id_key" ON "class_history"("student_result_id");
-
--- CreateIndex
 CREATE INDEX "class_history_start_date_idx" ON "class_history"("start_date");
 
 -- CreateIndex
@@ -877,16 +861,19 @@ CREATE INDEX "class_history_quranic_periods_quranic_period_id_idx" ON "class_his
 CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_peri_key" ON "class_history_quranic_periods"("class_history_id", "quranic_period_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "half_yearly_exam_marks_student_result_id_exam_subject_id_key" ON "half_yearly_exam_marks"("student_result_id", "exam_subject_id");
+CREATE UNIQUE INDEX "monthly_exam_marks_class_history_id_key" ON "monthly_exam_marks"("class_history_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "annual_exam_marks_student_result_id_exam_subject_id_key" ON "annual_exam_marks"("student_result_id", "exam_subject_id");
+CREATE UNIQUE INDEX "half_yearly_exam_marks_class_history_id_exam_subject_id_key" ON "half_yearly_exam_marks"("class_history_id", "exam_subject_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "co_curricular_activities_student_result_id_exam_type_key" ON "co_curricular_activities"("student_result_id", "exam_type");
+CREATE UNIQUE INDEX "annual_exam_marks_class_history_id_exam_subject_id_key" ON "annual_exam_marks"("class_history_id", "exam_subject_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "moral_manners_evaluation_student_result_id_exam_type_key" ON "moral_manners_evaluation"("student_result_id", "exam_type");
+CREATE UNIQUE INDEX "co_curricular_activities_class_history_id_exam_type_key" ON "co_curricular_activities"("class_history_id", "exam_type");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "moral_manners_evaluation_class_history_id_exam_type_key" ON "moral_manners_evaluation"("class_history_id", "exam_type");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "exam_subjects_class_id_section_version_exam_subject_name_de_key" ON "exam_subjects"("class_id", "section", "version", "exam_subject_name", "department");
@@ -974,9 +961,6 @@ CREATE UNIQUE INDEX "student_fee_payments_student_id_fee_type_billing_frequency_
 
 -- CreateIndex
 CREATE UNIQUE INDEX "class_standard_student_fee_rates_class_id_standard_student__key" ON "class_standard_student_fee_rates"("class_id", "standard_student_fee_rate_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "student_results_class_history_id_key" ON "student_results"("class_history_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
@@ -1084,9 +1068,6 @@ ALTER TABLE "class_history" ADD CONSTRAINT "class_history_class_id_fkey" FOREIGN
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "academic_years"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "class_history" ADD CONSTRAINT "class_history_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "class_history" ADD CONSTRAINT "class_history_quranic_subject_id_fkey" FOREIGN KEY ("quranic_subject_id") REFERENCES "quranic_subjects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1117,13 +1098,16 @@ ALTER TABLE "class_routines" ADD CONSTRAINT "class_routines_created_by_id_fkey" 
 ALTER TABLE "class_routines" ADD CONSTRAINT "class_routines_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "half_yearly_exam_marks" ADD CONSTRAINT "half_yearly_exam_marks_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "half_yearly_exam_marks" ADD CONSTRAINT "half_yearly_exam_marks_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "half_yearly_exam_marks" ADD CONSTRAINT "half_yearly_exam_marks_exam_subject_id_fkey" FOREIGN KEY ("exam_subject_id") REFERENCES "exam_subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1135,7 +1119,7 @@ ALTER TABLE "half_yearly_exam_marks" ADD CONSTRAINT "half_yearly_exam_marks_crea
 ALTER TABLE "half_yearly_exam_marks" ADD CONSTRAINT "half_yearly_exam_marks_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "annual_exam_marks" ADD CONSTRAINT "annual_exam_marks_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "annual_exam_marks" ADD CONSTRAINT "annual_exam_marks_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "annual_exam_marks" ADD CONSTRAINT "annual_exam_marks_exam_subject_id_fkey" FOREIGN KEY ("exam_subject_id") REFERENCES "exam_subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -1147,7 +1131,7 @@ ALTER TABLE "annual_exam_marks" ADD CONSTRAINT "annual_exam_marks_created_by_id_
 ALTER TABLE "annual_exam_marks" ADD CONSTRAINT "annual_exam_marks_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "co_curricular_activities" ADD CONSTRAINT "co_curricular_activities_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "co_curricular_activities" ADD CONSTRAINT "co_curricular_activities_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "co_curricular_activities" ADD CONSTRAINT "co_curricular_activities_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1156,7 +1140,7 @@ ALTER TABLE "co_curricular_activities" ADD CONSTRAINT "co_curricular_activities_
 ALTER TABLE "co_curricular_activities" ADD CONSTRAINT "co_curricular_activities_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "moral_manners_evaluation" ADD CONSTRAINT "moral_manners_evaluation_student_result_id_fkey" FOREIGN KEY ("student_result_id") REFERENCES "student_results"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "moral_manners_evaluation" ADD CONSTRAINT "moral_manners_evaluation_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "moral_manners_evaluation" ADD CONSTRAINT "moral_manners_evaluation_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1385,15 +1369,6 @@ ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_st
 
 -- AddForeignKey
 ALTER TABLE "class_standard_student_fee_rates" ADD CONSTRAINT "class_standard_student_fee_rates_standard_student_fee_rate_fkey" FOREIGN KEY ("standard_student_fee_rate_id") REFERENCES "standard_student_fee_rates"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "student_results" ADD CONSTRAINT "student_results_monthly_exam_mark_id_fkey" FOREIGN KEY ("monthly_exam_mark_id") REFERENCES "monthly_exam_marks"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "student_results" ADD CONSTRAINT "student_results_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "student_results" ADD CONSTRAINT "student_results_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

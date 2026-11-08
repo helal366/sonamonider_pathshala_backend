@@ -10,7 +10,7 @@ const halfYearlyExamMarkFields = {
   full_mark: mark,
   highest_mark: mark,
   obtained_mark: mark,
-  student_result_id: z4.uuid("Invalid student result ID format."),
+  class_history_id: z4.uuid("Invalid class history ID format."),
   exam_subject_id: z4.uuid("Invalid exam subject ID format."),
 };
 const halfYearlyExamMarkBaseSchema = z4.object(halfYearlyExamMarkFields);
@@ -56,8 +56,8 @@ const updateHalfYearlyExamMarkFieldZodSchema = z4.discriminatedUnion(
     z4.object({ field: z4.literal("highest_mark"), value: mark }),
     z4.object({ field: z4.literal("obtained_mark"), value: mark }),
     z4.object({
-      field: z4.literal("student_result_id"),
-      value: z4.uuid("Invalid student result ID format."),
+      field: z4.literal("class_history_id"),
+      value: z4.uuid("Invalid class history ID format."),
     }),
     z4.object({
       field: z4.literal("exam_subject_id"),

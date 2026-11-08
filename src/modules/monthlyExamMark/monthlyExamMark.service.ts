@@ -24,13 +24,39 @@ const fields = [
 const auditValues = (record: Record<(typeof fields)[number], Prisma.Decimal>) =>
   Object.fromEntries(fields.map((field) => [field, record[field].toNumber()]));
 
+const ensureClassHistoryAvailable = async (
+  transaction: Prisma.TransactionClient,
+  classHistoryId: string,
+  markId?: string,
+) => {
+  const history = await transaction.classHistory.findUnique({
+    where: { id: classHistoryId },
+    select: { id: true, monthly_exam_marks: { select: { id: true } } },
+  });
+  if (!history) {
+    throw new AppError("Class history not found.", StatusCodes.NOT_FOUND);
+  }
+  if (history.monthly_exam_marks && history.monthly_exam_marks.id !== markId) {
+    throw new AppError(
+      "A monthly exam mark is already assigned to this class history.",
+      StatusCodes.CONFLICT,
+    );
+  }
+};
+
 const createMonthlyExamMark = async (
   payload: TCreateMonthlyExamMark,
   loggedInUser: TLoggedInUser,
 ) =>
   prisma.$transaction(async (transaction) => {
+    await ensureClassHistoryAvailable(transaction, payload.class_history_id);
+    const { class_history_id, ...markData } = payload;
     const created = await transaction.monthlyExamMark.create({
-      data: { ...payload, created_by_id: loggedInUser.user_id },
+      data: {
+        ...markData,
+        class_history_id,
+        created_by_id: loggedInUser.user_id,
+      },
     });
     await transaction.auditLog.create({
       data: {
@@ -52,18 +78,10 @@ const deleteMonthlyExamMark = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.monthlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Monthly exam mark not found.", StatusCodes.NOT_FOUND);
-    }
-    const linkedResults = await transaction.studentResult.count({
-      where: { monthly_exam_mark_id: id },
-    });
-    if (linkedResults > 0) {
-      throw new AppError(
-        "Cannot delete a monthly exam mark assigned to student results.",
-        StatusCodes.CONFLICT,
-      );
     }
     const deleted = await transaction.monthlyExamMark.delete({ where: { id } });
     await transaction.auditLog.create({
@@ -72,7 +90,10 @@ const deleteMonthlyExamMark = async (
         entity_name: entityName,
         action: "DELETE",
         changed_by_id: loggedInUser.user_id,
-        old_value: auditValues(existing),
+        old_value: {
+          ...auditValues(existing),
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: Prisma.JsonNull,
       },
     });
@@ -87,14 +108,22 @@ const updateMonthlyExamMark = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.monthlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Monthly exam mark not found.", StatusCodes.NOT_FOUND);
     }
+    await ensureClassHistoryAvailable(
+      transaction,
+      payload.class_history_id,
+      id,
+    );
+    const { class_history_id, ...markData } = payload;
     const updated = await transaction.monthlyExamMark.update({
       where: { id },
       data: {
-        ...payload,
+        ...markData,
+        class_history_id,
         updated_by_id: loggedInUser.user_id,
       },
     });
@@ -104,7 +133,10 @@ const updateMonthlyExamMark = async (
         entity_name: entityName,
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
-        old_value: auditValues(existing),
+        old_value: {
+          ...auditValues(existing),
+          class_history_id: existing.class_history?.id ?? null,
+        },
         new_value: payload,
       },
     });
@@ -119,12 +151,20 @@ const updateMonthlyExamMarkField = async (
   prisma.$transaction(async (transaction) => {
     const existing = await transaction.monthlyExamMark.findUnique({
       where: { id },
+      include: { class_history: true },
     });
     if (!existing) {
       throw new AppError("Monthly exam mark not found.", StatusCodes.NOT_FOUND);
     }
-    if (existing[payload.field].toNumber() === payload.value) {
+    const currentValue =
+      payload.field === "class_history_id"
+        ? existing.class_history?.id ?? ""
+        : existing[payload.field].toNumber();
+    if (currentValue === payload.value) {
       throw new AppError("Field value already exists.", StatusCodes.CONFLICT);
+    }
+    if (payload.field === "class_history_id") {
+      await ensureClassHistoryAvailable(transaction, payload.value, id);
     }
     const updated = await transaction.monthlyExamMark.update({
       where: { id },
@@ -139,7 +179,7 @@ const updateMonthlyExamMarkField = async (
         entity_name: entityName,
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
-        old_value: { [payload.field]: existing[payload.field].toNumber() },
+        old_value: { [payload.field]: currentValue },
         new_value: { [payload.field]: payload.value },
       },
     });
@@ -147,10 +187,16 @@ const updateMonthlyExamMarkField = async (
   });
 
 const getAllMonthlyExamMarks = () =>
-  prisma.monthlyExamMark.findMany({ orderBy: { created_at: "desc" } });
+  prisma.monthlyExamMark.findMany({
+    include: { class_history: true },
+    orderBy: { created_at: "desc" },
+  });
 
 const getMonthlyExamMarkById = async (id: string) => {
-  const mark = await prisma.monthlyExamMark.findUnique({ where: { id } });
+  const mark = await prisma.monthlyExamMark.findUnique({
+    where: { id },
+    include: { class_history: true },
+  });
   if (!mark) {
     throw new AppError("Monthly exam mark not found.", StatusCodes.NOT_FOUND);
   }

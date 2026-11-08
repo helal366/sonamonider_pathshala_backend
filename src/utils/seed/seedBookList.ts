@@ -2,9 +2,25 @@ import { ExamSubjectName, Prisma, Section, Version } from "#db-client";
 import { prisma } from "../../lib/prisma";
 
 const classIdCache = new Map<string, Promise<string>>();
-type SeedBook = Omit<Prisma.BooklistCreateManyInput, "class_id"> & {
+type SeedBook = Omit<
+  Prisma.BooklistCreateManyInput,
+  "class_id" | "class_name" | "version" | "section"
+>;
+type SeedBookList = (Omit<Prisma.BooklistCreateManyInput, "class_id"> & {
   class_name: string;
-};
+})[];
+
+const defineBookList = (
+  class_name: string,
+  section: Section,
+  books: SeedBook[],
+): SeedBookList =>
+  books.map((book) => ({
+    ...book,
+    class_name,
+    version: Version.BENGALI,
+    section,
+  }));
 
 const getClassId = (className: string) => {
   const cachedClassId = classIdCache.get(className);
@@ -23,7 +39,7 @@ const getClassId = (className: string) => {
   return classId;
 };
 
-const createBookList = async (books: SeedBook[]) => {
+const createBookList = async (books: SeedBookList) => {
   const data = await Promise.all(
     books.map(async (book) => ({
       ...book,
@@ -37,1499 +53,1520 @@ const createBookList = async (books: SeedBook[]) => {
   });
 };
 
-const bookListPlaygroupSchool = [
+const bookListPlaygroupSchool = defineBookList("PLAYGROUP", Section.SCHOOL, [
   {
     book_name: "My 1st Step ABC Alphabet",
     publisher: "Nabarun Publications",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book -I)",
     publisher: "Adeline Malakar",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book - 0",
     publisher: "Standard/(Metro)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - A",
     publisher: "Orient Black Swan/World Book",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "How to Draw and Colour - A",
     publisher: "Nabarun Publications",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ১",
     publisher: "Samia/(Rakib)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার বর্ণমালা B - I",
     publisher: "Read Publications - (Savar)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি - ১",
     publisher: "এডলিন মালাকার",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা - তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন - Uttara",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি-১",
     publisher: "এডুকেয়ার",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
-];
-const seedBookListPlaygroupSchool = async () => {
-  console.log("Seeding Playgroup School booklist...");
-  const result = await createBookList(bookListPlaygroupSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListPlaygroupMadrasha = [
-  {
-    book_name: "My 1st Step ABC Alphabet",
-    publisher: "Nabarun Publications",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "My Handwriting (Book -I)",
-    publisher: "Adeline Malakar",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "Spoken English Work Book - 0",
-    publisher: "Standard/(Metro)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "Success Math's With Ahead - A",
-    publisher: "Orient Black Swan/World Book",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "Teaching of Islam - A",
-    publisher: "Nabarun Publications",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.ARABIC
-  },
-  {
-    book_name: "How to Draw and Colour - A",
-    publisher: "Nabarun Publications",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "ছবি দেখে গোনা ও লেখা শেখা - ১",
-    publisher: "Samia/(Rakib)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "আমার বর্ণমালা B - I",
-    publisher: "Read Publications - (Savar)",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "এসো লেখা শিখি - ১",
-    publisher: "এডলিন মালাকার",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "কায়দা - তাজবীদুল কুরআন",
-    publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন - Uttara",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "এসো জীবন গড়ি-১",
-    publisher: "এডুকেয়ার",
-    class_name: "PLAYGROUP",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-];
-const seedBookListPlaygroupMadrasha = async () => {
-  console.log("Seeding Playgroup Madrasha booklist...");
-  const result = await createBookList(bookListPlaygroupMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListNurserySchool = [
+]);
+const bookListPlaygroupMadrasha = defineBookList(
+  "PLAYGROUP",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "My 1st Step ABC Alphabet",
+      publisher: "Nabarun Publications",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "My Handwriting (Book -I)",
+      publisher: "Adeline Malakar",
+      isBookMain: false,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "Spoken English Work Book - 0",
+      publisher: "Standard/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "Success Math's With Ahead - A",
+      publisher: "Orient Black Swan/World Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "Teaching of Islam - A",
+      publisher: "Nabarun Publications",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC,
+    },
+    {
+      book_name: "How to Draw and Colour - A",
+      publisher: "Nabarun Publications",
+      isBookMain: false,
+    },
+    {
+      book_name: "ছবি দেখে গোনা ও লেখা শেখা - ১",
+      publisher: "Samia/(Rakib)",
+      isBookMain: false,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "আমার বর্ণমালা B - I",
+      publisher: "Read Publications - (Savar)",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "এসো লেখা শিখি - ১",
+      publisher: "এডলিন মালাকার",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "কায়দা - তাজবীদুল কুরআন",
+      publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন - Uttara",
+      isBookMain: false,
+    },
+    {
+      book_name: "এসো জীবন গড়ি-১",
+      publisher: "এডুকেয়ার",
+      isBookMain: false,
+    },
+  ],
+);
+const bookListNurserySchool = defineBookList("NURSERY", Section.SCHOOL, [
   {
     book_name: "Child's First Step Picture ABC",
     publisher: "The Orient/(Nabarun)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book -II)",
     publisher: "Adeline Malakar",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book - 0",
     publisher: "Standard/(Metro)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - B",
     publisher: "Orient Black Swan/World Book",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "How to Draw and Colour - B",
     publisher: "Nabarun",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ২",
     publisher: "Samina/(Rakib)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার সহজ বাংলা পড়া B-2",
     publisher: "Read Publications- (Savar)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি-২",
     publisher: "এডলিন মালাকার",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা- তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/(Uttara)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
     publisher: "এডুকেয়ার",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: false,
   },
-];
-const seedBoolListNurserySchool = async () => {
-  console.log("Seeding Nursery School booklist...");
-  const result = await createBookList(bookListNurserySchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListNurseryMadrasha = [
+]);
+const bookListNurseryMadrasha = defineBookList("NURSERY", Section.MADRASHA, [
   {
     book_name: "Child's First Step Picture ABC",
     publisher: "The Orient/(Nabarun)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book -II)",
     publisher: "Adeline Malakar",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book - 0",
     publisher: "Standard/(Metro)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
   },
   {
     book_name: "Success Math's With Ahead - B",
     publisher: "Orient Black Swan/World Book",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "How to Draw and Colour - B",
     publisher: "Nabarun",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
   },
   {
     book_name: "ছবি দেখে গোনা ও লেখা শেখা - ২",
     publisher: "Samina/(Rakib)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
-    subject_group: ExamSubjectName.MATHEMATICS
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার সহজ বাংলা পড়া B-2",
     publisher: "Read Publications- (Savar)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি-২",
     publisher: "এডলিন মালাকার",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
   },
   {
     book_name: "কায়দা- তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/(Uttara)",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ১",
     publisher: "এডুকেয়ার",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: false,
   },
   {
     book_name: "Teaching of Islam- A",
     publisher: "Nabarun",
-    class_name: "NURSERY",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-    subject_group: ExamSubjectName.ARABIC
+    subject_group: ExamSubjectName.ARABIC,
   },
-];
-const seedBoolListNurseryMadrasha = async () => {
-  console.log("Seeding Nursery Madrasha booklist...");
-  const result = await createBookList(bookListNurseryMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListKindergartenSchool = [
-  {
-    book_name: "English Avenue- Premier I",
-    publisher: "Excel Publishing Center/Nabarun",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "My Handwriting (Book- III)",
-    publisher: "Adeline Malakar",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "Spoken English Work Book- 0",
-    publisher: "Standard/(Metro)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-  },
-  {
-    book_name: "Success Math's With Ahead- I",
-    publisher: "Orient Black Swan/World Book",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "How to Draw and Colour- C",
-    publisher: "Nabarun",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-  },
-  {
-    book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
-    publisher: "Samira/(Rakib)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "শিশুদের সহজ বাংলা পড়া B- III",
-    publisher: "Read Publications- (Savar)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "এসো লেখা শিখি- ৩",
-    publisher: "এডলিন মালাকার",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "কায়দা তাজবীদুল কুরআন",
-    publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/ (Uttara)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-  },
-  {
-    book_name: "এসো জীবন গড়ি- ১",
-    publisher: "এডুকেয়ার",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: false,
-  },
-];
-const seedBoolListKindergartenSchool = async () => {
-  console.log("Seeding Kindergarten School booklist...");
-  const result = await createBookList(bookListKindergartenSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListKindergartenMadrasha = [
-  {
-    book_name: "English Avenue- Premier I",
-    publisher: "Excel Publishing Center/Nabarun",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "My Handwriting (Book- III)",
-    publisher: "Adeline Malakar",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-    subject_group: ExamSubjectName.ENGLISH
-  },
-  {
-    book_name: "Spoken English Work Book- 0",
-    publisher: "Standard/(Metro)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "Success Math's With Ahead- I",
-    publisher: "Orient Black Swan/World Book",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "How to Draw and Colour- C",
-    publisher: "Nabarun",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
-    publisher: "Samira/(Rakib)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS
-  },
-  {
-    book_name: "শিশুদের সহজ বাংলা পড়া B- III",
-    publisher: "Read Publications- (Savar)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "এসো লেখা শিখি- ৩",
-    publisher: "এডলিন মালাকার",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI
-  },
-  {
-    book_name: "কায়দা তাজবীদুল কুরআন",
-    publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/ (Uttara)",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "এসো জীবন গড়ি- ১",
-    publisher: "এডুকেয়ার",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: false,
-  },
-  {
-    book_name: "Teaching of Islam- B",
-    publisher: "Nabarun",
-    class_name: "KINDERGARTEN",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-    subject_group: ExamSubjectName.ARABIC
-  },
-];
-const seedBoolListKindergartenMadrasha = async () => {
-  console.log("Seeding Kindergarten Madrasha booklist...");
-  const result = await createBookList(bookListKindergartenMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeOneSchool = [
+]);
+const bookListKindergartenSchool = defineBookList(
+  "KINDERGARTEN",
+  Section.SCHOOL,
+  [
+    {
+      book_name: "English Avenue- Premier I",
+      publisher: "Excel Publishing Center/Nabarun",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "My Handwriting (Book- III)",
+      publisher: "Adeline Malakar",
+      isBookMain: false,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "Spoken English Work Book- 0",
+      publisher: "Standard/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "Success Math's With Ahead- I",
+      publisher: "Orient Black Swan/World Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "How to Draw and Colour- C",
+      publisher: "Nabarun",
+      isBookMain: false,
+    },
+    {
+      book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
+      publisher: "Samira/(Rakib)",
+      isBookMain: false,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "শিশুদের সহজ বাংলা পড়া B- III",
+      publisher: "Read Publications- (Savar)",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "এসো লেখা শিখি- ৩",
+      publisher: "এডলিন মালাকার",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "কায়দা তাজবীদুল কুরআন",
+      publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/ (Uttara)",
+      isBookMain: false,
+    },
+    {
+      book_name: "এসো জীবন গড়ি- ১",
+      publisher: "এডুকেয়ার",
+      isBookMain: false,
+    },
+  ],
+);
+const bookListKindergartenMadrasha = defineBookList(
+  "KINDERGARTEN",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English Avenue- Premier I",
+      publisher: "Excel Publishing Center/Nabarun",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "My Handwriting (Book- III)",
+      publisher: "Adeline Malakar",
+      isBookMain: false,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "Spoken English Work Book- 0",
+      publisher: "Standard/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "Success Math's With Ahead- I",
+      publisher: "Orient Black Swan/World Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "How to Draw and Colour- C",
+      publisher: "Nabarun",
+      isBookMain: false,
+    },
+    {
+      book_name: "ছবি দেখে গোনা ও লেখা শেখা- ২",
+      publisher: "Samira/(Rakib)",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "শিশুদের সহজ বাংলা পড়া B- III",
+      publisher: "Read Publications- (Savar)",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "এসো লেখা শিখি- ৩",
+      publisher: "এডলিন মালাকার",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "কায়দা তাজবীদুল কুরআন",
+      publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন/ (Uttara)",
+      isBookMain: false,
+    },
+    {
+      book_name: "এসো জীবন গড়ি- ১",
+      publisher: "এডুকেয়ার",
+      isBookMain: false,
+    },
+    {
+      book_name: "Teaching of Islam- B",
+      publisher: "Nabarun",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC,
+    },
+  ],
+);
+const bookListGradeOneSchool = defineBookList("GRADE_ONE", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - III)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - IV)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book- I",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Elementary Mathematics",
     publisher: "Text Book",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি- ৪",
     publisher: "এডলিন মালাকার",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ২",
     publisher: "এডুকেয়ার",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
-];
-const seedBoolListGradeOneSchool = async () => {
-  console.log("Seeding Grade One School booklist...");
-  const result = await createBookList(bookListGradeOneSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeOneMadrasha = [
+]);
+const bookListGradeOneMadrasha = defineBookList("GRADE_ONE", Section.MADRASHA, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - III)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - IV)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book- I",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Elementary Mathematics",
     publisher: "Text Book",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি- ৪",
     publisher: "এডলিন মালাকার",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ২",
     publisher: "এডুকেয়ার",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "আদ দুরুসুল আরাবিয়্যাহ",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC,
   },
   {
     book_name: "Teaching of Islam- I",
     publisher: "Nabarun",
-    class_name: "GRADE_ONE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.TEACHING_OF_ISLAM,
   },
-];
-const seedBoolListGradeOneMadrasha = async () => {
-  console.log("Seeding Grade One Madrasha booklist...");
-  const result = await createBookList(bookListGradeOneMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeTwoSchool = [
+]);
+const bookListGradeTwoSchool = defineBookList("GRADE_TWO", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - V)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book- I",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Elementary Mathematics",
     publisher: "Text Book",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি- ৫",
     publisher: "এডলিন মালাকার",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ২",
     publisher: "এডুকেয়ার",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
-];
-const seedBookListGradeTwoSchool = async () => {
-  console.log("Seeding Grade Two School booklist...");
-  const result = await createBookList(bookListGradeTwoSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeTwoMadrasha = [
+]);
+const bookListGradeTwoMadrasha = defineBookList("GRADE_TWO", Section.MADRASHA, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "My Handwriting (Book - V)",
     publisher: "Adeline Malakar",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "Spoken English Work Book- I",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "Elementary Mathematics",
     publisher: "Text Book",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "এসো লেখা শিখি- ৫",
     publisher: "এডলিন মালাকার",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "কায়দা তাজবীদুল কুরআন",
     publisher: "বাংলাদেশ হলি কুরআন ফাউন্ডেশন",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "এসো জীবন গড়ি- ২",
     publisher: "এডুকেয়ার",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "আদ দুরুসুল আরাবিয়্যাহ",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC,
   },
   {
     book_name: "Teaching of Islam- I",
     publisher: "Nabarun",
-    class_name: "GRADE_TWO",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.TEACHING_OF_ISLAM,
   },
-];
-const seedBookListGradeTwoMadrasha = async () => {
-  console.log("Seeding Grade Two Madrasha booklist...");
-  const result = await createBookList(bookListGradeTwoMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeThreeSchool = [
+]);
+const bookListGradeThreeSchool = defineBookList("GRADE_THREE", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "প্রাথমিক গণিত",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
   },
   {
     book_name: "প্রাথমিক বিজ্ঞান",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
   },
   {
     book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
   },
   {
     book_name: "ইসলাম ও নৈতিক শিক্ষা",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION,
   },
   {
     book_name: "Spoken English Work Book-2",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "নাদিয়া আমপারা",
     publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "তা'লীমুল ইসলাম",
     publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "মজার গল্প",
     publisher: "এডুকেয়ার",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
-];
-const seedBookListGradeThreeSchool = async () => {
-  console.log("Seeding Grade Three School booklist...");
-  const result = await createBookList(bookListGradeThreeSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeThreeMadrasha = [
+]);
+const bookListGradeThreeMadrasha = defineBookList(
+  "GRADE_THREE",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "আমার বাংলা বই",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "প্রাথমিক গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
+    },
+    {
+      book_name: "প্রাথমিক বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "Spoken English Work Book-2",
+      publisher: "Standard/(Metro)/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "নাদিয়া আমপারা",
+      publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
+      isBookMain: false,
+    },
+    {
+      book_name: "তা'লীমুল ইসলাম",
+      publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
+      isBookMain: false,
+    },
+    {
+      book_name: "মজার গল্প",
+      publisher: "এডুকেয়ার",
+      isBookMain: false,
+    },
+    {
+      book_name: "আদ দুরুসুল আরাবিয়্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC,
+    },
+    {
+      book_name: "আকাইদ ও ফিকস",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListGradeFourSchool = defineBookList("GRADE_FOUR", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "প্রাথমিক গণিত",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
   },
   {
     book_name: "প্রাথমিক বিজ্ঞান",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
   },
   {
     book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-  },
-  {
-    book_name: "Spoken English Work Book-2",
-    publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "নাদিয়া আমপারা",
-    publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "তা'লীমুল ইসলাম",
-    publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "মজার গল্প",
-    publisher: "এডুকেয়ার",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আদ দুরুসুল আরাবিয়্যাহ",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আকাইদ ও ফিকস",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_THREE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-];
-const seedBookListGradeThreeMadrasha = async () => {
-  console.log("Seeding Grade Three Madrasha booklist...");
-  const result = await createBookList(bookListGradeThreeMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeFourSchool = [
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "আমার বাংলা বই",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "প্রাথমিক গণিত",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "প্রাথমিক বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
   },
   {
     book_name: "ইসলাম ও নৈতিক শিক্ষা",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION,
   },
   {
     book_name: "Spoken English Work Book-2",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "নাদিয়া আমপারা",
     publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "তা'লীমুল ইসলাম",
     publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "আদর্শ মানব মুহাম্মদ (সা.)",
     publisher: "বাংলাদেশ ইসলামিক সেন্টার ঢাকা",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
-];
-const seedBookListGradeFourSchool = async () => {
-  console.log("Seeding Grade Four School booklist...");
-  const result = await createBookList(bookListGradeFourSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeFourMadrasha = [
+]);
+const bookListGradeFourMadrasha = defineBookList(
+  "GRADE_FOUR",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "আমার বাংলা বই",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "প্রাথমিক গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
+    },
+    {
+      book_name: "প্রাথমিক বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "Spoken English Work Book-2",
+      publisher: "Standard/(Metro)/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "নাদিয়া আমপারা",
+      publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
+      isBookMain: false,
+    },
+    {
+      book_name: "তা'লীমুল ইসলাম",
+      publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
+      isBookMain: false,
+    },
+    {
+      book_name: "আদর্শ মানব মুহাম্মদ (সা.)",
+      publisher: "বাংলাদেশ ইসলামিক সেন্টার ঢাকা",
+      isBookMain: false,
+    },
+    {
+      book_name: "আদ দুরুসুল আরাবিয়্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_1ST,
+    },
+    {
+      book_name: "আরবি ব্যাকরণ (মিযানুস সরফ)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_2ND,
+    },
+    {
+      book_name: "আকাইদ ও ফিকস",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListGradeFiveSchool = defineBookList("GRADE_FIVE", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH,
   },
   {
     book_name: "আমার বাংলা বই",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI,
   },
   {
     book_name: "প্রাথমিক গণিত",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
   },
   {
     book_name: "প্রাথমিক বিজ্ঞান",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
   },
   {
     book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
-  },
-  {
-    book_name: "Spoken English Work Book-2",
-    publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "নাদিয়া আমপারা",
-    publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "তা'লীমুল ইসলাম",
-    publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আদর্শ মানব মুহাম্মদ (সা.)",
-    publisher: "বাংলাদেশ ইসলামিক সেন্টার ঢাকা",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আদ দুরুসুল আরাবিয়্যাহ",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আরবি ব্যাকরণ",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আকাইদ ও ফিকস",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FOUR",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-];
-const seedBookListGradeFourMadrasha = async () => {
-  console.log("Seeding Grade Four Madrasha booklist...");
-  const result = await createBookList(bookListGradeFourMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeFiveSchool = [
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "আমার বাংলা বই",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "প্রাথমিক গণিত",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "প্রাথমিক বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
   },
   {
     book_name: "ইসলাম ও নৈতিক শিক্ষা",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
     isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION,
   },
   {
     book_name: "Spoken English Work Book-3",
     publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "নাদিয়া আমপারা",
     publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "তা'লীমুল ইসলাম",
     publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
   {
     book_name: "মোরা বড় হতে চাই",
     publisher: "আই সি এস পাবলিকেশন্স",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.SCHOOL,
-    isBookMain: true,
+    isBookMain: false,
   },
-];
-const seedBookListGradeFiveSchool = async () => {
-  console.log("Seeding Grade Five School booklist...");
-  const result = await createBookList(bookListGradeFiveSchool);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
-const bookListGradeFiveMadrasha = [
+]);
+const bookListGradeFiveMadrasha = defineBookList(
+  "GRADE_FIVE",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "আমার বাংলা বই",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "প্রাথমিক গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
+    },
+    {
+      book_name: "প্রাথমিক বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "Spoken English Work Book-3",
+      publisher: "Standard/(Metro)/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "নাদিয়া আমপারা",
+      publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
+      isBookMain: false,
+    },
+    {
+      book_name: "তা'লীমুল ইসলাম",
+      publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
+      isBookMain: false,
+    },
+    {
+      book_name: "মোরা বড় হতে চাই",
+      publisher: "আই সি এস পাবলিকেশন্স",
+      isBookMain: false,
+    },
+    {
+      book_name: "আদ দুরুসুল আরাবিয়্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_1ST,
+    },
+    {
+      book_name: "আরবি ব্যাকরণ (মিযানুস সরফ)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_2ND,
+    },
+    {
+      book_name: "আকাইদ ও ফিকস",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListGradeSixSchool = defineBookList("GRADE_SIX", Section.SCHOOL, [
   {
     book_name: "English For Today",
     publisher: "Text Book",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_1ST,
   },
   {
-    book_name: "আমার বাংলা বই",
-    publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
+    book_name: "English Grammer and Composition",
+    publisher: "Text Book",
     isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_2ND,
   },
   {
-    book_name: "প্রাথমিক গণিত",
+    book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI_1ST,
   },
   {
-    book_name: "প্রাথমিক বিজ্ঞান",
+    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_2ND,
+  },
+  {
+    book_name: "গণিত",
+    publisher: "বোর্ড বই",
     isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
+  },
+  {
+    book_name: "বিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.SCIENCE,
   },
   {
     book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
     isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
   },
   {
-    book_name: "Spoken English Work Book-3",
-    publisher: "Standard/(Metro)/(Metro)",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "নাদিয়া আমপারা",
-    publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "তা'লীমুল ইসলাম",
-    publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "মোরা বড় হতে চাই",
-    publisher: "আই সি এস পাবলিকেশন্স",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
-    isBookMain: true,
-  },
-  {
-    book_name: "আদ দুরুসুল আরাবিয়্যাহ",
+    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
+    isBookMain: true,
+    subject_group: ExamSubjectName.ICT,
+  },
+  {
+    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+    publisher: "বোর্ড বই",
     isBookMain: true,
   },
   {
-    book_name: "আরবি ব্যাকরণ",
+    book_name: "লার্নিং উইথ হ্যাপিনেস",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
+    isBookMain: true,
+    subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
+  },
+  {
+    book_name: "আমার কারিগরি শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+  },
+  {
+    book_name: "ইসলাম শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION,
+  },
+]);
+const bookListGradeSixMadrasha = defineBookList("GRADE_SIX", Section.MADRASHA, [
+  {
+    book_name: "English For Today",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_1ST,
+  },
+  {
+    book_name: "English Grammer and Composition",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_2ND,
+  },
+  {
+    book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_2ND,
+  },
+  {
+    book_name: "গণিত",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
+  },
+  {
+    book_name: "বিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.SCIENCE,
+  },
+  {
+    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+  },
+  {
+    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ICT,
+  },
+  {
+    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+    publisher: "বোর্ড বই",
     isBookMain: true,
   },
   {
-    book_name: "আকাইদ ও ফিকস",
+    book_name: "লার্নিং উইথ হ্যাপিনেস",
     publisher: "বোর্ড বই",
-    class_name: "GRADE_FIVE",
-    version: Version.BENGALI,
-    section: Section.MADRASHA,
+    isBookMain: true,
+    subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
+  },
+  {
+    book_name: "আমার কারিগরি শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+  },
+  {
+    book_name: "আকাইদ ও ফিকহ",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+  },
+]);
+const bookListGradeSevenSchool = defineBookList("GRADE_SEVEN", Section.SCHOOL, [
+  {
+    book_name: "English For Today",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_1ST,
+  },
+  {
+    book_name: "English Grammer and Composition",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_2ND,
+  },
+  {
+    book_name: "সপ্তবর্ণা (বাংলা সাহিত্যের মূল বই)",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_2ND,
+  },
+  {
+    book_name: "গণিত",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
+  },
+  {
+    book_name: "বিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.SCIENCE,
+  },
+  {
+    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+  },
+  {
+    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ICT,
+  },
+  {
+    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+    publisher: "বোর্ড বই",
     isBookMain: true,
   },
-];
-const seedBookListGradeFiveMadrasha = async () => {
-  console.log("Seeding Grade Five Madrasha booklist...");
-  const result = await createBookList(bookListGradeFiveMadrasha);
-  console.log(`Regular periods done. Created ${result.count} entries.`);
-};
+  {
+    book_name: "কর্ম ও জীবনমুখী শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+  },
+  {
+    book_name: "কৃষি শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.AGRICULTURE,
+  },
+  {
+    book_name: "গার্হস্থ্যবিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.HOME_SCIENCE,
+  },
+    {
+    book_name: "ইসলাম শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION
+  },
+]);
+const bookListGradeSevenMadrasha = defineBookList(
+  "GRADE_SEVEN",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+  {
+    book_name: "কর্ম ও জীবনমুখী শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+  },
+  {
+    book_name: "কৃষি শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.AGRICULTURE,
+  },
+  {
+    book_name: "গার্হস্থ্যবিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.HOME_SCIENCE,
+  },
+    {
+      book_name: "আকাইদ ও ফিকহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListGradeEightSchool = defineBookList("GRADE_EIGHT", Section.SCHOOL, [
+  {
+    book_name: "English For Today",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_1ST,
+  },
+  {
+    book_name: "English Grammer and Composition",
+    publisher: "Text Book",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ENGLISH_2ND,
+  },
+  {
+    book_name: "সাহিত্য-কণিকা (বাংলা সাহিত্যের মূল বই)",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন)",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_1ST,
+  },
+  {
+    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+    publisher: "বোর্ড বই",
+    isBookMain: false,
+    subject_group: ExamSubjectName.BENGALI_2ND,
+  },
+  {
+    book_name: "গণিত",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.MATHEMATICS,
+  },
+  {
+    book_name: "বিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.SCIENCE,
+  },
+  {
+    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+  },
+  {
+    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ICT,
+  },
+  {
+    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+  },
+  {
+    book_name: "ইসলাম শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.RELIGION,
+  },
+  {
+    book_name: "কৃষি শিক্ষা",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.AGRICULTURE,
+  },
+  {
+    book_name: "গার্হস্থ্যবিজ্ঞান",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.HOME_SCIENCE,
+  },
+]);
+const bookListGradeEightMadrasha = defineBookList(
+  "GRADE_SIX",
+  Section.MADRASHA,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "সাহিত্য-কণিকা (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+    {
+      book_name: "কৃষি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AGRICULTURE,
+    },
+    {
+      book_name: "গার্হস্থ্যবিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.HOME_SCIENCE,
+    },
+    {
+      book_name: "আকাইদ ও ফিকহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListSeedConfigs = [
+  ["Playgroup School", bookListPlaygroupSchool],
+  ["Playgroup Madrasha", bookListPlaygroupMadrasha],
+  ["Nursery School", bookListNurserySchool],
+  ["Nursery Madrasha", bookListNurseryMadrasha],
+  ["Grade One School", bookListGradeOneSchool],
+  ["Grade One Madrasha", bookListGradeOneMadrasha],
+  ["Grade Two School", bookListGradeTwoSchool],
+  ["Grade Two Madrasha", bookListGradeTwoMadrasha],
+  ["Grade Three School", bookListGradeThreeSchool],
+  ["Grade Three Madrasha", bookListGradeThreeMadrasha],
+  ["Kindergarten School", bookListKindergartenSchool],
+  ["Kindergarten Madrasha", bookListKindergartenMadrasha],
+  ["Grade Four School", bookListGradeFourSchool],
+  ["Grade Four Madrasha", bookListGradeFourMadrasha],
+  ["Grade Five School", bookListGradeFiveSchool],
+  ["Grade Five Madrasha", bookListGradeFiveMadrasha],
+  ["Grade Six School", bookListGradeSixSchool],
+  ["Grade Six Madrasha", bookListGradeSixMadrasha],
+  ["Grade Seven School", bookListGradeSevenSchool],
+  ["Grade Seven Madrasha", bookListGradeSevenMadrasha],
+  ["Grade Eight School", bookListGradeEightSchool],
+  ["Grade Eight Madrasha", bookListGradeEightMadrasha],
+] as const;
+
 export const runBookList = async () => {
-  await seedBookListPlaygroupSchool();
-  await seedBookListPlaygroupMadrasha();
-  await seedBoolListNurserySchool();
-  await seedBoolListNurseryMadrasha();
-  await seedBoolListGradeOneSchool();
-  await seedBoolListGradeOneMadrasha();
-  await seedBookListGradeTwoSchool();
-  await seedBookListGradeTwoMadrasha();
-  await seedBookListGradeThreeSchool();
-  await seedBookListGradeThreeMadrasha();
-  await seedBoolListKindergartenSchool();
-  await seedBoolListKindergartenMadrasha();
-  await seedBookListGradeFourSchool();
-  await seedBookListGradeFourMadrasha();
-  await seedBookListGradeFiveSchool();
-  await seedBookListGradeFiveMadrasha();
+  for (const [label, books] of bookListSeedConfigs) {
+    console.log(`Seeding ${label} booklist...`);
+    const result = await createBookList(books);
+    console.log(`Regular periods done. Created ${result.count} entries.`);
+  }
 };

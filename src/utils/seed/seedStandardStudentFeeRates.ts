@@ -31,7 +31,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["PLAYGROUP"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 
@@ -42,7 +42,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -52,7 +52,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -62,7 +62,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -72,7 +72,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: "SCIENCE",
   },
@@ -83,7 +83,7 @@ const standardMonthlyTuitionFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
       in: ["ARTS", "COMMERCE"], // Matches either department
@@ -99,7 +99,7 @@ const standardsessionFeeRate = defineRates([
     class_names: ["PLAYGROUP"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -122,7 +122,7 @@ const standardsessionFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -135,7 +135,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["PLAYGROUP"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -145,7 +145,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -155,7 +155,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -165,7 +165,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -175,7 +175,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: "SCIENCE",
   },
@@ -186,7 +186,7 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
       in: ["ARTS", "COMMERCE"], // Matches either department
@@ -202,7 +202,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -212,7 +212,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: "SCIENCE",
   },
@@ -223,7 +223,7 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
       in: ["ARTS", "COMMERCE"],
@@ -241,7 +241,7 @@ const standardExamFeeRate = defineRates([
     class_names: ["PLAYGROUP", "NURSERY", "KINDERGARTEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -259,7 +259,7 @@ const standardExamFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -277,7 +277,7 @@ const standardExamFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -292,7 +292,7 @@ const standardIntensiveCareFeeRate = defineRates([
     class_names: ["GRADE_ONE", "GRADE_TWO"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -304,7 +304,7 @@ const standardIntensiveCareFeeRate = defineRates([
     class_names: ["GRADE_THREE", "GRADE_FOUR"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -316,7 +316,7 @@ const standardIntensiveCareFeeRate = defineRates([
     class_names: ["GRADE_FIVE", "GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -328,7 +328,7 @@ const standardIntensiveCareFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: "SCIENCE",
   },
@@ -341,7 +341,7 @@ const standardIntensiveCareFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
       in: ["ARTS", "COMMERCE"],
@@ -372,7 +372,7 @@ const standardQuranicEveningFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -400,7 +400,7 @@ const standardQuranicNightFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -427,7 +427,7 @@ const standardTransferCertificateFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -454,7 +454,7 @@ const standardOtherCertificateFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -481,7 +481,7 @@ const standardResidentialFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -508,7 +508,7 @@ const standardAdmissionFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -535,7 +535,7 @@ const standardDayCareFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -562,7 +562,7 @@ const standardEstablishmentFeeRate = defineRates([
     ],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
 ]);
@@ -575,7 +575,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["PLAYGROUP"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -585,7 +585,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -595,7 +595,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -605,7 +605,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
   },
   {
@@ -615,7 +615,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: "SCIENCE",
   },
@@ -626,7 +626,7 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     class_names: ["GRADE_NINE", "GRADE_TEN"],
     version: "BENGALI",
     section: {
-      in: ["MADRASHA", "SCHOOL"],
+      in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
       in: ["ARTS", "COMMERCE"], // Matches either department
