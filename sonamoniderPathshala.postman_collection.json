@@ -1090,7 +1090,7 @@
           "response": []
         },
         {
-          "name": "DELETE Delete/Id",
+          "name": "DELETE Delete/:academicResultId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1099,7 +1099,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/delete/{{academicResultId}}",
             "auth": {
               "type": "noauth"
             }
@@ -1107,7 +1107,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:academicResultId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1116,7 +1116,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/update_field/{{academicResultId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1149,7 +1149,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_result/{{academicResultId}}",
             "auth": {
               "type": "noauth"
             }

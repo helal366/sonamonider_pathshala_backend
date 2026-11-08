@@ -4,8 +4,6 @@ import { findPositionExistence } from "../../helperFunctions/cachedData/cache_po
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import {
   TCreateAcademicResultZodSchema,
-  TDeleteAcademicResultZodSchema,
-  TGetSingleAcademicResultZodSchema,
   TUpdateAcademicResultField,
 } from "./academicResult.zodValidation";
 import { prisma } from "../../lib/prisma";

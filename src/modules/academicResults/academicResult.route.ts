@@ -24,9 +24,9 @@ router.post(
 // DELETE ACADEMIC RESULT ROUTE
 // ==========================================
 router.delete(
-  "/delete/:id",
+  "/delete/:academic_result_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
+  validateZodParams(academicResultZodSchema.academicResultIdParamsZodSchema),
   academicResultController.deleteAcademicResult,
 );
 
@@ -34,9 +34,9 @@ router.delete(
 // UPDATE ACADEMIC RESULT FIELD ROUTE
 // ==========================================
 router.patch(
-  "/update_field/:id",
+  "/update_field/:academic_result_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(academicResultZodSchema.deleteAcademicResultZodSchema),
+  validateZodParams(academicResultZodSchema.academicResultIdParamsZodSchema),
   validateZodSchema(academicResultZodSchema.updateAcademicResultFieldZodSchema),
   academicResultController.updateAcademicResultField,
 );
@@ -54,9 +54,9 @@ router.get(
 // GET SINGLE ACADEMIC RESULT BY ID ROUTE
 // ==========================================
 router.get(
-  "/:id",
+  "/:academic_result_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(academicResultZodSchema.getSingleAcademicResultZodSchema),
+  validateZodParams(academicResultZodSchema.academicResultIdParamsZodSchema),
   academicResultController.getSingleAcademicResult,
 );
 

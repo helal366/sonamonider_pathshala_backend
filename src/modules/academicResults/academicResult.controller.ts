@@ -5,6 +5,7 @@ import { academicResultServices } from "./academicResult.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
+  TAcademicResultIdParamsZodSchema,
   TGetAcademicResultByStaffIdZodSchema,
   TGetSingleAcademicResultZodSchema,
 } from "./academicResult.zodValidation";
@@ -31,12 +32,12 @@ const createAcademicResult = catchAsync(async (req: Request, res: Response) => {
 // ==========================================
 // DELETE ACADEMIC RESULT CONTROLLER
 // ==========================================
-const deleteAcademicResult = catchAsync(async (req: Request, res: Response) => {
+const deleteAcademicResult = catchAsync(async (req: Request<TAcademicResultIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as { id: string };
+  const { academic_result_id } = req.params;
 
   const result = await academicResultServices.deleteAcademicResult(
-    id,
+    academic_result_id,
     loggedInUser,
   );
   sendResponse(res, {
@@ -51,15 +52,15 @@ const deleteAcademicResult = catchAsync(async (req: Request, res: Response) => {
 // UPDATE ACADEMIC RESULT FIELD CONTROLLER
 // ==========================================
 const updateAcademicResultField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TAcademicResultIdParamsZodSchema>, res: Response) => {
     const payload = req.body;
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as { id: string };
+    const { academic_result_id } = req.params;
 
     const result = await academicResultServices.updateAcademicResultField(
       payload,
       loggedInUser,
-      id,
+      academic_result_id,
     );
     sendResponse(res, {
       success: true,
@@ -90,14 +91,14 @@ const getAllAcademicResults = catchAsync(
 // GET SINGLE ACADEMIC RESULT BY ID CONTROLLER
 // =============================================
 const getSingleAcademicResult = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TAcademicResultIdParamsZodSchema>, res: Response) => {
     helperFunctions.requiredUser(req);
 
-    const { id } =
-      req.params as unknown as TGetSingleAcademicResultZodSchema;
+    const { academic_result_id } =
+      req.params;
 
     const result =
-      await academicResultServices.getSingleAcademicResult(id);
+      await academicResultServices.getSingleAcademicResult(academic_result_id);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,

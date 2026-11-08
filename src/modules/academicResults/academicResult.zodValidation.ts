@@ -49,8 +49,15 @@ export type TCreateAcademicResultZodSchema = z4.infer<
 >;
 
 // ==========================================
-// DELETE ACADEMIC RESULT ZOD SCHEMA
+// ACADEMIC RESULT ID PARAMS ZOD SCHEMA
 // ==========================================
+
+const academicResultIdParamsZodSchema = z4.object({
+  academic_result_id: z4.uuid("Invalid academic result ID."),
+});
+export type TAcademicResultIdParamsZodSchema = z4.infer<
+  typeof academicResultIdParamsZodSchema
+>;
 const deleteAcademicResultZodSchema = z4.object({
   id: z4.uuid("Invalid academic result ID."),
 });
@@ -99,6 +106,7 @@ export type TGetAcademicResultByStaffIdZodSchema = z4.infer<typeof getAcademicRe
 
 export const academicResultZodSchema = {
   createAcademicResultZodSchema,
+  academicResultIdParamsZodSchema,
   deleteAcademicResultZodSchema,
   updateAcademicResultFieldZodSchema,
   getSingleAcademicResultZodSchema,
