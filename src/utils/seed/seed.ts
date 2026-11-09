@@ -213,7 +213,7 @@ const createNehaMadam = async (joining_date: Date) => {
 const createKouserSir = async (joining_date: Date) => {
   const full_name = "Md Kouser Ahammed";
   const mobile_number = "01996797468";
-  const email = "niha99islam@gmail.com";
+  const email = "kousarahammed919@gmail.com";
   const password = "123456";
   const gender = Gender.MALE;
   const current_role = Role.ACADEMIC;

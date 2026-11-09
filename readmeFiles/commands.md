@@ -45,6 +45,7 @@ pnpm exec prisma migrate dev --name init
 pnpm exec prisma generate
 pnpm build
 pnpm seed
+pnpm seedBookList
 ```
 
 ## Total time check for transaction:

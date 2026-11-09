@@ -17,7 +17,6 @@
     "vercel-build": "pnpm prisma generate && tsup",
     "db:migrate": "prisma migrate dev",
     "seed": "pnpm exec tsx src/utils/seed/runSeed.ts",
-    "seedStudentFeeRate": "pnpm exec tsx src/utils/seed/runSeedStudentFeeRate.ts",
     "seedBookList": "pnpm exec tsx src/utils/seed/runSeecBookList.ts",
     "db:push": "prisma db push --force-reset",
     "db:reset": "rm -rf prisma/migrations && prisma db push --force-reset && prisma migrate reset --force"

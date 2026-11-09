@@ -520,6 +520,7 @@ CREATE TABLE "promotion_requests" (
     "user_id" TEXT NOT NULL,
     "old_role" "Role" NOT NULL,
     "new_role" "Role" NOT NULL,
+    "joining_date" TIMESTAMP(3) NOT NULL,
     "old_position_id" TEXT NOT NULL,
     "new_position_id" TEXT NOT NULL,
     "management_staff_id" TEXT,
@@ -639,10 +640,12 @@ CREATE TABLE "students" (
 -- CreateTable
 CREATE TABLE "student_fee_rates" (
     "id" TEXT NOT NULL,
-    "student_id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "fee_type" "StudentFeeType" NOT NULL,
     "billing_frequency" "BillingFrequency" NOT NULL,
     "amount" DECIMAL(10,2) NOT NULL,
+    "discount_amount" DECIMAL(10,2) NOT NULL DEFAULT 0,
+    "amount_to_pay" DECIMAL(10,2) NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -654,12 +657,12 @@ CREATE TABLE "student_fee_rates" (
 -- CreateTable
 CREATE TABLE "student_fee_payments" (
     "id" TEXT NOT NULL,
-    "student_id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
     "academic_year_id" TEXT NOT NULL,
     "fee_type" "StudentFeeType" NOT NULL,
     "billing_frequency" "BillingFrequency" NOT NULL,
     "billing_period_key" TEXT NOT NULL,
-    "amount" DECIMAL(10,2) NOT NULL,
+    "amount_to_pay" DECIMAL(10,2) NOT NULL,
     "paid_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "receipt_number" TEXT,
     "online_payment_gateway" TEXT,
@@ -725,6 +728,7 @@ CREATE TABLE "users" (
     "active_status" "ActiveStatus" NOT NULL DEFAULT 'ACTIVE',
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
     "current_role" "Role",
+    "joining_date" TIMESTAMP(3) NOT NULL,
     "current_position_id" TEXT,
     "father_details_id" TEXT,
     "mother_details_id" TEXT,
@@ -945,7 +949,7 @@ CREATE UNIQUE INDEX "staff_payments_management_staff_id_payment_type_payment_per
 CREATE UNIQUE INDEX "students_user_id_key" ON "students"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_fee_rates_student_id_fee_type_billing_frequency_key" ON "student_fee_rates"("student_id", "fee_type", "billing_frequency");
+CREATE UNIQUE INDEX "student_fee_rates_class_history_id_fee_type_billing_frequen_key" ON "student_fee_rates"("class_history_id", "fee_type", "billing_frequency");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "student_fee_payments_receipt_number_key" ON "student_fee_payments"("receipt_number");
@@ -954,10 +958,10 @@ CREATE UNIQUE INDEX "student_fee_payments_receipt_number_key" ON "student_fee_pa
 CREATE UNIQUE INDEX "student_fee_payments_online_tran_id_key" ON "student_fee_payments"("online_tran_id");
 
 -- CreateIndex
-CREATE INDEX "student_fee_payments_student_id_paid_at_idx" ON "student_fee_payments"("student_id", "paid_at");
+CREATE INDEX "student_fee_payments_class_history_id_paid_at_idx" ON "student_fee_payments"("class_history_id", "paid_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_fee_payments_student_id_fee_type_billing_frequency__key" ON "student_fee_payments"("student_id", "fee_type", "billing_frequency", "academic_year_id", "billing_period_key");
+CREATE UNIQUE INDEX "student_fee_payments_class_history_id_fee_type_billing_freq_key" ON "student_fee_payments"("class_history_id", "fee_type", "billing_frequency", "academic_year_id", "billing_period_key");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "class_standard_student_fee_rates_class_id_standard_student__key" ON "class_standard_student_fee_rates"("class_id", "standard_student_fee_rate_id");
@@ -1338,7 +1342,7 @@ ALTER TABLE "students" ADD CONSTRAINT "students_created_by_id_fkey" FOREIGN KEY 
 ALTER TABLE "students" ADD CONSTRAINT "students_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student_fee_rates" ADD CONSTRAINT "student_fee_rates_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "student_fee_rates" ADD CONSTRAINT "student_fee_rates_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_fee_rates" ADD CONSTRAINT "student_fee_rates_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -1347,7 +1351,7 @@ ALTER TABLE "student_fee_rates" ADD CONSTRAINT "student_fee_rates_created_by_id_
 ALTER TABLE "student_fee_rates" ADD CONSTRAINT "student_fee_rates_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "student_fee_payments" ADD CONSTRAINT "student_fee_payments_academic_year_id_fkey" FOREIGN KEY ("academic_year_id") REFERENCES "academic_years"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
