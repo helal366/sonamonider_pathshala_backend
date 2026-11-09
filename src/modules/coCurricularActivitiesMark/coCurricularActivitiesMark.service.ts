@@ -8,6 +8,7 @@ import {
   TUpdateCoCurricularActivitiesMark,
   TUpdateCoCurricularActivitiesMarkField,
 } from "./coCurricularActivitiesMark.zodValidation.js";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions.js";
 
 const entityName = "coCurricularActivitiesMark";
 
@@ -66,7 +67,7 @@ const createCoCurricularActivitiesMark = async (
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
         old_value: Prisma.JsonNull,
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return created;
@@ -151,7 +152,7 @@ const updateCoCurricularActivitiesMark = async (
           ...existing,
           class_history_id: existing.class_history?.id ?? null,
         },
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return updated;

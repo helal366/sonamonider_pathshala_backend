@@ -8,6 +8,7 @@ import {
   TUpdateMonthlyExamMark,
   TUpdateMonthlyExamMarkField,
 } from "./monthlyExamMark.zodValidation.js";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions.js";
 
 const entityName = "monthlyExamMark";
 const fields = [
@@ -65,7 +66,7 @@ const createMonthlyExamMark = async (
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
         old_value: Prisma.JsonNull,
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return created;
@@ -137,7 +138,7 @@ const updateMonthlyExamMark = async (
           ...auditValues(existing),
           class_history_id: existing.class_history?.id ?? null,
         },
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return updated;

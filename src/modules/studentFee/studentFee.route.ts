@@ -2,6 +2,7 @@ import { Router } from "express";
 import { userAuth } from "../../middlewares/userAuth.js";
 import {
   validateZodParams,
+  validateZodQuery,
   validateZodSchema,
 } from "../../middlewares/validateZodSchema.js";
 import { studentFeeController } from "./studentFee.controller.js";
@@ -56,9 +57,8 @@ router.get(
 router.get(
   "/get_student_fee_by_student_id/:student_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  validateZodParams(
-    studentFeeZodSchema.studentIdParamsZodSchema,
-  ),
+  validateZodParams(studentFeeZodSchema.studentIdParamsZodSchema),
+  validateZodSchema(studentFeeZodSchema.updateStudentFeePaymentFieldZodSchema),
   studentFeeController.getStudentFeeRateByStudentId,
 );
 
@@ -78,6 +78,7 @@ router.get(
   "/get_student_fee_payments_by_student_id/:student_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentIdParamsZodSchema),
+  validateZodQuery(studentFeeZodSchema.academicYearQueryZodSchema),
   studentFeeController.getStudentFeePaymentsByStudentId,
 );
 // ======================================================
@@ -94,7 +95,7 @@ router.post(
 // UPDATE A SINGLE STUDENT FEE PAYMENT FIELD ROUTE
 // ======================================================
 router.patch(
-  "/update_student_fee_payment_field/:id",
+  "/update_student_fee_payment_field/:student_fee_payment_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeePaymentIdParamsZodSchema),
   validateZodSchema(studentFeeZodSchema.updateStudentFeePaymentFieldZodSchema),
@@ -105,7 +106,7 @@ router.patch(
 // DELETE STUDENT FEE PAYMENT ROUTE
 // ======================================================
 router.delete(
-  "/delete_student_fee_payment/:id",
+  "/delete_student_fee_payment/:student_fee_payment_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeePaymentIdParamsZodSchema),
   studentFeeController.deleteStudentFeePayment,

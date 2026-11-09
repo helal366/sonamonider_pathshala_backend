@@ -8,6 +8,7 @@ import {
   TUpdateMoralMannersEvaluationMark,
   TUpdateMoralMannersEvaluationMarkField,
 } from "./moralMannersEvaluationMark.zodValidation.js";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions.js";
 
 const entityName = "moralMannersEvaluationMark";
 
@@ -66,7 +67,7 @@ const createMoralMannersEvaluationMark = async (
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
         old_value: Prisma.JsonNull,
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return created;
@@ -151,7 +152,7 @@ const updateMoralMannersEvaluationMark = async (
           ...existing,
           class_history_id: existing.class_history?.id ?? null,
         },
-        new_value: payload,
+        new_value: toAuditJson(payload),
       },
     });
     return updated;

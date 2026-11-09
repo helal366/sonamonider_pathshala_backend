@@ -9,6 +9,7 @@ import {
 } from "./examSubject.zodValidation";
 import { Prisma } from "#db-client";
 import { checkDuplicateExamSubject } from "./examSubject.helperFunction";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions";
 
 const throwDuplicateExamSubjectConflict = (error: unknown): never => {
   if (
@@ -131,7 +132,7 @@ const deleteExamSubject = async (
         entity_name: "examSubject",
         changed_by: { connect: { id: loggedInUser.user_id } },
         action: "DELETE",
-        old_value: deleted as Prisma.InputJsonValue,
+        old_value: toAuditJson(deleted),
         new_value: Prisma.JsonNull,
       },
     });
@@ -234,8 +235,8 @@ const updateExamSubject = async (
           entity_name: "examSubject",
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
-          old_value: examSubject as Prisma.InputJsonValue,
-          new_value: updated as Prisma.InputJsonValue,
+          old_value: toAuditJson(examSubject),
+          new_value: toAuditJson(updated), 
         },
       });
       return updated;

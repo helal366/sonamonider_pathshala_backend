@@ -5,6 +5,7 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma";
 import { TCreateClassZodSchema } from "./class.zodValidation";
 import { IUpdateClassField } from "./class.interface";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions";
 
 // =============================================
 // CREATE CLASS NAME SERVICE LAYER
@@ -41,7 +42,7 @@ const createClassName = async (
         action: "CREATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: Prisma.JsonNull,
-        new_value: createdNewClass as unknown as Prisma.InputJsonValue,
+        new_value:  toAuditJson(createdNewClass),
       },
     });
     return createdNewClass;
@@ -79,7 +80,7 @@ const deleteClassName = async (
         entity_name: "class",
         changed_by: { connect: { id: loggedInUser.user_id } },
         action: "DELETE",
-        old_value: existingClass as unknown as Prisma.InputJsonValue,
+        old_value: toAuditJson(existingClass),
         new_value: Prisma.JsonNull,
       },
     });

@@ -83,10 +83,107 @@ const createPrincipal = async () => {
   }
 };
 
+// Create Nazim Sir
+const createNazimSir = async()=>{
+  const full_name = "Md Nazimuddin";
+  const mobile_number = "01671588904";
+  const email = "nazimuddin0708@gmail.com";
+  const password = "123456";
+  const gender= "MALE";
+
+  const existing = await prisma.user.findFirst({
+    where: {
+      full_name,
+      mobile_number,
+      email,
+    },
+  });
+
+  if (!existing) {
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(envVars.BCRYPT_SALT_ROUND),
+    );
+
+    await prisma.user.create({
+      data: {
+        full_name,
+        mobile_number,
+        email,
+        gender,
+        user_name: mobile_number,
+        user_password: hashedPassword,
+
+        current_role: Role.ADMIN,
+
+        current_position: {
+          connect: {
+            position_name: "ADMINISTRATIVE_INCHARGE",
+          },
+        },
+      },
+    });
+
+    console.log("Md Nazimuddin sir user created.");
+  } else {
+    console.log("Md Nazimuddin sir user already exists.");
+  }
+}
+
+// Create Neha madam
+const createNehaMadam= async()=>{
+  const full_name = "Niha Islam Sharna";
+  const mobile_number = "01732639696";
+  const email = "niha99islam@gmail.com";
+  const password = "123456";
+  const gender= "FEMALE";
+
+  const existing = await prisma.user.findFirst({
+    where: {
+      full_name,
+      mobile_number,
+      email,
+    },
+  });
+
+  if (!existing) {
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(envVars.BCRYPT_SALT_ROUND),
+    );
+
+    await prisma.user.create({
+      data: {
+        full_name,
+        mobile_number,
+        email,
+        gender,
+        user_name: mobile_number,
+        user_password: hashedPassword,
+
+        current_role: Role.ACADEMIC,
+
+        current_position: {
+          connect: {
+            position_name: "ASSISTANT_TEACHER",
+          }
+        },
+      },
+    });
+
+    console.log("Niha madam user created.");
+  } else {
+    console.log("Niha madam user already exists.");
+  }
+}
 export const runInitialSeed = async () => {
   await seedPositions();
 
   await createPrincipal();
+
+  await createNazimSir();
+
+  await createNehaMadam();
 
   console.log("Initial seed completed successfully.");
 };

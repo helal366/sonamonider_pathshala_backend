@@ -14,6 +14,8 @@ model ClassHistory {
   academic_year_id String
   academic_year    AcademicYear @relation(fields: [academic_year_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
+  student_class_fee_rates StudentFeeRate[]
+  student_class_fee_payments   StudentFeePayment[]
   monthly_exam_marks   MonthlyExamMark?
   half_yearly_exam_mark HalfYearlyExamMark[]
   annual_exam_mark      AnnualExamMark[]

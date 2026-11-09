@@ -1,4 +1,6 @@
 import { ExamSubjectName, Prisma, Section, Version } from "#db-client";
+import { StatusCodes } from "http-status-codes";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
 import { prisma } from "../../lib/prisma";
 
 const classIdCache = new Map<string, Promise<string>>();
@@ -22,18 +24,24 @@ const defineBookList = (
     section,
   }));
 
-const getClassId = (className: string) => {
+const getClassId = (className: string): Promise<string> => {
   const cachedClassId = classIdCache.get(className);
   if (cachedClassId) {
     return cachedClassId;
   }
 
   const classId = prisma.class
-    .findUniqueOrThrow({
+    .findUnique({
       where: { class_name: className },
       select: { id: true },
     })
-    .then(({ id }) => id);
+    .then((classExists) => {
+      if (!classExists) {
+        throw new AppError("Class not found.", StatusCodes.NOT_FOUND);
+      }
+
+      return classExists.id;
+    });
 
   classIdCache.set(className, classId);
   return classId;
@@ -41,9 +49,9 @@ const getClassId = (className: string) => {
 
 const createBookList = async (books: SeedBookList) => {
   const data = await Promise.all(
-    books.map(async (book) => ({
+    books.map(async ({ class_name, ...book }) => ({
       ...book,
-      class_id: await getClassId(book.class_name),
+      class_id: await getClassId(class_name),
     })),
   );
 
@@ -1456,7 +1464,7 @@ const bookListGradeEightSchool = defineBookList("GRADE_EIGHT", Section.SCHOOL, [
   },
 ]);
 const bookListGradeEightMadrasha = defineBookList(
-  "GRADE_SIX",
+  "GRADE_EIGHT",
   Section.MADRASHA,
   [
     {

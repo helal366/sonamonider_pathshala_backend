@@ -33,7 +33,9 @@ const createAcademicYear = async (
         action: "CREATE",
         changed_by: { connect: { id: loggedInUser.user_id } },
         old_value: Prisma.JsonNull,
-        new_value: academicYear as unknown as Prisma.InputJsonValue,
+        new_value: JSON.parse(
+          JSON.stringify(academicYear),
+        ) as Prisma.InputJsonValue,
       },
     });
     return academicYear;
@@ -65,7 +67,9 @@ const deleteAcademicYear = async (
         entity_name: "academicYear",
         action: "DELETE",
         changed_by: { connect: { id: loggedInUser.user_id } },
-        old_value: academicYearExistance as unknown as Prisma.InputJsonValue,
+        old_value: JSON.parse(
+          JSON.stringify(academicYearExistance),
+        ) as Prisma.InputJsonValue,
         new_value: Prisma.JsonNull,
       },
     });

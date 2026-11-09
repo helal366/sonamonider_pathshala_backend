@@ -7,6 +7,7 @@ import { studentFeeServices } from "./studentFee.service.js";
 import {
   TCreateStudentFeePaymentZodSchema,
   TCreateStudentFeeRateZodSchema,
+  TAcademicYearQueryZodSchema,
   TStudentFeePaymentIdParamsZodSchema,
   TStudentFeeRateIdParamsZodSchema,
   TStudentIdParamsZodSchema,
@@ -17,32 +18,27 @@ import {
 // ======================================================
 // CREATE STUDENT FEE RATE CONTROLLER
 // ======================================================
-const createStudentFeeRate = catchAsync(
-  async (req: Request, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TCreateStudentFeeRateZodSchema;
-    const result = await studentFeeServices.createStudentFeeRate(
-      payload,
-      loggedInUser,
-    );
+const createStudentFeeRate = catchAsync(async (req: Request, res: Response) => {
+  const loggedInUser = helperFunctions.requiredUser(req);
+  const payload = req.body as TCreateStudentFeeRateZodSchema;
+  const result = await studentFeeServices.createStudentFeeRate(
+    payload,
+    loggedInUser,
+  );
 
-    sendResponse(res, {
-      statusCode: StatusCodes.CREATED,
-      success: true,
-      message: "Student fee rate created successfully.",
-      data: result,
-    });
-  },
-);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: "Student fee rate created successfully.",
+    data: result,
+  });
+});
 
 // ======================================================
 // UPDATE A SINGLE STUDENT FEE RATE FIELD CONTROLLER
 // ======================================================
 const updateStudentFeeRateField = catchAsync(
-  async (
-    req: Request<TStudentFeeRateIdParamsZodSchema>,
-    res: Response,
-  ) => {
+  async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStudentFeeRateFieldZodSchema;
     const { id } = req.params;
@@ -65,10 +61,7 @@ const updateStudentFeeRateField = catchAsync(
 // DELETE STUDENT FEE RATE CONTROLLER
 // ======================================================
 const deleteStudentFeeRate = catchAsync(
-  async (
-    req: Request<TStudentFeeRateIdParamsZodSchema>,
-    res: Response,
-  ) => {
+  async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const { id } = req.params;
     const result = await studentFeeServices.deleteStudentFeeRate(
@@ -88,30 +81,32 @@ const deleteStudentFeeRate = catchAsync(
 // ======================================================
 // GET ALL STUDENT FEE RATE CONTROLLER
 // ======================================================
-const getAllStudentFeeRates = catchAsync(async(req: Request, res: Response)=>{
-  const loggedInUser = helperFunctions.requiredUser(req);
-  const result = await studentFeeServices.getAllStudentFeeRates(loggedInUser);
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: "All student fee rate retrieved successfully.",
-    data : result
-  }) 
-});
+const getAllStudentFeeRates = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await studentFeeServices.getAllStudentFeeRates(loggedInUser);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "All student fee rate retrieved successfully.",
+      data: result,
+    });
+  },
+);
 
 // ======================================================
 // GET STUDENT FEE RATE BY STUDENT ID CONTROLLER
 // ======================================================
 const getStudentFeeRateByStudentId = catchAsync(
-  async (
-    req: Request<TStudentIdParamsZodSchema>,
-    res: Response,
-  ) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { student_id } = req.params;
+    const { student_id } = req.params as unknown as TStudentIdParamsZodSchema;
+    const { academic_year_name } =
+      req.query as unknown as TAcademicYearQueryZodSchema;
     const result = await studentFeeServices.getStudentFeeRateByStudentId(
       loggedInUser,
       student_id,
+      academic_year_name,
     );
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -128,7 +123,8 @@ const getStudentFeeRateByStudentId = catchAsync(
 const getAllStudentFeePayments = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await studentFeeServices.getAllStudentFeePayments(loggedInUser);
+    const result =
+      await studentFeeServices.getAllStudentFeePayments(loggedInUser);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
@@ -142,12 +138,15 @@ const getAllStudentFeePayments = catchAsync(
 // GET STUDENT FEE PAYMENTS BY STUDENT ID CONTROLLER
 // ======================================================
 const getStudentFeePaymentsByStudentId = catchAsync(
-  async (req: Request<TStudentIdParamsZodSchema>, res: Response) => {
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { student_id } = req.params;
+    const { student_id } = req.params as unknown as TStudentIdParamsZodSchema;
+    const { academic_year_name } =
+      req.query as unknown as TAcademicYearQueryZodSchema;
     const result = await studentFeeServices.getStudentFeePaymentsByStudentId(
       loggedInUser,
       student_id,
+      academic_year_name,
     );
     sendResponse(res, {
       statusCode: StatusCodes.OK,
@@ -183,17 +182,14 @@ const createStudentFeePayment = catchAsync(
 // UPDATE A SINGLE STUDENT FEE PAYMENT FIELD CONTROLLER
 // ======================================================
 const updateStudentFeePaymentField = catchAsync(
-  async (
-    req: Request<TStudentFeePaymentIdParamsZodSchema>,
-    res: Response,
-  ) => {
+  async (req: Request<TStudentFeePaymentIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStudentFeePaymentFieldZodSchema;
-    const { id } = req.params;
+    const { student_fee_payment_id } = req.params;
     const result = await studentFeeServices.updateStudentFeePaymentField(
       payload,
       loggedInUser,
-      id,
+      student_fee_payment_id,
     );
 
     sendResponse(res, {
@@ -209,14 +205,11 @@ const updateStudentFeePaymentField = catchAsync(
 // DELETE STUDENT FEE PAYMENT CONTROLLER
 // ======================================================
 const deleteStudentFeePayment = catchAsync(
-  async (
-    req: Request<TStudentFeePaymentIdParamsZodSchema>,
-    res: Response,
-  ) => {
+  async (req: Request<TStudentFeePaymentIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params;
+    const { student_fee_payment_id } = req.params;
     const result = await studentFeeServices.deleteStudentFeePayment(
-      id,
+      student_fee_payment_id,
       loggedInUser,
     );
 

@@ -7,7 +7,6 @@ import { StatusCodes } from "http-status-codes";
 import {
   TAcademicResultIdParamsZodSchema,
   TGetAcademicResultByStaffIdZodSchema,
-  TGetSingleAcademicResultZodSchema,
 } from "./academicResult.zodValidation";
 
 // ==========================================
