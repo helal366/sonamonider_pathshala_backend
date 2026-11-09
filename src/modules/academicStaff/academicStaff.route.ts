@@ -14,7 +14,7 @@ const router = Router();
 // UPDATE SUBJECT FOR SUBJECT TEAHER ROUTE
 // ================================================
 router.patch(
-  "/update_subject/:id",
+  "/update_subject/:academicStaff_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicStaffZodSchema.academicStaffParamsZodSchema),
   validateZodSchema(
@@ -27,7 +27,7 @@ router.patch(
 // UPDATE ACADEMIC STAFF FIELD ROUTE
 // ================================================
 router.patch(
-  "/update_field/:id",
+  "/update_field/:academicStaff_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(academicStaffZodSchema.academicStaffParamsZodSchema),
   validateZodSchema(academicStaffZodSchema.updateAcademicStaffFieldZodSchema),

@@ -82,6 +82,7 @@ const createUser = async (
           email,
           user_name,
           gender,
+          joining_date,
           ...(payload.blood_group !== undefined && {
             blood_group: payload.blood_group,
           }),

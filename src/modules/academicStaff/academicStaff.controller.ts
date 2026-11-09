@@ -5,90 +5,108 @@ import { academicStaffServices } from "./academicStaff.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import {
-    TAssignGradeGroupTeacherZodSchema,
-    TDisconnectGradeGroupTeacherZodSchema,
-    TUpdateAcademicStaffFieldZodSchema,
-    TUpdateSubjectForSubjectTeacherZodSchema,
+  TAcademicStaffParamsZodSchema,
+  TAssignGradeGroupTeacherZodSchema,
+  TDisconnectGradeGroupTeacherZodSchema,
+  TUpdateAcademicStaffFieldZodSchema,
+  TUpdateSubjectForSubjectTeacherZodSchema,
 } from "./academicStaff.zodValidation";
 
 // ================================================
 // UPDATE SUBJECT FOR SUBJECT TEAHER CONTROLLER
 // ================================================
-const updateSubjectForSubjectTeacher = catchAsync(async(req: Request, res: Response)=>{
+const updateSubjectForSubjectTeacher = catchAsync(
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TUpdateSubjectForSubjectTeacherZodSchema = req.body;
-    const { id } = req.params as unknown as { id: string };
-    const result = await academicStaffServices.updateSubjectForSubjectTeacher(payload, loggedInUser, id);
+    const { academicStaff_id } =
+      req.params as unknown as TAcademicStaffParamsZodSchema;
+    const result = await academicStaffServices.updateSubjectForSubjectTeacher(
+      payload,
+      loggedInUser,
+      academicStaff_id,
+    );
 
     sendResponse(res, {
-        success: true,
-        statusCode: StatusCodes.OK,
-        message: `Subject is successfully updated to Subject Teacher`,
-        data: result
-    })
-});
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Subject is successfully updated to Subject Teacher`,
+      data: result,
+    });
+  },
+);
 
 // ================================================
 // UPDATE ACADEMIC STAFF FIELD CONTROLLER
 // ================================================
-const updateAcademicStaffField = catchAsync(async(req: Request, res: Response)=>{
+const updateAcademicStaffField = catchAsync(
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TUpdateAcademicStaffFieldZodSchema = req.body;
-    const { id } = req.params as unknown as { id: string };
-    const result = await academicStaffServices.updateAcademicStaffField(payload, loggedInUser, id);
+    const { academicStaff_id } = req.params as unknown as TAcademicStaffParamsZodSchema;
+    const result = await academicStaffServices.updateAcademicStaffField(
+      payload,
+      loggedInUser,
+      academicStaff_id,
+    );
 
     sendResponse(res, {
-        success: true,
-        statusCode: StatusCodes.OK,
-        message: `Academic staff field updated successfully.`,
-        data: result
-    })
-});
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: `Academic staff field updated successfully.`,
+      data: result,
+    });
+  },
+);
 
 // =============================================
 // ASSIGN GRADE GROUP TEACHER CONTROLLER
 // =============================================
-const assignGradeGroupTeacher= catchAsync(async(req: Request, res: Response)=>{
+const assignGradeGroupTeacher = catchAsync(
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TAssignGradeGroupTeacherZodSchema = req.body;
-        const result = await academicStaffServices.assignGradeGroupTeacher(
-          payload,
-          loggedInUser,
-        );
-        sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: result.email_sent
-            ? `${result.teacherType} teacher assigned successfully.`
-            : `${result.teacherType} teacher assigned successfully, but the notification email could not be sent.`,
-          data: result,
-        });
-});
+    const result = await academicStaffServices.assignGradeGroupTeacher(
+      payload,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: result.email_sent
+        ? `${result.teacherType} teacher assigned successfully.`
+        : `${result.teacherType} teacher assigned successfully, but the notification email could not be sent.`,
+      data: result,
+    });
+  },
+);
 
 // =============================================
 // DISCONNECT GRADE GROUP TEACHER CONTROLLER
 // =============================================
-const disconnectGradeGroupTeacher= catchAsync(async(req: Request, res: Response)=>{
+const disconnectGradeGroupTeacher = catchAsync(
+  async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload: TDisconnectGradeGroupTeacherZodSchema = req.body;
-        const result = await academicStaffServices.disconnectGradeGroupTeacher(
-          payload,
-          loggedInUser,
-        );
-        sendResponse(res, {
-          success: true,
-          statusCode: StatusCodes.OK,
-          message: result.email_skipped
-            ? `${result.teacherType} teacher disconnected successfully. Notification email was skipped because the teacher account is inactive or deleted.`
-            : result.email_sent
-              ? `${result.teacherType} teacher disconnected successfully.`
-              : `${result.teacherType} teacher disconnected successfully, but the notification email could not be sent.`,
-          data: result,
-        });
-});
+    const result = await academicStaffServices.disconnectGradeGroupTeacher(
+      payload,
+      loggedInUser,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: result.email_skipped
+        ? `${result.teacherType} teacher disconnected successfully. Notification email was skipped because the teacher account is inactive or deleted.`
+        : result.email_sent
+          ? `${result.teacherType} teacher disconnected successfully.`
+          : `${result.teacherType} teacher disconnected successfully, but the notification email could not be sent.`,
+      data: result,
+    });
+  },
+);
 export const academicStaffController = {
-    updateSubjectForSubjectTeacher,
-    updateAcademicStaffField,
-    assignGradeGroupTeacher,
-    disconnectGradeGroupTeacher
-}
+  updateSubjectForSubjectTeacher,
+  updateAcademicStaffField,
+  assignGradeGroupTeacher,
+  disconnectGradeGroupTeacher,
+};

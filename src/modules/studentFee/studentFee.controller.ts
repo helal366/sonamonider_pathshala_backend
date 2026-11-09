@@ -41,11 +41,11 @@ const updateStudentFeeRateField = catchAsync(
   async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body as TUpdateStudentFeeRateFieldZodSchema;
-    const { id } = req.params;
+    const { student_fee_rate_id } = req.params;
     const result = await studentFeeServices.updateStudentFeeRateField(
       payload,
       loggedInUser,
-      id,
+      student_fee_rate_id,
     );
 
     sendResponse(res, {
@@ -63,9 +63,9 @@ const updateStudentFeeRateField = catchAsync(
 const deleteStudentFeeRate = catchAsync(
   async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params;
+    const { student_fee_rate_id } = req.params;
     const result = await studentFeeServices.deleteStudentFeeRate(
-      id,
+      student_fee_rate_id,
       loggedInUser,
     );
 

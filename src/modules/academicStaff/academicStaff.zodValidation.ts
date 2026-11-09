@@ -1,8 +1,9 @@
 import z4 from "zod/v4";
 
 const academicStaffParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid academic staff ID format."),
+  academicStaff_id: z4.uuid("Invalid academic staff ID format."),
 });
+export type TAcademicStaffParamsZodSchema = z4.infer<typeof academicStaffParamsZodSchema>
 // ================================================
 // UPDATE SUBJECT FOR SUBJECT TEAHER ZOD SCHEMA
 // ================================================

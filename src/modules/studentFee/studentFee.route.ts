@@ -25,7 +25,7 @@ router.post(
 // UPDATE A SINGLE STUDENT FEE RATE FIELD ROUTE
 // ======================================================
 router.patch(
-  "/update_student_fee_rate_field/:id",
+  "/update_student_fee_rate_field/:student_fee_rate_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
   validateZodSchema(studentFeeZodSchema.updateStudentFeeRateFieldZodSchema),
@@ -36,7 +36,7 @@ router.patch(
 // DELETE STUDENT FEE RATE ROUTE
 // ======================================================
 router.delete(
-  "/delete_student_fee_rate/:id",
+  "/delete_student_fee_rate/:student_fee_rate_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
   studentFeeController.deleteStudentFeeRate,

@@ -8,7 +8,7 @@ import { sendVerificationResultEmail } from "../email/email.helper.function";
 
 const MANAGEMENT_ROLE_TRACK = ["MANAGEMENT", "ADMIN"];
 const ACADEMIC_ROLE_TRACK = ["ACADEMIC", "TEACHER_ADMIN"];
-const actionPromotionRequest = async (              
+const actionPromotionRequest = async (
   payload: TActionPromotionRequestZodSchema,
   loggedInUser: TLoggedInUser,
   promotion_request_id: string,
@@ -25,6 +25,7 @@ const actionPromotionRequest = async (
             select: {
               full_name: true,
               mobile_number: true,
+              joining_date: true,
             },
           },
           old_position: { select: { position_name: true } },
@@ -41,6 +42,14 @@ const actionPromotionRequest = async (
       if (promotionRequest.promotion_request_status !== "PENDING") {
         throw new AppError(
           `This request has already been processed as ${promotionRequest.promotion_request_status}.`,
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
+      // COMPARE EFFECTIVE_DATE AND JOINING_DATE
+      if (effectiveDate.getTime() < promotionRequest.joining_date.getTime()) {
+        throw new AppError(
+          "Effective date cannot be before the user's joining date.",
           StatusCodes.BAD_REQUEST,
         );
       }
@@ -440,7 +449,9 @@ const actionPromotionRequest = async (
             throw new AppError(`Staff not found `, StatusCodes.BAD_REQUEST);
           }
           if (
-            mngStaff.user_primary_data.active_status === ActiveStatus.INACTIVE || mngStaff.user_primary_data.is_deleted
+            mngStaff.user_primary_data.active_status ===
+              ActiveStatus.INACTIVE ||
+            mngStaff.user_primary_data.is_deleted
           ) {
             throw new AppError(
               "Management staff is unauthorized. Check activity.",
@@ -528,7 +539,7 @@ const actionPromotionRequest = async (
                 `Academic staff not found.`,
                 StatusCodes.NOT_FOUND,
               );
-            };
+            }
 
             // Update academic staff profile
             const updatedAcadStaff = await tx.academicStaff.update({
@@ -905,7 +916,8 @@ const actionPromotionRequest = async (
         promotionEmail: {
           to: targetUser.email,
           templateName: "approve_promotion_congratulations_email.ejs",
-          subject: "Congratulations on Your Promotion – Sonamonider Pathshala & High School.",
+          subject:
+            "Congratulations on Your Promotion – Sonamonider Pathshala & High School.",
           templateData: {
             name: targetUser.full_name,
             previousPosition: promotionRequest.old_position.position_name,

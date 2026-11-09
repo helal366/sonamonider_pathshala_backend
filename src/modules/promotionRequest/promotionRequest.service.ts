@@ -18,7 +18,6 @@ const createPromotionRequest = async (
   const { user_id, old_role, new_role, old_position, new_position } = payload;
 
   // GET CLEAN POSITION
-
   const clean_old_position = old_position.trim().toUpperCase();
   const clean_new_position = new_position.trim().toUpperCase();
 
@@ -52,6 +51,7 @@ const createPromotionRequest = async (
         academic_staff_profile: { select: { id: true } },
         student_profile: { select: { id: true } },
         governing_body_profile: { select: { id: true } },
+        joining_date: true,
       },
     });
     if (!targetUser) {
@@ -103,6 +103,7 @@ const createPromotionRequest = async (
         new_role: new_role,
         old_position_id: oldPositionExists.id,
         new_position_id: newPositionExists.id,
+        joining_date: targetUser.joining_date,
         created_by_id: loggedInUser.user_id,
       },
     });

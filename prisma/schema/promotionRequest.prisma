@@ -6,6 +6,7 @@ model PromotionRequest {
 
   old_role Role
   new_role Role
+  joining_date DateTime
 
   old_position_id String
   old_position    UserPosition @relation("promotion_request_old_position", fields: [old_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

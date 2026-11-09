@@ -28,6 +28,7 @@ model User {
   promotion_requests PromotionRequest[]
 
   current_role Role?
+  joining_date DateTime
 
   current_position_id String?
   current_position    UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

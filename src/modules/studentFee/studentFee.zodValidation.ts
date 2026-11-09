@@ -119,10 +119,10 @@ export type TUpdateStudentFeePaymentFieldZodSchema = z4.infer<
 >;
 
 // ======================================================
-// DELETE STUDENT FEE RATE ZOD SCHEMA
+//  STUDENT FEE RATE ZOD SCHEMA
 // ======================================================
 const studentFeeRateIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid student fee rate ID."),
+  student_fee_rate_id: z4.uuid("Invalid student fee rate ID."),
 });
 
 export type TStudentFeeRateIdParamsZodSchema = z4.infer<

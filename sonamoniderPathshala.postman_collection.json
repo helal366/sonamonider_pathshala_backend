@@ -1612,7 +1612,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/update_field/{{academicStaffId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2134,7 +2134,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/subject/update_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/subject/update_subject/{{Id}}",
             "auth": {
               "type": "noauth"
             },
@@ -2582,7 +2582,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{studentFeeRateId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2608,7 +2608,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{studentFeeRateId}}",
             "auth": {
               "type": "noauth"
             }
