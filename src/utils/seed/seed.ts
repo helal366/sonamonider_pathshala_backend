@@ -1,7 +1,39 @@
-import { Role } from "#db-client";
+import { Gender, Role } from "#db-client";
 import { envVars } from "../../config/index.js";
 import { prisma } from "../../lib/prisma.js";
 import bcrypt from "bcryptjs";
+interface ICreateSirMadamPayload {
+  full_name: string;
+  mobile_number: string;
+  email: string;
+  gender: Gender;
+  user_name: string;
+  hashedPassword: string;
+  joining_date: Date;
+  current_role: Role;
+  position_name: string
+}
+const createSirMadam = async (payload: ICreateSirMadamPayload) => {
+  const {full_name, mobile_number, email, gender, hashedPassword, joining_date, current_role, position_name} =payload
+  await prisma.user.create({
+    data: {
+      full_name,
+      mobile_number,
+      email,
+      gender,
+      user_name: mobile_number,
+      user_password: hashedPassword,
+      joining_date,
+      current_role,
+
+      current_position: {
+        connect: {
+          position_name,
+        },
+      },
+    },
+  });
+};
 
 const seedPositions = async () => {
   const positions = [
@@ -41,7 +73,7 @@ const seedPositions = async () => {
   console.log(`Positions seeding done. Created ${result.count} new positions.`);
 };
 
-const createPrincipal = async () => {
+const createPrincipal = async (joining_date:Date) => {
   // Check SUPER_ADMIN user
   const existingSuperAdmin = await prisma.user.findFirst({
     where: {
@@ -66,6 +98,7 @@ const createPrincipal = async () => {
         gender: "MALE",
         user_name: envVars.SUPER_ADMIN_MOBILE_NO,
         user_password: hashedPassword,
+        joining_date,
 
         current_role: Role.SUPER_ADMIN,
 
@@ -84,12 +117,12 @@ const createPrincipal = async () => {
 };
 
 // Create Nazim Sir
-const createNazimSir = async()=>{
+const createNazimSir = async (joining_date:Date) => {
   const full_name = "Md Nazimuddin";
   const mobile_number = "01671588904";
   const email = "nazimuddin0708@gmail.com";
   const password = "123456";
-  const gender= "MALE";
+  const gender = Gender.MALE;
 
   const existing = await prisma.user.findFirst({
     where: {
@@ -104,39 +137,32 @@ const createNazimSir = async()=>{
       password,
       Number(envVars.BCRYPT_SALT_ROUND),
     );
-
-    await prisma.user.create({
-      data: {
-        full_name,
-        mobile_number,
-        email,
-        gender,
-        user_name: mobile_number,
-        user_password: hashedPassword,
-
-        current_role: Role.ADMIN,
-
-        current_position: {
-          connect: {
-            position_name: "ADMINISTRATIVE_INCHARGE",
-          },
-        },
-      },
-    });
+    const payload = {
+      full_name,
+      mobile_number, 
+      email,
+      hashedPassword,
+      user_name: mobile_number,
+      gender,
+      joining_date,
+      current_role: Role.ADMIN,
+      position_name: "ADMINISTRATIVE_INCHARGE"
+    }
+    await createSirMadam(payload)
 
     console.log("Md Nazimuddin sir user created.");
   } else {
     console.log("Md Nazimuddin sir user already exists.");
   }
-}
+};
 
 // Create Neha madam
-const createNehaMadam= async()=>{
+const createNehaMadam = async (joining_date:Date) => {
   const full_name = "Niha Islam Sharna";
   const mobile_number = "01732639696";
   const email = "niha99islam@gmail.com";
   const password = "123456";
-  const gender= "FEMALE";
+  const gender = Gender.FEMALE;
 
   const existing = await prisma.user.findFirst({
     where: {
@@ -151,39 +177,74 @@ const createNehaMadam= async()=>{
       password,
       Number(envVars.BCRYPT_SALT_ROUND),
     );
-
-    await prisma.user.create({
-      data: {
-        full_name,
-        mobile_number,
-        email,
-        gender,
-        user_name: mobile_number,
-        user_password: hashedPassword,
-
-        current_role: Role.ACADEMIC,
-
-        current_position: {
-          connect: {
-            position_name: "ASSISTANT_TEACHER",
-          }
-        },
-      },
-    });
+    const payload = {
+      full_name,
+      mobile_number, 
+      email,
+      hashedPassword,
+      user_name: mobile_number,
+      gender,
+      joining_date,
+      current_role: Role.ACADEMIC,
+      position_name: "ASSISTANT_TEACHER"
+    }
+    await createSirMadam(payload);
 
     console.log("Niha madam user created.");
   } else {
     console.log("Niha madam user already exists.");
   }
-}
+};
+
+// Create Kouser Ahmed sir
+const createKouserSir = async (joining_date:Date) => {
+   const full_name = "Md Kouser Ahammed";
+  const mobile_number = "01996797468";
+  const email = "niha99islam@gmail.com";
+  const password = "123456";
+  const gender = Gender.MALE;
+
+  const existing = await prisma.user.findFirst({
+    where: {
+      full_name,
+      mobile_number,
+      email,
+    },
+  });
+
+  if (!existing) {
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(envVars.BCRYPT_SALT_ROUND),
+    );
+    const payload = {
+      full_name,
+      mobile_number, 
+      email,
+      hashedPassword,
+      user_name: mobile_number,
+      gender,
+      joining_date,
+      current_role: Role.ACADEMIC,
+      position_name: "ASSISTANT_TEACHER"
+    }
+    await createSirMadam(payload);
+
+    console.log("Niha madam user created.");
+  } else {
+    console.log("Niha madam user already exists.");
+  }
+};
 export const runInitialSeed = async () => {
   await seedPositions();
 
-  await createPrincipal();
+  await createPrincipal(new Date("2015-10-27T00:00:00.000Z"));
 
-  await createNazimSir();
+  await createNazimSir(new Date("2023-10-27T00:00:00.000Z"));
 
-  await createNehaMadam();
+  await createNehaMadam(new Date("2023-10-27T00:00:00.000Z"));
+
+  await createKouserSir(new Date("2023-10-27T00:00:00.000Z"));
 
   console.log("Initial seed completed successfully.");
 };
