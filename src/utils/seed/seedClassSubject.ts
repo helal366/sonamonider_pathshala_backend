@@ -278,7 +278,7 @@ const seedArabicSubjects = async () => {
 // ========================================================
 // INITIAL EXECUTION HANDLER
 // ========================================================
-export const runInitialOthers = async () => {
+export const runInitialClassSubject = async () => {
   await seedClasses();
   await seedquranicSubjectes();
   await seedGeneralSubjects();

@@ -28,7 +28,7 @@ This note captures decisions and implementation context from the October 2026 cl
 Mounted in `src/app.ts`:
 
 - `/api/v1/smps/period`
-- `/api/v1/smps/subject`
+- `/api/v1/smps/general_subject`
 - `/api/v1/smps/quranic_class_period`
 - `/api/v1/smps/quranic_subject`
 - `/api/v1/smps/class_routine`

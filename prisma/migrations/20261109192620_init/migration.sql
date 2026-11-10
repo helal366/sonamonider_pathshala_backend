@@ -94,7 +94,7 @@ CREATE TABLE "academic_staffs" (
     "id" TEXT NOT NULL,
     "current_position_id" TEXT,
     "current_role" "Role",
-    "subject_as_subject_teacher" TEXT,
+    "subject_for_subject_teacher" TEXT,
     "grade_group_teacher_class_id" TEXT,
     "teaching_experience_year" INTEGER,
     "teaching_experience_month" INTEGER,

@@ -1627,6 +1627,58 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Assign Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/assign_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Grade Group Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/academic_staff/disconnect_grade_group_teacher",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_id\": \"00000000-0000-4000-8000-000000000001\",\n  \"academicStaff_id\": \"00000000-0000-4000-8000-000000000010\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -2096,10 +2148,10 @@
       ]
     },
     {
-      "name": "Subject",
+      "name": "General Subject",
       "item": [
         {
-          "name": "Create Subject",
+          "name": "Create General Subject",
           "request": {
             "method": "POST",
             "header": [
@@ -2108,7 +2160,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/subject/create_subject",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/create_general_subject",
             "auth": {
               "type": "noauth"
             },
@@ -2125,7 +2177,7 @@
           "response": []
         },
         {
-          "name": "Update Subject/:Id",
+          "name": "Update General Subject/:Id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2134,7 +2186,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/subject/update_subject/{{Id}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_general_subject/{{Id}}",
             "auth": {
               "type": "noauth"
             },
@@ -2151,7 +2203,7 @@
           "response": []
         },
         {
-          "name": "Update Single Subject Field/:Id",
+          "name": "Update Single General Subject Field/:Id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2160,7 +2212,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/subject/update_single_subject_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_single_general_subject_field/{{userId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2177,7 +2229,7 @@
           "response": []
         },
         {
-          "name": "Delete Subject/:Id",
+          "name": "Delete General Subject/:Id",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2186,7 +2238,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/subject/delete_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/delete_general_subject/{{userId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2194,11 +2246,11 @@
           "response": []
         },
         {
-          "name": "Get Subjects",
+          "name": "Get General Subjects",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/subject/get_subjects",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/get_general_subjects",
             "auth": {
               "type": "noauth"
             }
@@ -2206,11 +2258,11 @@
           "response": []
         },
         {
-          "name": "Get Subject/:Id",
+          "name": "Get General Subject/:Id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/subject/get_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/get_general_subject/{{userId}}",
             "auth": {
               "type": "noauth"
             }

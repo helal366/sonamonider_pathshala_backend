@@ -15,7 +15,7 @@ model AcademicStaff {
   students_in_responsibility Student[]
   class_routines_as_teacher  ClassRoutine[]     @relation("class_routine_teachers")
 
-  subject_as_subject_teacher String?
+  subject_for_subject_teacher String?
 
   grade_group_teacher_class_id String? @unique
   grade_group_teacher_class    Class?  @relation(fields: [grade_group_teacher_class_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

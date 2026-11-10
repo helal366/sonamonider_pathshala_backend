@@ -11,14 +11,14 @@ import { Role } from "#db-client";
 const router = Router();
 
 router.post(
-  "/create_subject",
+  "/create_general_subject",
   userAuth(Role.SUPER_ADMIN),
   validateZodSchema(subjectZodSchema.createSubjectZodSchema),
   subjectController.createSubject,
 );
 
 router.patch(
-  "/update_subject/:id",
+  "/update_general_subject/:id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
   validateZodSchema(subjectZodSchema.updateSubjectZodSchema),
@@ -26,7 +26,7 @@ router.patch(
 );
 
 router.patch(
-  "/update_single_subject_field/:id",
+  "/update_single_general_subject_field/:id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
   validateZodSchema(subjectZodSchema.updateSubjectSingleFieldZodSchema),
@@ -34,23 +34,23 @@ router.patch(
 );
 
 router.delete(
-  "/delete_subject/:id",
+  "/delete_general_subject/:id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(subjectZodSchema.deleteSubjectParamsZodSchema),
   subjectController.deleteSubject,
 );
 
 router.get(
-  "/get_subjects",
+  "/get_general_subjects",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   subjectController.getAllSubjects,
 );
 
 router.get(
-  "/get_subject/:id",
+  "/get_general_subject/:id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(subjectZodSchema.getSingleSubjectParamsZodSchema),
   subjectController.getSingleSubject,
 );
 
-export const subjectRouter: Router = router;
+export const generalSubjectRouter: Router = router;

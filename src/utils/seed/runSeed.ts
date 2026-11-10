@@ -1,14 +1,14 @@
 import { prisma } from "../../lib/prisma.js";
-import { runInitialSeed } from "./seed.js";
-import { runInitialOthers } from "./seedOthers.js";
+import { runInitialSeedPositionStaff } from "./seedStaff.js";
+import { runInitialClassSubject } from "./seedClassSubject.js";
 import { runStandardStudentFeeRateSeed } from "./seedStandardStudentFeeRates.js";
 
 const main = async () => {
   await prisma.$connect();
 
-  await runInitialSeed();
+  await runInitialSeedPositionStaff();
 
-  await runInitialOthers();
+  await runInitialClassSubject();
 
   await runStandardStudentFeeRateSeed();
 };

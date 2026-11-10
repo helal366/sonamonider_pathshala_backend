@@ -28,7 +28,7 @@ const updateSubjectForSubjectTeacher = async (
         user_primary_data: {
           select: { active_status: true, is_deleted: true },
         },
-        subject_as_subject_teacher: true,
+        subject_for_subject_teacher: true,
         current_position: {
           select: {
             position_name: true,
@@ -61,7 +61,7 @@ const updateSubjectForSubjectTeacher = async (
     // IT CAN BE CHECKED IF THE RULE ALLOW
 
     // CHECK THE PROVIDED CURRENT SUBJECT IS ASSIGNED TO TEACHER OR NOT
-    if (teacher.subject_as_subject_teacher !== current_subject) {
+    if (teacher.subject_for_subject_teacher !== current_subject) {
       throw new AppError(
         `The provided current subject is not assigned to the provided teacher.`,
         StatusCodes.BAD_REQUEST,
@@ -72,7 +72,7 @@ const updateSubjectForSubjectTeacher = async (
     const updated = await tx.academicStaff.update({
       where: { id: academicStaff_id },
       data: {
-        subject_as_subject_teacher: new_subject,
+        subject_for_subject_teacher: new_subject,
       },
     });
     await tx.auditLog.create({
@@ -82,10 +82,10 @@ const updateSubjectForSubjectTeacher = async (
         changed_by_id: loggedInUser.user_id,
         action: "UPDATE",
         old_value: {
-          subject_as_subject_teacher: current_subject,
+          subject_for_subject_teacher: current_subject,
         },
         new_value: {
-          subject_as_subject_teacher: new_subject,
+          subject_for_subject_teacher: new_subject,
         },
       },
     });
@@ -177,7 +177,7 @@ const assignGradeGroupTeacher = async (
   loggedInUser: TLoggedInUser,
 ) => {
   const { class_id, academicStaff_id } = payload;
-  const { assigned, email, teacherType } = await prisma.$transaction(
+  const { assigned, teacherType, email } = await prisma.$transaction(
     async (tx) => {
       // FIND CLASS
       const existingClass = await tx.class.findUnique({
