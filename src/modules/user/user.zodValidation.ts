@@ -1,4 +1,12 @@
-import { BloodGroup, Department, Gender, Religion, Section, Shift, Version } from "#db-client";
+import {
+  BloodGroup,
+  Department,
+  Gender,
+  Religion,
+  Section,
+  Shift,
+  Version,
+} from "#db-client";
 import z4 from "zod/v4";
 import {
   ACTIVE_STATUS_ENUM,
@@ -102,16 +110,24 @@ const userCreateZodSchema = z4
       .int("Roll number must be an integer.")
       .min(1, "Roll number must be greater than 0.")
       .optional(),
-    quranic_class_name: z4.string().trim().optional(),
+    quranic_subject_name: z4.string().trim().optional(),
     quranic_class_period_ids: z4
       .array(
-        z4.uuid({ error: "Each period ID must be a valid UUID string format." })
+        z4.uuid({
+          error: "Each period ID must be a valid UUID string format.",
+        }),
       )
       .refine((ids) => new Set(ids).size === ids.length, {
         message: "Quranic class period IDs must be unique.",
       })
       .optional(),
-    department: z4.enum(Department).optional().nullable()
+    arabic_subject_names: z4
+      .array(z4.string("Invalid Arabic Subject name."))
+      .optional(),
+    arabic_period_ids: z4.array(
+      z4.uuid("Invalid Arabic Period ID")
+    ).optional(),
+    department: z4.enum(Department).optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -147,19 +163,19 @@ const userCreateZodSchema = z4
         });
       }
 
-      if(!data.version){
+      if (!data.version) {
         ctx.addIssue({
           code: "custom",
           message: "Version is required for student",
-          path: ["version"]
-        })
+          path: ["version"],
+        });
       }
-      if(!data.section){
+      if (!data.section) {
         ctx.addIssue({
           code: "custom",
           message: "Section is required for student",
-          path: ["section"]
-        })
+          path: ["section"],
+        });
       }
       if (
         data.shift_name === Shift.MORNING &&
@@ -178,23 +194,56 @@ const userCreateZodSchema = z4
           path: ["section"],
         });
       }
-      if(!data.quranic_class_name ||data.quranic_class_name.trim() === ""){
+      if (
+        !data.quranic_subject_name ||
+        data.quranic_subject_name.trim() === ""
+      ) {
         ctx.addIssue({
           code: "custom",
           message: "Quranic class name is required for students.",
-          path: ["quranic_class_name"]
-        })
+          path: ["quranic_subject_name"],
+        });
       }
 
-      if (!data.quranic_class_period_ids || data.quranic_class_period_ids.length === 0) {
+      if (
+        !data.quranic_class_period_ids ||
+        data.quranic_class_period_ids.length === 0
+      ) {
         ctx.addIssue({
           code: "custom",
-          message: "At least one Quranic class period is required for students.",
+          message:
+            "At least one Quranic class period is required for students.",
           path: ["quranic_class_period_ids"],
         });
       }
+
+      // Arabic subject and period validation
+      if (
+        data.arabic_subject_names &&
+        data.arabic_subject_names.length > 0 &&
+        (!data.arabic_period_ids || data.arabic_period_ids?.length ===0)
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "Arabic period ID is required when Arabic subjects are provided.",
+          path: ["arabic_period_id"],
+        });
+      }
+
+      if (
+        (data.arabic_period_ids && data.arabic_period_ids.length > 0) &&
+        (!data.arabic_subject_names || data.arabic_subject_names.length === 0)
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "At least one Arabic subject is required when Arabic period ID is provided.",
+          path: ["arabic_subject_names"],
+        });
+      }
     }
-  })
+  });
 export type TUserCreateZodSchema = z4.infer<typeof userCreateZodSchema>;
 // ===========================================
 // UPDATE USER POSITION ZOD SCHEMA
@@ -417,9 +466,11 @@ export type TUpdateUserPasswordZodSchema = z4.infer<
 // ============================================================
 const getSingleUserZodSchema = z4.object({
   id: z4.uuid({
-    error: (issue)=>
-      issue.input === undefined? "User ID is required.":"Invalid user ID format."
-  })
+    error: (issue) =>
+      issue.input === undefined
+        ? "User ID is required."
+        : "Invalid user ID format.",
+  }),
 });
 export type TGetSingleUserZodSchema = z4.infer<typeof getSingleUserZodSchema>;
 
@@ -430,5 +481,5 @@ export const userZodSchema = {
   updateSingleUserFieldSuperAdminZodSchema,
   updateUserNameZodSchema,
   updateUserPasswordZodSchema,
-  getSingleUserZodSchema
+  getSingleUserZodSchema,
 };

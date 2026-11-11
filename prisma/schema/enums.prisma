@@ -33,7 +33,7 @@ enum Religion {
   OTHER
 }
 
-enum Quranic_Section {
+enum QuranicSection {
   NURANI
   NAZERA
   HIFZ

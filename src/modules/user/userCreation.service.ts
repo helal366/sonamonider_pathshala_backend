@@ -189,8 +189,10 @@ const createUser = async (
           roll_number: payload.roll_number,
           section: payload.section,
           version: payload.version,
-          quranic_class_name: payload.quranic_class_name,
+          quranic_subject_name: payload.quranic_subject_name,
           quranic_class_period_ids: payload.quranic_class_period_ids,
+          arabic_subject_names: payload.arabic_subject_names,
+          arabic_period_ids: payload.arabic_period_ids
         };
         // CHECK ALL REQUIREMENTS
         const {
@@ -202,7 +204,7 @@ const createUser = async (
           rollNumber,
           section,
           version,
-          existingQuranicClass,
+          existingQuranicSubject,
           quranicClassPeriodIDs,
         } = await userHelperFunction.checkStudentCreationRequirements(
           studentsRequirementPayload,
@@ -217,7 +219,7 @@ const createUser = async (
             roll_number: rollNumber,
             start_date: academicStartDate,
             end_date: academicEndDate,
-            quranic_subject: { connect: { id: existingQuranicClass.id } },
+            quranic_subject: { connect: { id: existingQuranicSubject.id } },
             section,
             version,
             department: payload?.department ?? null,
@@ -245,7 +247,7 @@ const createUser = async (
             section,
             version,
             department: payload?.department ?? null,
-            quranic_class_id: existingQuranicClass.id,
+            quranic_class_id: existingQuranicSubject.id,
             quranic_class_period_ids: quranicClassPeriodIDs,
           },
           action: "CREATE",

@@ -313,10 +313,44 @@ const checkStudentCreationRequirements = async (
     roll_number,
     section,
     version,
-    quranic_class_name,
+    quranic_subject_name,
     quranic_class_period_ids,
+    arabic_subject_names,
+    arabic_period_ids
   } = studentsRequirementPayload;
 
+  // CHECK ARABIC SUBJECT NAMES 
+  if(arabic_subject_names && arabic_subject_names.length !==0){
+    await Promise.all(
+      arabic_subject_names.map(async(subj)=>{
+        const checkExisting = await transaction.arabicSubject.findUnique({
+          where: {arabic_subject_name: subj},
+          select: {id: true, arabic_subject_name: true}
+        });
+        if(!checkExisting){
+          throw new AppError(`Arabic subject: ${subj} not found in database.`, StatusCodes.NOT_FOUND)
+        }
+      })
+    )
+  }
+
+  // CHECK ARABIC PERIOD ID
+  if(arabic_period_ids && arabic_period_ids.length !== 0){
+    await Promise.all(
+      arabic_period_ids.map(async(id)=>{
+        const existing =await transaction.arabicPeriod.findUnique({
+          where: {id},
+          select: {
+            id: true,
+            arabic_period_name: true
+          }
+        })
+        if(!existing){
+          throw new AppError(`Arabic period not found in database`, StatusCodes.NOT_FOUND)
+        }
+      })
+    )
+  };
   // CHECK IS ACTIVE CLASS
   if (!active_class_id) {
     throw new AppError(`Active class ID not found.`, StatusCodes.NOT_FOUND);
@@ -333,7 +367,6 @@ const checkStudentCreationRequirements = async (
   if (!classCheck.is_active_class) {
     throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST);
   }
-
   // CHECK THE YEAR NAME
   if (!year_name) {
     throw new AppError(
@@ -419,20 +452,20 @@ const checkStudentCreationRequirements = async (
   }
 
   // CHECK QURANIC CLASS NAME
-  if (!quranic_class_name) {
+  if (!quranic_subject_name) {
     throw new AppError(
       `Quranic class name is required.`,
       StatusCodes.NOT_FOUND,
     );
   }
-  const cleanQuranicClassName = quranic_class_name.trim().toUpperCase();
-  const existingQuranicClass = await transaction.quranicSubject.findUnique({
-    where: { quranic_subject_name: cleanQuranicClassName },
+  const cleanQuranicSubjectName = quranic_subject_name.trim().toUpperCase();
+  const existingQuranicSubject = await transaction.quranicSubject.findUnique({
+    where: { quranic_subject_name: cleanQuranicSubjectName },
     select: { id: true },
   });
-  if (!existingQuranicClass) {
+  if (!existingQuranicSubject) {
     throw new AppError(
-      `Provided quranic class name ${cleanQuranicClassName} not found in database.`,
+      `Provided quranic subject name ${cleanQuranicSubjectName} not found in database.`,
       StatusCodes.NOT_FOUND,
     );
   }
@@ -480,8 +513,10 @@ const checkStudentCreationRequirements = async (
     rollNumber: roll_number,
     section,
     version,
-    existingQuranicClass,
+    existingQuranicSubject,
     quranicClassPeriodIDs: quranic_class_period_ids,
+    arabicSubjectNames: arabic_subject_names,
+    arabicSubjectPeriod: arabic_period_ids
   };
 };
 

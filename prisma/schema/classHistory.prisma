@@ -28,6 +28,7 @@ model ClassHistory {
   version     Version
   department  Department?
 
+  arabic_subject_class_history ArabicSubjectClassHistory[]
   quranic_subject_id String
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

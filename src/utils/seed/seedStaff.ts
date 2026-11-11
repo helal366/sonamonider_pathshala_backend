@@ -237,7 +237,7 @@ const createStaff = async (payload: ICreateStaffPayload) => {
 
 };
 
-const createPrincipal = async (joining_date: Date) => {
+const createPrincipalSir = async (joining_date: Date) => {
   // Check SUPER_ADMIN user
   const existingSuperAdmin = await prisma.user.findFirst({
     where: {
@@ -820,7 +820,7 @@ const createAKMMoniruzzamanSir = async (joining_date: Date) => {
 export const runInitialSeedPositionStaff = async () => {
   await seedPositions();
 
-  await createPrincipal(new Date("2015-10-27T00:00:00.000Z"));
+  await createPrincipalSir(new Date("2015-10-27T00:00:00.000Z"));
   await createNazimSir(new Date("2023-10-27T00:00:00.000Z"));
   await createNihaMadam(new Date("2023-10-27T00:00:00.000Z"));
   await createKouserSir(new Date("2023-10-27T00:00:00.000Z"));

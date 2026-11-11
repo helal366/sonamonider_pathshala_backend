@@ -5,7 +5,7 @@ Medium — duplicate admission can slip through concurrent requests. Readmission
 Medium — student username generation can conflict across roles. Usernames are globally unique, but the count used to generate them is scoped to the requested role. If a student shares a mobile number with an existing user of another role, the student count can be zero and the service will try to use the same mobile number as that user’s username. See userCreation.service.ts, userCount, and user.prisma.
 
 
-*** Create user
+*** Create user staff
 {
   "full_name": "Asma Akter",
   "mobile_number": "01322035427",
@@ -15,6 +15,25 @@ Medium — student username generation can conflict across roles. Usernames are 
   "role_name": "ACADEMIC",
   "joining_date": "2025-07-31T00:00:00.000Z"
 }
+
+*** Create user student
+{
+  "full_name": "Asma Akter",
+  "mobile_number": "01322035427",
+  "gender": "FEMALE",
+  "email": "asmaakter26696@gmail.com",
+  "position_name": "ACADEMIC_STAFF",
+  "role_name": "ACADEMIC",
+  "joining_date": "2025-07-31T00:00:00.000Z",
+  "class_name":"NURSERY",
+  "academic_year":"2026",
+  "roll_number": 1,
+  "shift": "MORNING",
+  "section":"MADRASHA",
+  "version":"MORNING",
+  "department": null,
+}
+
 
 *** login
 {

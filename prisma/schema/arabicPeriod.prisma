@@ -23,6 +23,7 @@ model ArabicSubject {
   id                  String         @id @default(uuid())
   arabic_subject_name String         @unique
   class_routines      ClassRoutine[]
+  arabic_subject_class_history ArabicSubjectClassHistory[]
 
   created_by_id String?
   created_by    User?   @relation("arabic_subject_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -34,4 +35,15 @@ model ArabicSubject {
   updated_at DateTime? @updatedAt
 
   @@map("arabic_subjects")
+}
+
+model ArabicSubjectClassHistory {
+  id String @id @default(uuid())
+  class_history_id String
+  class_history ClassHistory @relation(fields: [class_history_id], references: [id])
+  arabic_subject_id String
+  arabic_subject ArabicSubject @relation(fields: [arabic_subject_id], references: [id])
+  created_at DateTime @default(now())
+  @@unique([class_history_id, arabic_subject_id])
+  @@map("arabic_subject_class_histories")
 }

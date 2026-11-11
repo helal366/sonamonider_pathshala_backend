@@ -1204,6 +1204,18 @@ const bookListGradeSixMadrasha = defineBookList("GRADE_SIX", Section.MADRASHA, [
     subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
   },
   {
+    book_name: "আল লুগাতুল আরাবিয়্যাতুল ইত্তিসালিয্যাহ",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC_1ST,
+  },
+  {
+    book_name: "কাওয়াইদুল আরাবিয়্যাতুল",
+    publisher: "বোর্ড বই",
+    isBookMain: true,
+    subject_group: ExamSubjectName.ARABIC_2ND,
+  },
+  {
     book_name: "আকাইদ ও ফিকহ",
     publisher: "বোর্ড বই",
     isBookMain: true,
@@ -1288,11 +1300,11 @@ const bookListGradeSevenSchool = defineBookList("GRADE_SEVEN", Section.SCHOOL, [
     isBookMain: true,
     subject_group: ExamSubjectName.HOME_SCIENCE,
   },
-    {
+  {
     book_name: "ইসলাম শিক্ষা",
     publisher: "বোর্ড বই",
     isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION
+    subject_group: ExamSubjectName.RELIGION,
   },
 ]);
 const bookListGradeSevenMadrasha = defineBookList(
@@ -1358,24 +1370,36 @@ const bookListGradeSevenMadrasha = defineBookList(
       publisher: "বোর্ড বই",
       isBookMain: true,
     },
-  {
-    book_name: "কর্ম ও জীবনমুখী শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
-  },
-  {
-    book_name: "কৃষি শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.AGRICULTURE,
-  },
-  {
-    book_name: "গার্হস্থ্যবিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.HOME_SCIENCE,
-  },
+    {
+      book_name: "কর্ম ও জীবনমুখী শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+    },
+    {
+      book_name: "কৃষি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AGRICULTURE,
+    },
+    {
+      book_name: "গার্হস্থ্যবিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.HOME_SCIENCE,
+    },
+    {
+      book_name: "আল লুগাতুল আরাবিয়্যাতুল ইত্তিসালিয্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_1ST,
+    },
+    {
+      book_name: "কাওয়াইদুল আরাবিয়্যাতুল",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_2ND,
+    },
     {
       book_name: "আকাইদ ও ফিকহ",
       publisher: "বোর্ড বই",
@@ -1537,6 +1561,18 @@ const bookListGradeEightMadrasha = defineBookList(
       publisher: "বোর্ড বই",
       isBookMain: true,
       subject_group: ExamSubjectName.HOME_SCIENCE,
+    },
+    {
+      book_name: "আল লুগাতুল আরাবিয়্যাতুল ইত্তিসালিয্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_1ST,
+    },
+    {
+      book_name: "কাওয়াইদুল আরাবিয়্যাতুল",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_2ND,
     },
     {
       book_name: "আকাইদ ও ফিকহ",

@@ -144,7 +144,9 @@ export interface IStudentRequirementsPayload {
   roll_number: number | undefined;
   section: Section;
   version: Version;
-  quranic_class_name: string | undefined;
+  quranic_subject_name: string | undefined;
   quranic_class_period_ids: string[] | undefined;
   transaction: Prisma.TransactionClient ;
+  arabic_subject_names: string[] | undefined;
+  arabic_period_ids: string[] | undefined;
 }
