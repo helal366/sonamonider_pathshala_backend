@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Prisma, Role, Section, Shift } from "#db-client";
+import { Department, Prisma, Role, Section, Shift } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 
@@ -177,12 +177,7 @@ const userCreationRolePostionCheck = (
 };
 
 const buildDynamicProfileData = (payload: IDynamicProfilePayload) => {
-  const {
-    cleanRole,
-    positionId,
-    loggedInUserId,
-    active_class_id,
-  } = payload;
+  const { cleanRole, positionId, loggedInUserId, active_class_id } = payload;
 
   let targetEntityName = "";
   const profileData: Record<string, any> = {};
@@ -313,44 +308,60 @@ const checkStudentCreationRequirements = async (
     roll_number,
     section,
     version,
+    department,
     quranic_subject_name,
     quranic_class_period_ids,
     arabic_subject_names,
-    arabic_period_ids
+    arabic_period_ids,
   } = studentsRequirementPayload;
 
-  // CHECK ARABIC SUBJECT NAMES 
-  if(arabic_subject_names && arabic_subject_names.length !==0){
+  // CHECK ARABIC SUBJECT NAMES
+  if (arabic_subject_names && arabic_subject_names.length !== 0) {
     await Promise.all(
-      arabic_subject_names.map(async(subj)=>{
+      arabic_subject_names.map(async (subj) => {
         const checkExisting = await transaction.arabicSubject.findUnique({
-          where: {arabic_subject_name: subj},
-          select: {id: true, arabic_subject_name: true}
+          where: { arabic_subject_name: subj },
+          select: { id: true, arabic_subject_name: true },
         });
-        if(!checkExisting){
-          throw new AppError(`Arabic subject: ${subj} not found in database.`, StatusCodes.NOT_FOUND)
+        if (!checkExisting) {
+          throw new AppError(
+            `Arabic subject: ${subj} not found in database.`,
+            StatusCodes.NOT_FOUND,
+          );
         }
-      })
-    )
+      }),
+    );
   }
 
   // CHECK ARABIC PERIOD ID
-  if(arabic_period_ids && arabic_period_ids.length !== 0){
+  if (
+    arabic_period_ids &&
+    new Set(arabic_period_ids).size !== arabic_period_ids.length
+  ) {
+    throw new AppError(
+      "Arabic period IDs must be unique.",
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+  if (arabic_period_ids && arabic_period_ids.length !== 0) {
     await Promise.all(
-      arabic_period_ids.map(async(id)=>{
-        const existing =await transaction.arabicPeriod.findUnique({
-          where: {id},
+      arabic_period_ids.map(async (id) => {
+        const existing = await transaction.arabicPeriod.findUnique({
+          where: { id },
           select: {
             id: true,
-            arabic_period_name: true
-          }
-        })
-        if(!existing){
-          throw new AppError(`Arabic period not found in database`, StatusCodes.NOT_FOUND)
+            arabic_period_name: true,
+          },
+        });
+        if (!existing) {
+          throw new AppError(
+            `Arabic period not found in database`,
+            StatusCodes.NOT_FOUND,
+          );
         }
-      })
-    )
-  };
+      }),
+    );
+  }
   // CHECK IS ACTIVE CLASS
   if (!active_class_id) {
     throw new AppError(`Active class ID not found.`, StatusCodes.NOT_FOUND);
@@ -404,6 +415,11 @@ const checkStudentCreationRequirements = async (
   // CHECK VERSION
   if (!version) {
     throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+  }
+
+  // CHECK DEPARTMENT
+  if (!department) {
+    throw new AppError("Department is required.", StatusCodes.NOT_FOUND);
   }
 
   // CHECK THE SHIFT NAME
@@ -483,7 +499,9 @@ const checkStudentCreationRequirements = async (
       StatusCodes.NOT_FOUND,
     );
   }
-  if (new Set(quranic_class_period_ids).size !== quranic_class_period_ids.length) {
+  if (
+    new Set(quranic_class_period_ids).size !== quranic_class_period_ids.length
+  ) {
     throw new AppError(
       "Quranic class period IDs must be unique.",
       StatusCodes.BAD_REQUEST,
@@ -513,10 +531,11 @@ const checkStudentCreationRequirements = async (
     rollNumber: roll_number,
     section,
     version,
+    department,
     existingQuranicSubject,
     quranicClassPeriodIDs: quranic_class_period_ids,
     arabicSubjectNames: arabic_subject_names,
-    arabicSubjectPeriod: arabic_period_ids
+    arabicSubjectPeriod: arabic_period_ids,
   };
 };
 

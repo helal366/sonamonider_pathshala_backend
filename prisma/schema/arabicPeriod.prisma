@@ -6,6 +6,7 @@ model ArabicPeriod {
   end_time   String //example: 8:00 AM
 
   class_routines ClassRoutine[]
+  arabic_period_class_histries ArabicPeriodClassHistory[]
 
   created_by_id String?
   created_by    User?   @relation("arabic_period_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -46,4 +47,15 @@ model ArabicSubjectClassHistory {
   created_at DateTime @default(now())
   @@unique([class_history_id, arabic_subject_id])
   @@map("arabic_subject_class_histories")
+}
+
+model ArabicPeriodClassHistory {
+  id String @id @default(uuid())
+  class_history_id String
+  class_history ClassHistory @relation(fields: [class_history_id], references: [id])
+  arabic_period_id String
+  arabic_period ArabicPeriod @relation(fields: [arabic_period_id], references: [id])
+  created_at DateTime @default(now())
+  @@unique([class_history_id, arabic_period_id])
+  @@map("arabic_period_class_histories")
 }

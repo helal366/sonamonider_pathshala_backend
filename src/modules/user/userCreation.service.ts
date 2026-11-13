@@ -6,7 +6,7 @@ import { userHelperFunction } from "./user.helperFunction";
 import { TCleanRolesUserCreation } from "./user.interface";
 import { TUserCreateZodSchema } from "./user.zodValidation";
 import { prisma } from "../../lib/prisma";
-import { Prisma, Role } from "#db-client";
+import { Department, Prisma, Role } from "#db-client";
 import { issueOtpAndSendEmail } from "../email/email.helper.function";
 import crypto from "crypto";
 
@@ -30,7 +30,7 @@ const createUser = async (
 
   const cleanRole = role_name.trim().toUpperCase() as TCleanRolesUserCreation;
   const cleanPosition = position_name.trim().toUpperCase();
-  const effectiveJoiningDate = new Date(joining_date);
+  const effectiveJoiningDate = new Date(`${joining_date}T00:00:00.000Z`);
 
   // 1. Check the role and position are authorized to create or not.
   // Called helper function
@@ -66,13 +66,43 @@ const createUser = async (
   const otpKey = `new_user_welcome_otp:${email}`;
   const newUser = await prisma.$transaction(
     async (transaction) => {
+      // MAKE STUDENT REQUIREMENTS 
+      let studentRequirements = undefined;
+      if (cleanRole === Role.STUDENT) {
+                // CHECK SECTION
+        if (!payload.section) {
+          throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
+        }
+
+        // CHECK VERSION
+        if (!payload.version) {
+          throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+        }
+      studentRequirements =
+        await userHelperFunction.checkStudentCreationRequirements({
+          transaction,
+          active_class_id: payload.active_class_id,
+          year_name: payload.year_name,
+          shift_name: payload.shift_name,
+          roll_number: payload.roll_number,
+          section: payload.section,
+          version: payload.version,
+          department: payload.department ?? Department.GENERAL,
+          quranic_subject_name: payload.quranic_subject_name,
+          quranic_class_period_ids: payload.quranic_class_period_ids,
+          arabic_subject_names: payload.arabic_subject_names,
+          arabic_period_ids: payload.arabic_period_ids,
+        });
+    }
+
+
       // CALLING THE HELPER FUNCTION HERE
       const { profileData, targetEntityName } =
         userHelperFunction.buildDynamicProfileData({
           cleanRole,
           positionId: positionExists.id,
           loggedInUserId: loggedInUser.user_id,
-          active_class_id: payload.active_class_id,
+          active_class_id: studentRequirements?.activeClassID,
         });
       // A) Create the User and nested ManagementStaff profile
       const createdUser = await transaction.user.create({
@@ -82,7 +112,7 @@ const createUser = async (
           email,
           user_name,
           gender,
-          joining_date,
+          joining_date: effectiveJoiningDate,
           ...(payload.blood_group !== undefined && {
             blood_group: payload.blood_group,
           }),
@@ -171,6 +201,9 @@ const createUser = async (
       // STUDENT CREATION
       // ======================
       if (cleanRole === Role.STUDENT && subProfileId) {
+        if(!studentRequirements){
+          throw new AppError(`Student requirements not found.`, StatusCodes.NOT_FOUND)
+        }
         // CHECK SECTION
         if (!payload.section) {
           throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
@@ -180,51 +213,22 @@ const createUser = async (
         if (!payload.version) {
           throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
         }
-        // MAKE STUDENT REQUIREMENTS PAYLOAD
-        const studentsRequirementPayload = {
-          transaction,
-          active_class_id: payload.active_class_id,
-          year_name: payload.year_name,
-          shift_name: payload.shift_name,
-          roll_number: payload.roll_number,
-          section: payload.section,
-          version: payload.version,
-          quranic_subject_name: payload.quranic_subject_name,
-          quranic_class_period_ids: payload.quranic_class_period_ids,
-          arabic_subject_names: payload.arabic_subject_names,
-          arabic_period_ids: payload.arabic_period_ids
-        };
-        // CHECK ALL REQUIREMENTS
-        const {
-          activeClassID,
-          academicStartDate,
-          academicEndDate,
-          academicYear,
-          existingShift,
-          rollNumber,
-          section,
-          version,
-          existingQuranicSubject,
-          quranicClassPeriodIDs,
-        } = await userHelperFunction.checkStudentCreationRequirements(
-          studentsRequirementPayload,
-        );
 
         const classHistory = await transaction.classHistory.create({
           data: {
             student: { connect: { id: subProfileId } },
-            class: { connect: { id: activeClassID } },
-            academic_year: { connect: { id: academicYear.id } },
-            shift: existingShift,
-            roll_number: rollNumber,
-            start_date: academicStartDate,
-            end_date: academicEndDate,
-            quranic_subject: { connect: { id: existingQuranicSubject.id } },
-            section,
-            version,
-            department: payload?.department ?? null,
+            class: { connect: { id: studentRequirements.activeClassID } },
+            academic_year: { connect: { id: studentRequirements.academicYear.id } },
+            shift: studentRequirements.existingShift,
+            roll_number: studentRequirements.rollNumber,
+            start_date: studentRequirements.academicStartDate,
+            end_date: studentRequirements.academicEndDate,
+            quranic_subject: { connect: { id: studentRequirements.existingQuranicSubject.id } },
+            section: studentRequirements.section,
+            version: studentRequirements.version,
+            department: studentRequirements.department,
             class_history_quranic_periods: {
-              create: quranicClassPeriodIDs.map((id: string) => ({
+              create: studentRequirements.quranicClassPeriodIDs.map((id: string) => ({
                 quranic_period: { connect: { id } },
               })),
             },
@@ -238,17 +242,17 @@ const createUser = async (
           old_value: Prisma.JsonNull,
           new_value: {
             student_id: subProfileId,
-            class_id: activeClassID,
-            academic_year_id: academicYear.id,
-            start_date: academicStartDate.toISOString(),
-            end_date: academicEndDate.toISOString(),
-            roll_number: rollNumber,
-            shift: existingShift,
-            section,
-            version,
-            department: payload?.department ?? null,
-            quranic_class_id: existingQuranicSubject.id,
-            quranic_class_period_ids: quranicClassPeriodIDs,
+            class_id: studentRequirements.activeClassID,
+            academic_year_id: studentRequirements.academicYear.id,
+            start_date: studentRequirements.academicStartDate.toISOString(),
+            end_date: studentRequirements.academicEndDate.toISOString(),
+            roll_number: studentRequirements.rollNumber,
+            shift: studentRequirements.existingShift,
+            section: studentRequirements.section,
+            version: studentRequirements.version,
+            department: studentRequirements.department,
+            quranic_class_id: studentRequirements.existingQuranicSubject.id,
+            quranic_class_period_ids: studentRequirements.quranicClassPeriodIDs,
           },
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,

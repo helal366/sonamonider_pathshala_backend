@@ -26,9 +26,11 @@ model ClassHistory {
   shift       Shift
   section     Section
   version     Version
-  department  Department?
+  department  Department @default(GENERAL)
 
-  arabic_subject_class_history ArabicSubjectClassHistory[]
+  class_history_arabic_period_ids ArabicPeriodClassHistory[]
+  class_history_arabic_subjects ArabicSubjectClassHistory[]
+  // need to add quranic periods
   quranic_subject_id String
   quranic_subject    QuranicSubject @relation(fields: [quranic_subject_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 

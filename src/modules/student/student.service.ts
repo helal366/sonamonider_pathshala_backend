@@ -9,7 +9,7 @@ import {
   TStudentDeactivateZodSchema,
   TStudentReadmissionZodSchema,
 } from "./student.zodValidation";
-import { ActiveStatus, Prisma, Role } from "#db-client";
+import { ActiveStatus, Department, Prisma, Role } from "#db-client";
 import { userHelperFunction } from "../user/user.helperFunction";
 import { sendVerificationResultEmail } from "../email/email.helper.function";
 
@@ -26,7 +26,7 @@ const studentReadmission = async (
     target_shift_name,
     target_year_name,
     roll_number,
-    quranic_class_name,
+    quranic_subject_name,
     quranic_class_period_ids,
   } = payload;
   const cleanShiftName = target_shift_name;
@@ -149,7 +149,8 @@ const studentReadmission = async (
         roll_number: roll_number,
         section: payload.section,
         version: payload.version,
-        quranic_class_name: quranic_class_name,
+        department: payload.department ?? Department.GENERAL,
+        quranic_subject_name,
         quranic_class_period_ids: quranic_class_period_ids,
       };
       const {
@@ -161,7 +162,8 @@ const studentReadmission = async (
         rollNumber,
         section,
         version,
-        existingQuranicClass,
+        department,
+        existingQuranicSubject,
         quranicClassPeriodIDs,
       } = await userHelperFunction.checkStudentCreationRequirements(
         studentsRequirementPayload,
@@ -195,8 +197,8 @@ const studentReadmission = async (
           end_date: academicEndDate,
           section,
           version,
-          department: payload?.department ?? null,
-          quranic_subject: { connect: { id: existingQuranicClass.id } },
+          department,
+          quranic_subject: { connect: { id: existingQuranicSubject.id } },
           class_history_quranic_periods: {
             create: quranicClassPeriodIDs.map((id: string) => ({
               quranic_period: { connect: { id } },
@@ -221,8 +223,8 @@ const studentReadmission = async (
           shift: existingShift,
           section,
           version,
-          department: payload?.department ?? null,
-          quranic_class_id: existingQuranicClass.id,
+          department,
+          quranic_subject_id: existingQuranicSubject.id,
           quranic_class_period_ids: quranicClassPeriodIDs,
         },
         action: "CREATE",
@@ -247,10 +249,13 @@ const deactivateNotReadmittedStudents = async (
 ) => {
   const { targetYear } = payload;
   const academicYear = await prisma.academicYear.findUnique({
-    where: {academic_year_name: targetYear}
+    where: { academic_year_name: targetYear },
   });
-  if(!academicYear){
-    throw new AppError(`Provided target academic year not found.`, StatusCodes.NOT_FOUND)
+  if (!academicYear) {
+    throw new AppError(
+      `Provided target academic year not found.`,
+      StatusCodes.NOT_FOUND,
+    );
   }
   const currentYear = targetYear;
   const previousYear = (Number(targetYear) - 1).toString();
@@ -359,7 +364,7 @@ const oldStudentAdmission = async (
     target_shift_name,
     target_year_name,
     roll_number,
-    quranic_class_name,
+    quranic_subject_name,
     quranic_class_period_ids,
   } = payload;
   const targetYear = target_year_name;
@@ -449,7 +454,8 @@ const oldStudentAdmission = async (
       roll_number: roll_number,
       section: payload.section,
       version: payload.version,
-      quranic_class_name: quranic_class_name,
+      department: payload.department ?? Department.GENERAL,
+      quranic_subject_name,
       quranic_class_period_ids: quranic_class_period_ids,
     };
 
@@ -462,7 +468,8 @@ const oldStudentAdmission = async (
       rollNumber,
       section,
       version,
-      existingQuranicClass,
+      department,
+      existingQuranicSubject,
       quranicClassPeriodIDs,
     } = await userHelperFunction.checkStudentCreationRequirements(
       studentsRequirementPayload,
@@ -510,52 +517,52 @@ const oldStudentAdmission = async (
     });
 
     const freshClassHistory = await transaction.classHistory.create({
-        data: {
-          student: { connect: { id: student_id } },
-          class: { connect: { id: activeClassID } },
-          academic_year: { connect: { id: academicYear.id } },
-          shift: existingShift,
-          roll_number: rollNumber,
-          start_date: academicStartDate,
-          end_date: academicEndDate,
-          section,
-          version,
-          department: payload?.department ?? null,
-          quranic_subject: { connect: { id: existingQuranicClass.id } },
-          class_history_quranic_periods: {
-            create: quranicClassPeriodIDs.map((id: string) => ({
-              quranic_period: { connect: { id } },
-            })),
-          },
-          created_by: { connect: { id: loggedInUser.user_id } },
+      data: {
+        student: { connect: { id: student_id } },
+        class: { connect: { id: activeClassID } },
+        academic_year: { connect: { id: academicYear.id } },
+        shift: existingShift,
+        roll_number: rollNumber,
+        start_date: academicStartDate,
+        end_date: academicEndDate,
+        section,
+        version,
+        department,
+        quranic_subject: { connect: { id: existingQuranicSubject.id } },
+        class_history_quranic_periods: {
+          create: quranicClassPeriodIDs.map((id: string) => ({
+            quranic_period: { connect: { id } },
+          })),
         },
-      });
-      auditRecords.push({
-        entity_id: freshClassHistory.id,
-        entity_name: "classHistory",
-        old_value: Prisma.JsonNull,
-        new_value: {
-          student_id,
-          class_id: activeClassID,
-          academic_year_id: academicYear.id,
-          start_date: academicStartDate.toISOString(),
-          end_date: academicEndDate.toISOString(),
-          roll_number: rollNumber,
-          shift: existingShift,
-          section,
-          version,
-          department: payload?.department ?? null,
-          quranic_class_id: existingQuranicClass.id,
-          quranic_class_period_ids: quranicClassPeriodIDs,
-        },
-        action: "CREATE",
-        changed_by_id: loggedInUser.user_id,
-      });
+        created_by: { connect: { id: loggedInUser.user_id } },
+      },
+    });
+    auditRecords.push({
+      entity_id: freshClassHistory.id,
+      entity_name: "classHistory",
+      old_value: Prisma.JsonNull,
+      new_value: {
+        student_id,
+        class_id: activeClassID,
+        academic_year_id: academicYear.id,
+        start_date: academicStartDate.toISOString(),
+        end_date: academicEndDate.toISOString(),
+        roll_number: rollNumber,
+        shift: existingShift,
+        section,
+        version,
+        department,
+        quranic_subject_id: existingQuranicSubject.id,
+        quranic_class_period_ids: quranicClassPeriodIDs,
+      },
+      action: "CREATE",
+      changed_by_id: loggedInUser.user_id,
+    });
 
-      // 7. STEP D: BULK ATOMIC COMMIT OF TRACKED AUDIT ENTRIES
-      await transaction.auditLog.createMany({ data: auditRecords });
+    // 7. STEP D: BULK ATOMIC COMMIT OF TRACKED AUDIT ENTRIES
+    await transaction.auditLog.createMany({ data: auditRecords });
 
-      return updatedStudent;
+    return updatedStudent;
   });
 };
 

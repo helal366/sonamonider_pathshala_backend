@@ -1394,7 +1394,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_class_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1437,7 +1437,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_class_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "raw": "{\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"

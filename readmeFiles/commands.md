@@ -11,8 +11,10 @@
 * pnpm dlx vercel --prod
 * pnpm vercel env rm DATABASE_URL
 * pnpm vercel env rm DATABASE_URL_DIRECT
+* pnpm vercel env rm SUPER_ADMIN_EMAIL
 * pnpm vercel env add DATABASE_URL
 * pnpm vercel env add DATABASE_URL_DIRECT
+* pnpm vercel env add SUPER_ADMIN_EMAIL
 
 
 * 

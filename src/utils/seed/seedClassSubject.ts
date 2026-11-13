@@ -1,12 +1,26 @@
 import { prisma } from "../../lib/prisma.js";
-
+// =========================================================
+// SEED ACADEMIC YEARS
+// =========================================================
+const academicYears = ["2020","2021","2022","2023","2024","2025", "2026", "2027"];
+const seedAcademicYears = async()=>{
+    console.log("Seeding years...");
+    const dataToInsert = academicYears.map((year)=> ({
+        academic_year_name: year
+    }));
+    const result =await prisma.academicYear.createMany({
+        data: dataToInsert,
+        skipDuplicates: true
+    });
+    console.log(`Academic years seeding done. Created ${result.count} new academic years.`);
+};
 // =========================================================
 // SEED CLASSES
 // =========================================================
 const seedClasses = async () => {
   const classes = [
-    "GRADE_NURANI",
-    "GRADE_NAZERA",
+    "GROUP_NURANI",
+    "GROUP_NAZERA",
     "GRADE_HIFZ",
     "PLAYGROUP",
     "NURSERY",
@@ -67,9 +81,14 @@ const seedquranicSubjectes = async () => {
 // ========================================================
 const quranicPeriods = [
   {
-    quranic_period_name: "NURANI_MORNING",
-    start_time: "7:01 AM",
-    end_time: "7:50 AM",
+    quranic_period_name: "NURANI_PLAY_MORNING",
+    start_time: "08:01 AM",
+    end_time: "08:30 AM",
+  },
+  {
+    quranic_period_name: "NURANI_NURSERY_MORNING",
+    start_time: "07:01 AM",
+    end_time: "07:50 AM",
   },
   {
     quranic_period_name: "HIFZ_MORNING",
@@ -80,6 +99,16 @@ const quranicPeriods = [
     quranic_period_name: "ASSEMBLY",
     start_time: "7:51 AM",
     end_time: "8:00 AM",
+  },
+  {
+    quranic_period_name: "NURANI_PLAY_DAY",
+    start_time: "12:31 AM",
+    end_time: "01:00 AM",
+  },
+  {
+    quranic_period_name: "NURANI_NURSERY_DAY",
+    start_time: "12:01 AM",
+    end_time: "12:30 AM",
   },
   {
     quranic_period_name: "QURANIC_EVENING",
@@ -211,11 +240,13 @@ const generalSubjects = [
   "MATH",
   "QURAN",
   "ARABIC",
+  "ARABIC_1ST",
+  "ARABIC_2ND",
   "SPOKEN_HOUR",
   "BGS",
   "ICT",
   "ISLAM",
-  "AQUAID",
+  "AQUAEED_AND_FIQH",
   "AGRICULTURE",
   "HOME_SCIENCE",
 ];
@@ -236,17 +267,22 @@ const seedGeneralSubjects = async () => {
 // ========================================================
 const arabicPeriods = [
   {
-    arabic_period_name: "ARABIC",
+    arabic_period_name: "ARABIC_ONE",
     start_time: "10:16 AM",
     end_time: "11:15 AM",
   },
   {
-    arabic_period_name: "ARABIC_BOYS",
+    arabic_period_name: "ARABIC_TWO",
     start_time: "11:16 AM",
     end_time: "12:00 PM",
   },
   {
-    arabic_period_name: "ARABIC_GIRLS",
+    arabic_period_name: "ARABIC_THREE",
+    start_time: "11:46 AM",
+    end_time: "12:15 AM",
+  },
+  {
+    arabic_period_name: "ARABIC_ONE_GIRLS",
     start_time: "09:01 AM",
     end_time: "09:45 AM",
   },
@@ -263,7 +299,7 @@ const seedArabicPeriods = async () => {
 // ========================================================
 // SEED ARABIC PERIODS
 // ========================================================
-const arabicSubjects = ["ARABIC", "ARABIC_1ST", "ARABIC_2ND"];
+const arabicSubjects = ["ARABIC", "ARABIC_1ST", "ARABIC_2ND", "AQUAEED_AND_FIQH"];
 const seedArabicSubjects = async () => {
   console.log("Seeding arabic periods...");
   const result = await prisma.arabicSubject.createMany({
@@ -279,12 +315,13 @@ const seedArabicSubjects = async () => {
 // INITIAL EXECUTION HANDLER
 // ========================================================
 export const runInitialClassSubject = async () => {
+  await seedAcademicYears();
   await seedClasses();
   await seedquranicSubjectes();
   await seedGeneralSubjects();
+  await seedArabicSubjects();
   await seedQuranicPeriods();
   await seedGeneralPeriods();
   await seedArabicPeriods();
-  await seedArabicSubjects();
   console.log("Initial secondary seeds completed safely.");
 };

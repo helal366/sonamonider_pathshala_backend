@@ -6,9 +6,9 @@ import { runStandardStudentFeeRateSeed } from "./seedStandardStudentFeeRates.js"
 const main = async () => {
   await prisma.$connect();
 
-  await runInitialSeedPositionStaff();
-
   await runInitialClassSubject();
+  
+  await runInitialSeedPositionStaff();
 
   await runStandardStudentFeeRateSeed();
 };

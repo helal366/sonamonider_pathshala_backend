@@ -44,6 +44,9 @@ CREATE TYPE "BillingFrequency" AS ENUM ('MONTHLY', 'HALF_YEARLY', 'YEARLY', 'ONE
 CREATE TYPE "ExamSubjectName" AS ENUM ('AGRICULTURE', 'ARABIC', 'ARABIC_1ST', 'ARABIC_2ND', 'AQUAEED_AND_FIQH', 'BANGLADESH_AND_GLOBAL_STUDIES', 'BENGALI', 'BENGALI_1ST', 'BENGALI_2ND', 'ELEMENTARY_MATHEMATICS', 'ICT', 'MATHEMATICS', 'ELEMENTARY_SCIENCE', 'HOME_SCIENCE', 'SCIENCE', 'ENGLISH', 'ENGLISH_1ST', 'ENGLISH_2ND', 'TEACHING_OF_ISLAM', 'RELIGION', 'VOCATIONAL_EDUCATION', 'LEARNING_WITH_HAPPINESS');
 
 -- CreateEnum
+CREATE TYPE "Shift" AS ENUM ('MORNING', 'DAY', 'BOYS', 'GIRLS');
+
+-- CreateEnum
 CREATE TYPE "Section" AS ENUM ('MADRASHA', 'SCHOOL');
 
 -- CreateEnum
@@ -60,9 +63,6 @@ CREATE TYPE "SalaryChangeType" AS ENUM ('INITIAL', 'INCREMENT', 'ADJUSTMENT');
 
 -- CreateEnum
 CREATE TYPE "ResultGrade" AS ENUM ('A_PLUS', 'A', 'A_MINUS', 'B', 'C', 'D', 'F');
-
--- CreateEnum
-CREATE TYPE "Shift" AS ENUM ('MORNING', 'DAY', 'BOYS', 'GIRLS');
 
 -- CreateEnum
 CREATE TYPE "ExamType" AS ENUM ('HALF_YEARLY', 'ANNUAL');
@@ -148,6 +148,26 @@ CREATE TABLE "arabic_subjects" (
 );
 
 -- CreateTable
+CREATE TABLE "arabic_subject_class_histories" (
+    "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
+    "arabic_subject_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "arabic_subject_class_histories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "arabic_period_class_histories" (
+    "id" TEXT NOT NULL,
+    "class_history_id" TEXT NOT NULL,
+    "arabic_period_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "arabic_period_class_histories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "audit_logs" (
     "audit_id" TEXT NOT NULL,
     "entity_id" TEXT NOT NULL,
@@ -206,7 +226,7 @@ CREATE TABLE "class_history" (
     "shift" "Shift" NOT NULL,
     "section" "Section" NOT NULL,
     "version" "Version" NOT NULL,
-    "department" "Department",
+    "department" "Department" NOT NULL DEFAULT 'GENERAL',
     "quranic_subject_id" TEXT NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -829,6 +849,12 @@ CREATE UNIQUE INDEX "arabic_periods_arabic_period_name_key" ON "arabic_periods"(
 CREATE UNIQUE INDEX "arabic_subjects_arabic_subject_name_key" ON "arabic_subjects"("arabic_subject_name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "arabic_subject_class_histories_class_history_id_arabic_subj_key" ON "arabic_subject_class_histories"("class_history_id", "arabic_subject_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "arabic_period_class_histories_class_history_id_arabic_perio_key" ON "arabic_period_class_histories"("class_history_id", "arabic_period_id");
+
+-- CreateIndex
 CREATE INDEX "audit_logs_created_at_idx" ON "audit_logs"("created_at");
 
 -- CreateIndex
@@ -1043,6 +1069,18 @@ ALTER TABLE "arabic_subjects" ADD CONSTRAINT "arabic_subjects_created_by_id_fkey
 
 -- AddForeignKey
 ALTER TABLE "arabic_subjects" ADD CONSTRAINT "arabic_subjects_updated_by_id_fkey" FOREIGN KEY ("updated_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_subject_class_histories" ADD CONSTRAINT "arabic_subject_class_histories_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_subject_class_histories" ADD CONSTRAINT "arabic_subject_class_histories_arabic_subject_id_fkey" FOREIGN KEY ("arabic_subject_id") REFERENCES "arabic_subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_period_class_histories" ADD CONSTRAINT "arabic_period_class_histories_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "arabic_period_class_histories" ADD CONSTRAINT "arabic_period_class_histories_arabic_period_id_fkey" FOREIGN KEY ("arabic_period_id") REFERENCES "arabic_periods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_changed_by_id_fkey" FOREIGN KEY ("changed_by_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

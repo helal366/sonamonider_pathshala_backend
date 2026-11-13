@@ -6,13 +6,13 @@ import z4 from "zod/v4";
 // ========================================================
 const studentReadmissionParamsZodSchema = z4.object({
   student_id: z4.uuid({
-      error: (issue) =>
-        issue.input === undefined
-          ? "Student ID is required."
-          : "Invalid Student ID format.",
-    }),
+    error: (issue) =>
+      issue.input === undefined
+        ? "Student ID is required."
+        : "Invalid Student ID format.",
+  }),
 });
-export type TStudentReadmissionParamsZodSchema =z4.infer<
+export type TStudentReadmissionParamsZodSchema = z4.infer<
   typeof studentReadmissionParamsZodSchema
 >;
 
@@ -45,8 +45,10 @@ const studentReadmissionZodSchema = z4
       .min(1, "Roll number must be greater than 0"),
     section: z4.enum(Section, "Invalid section format."),
     version: z4.enum(Version, "Invalid version format."),
-    department: z4.enum(Department, "Invalid department format.").optional().nullable(),
-    quranic_class_name: z4
+    department: z4
+      .enum(Department, "Invalid department format.")
+      .default("GENERAL"),
+    quranic_subject_name: z4
       .string()
       .trim()
       .min(1, "Quranic class name is required."),
@@ -150,8 +152,11 @@ const oldStudentAdmissionZodSchema = z4.object({
     .min(1, "Roll number must be greater than 0"),
   section: z4.enum(Section, "Invalid section format."),
   version: z4.enum(Version, "Invalid version format."),
-  department: z4.enum(Department, "Invalid department format.").optional().nullable(),
-  quranic_class_name: z4
+  department: z4
+    .enum(Department, "Invalid department format.")
+    .optional()
+    .nullable(),
+  quranic_subject_name: z4
     .string()
     .trim()
     .min(1, "Quranic class name is required."),

@@ -156,6 +156,14 @@ enum ExamSubjectName {
   VOCATIONAL_EDUCATION
   LEARNING_WITH_HAPPINESS
 }
+
+enum Shift {
+  MORNING
+  DAY
+  BOYS
+  GIRLS
+}
+
 enum Section {
   MADRASHA
   SCHOOL
@@ -194,13 +202,6 @@ enum ResultGrade {
   C
   D
   F
-}
-
-enum Shift {
-  MORNING
-  DAY
-  BOYS
-  GIRLS
 }
 
 enum ExamType {

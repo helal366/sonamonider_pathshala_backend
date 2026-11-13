@@ -105,6 +105,7 @@ const userCreateZodSchema = z4
     shift_name: z4.enum(Shift).optional(),
     section: z4.enum(Section).optional(),
     version: z4.enum(Version).optional(),
+    department: z4.enum(Department).optional(),    
     roll_number: z4.coerce
       .number("Invalid roll number.")
       .int("Roll number must be an integer.")
@@ -127,7 +128,7 @@ const userCreateZodSchema = z4
     arabic_period_ids: z4.array(
       z4.uuid("Invalid Arabic Period ID")
     ).optional(),
-    department: z4.enum(Department).optional().nullable(),
+
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -176,6 +177,9 @@ const userCreateZodSchema = z4
           message: "Section is required for student",
           path: ["section"],
         });
+      }
+      if(!data.department){
+        data.department = Department.GENERAL
       }
       if (
         data.shift_name === Shift.MORNING &&
