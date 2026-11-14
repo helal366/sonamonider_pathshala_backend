@@ -24,11 +24,9 @@ router.post(
 // UPDATE QURANIC SUBJECT ROUTE
 // ====================================================
 router.patch(
-  "/update_quranic_subject/:id",
+  "/update_quranic_subject/:quranic_subject_id",
   userAuth(Role.SUPER_ADMIN),
-  validateZodParams(
-    quranicSubjectZodSchema.updateQuranicSubjectParamsZodSchema,
-  ),
+  validateZodParams(quranicSubjectZodSchema.quranicSubjectIdParamsZodSchema),
   validateZodSchema(quranicSubjectZodSchema.updateQuranicSubjectZodSchema),
   quranicSubjectController.updateQuranicSubject,
 );
@@ -37,10 +35,10 @@ router.patch(
 // UPDATE QURANIC SUBJECT SINGLE FIELD ROUTE
 // ====================================================
 router.patch(
-  "/update_quranic_single_subject_field/:id",
+  "/update_quranic_single_subject_field/:quranic_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
-    quranicSubjectZodSchema.updateQuranicSubjectSingleFieldParamsZodSchema,
+    quranicSubjectZodSchema.quranicSubjectIdParamsZodSchema,
   ),
   validateZodSchema(
     quranicSubjectZodSchema.updateQuranicSubjectSingleFieldZodSchema,
@@ -52,10 +50,10 @@ router.patch(
 // DELETE QURANIC SUBJECT ROUTE
 // =====================================================
 router.delete(
-  "/delete_quranic_subject/:id",
+  "/delete_quranic_subject/:quranic_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
-    quranicSubjectZodSchema.deleteQuranicSubjectParamsZodSchema,
+    quranicSubjectZodSchema.quranicSubjectIdParamsZodSchema,
   ),
   quranicSubjectController.deleteQuranicSubject,
 );
@@ -73,9 +71,9 @@ router.get(
 // GET SINGLE QURANIC SUBJECT BY PATH PARAM ID ROUTE
 // ========================================================
 router.get(
-  "/get_quranic_subject/:id",
+  "/get_quranic_subject/:quranic_subject_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(quranicSubjectZodSchema.getSingleQuranicSubjectZodSchema), // Uses your optimized params middleware helper
+  validateZodParams(quranicSubjectZodSchema.quranicSubjectIdParamsZodSchema), // Uses your optimized params middleware helper
   quranicSubjectController.getSingleQuranicSubject,
 );
 

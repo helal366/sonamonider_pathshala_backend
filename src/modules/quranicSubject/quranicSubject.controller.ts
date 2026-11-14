@@ -1,15 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { quranicSubjectServices } from "./quranicSubject.service.js";
 import {
   TCreateQuranicSubjectZodSchema,
-  TDeleteQuranicSubjectParamsZodSchema,
-  TGetSingleQuranicSubjectZodSchema,
-  TUpdateQuranicSubjectParamsZodSchema,
-  TUpdateQuranicSubjectSingleFieldParamsZodSchema,
+  TQuranicSubjectIdParamsZodSchema,
   TUpdateQuranicSubjectSingleFieldPayload,
   TUpdateQuranicSubjectZodSchema,
 } from "./quranicSubject.zodValidation.js";
@@ -43,13 +39,13 @@ const createQuranicSubject = catchAsync(
 const updateQuranicSubject = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const {id} = req.params as unknown as TUpdateQuranicSubjectParamsZodSchema;
+    const { quranic_subject_id } = req.params as unknown as TQuranicSubjectIdParamsZodSchema;
 
     const payload: TUpdateQuranicSubjectZodSchema = req.body;
     const result = await quranicSubjectServices.updateQuranicSubject(
       payload,
       loggedInUser,
-      id
+      quranic_subject_id,
     );
 
     sendResponse(res, {
@@ -64,13 +60,13 @@ const updateQuranicSubject = catchAsync(
 const updateQuranicSubjectSingleField = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } =
-      req.params as unknown as TUpdateQuranicSubjectSingleFieldParamsZodSchema;
+    const { quranic_subject_id } =
+      req.params as unknown as TQuranicSubjectIdParamsZodSchema;
     const payload: TUpdateQuranicSubjectSingleFieldPayload = req.body;
     const result = await quranicSubjectServices.updateQuranicSubjectSingleField(
       payload,
       loggedInUser,
-      id,
+      quranic_subject_id,
     );
 
     sendResponse(res, {
@@ -85,24 +81,22 @@ const updateQuranicSubjectSingleField = catchAsync(
 // ====================================================
 // DELETE QURANIC SUBJECT CONTROLLER
 // ====================================================
-const deleteQuranicSubject = catchAsync(
-  async (req: Request, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req)
+const deleteQuranicSubject = catchAsync(async (req: Request, res: Response) => {
+  const loggedInUser = helperFunctions.requiredUser(req);
 
-    const {id} = req.params as unknown as TDeleteQuranicSubjectParamsZodSchema;
-    const result = await quranicSubjectServices.deleteQuranicSubject(
-      id,
-      loggedInUser,
-    );
+  const { quranic_subject_id } = req.params as unknown as TQuranicSubjectIdParamsZodSchema;
+  const result = await quranicSubjectServices.deleteQuranicSubject(
+    quranic_subject_id,
+    loggedInUser,
+  );
 
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Quranic subject deleted successfully.",
-      data: result,
-    });
-  },
-);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Quranic subject deleted successfully.",
+    data: result,
+  });
+});
 
 // =====================================================
 // GET ALL QURANIC SUBJECTS CONTROLLER
@@ -126,11 +120,9 @@ const getAllQuranicSubjects = catchAsync(
 const getSingleQuranicSubject = catchAsync(
   async (req: Request, res: Response) => {
     // Safely parse from your validated path params middleware mapping block
-    const { id } =
-      req.params as unknown as TGetSingleQuranicSubjectZodSchema;
+    const { quranic_subject_id } = req.params as unknown as TQuranicSubjectIdParamsZodSchema;
 
-    const result =
-      await quranicSubjectServices.getSingleQuranicSubject(id);
+    const result = await quranicSubjectServices.getSingleQuranicSubject(quranic_subject_id);
 
     sendResponse(res, {
       success: true,

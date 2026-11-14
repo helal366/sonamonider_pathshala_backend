@@ -14,20 +14,23 @@ const createQuranicSubjectZodSchema = z4.object({
     .trim()
     .min(1, "Quranic Subject name cannot be empty."),
 });
-export type TCreateQuranicSubjectZodSchema = z4.infer<typeof createQuranicSubjectZodSchema>;
+export type TCreateQuranicSubjectZodSchema = z4.infer<
+  typeof createQuranicSubjectZodSchema
+>;
 
 // =======================================================
-// UPDATE QURANIC SUBJECT ZOD SCHEMA
+// QURANIC SUBJECT ID PARAMS ZOD SCHEMA
 // =======================================================
-const updateQuranicSubjectParamsZodSchema = z4.object({
-    id: z4.uuid({
+const quranicSubjectIdParamsZodSchema = z4.object({
+  quranic_subject_id: z4.uuid({
     message: "Invalid Quranic Subject ID format. Must be a valid UUID.",
   }),
 });
-export type TUpdateQuranicSubjectParamsZodSchema =z4.infer<typeof updateQuranicSubjectParamsZodSchema>;
+export type TQuranicSubjectIdParamsZodSchema = z4.infer<
+  typeof quranicSubjectIdParamsZodSchema
+>;
 
 const updateQuranicSubjectZodSchema = z4.object({
-
   quranic_subject_name: z4
     .string({
       error: (issue) =>
@@ -39,16 +42,10 @@ const updateQuranicSubjectZodSchema = z4.object({
     .min(1, "New Quranic Subject name cannot be empty."),
 });
 
-export type TUpdateQuranicSubjectZodSchema = z4.infer<typeof updateQuranicSubjectZodSchema>;
-
-const updateQuranicSubjectSingleFieldParamsZodSchema = z4.object({
-  id: z4.uuid({
-    message: "Invalid Quranic Subject ID format. Must be a valid UUID.",
-  }),
-});
-export type TUpdateQuranicSubjectSingleFieldParamsZodSchema = z4.infer<
-  typeof updateQuranicSubjectSingleFieldParamsZodSchema
+export type TUpdateQuranicSubjectZodSchema = z4.infer<
+  typeof updateQuranicSubjectZodSchema
 >;
+
 
 const updateQuranicSubjectSingleFieldZodSchema = z4.object({
   field: z4.literal("quranic_subject_name"),
@@ -66,30 +63,10 @@ export type TUpdateQuranicSubjectSingleFieldPayload = z4.infer<
   typeof updateQuranicSubjectSingleFieldZodSchema
 >;
 
-// DELETE QURANIC SUBJECT ZOD SCHEMA
-const deleteQuranicSubjectParamsZodSchema = z4.object({
-  id: z4.uuid({
-    message: "Invalid Quranic Subject ID format. Must be a valid UUID.",
-  }),
-});
-
-export type TDeleteQuranicSubjectParamsZodSchema = z4.infer<typeof deleteQuranicSubjectParamsZodSchema>;
-
-// GET SINGLE QURANIC SUBJECT BY ID ZOD SCHEMA
-const getSingleQuranicSubjectZodSchema = z4.object({
-  id: z4.uuid({ 
-    message: "Invalid ID format. Must be a valid UUID." 
-  }),
-});
-
-export type TGetSingleQuranicSubjectZodSchema = z4.infer<typeof getSingleQuranicSubjectZodSchema>;
 
 export const quranicSubjectZodSchema = {
-    createQuranicSubjectZodSchema,
-    updateQuranicSubjectParamsZodSchema,
-    updateQuranicSubjectZodSchema,
-    updateQuranicSubjectSingleFieldParamsZodSchema,
-    updateQuranicSubjectSingleFieldZodSchema,
-    deleteQuranicSubjectParamsZodSchema,
-    getSingleQuranicSubjectZodSchema
-}
+  createQuranicSubjectZodSchema,
+  quranicSubjectIdParamsZodSchema,
+  updateQuranicSubjectZodSchema,
+  updateQuranicSubjectSingleFieldZodSchema,
+};

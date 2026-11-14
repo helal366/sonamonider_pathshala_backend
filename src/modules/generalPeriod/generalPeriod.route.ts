@@ -11,14 +11,14 @@ import { Role } from "#db-client";
 const router = Router();
 
 router.post(
-  "/create_period",
+  "/create_general_period",
   userAuth(Role.SUPER_ADMIN),
   validateZodSchema(periodZodSchema.createPeriodZodSchema),
   periodController.createPeriod,
 );
 
 router.patch(
-  "/update_period/:id",
+  "/update_general_period/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(periodZodSchema.updatePeriodParamsZodSchema),
   validateZodSchema(periodZodSchema.updatePeriodZodSchema),
@@ -26,7 +26,7 @@ router.patch(
 );
 
 router.patch(
-  "/update_single_period_field/:id",
+  "/update_single_general_period_field/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(periodZodSchema.updatePeriodParamsZodSchema),
   validateZodSchema(periodZodSchema.updatePeriodSingleFieldZodSchema),
@@ -34,23 +34,23 @@ router.patch(
 );
 
 router.delete(
-  "/delete_period/:id",
+  "/delete_general_period/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(periodZodSchema.deletePeriodParamsZodSchema),
   periodController.deletePeriod,
 );
 
 router.get(
-  "/get_periods",
+  "/get_general_periods",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   periodController.getAllPeriods,
 );
 
 router.get(
-  "/get_period/:id",
+  "/get_general_period/:general_subject_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(periodZodSchema.getSinglePeriodParamsZodSchema),
   periodController.getSinglePeriod,
 );
 
-export const periodRouter: Router = router;
+export const generalPeriodRouter: Router = router;

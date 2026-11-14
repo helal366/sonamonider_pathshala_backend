@@ -24,7 +24,7 @@ import { promotionHistoryRouter } from "./modules/promotionHistory/promotionHist
 import { quranicSubjectRouter } from "./modules/quranicSubject/quranicSubject.route.js";
 import { quranicPeriodRouter } from "./modules/quranicPeriod/quranicPeriod.route.js";
 import { generalSubjectRouter } from "./modules/generalSubject/generalSubject.route.js";
-import { periodRouter } from "./modules/generalPeriod/generalPeriod.route.js";
+import { generalPeriodRouter } from "./modules/generalPeriod/generalPeriod.route.js";
 import { classRoutineRouter } from "./modules/classRoutine/classRoutine.route.js";
 import { studentFeeRouter } from "./modules/studentFee/studentFee.route.js";
 import { standardStudentFeeRateRouter } from "./modules/standardStudentFeeRate/standardStudentFeeRate.route.js";
@@ -67,7 +67,7 @@ app.use("/api/v1/smps/promotion_history", promotionHistoryRouter);
 app.use("/api/v1/smps/quranic_subject", quranicSubjectRouter);
 app.use("/api/v1/smps/quranic_class_period", quranicPeriodRouter);
 app.use("/api/v1/smps/general_subject", generalSubjectRouter);
-app.use("/api/v1/smps/period", periodRouter);
+app.use("/api/v1/smps/general_period", generalPeriodRouter);
 app.use("/api/v1/smps/class_routine", classRoutineRouter);
 app.use("/api/v1/smps/student_fee", studentFeeRouter);
 app.use(

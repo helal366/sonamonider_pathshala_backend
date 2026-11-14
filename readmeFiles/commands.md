@@ -73,7 +73,8 @@ ibus engine                // ibus-avro
 echo $GTK_IM_MODULE
 echo $QT_IM_MODULE
 echo $XMODIFIERS
-/usr/bin/code
+/usr/bin/code                     //VS Code Snap
+/usr/share/code/bin/code          //VS Code .deb
 ```
 ## SSLCommerz test credit card numbers are :
 * Test Credit Card Account Numbers

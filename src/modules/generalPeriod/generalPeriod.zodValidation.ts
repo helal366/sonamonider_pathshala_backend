@@ -40,7 +40,7 @@ const createPeriodZodSchema = z4
   });
 
 const updatePeriodParamsZodSchema = z4.object({
-  id: z4.uuid({ message: "Invalid period ID format." }),
+  general_subject_id: z4.uuid({ message: "Invalid period ID format." }),
 });
 
 const updatePeriodZodSchema = createPeriodZodSchema;

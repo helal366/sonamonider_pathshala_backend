@@ -20,6 +20,10 @@
       "value": "00000000-0000-4000-8000-000000000001"
     },
     {
+      "key": "generalPeriodId",
+      "value": "00000000-0000-4000-8000-000000000027"
+    },
+    {
       "key": "classId",
       "value": "00000000-0000-4000-8000-000000000002"
     },
@@ -1938,7 +1942,7 @@
           "response": []
         },
         {
-          "name": "Update Quranic Subject/:Id",
+          "name": "Update Quranic Subject/:quranicSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1947,7 +1951,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_subject/{{quranicSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1964,7 +1968,7 @@
           "response": []
         },
         {
-          "name": "Update Quranic Single Subject Field/:Id",
+          "name": "Update Quranic Single Subject Field/:quranicSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1973,7 +1977,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_single_subject_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/update_quranic_single_subject_field/{{quranicSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1990,7 +1994,7 @@
           "response": []
         },
         {
-          "name": "Delete Quranic Subject/:Id",
+          "name": "Delete Quranic Subject/:quranicSubjectId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1999,7 +2003,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/delete_quranic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/delete_quranic_subject/{{quranicSubjectId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2019,11 +2023,11 @@
           "response": []
         },
         {
-          "name": "Get Quranic Subject/:Id",
+          "name": "Get Quranic Subject/:quranicSubjectId",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/get_quranic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/quranic_subject/get_quranic_subject/{{quranicSubjectId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2281,10 +2285,10 @@
       ]
     },
     {
-      "name": "Period",
+      "name": "General Period",
       "item": [
         {
-          "name": "Create Period",
+          "name": "Create General Period",
           "request": {
             "method": "POST",
             "header": [
@@ -2293,7 +2297,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/period/create_period",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/create_general_period",
             "auth": {
               "type": "noauth"
             },
@@ -2310,7 +2314,7 @@
           "response": []
         },
         {
-          "name": "Update Period/:Id",
+          "name": "Update General Period/:general_subject_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2319,7 +2323,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/period/update_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/update_general_period/{{generalPeriodId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2336,7 +2340,7 @@
           "response": []
         },
         {
-          "name": "Update Single Period Field/:Id",
+          "name": "Update Single General Period Field/:general_subject_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2345,7 +2349,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/period/update_single_period_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/update_single_general_period_field/{{generalPeriodId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2362,7 +2366,7 @@
           "response": []
         },
         {
-          "name": "Delete Period/:Id",
+          "name": "Delete General Period/:general_subject_id",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2371,7 +2375,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/period/delete_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/delete_general_period/{{generalPeriodId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2379,11 +2383,11 @@
           "response": []
         },
         {
-          "name": "Get Periods",
+          "name": "Get General Periods",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/period/get_periods",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/get_general_periods",
             "auth": {
               "type": "noauth"
             }
@@ -2391,11 +2395,11 @@
           "response": []
         },
         {
-          "name": "Get Period/:Id",
+          "name": "Get General Period/:general_subject_id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/period/get_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_period/get_general_period/{{generalPeriodId}}",
             "auth": {
               "type": "noauth"
             }

@@ -23,8 +23,8 @@ const createPeriod = catchAsync(async (req: Request, res: Response) => {
 
 const updatePeriod = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TUpdatePeriodParams;
-  const result = await periodServices.updatePeriod(req.body, user, id);
+  const { general_subject_id } = req.params as unknown as TUpdatePeriodParams;
+  const result = await periodServices.updatePeriod(req.body, user, general_subject_id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -36,11 +36,11 @@ const updatePeriod = catchAsync(async (req: Request, res: Response) => {
 const updatePeriodSingleField = catchAsync(
   async (req: Request, res: Response) => {
     const user = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TUpdatePeriodParams;
+    const { general_subject_id } = req.params as unknown as TUpdatePeriodParams;
     const result = await periodServices.updatePeriodSingleField(
       req.body,
       user,
-      id,
+      general_subject_id,
     );
     sendResponse(res, {
       success: true,
@@ -53,8 +53,8 @@ const updatePeriodSingleField = catchAsync(
 
 const deletePeriod = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TDeletePeriodParams;
-  const result = await periodServices.deletePeriod(id, user);
+  const { general_subject_id } = req.params as unknown as TDeletePeriodParams;
+  const result = await periodServices.deletePeriod(general_subject_id, user);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -76,8 +76,8 @@ const getAllPeriods = catchAsync(async (req: Request, res: Response) => {
 
 const getSinglePeriod = catchAsync(async (req: Request, res: Response) => {
   helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TGetSinglePeriodParams;
-  const result = await periodServices.getSinglePeriod(id);
+  const { general_subject_id } = req.params as unknown as TGetSinglePeriodParams;
+  const result = await periodServices.getSinglePeriod(general_subject_id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
