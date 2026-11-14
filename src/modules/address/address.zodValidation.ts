@@ -69,7 +69,6 @@ export type TDeleteAddressZodSchema = z4.infer<typeof deleteAddressZodSchema>;
 // ============================================================
 // UPDATE SINGLE ADDRESS FIELD ZOD SCHEMA
 // ============================================================
-
 export const updateAddressFieldZodSchema = z4.object({
   field: z4.enum(ADDRESS_UPDATE_FIELDS, "Invalid field name"),
   value: z4
@@ -98,7 +97,7 @@ export type TUpdateAddressFieldZodSchema = z4.infer<
 // ADDRESS OWNER ID PARAMS ZOD SCHEMA
 // ============================================================
 export const addressOwnerIdParamsZodSchema = z4.object({
-  address_id: z4.uuid("Invalid address owner ID."),
+  user_id: z4.uuid("Invalid address owner ID."),
 });
 export type TAddressOwnerIdParamsZodSchema = z4.infer<
   typeof addressOwnerIdParamsZodSchema

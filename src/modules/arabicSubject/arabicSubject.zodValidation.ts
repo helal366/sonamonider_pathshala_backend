@@ -4,7 +4,7 @@ import z4 from "zod/v4";
 // ARABIC SUBJECT ID PARAMS ZOD SCHEMA
 // ==========================================================
 const idParamsSchema = z4.object({
-  id: z4.uuid("Invalid Arabic subject ID format."),
+  arabic_subject_id: z4.uuid("Invalid Arabic subject ID format."),
 });
 
 // ==========================================================
@@ -68,7 +68,4 @@ export const arabicSubjectZodSchema = {
   getSingleArabicSubjectParamsZodSchema: idParamsSchema,
 };
 
-// ==========================================================
-// ARABIC SUBJECT ID PARAMS TYPE
-// ==========================================================
 export type TArabicSubjectIdParams = z4.infer<typeof idParamsSchema>;

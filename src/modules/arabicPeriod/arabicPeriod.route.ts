@@ -20,7 +20,7 @@ router.post(
 // DELETE ARABIC PERIOD ROUTE
 // ==========================================================
 router.delete(
-    "/delete_arabic_period/:id",
+    "/delete_arabic_period/:arabic_period_id",
     userAuth(Role.SUPER_ADMIN),
     validateZodParams(arabicPeriodZodSchema.deleteArabicPeriodParamsZodSchema),
     arabicPeriodController.deleteArabicPeriod
@@ -30,7 +30,7 @@ router.delete(
 // UPDATE ARABIC PERIOD SINGLE FIELD ROUTE
 // ==========================================================
 router.patch(
-    "/update_quranic_period/:id",
+    "/update_arabic_period_single_field/:arabic_period_id",
     userAuth(Role.SUPER_ADMIN),
     validateZodParams(arabicPeriodZodSchema.updateArabicPeriodSingleFieldParamsZodSchema),
     validateZodSchema(arabicPeriodZodSchema.updateArabicPeriodSingleFieldZodSchema),
@@ -50,7 +50,7 @@ router.get(
 // GET SINGLE ARABIC PERIOD ROUTE
 // ==========================================================
 router.get(
-    "/single_arabic_period/:id",
+    "/single_arabic_period/:arabic_period_id",
     userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
     validateZodParams(arabicPeriodZodSchema.getSingleArabicPeriodParamsZodSchema),
     arabicPeriodController.getSingleArabicPeriod

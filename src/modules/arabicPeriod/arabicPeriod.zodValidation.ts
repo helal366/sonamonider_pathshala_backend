@@ -63,24 +63,12 @@ export type TCreateArabicPeriodZodSchema = z4.infer<
 >;
 
 // ==========================================================
-// DELETE ARABIC PERIOD ZOD SCHEMA
+//ARABIC PERIOD ID PARAMS ZOD SCHEMA
 // ==========================================================
-const deleteArabicPeriodParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid arabic period ID format."),
+const arabicPeriodIdParamsZodSchema = z4.object({
+  arabic_period_id: z4.uuid("Invalid arabic period ID format."),
 });
-export type TDeleteArabicPeriodParamsZodSchema = z4.infer<
-  typeof deleteArabicPeriodParamsZodSchema
->;
 
-// ==========================================================
-// UPDATE ARABIC PERIOD SINGLE FIELD ZOD SCHEMA
-// ==========================================================
-const updateArabicPeriodSingleFieldParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid arabic period ID format."),
-});
-export type TUpdateArabicPeriodSingleFieldParamsZodSchema = z4.infer<
-  typeof updateArabicPeriodSingleFieldParamsZodSchema
->;
 
 const updateArabicPeriodSingleFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
@@ -95,33 +83,34 @@ const updateArabicPeriodSingleFieldZodSchema = z4.discriminatedUnion("field", [
       .trim()
       .min(1, "Field value is required."),
   }),
-  ...(["start_time", "end_time"] as const).map((timeField)=>
+  ...(["start_time", "end_time"] as const).map((timeField) =>
     z4.object({
       field: z4.literal(timeField),
-      value: z4.string({
-        error: () => `${timeField.replace("_", " ")}  is required.`
-      }).trim().regex(
-        timeStringRegex,
+      value: z4
+        .string({
+          error: () => `${timeField.replace("_", " ")}  is required.`,
+        })
+        .trim()
+        .regex(
+          timeStringRegex,
           "Invalid time format. Expected format like '6:00 AM' or '12:30 PM'.",
-      )
-    })
-  )
+        ),
+    }),
+  ),
 ]);
 export type TUpdateArabicPeriodSingleFieldZodSchema = z4.infer<
   typeof updateArabicPeriodSingleFieldZodSchema
 >;
 
-// ==========================================================
-// GET SINGLE ARABIC PERIOD ZOD SCHEMA
-// ==========================================================
-const getSingleArabicPeriodParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid Arabic period ID format.")
-});
-export type TGetSingleArabicPeriodParamsZodSchema = z4.infer<typeof getSingleArabicPeriodParamsZodSchema>;
+
 export const arabicPeriodZodSchema = {
   createArabicPeriodZodSchema,
-  deleteArabicPeriodParamsZodSchema,
-  updateArabicPeriodSingleFieldParamsZodSchema,
+  deleteArabicPeriodParamsZodSchema: arabicPeriodIdParamsZodSchema,
+  updateArabicPeriodSingleFieldParamsZodSchema: arabicPeriodIdParamsZodSchema,
   updateArabicPeriodSingleFieldZodSchema,
-  getSingleArabicPeriodParamsZodSchema
+  getSingleArabicPeriodParamsZodSchema:arabicPeriodIdParamsZodSchema,
 };
+
+export type TArabicPeriodIdParamsZodSchema = z4.infer<
+  typeof arabicPeriodIdParamsZodSchema
+>;

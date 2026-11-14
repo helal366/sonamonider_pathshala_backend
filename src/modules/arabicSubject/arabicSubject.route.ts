@@ -24,7 +24,7 @@ router.post(
 // UPDATE ARABIC SUBJECT ROUTE
 // ==========================================================
 router.patch(
-  "/update_arabic_subject/:id",
+  "/update_arabic_subject/:arabic_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     arabicSubjectZodSchema.updateArabicSubjectParamsZodSchema,
@@ -37,7 +37,7 @@ router.patch(
 // UPDATE ARABIC SUBJECT SINGLE FIELD ROUTE
 // ==========================================================
 router.patch(
-  "/update_arabic_single_subject_field/:id",
+  "/update_arabic_single_subject_field/:arabic_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     arabicSubjectZodSchema.updateArabicSubjectSingleFieldParamsZodSchema,
@@ -52,7 +52,7 @@ router.patch(
 // DELETE ARABIC SUBJECT ROUTE
 // ==========================================================
 router.delete(
-  "/delete_arabic_subject/:id",
+  "/delete_arabic_subject/:arabic_subject_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(
     arabicSubjectZodSchema.deleteArabicSubjectParamsZodSchema,
@@ -73,7 +73,7 @@ router.get(
 // GET SINGLE ARABIC SUBJECT ROUTE
 // ==========================================================
 router.get(
-  "/get_arabic_subject/:id",
+  "/get_arabic_subject/:arabic_subject_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(
     arabicSubjectZodSchema.getSingleArabicSubjectParamsZodSchema,

@@ -7,14 +7,35 @@ import { prisma } from "../../lib/prisma";
 // ============================================================
 const getAllUsers = async () => {
   const allUsers = await prisma.user.findMany({
-    omit: { user_password: true },
-    include: {
+    select:{
+      full_name: true,
+      gender: true,
+      blood_group: true,
+      date_of_birth: true,
+      height_in_cm: true,
+      weight_in_kg: true,
+      religion: true,
+      nationality: true,
+      birth_certificate_number: true,
+      nid_number: true,
+      photo_url: true,
+      mobile_number: true,
+      is_mobile_verified: true,
+      email: true,
+      is_email_verified: true,
+      user_name: true,
+      active_status: true,
+      is_deleted: true,
+      current_role: true,
+      joining_date: true,
       current_position: {
-        select: { position_name: true },
+        select: {position_name: true}
       },
-      current_role: {
-        select: { role_name: true },
-      },
+      father_details: true,
+      mother_details: true,
+      spouse_information: true,
+      present_address: true,
+      permanent_address: true
     },
   });
 
@@ -56,14 +77,35 @@ const getInactiveUsers=async()=>{
       active_status: "INACTIVE",
       is_deleted: false,
     },
-    omit: { user_password: true },
-    include: {
+    select:{
+      full_name: true,
+      gender: true,
+      blood_group: true,
+      date_of_birth: true,
+      height_in_cm: true,
+      weight_in_kg: true,
+      religion: true,
+      nationality: true,
+      birth_certificate_number: true,
+      nid_number: true,
+      photo_url: true,
+      mobile_number: true,
+      is_mobile_verified: true,
+      email: true,
+      is_email_verified: true,
+      user_name: true,
+      active_status: true,
+      is_deleted: true,
+      current_role: true,
+      joining_date: true,
       current_position: {
-        select: { position_name: true },
+        select: {position_name: true}
       },
-      current_role: {
-        select: { role_name: true },
-      },
+      father_details: true,
+      mother_details: true,
+      spouse_information: true,
+      present_address: true,
+      permanent_address: true
     },
   });
   if (inactiveUsers.length === 0) {
@@ -81,14 +123,35 @@ const getSoftDeletedUsers=async()=>{
     where: {
       is_deleted: true,
     },
-    omit: { user_password: true },
-    include: {
+    select:{
+      full_name: true,
+      gender: true,
+      blood_group: true,
+      date_of_birth: true,
+      height_in_cm: true,
+      weight_in_kg: true,
+      religion: true,
+      nationality: true,
+      birth_certificate_number: true,
+      nid_number: true,
+      photo_url: true,
+      mobile_number: true,
+      is_mobile_verified: true,
+      email: true,
+      is_email_verified: true,
+      user_name: true,
+      active_status: true,
+      is_deleted: true,
+      current_role: true,
+      joining_date: true,
       current_position: {
-        select: { position_name: true },
+        select: {position_name: true}
       },
-      current_role: {
-        select: { role_name: true },
-      },
+      father_details: true,
+      mother_details: true,
+      spouse_information: true,
+      present_address: true,
+      permanent_address: true
     },
   });
   if (softDeletedUsers.length === 0) {
@@ -133,15 +196,6 @@ const getSingleUser = async (id: string) => {
       present_address: true,
       permanent_address: true
     },
-    // include: {
-    //   management_staff_profile: true,
-    //   academic_staff_profile: true,
-    //   student_profile: true,
-    //   governing_body_profile: true,
-    //   current_position: {
-    //     select: { position_name: true },
-    //   },
-    // },
   });
 
   if (!singleUser) {

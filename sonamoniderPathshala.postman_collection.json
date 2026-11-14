@@ -644,7 +644,7 @@
           "response": []
         },
         {
-          "name": "DELETE Address/Delete Address/Id",
+          "name": "DELETE Address/Delete Address/userId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -656,12 +656,21 @@
             "url": "{{baseUrl}}/api/v1/smps/user/address/delete_address/{{userId}}",
             "auth": {
               "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner_type\": \"USER\",\n  \"address_type\": \"PRESENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []
         },
         {
-          "name": "PATCH Address/Update Address Field/Id",
+          "name": "PATCH Address/Update Address Field/userId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3280,7 +3289,7 @@
           "response": []
         },
         {
-          "name": "Delete Arabic Period/:Id",
+          "name": "Delete Arabic Period/:arabicPeriodId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3289,7 +3298,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_period/delete_arabic_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/delete_arabic_period/{{arabicPeriodId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3297,7 +3306,7 @@
           "response": []
         },
         {
-          "name": "Update Quranic Period/:Id",
+          "name": "Update Quranic Period/:arabicPeriodId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3306,7 +3315,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_period/update_quranic_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/update_arabic_period_single_field/{{arabicPeriodId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3335,11 +3344,11 @@
           "response": []
         },
         {
-          "name": "GET Single Arabic Period/Id",
+          "name": "GET Single Arabic Period/arabicPeriodId",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_period/single_arabic_period/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_period/single_arabic_period/{{arabicPeriodId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3378,7 +3387,7 @@
           "response": []
         },
         {
-          "name": "Update Arabic Subject/:Id",
+          "name": "Update Arabic Subject/:arabicSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3387,7 +3396,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_subject/{{arabicSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3404,7 +3413,7 @@
           "response": []
         },
         {
-          "name": "Update Arabic Single Subject Field/:Id",
+          "name": "Update Arabic Single Subject Field/:arabicSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3413,7 +3422,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_single_subject_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/update_arabic_single_subject_field/{{arabicSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3430,7 +3439,7 @@
           "response": []
         },
         {
-          "name": "Delete Arabic Subject/:Id",
+          "name": "Delete Arabic Subject/:arabicSubjectId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3439,7 +3448,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/delete_arabic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/delete_arabic_subject/{{arabicSubjectId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3459,11 +3468,11 @@
           "response": []
         },
         {
-          "name": "Get Arabic Subject/:Id",
+          "name": "Get Arabic Subject/:arabicSubjectId",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/get_arabic_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/arabic_subject/get_arabic_subject/{{arabicSubjectId}}",
             "auth": {
               "type": "noauth"
             }

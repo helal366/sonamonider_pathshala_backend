@@ -151,7 +151,7 @@ const deleteAddress = async (
 };
 
 // ============================================================
-// UPDATE ADDRESS SERVICE LAYER
+// UPDATE ADDRESS FIELD SERVICE LAYER
 // ============================================================
 const updateUserAddressFiled = async (
   loggedInUser: TLoggedInUser,

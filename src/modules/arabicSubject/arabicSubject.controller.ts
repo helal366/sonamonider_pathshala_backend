@@ -31,11 +31,11 @@ const createArabicSubject = catchAsync(
 const updateArabicSubject = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TArabicSubjectIdParams;
+    const { arabic_subject_id } = req.params as unknown as TArabicSubjectIdParams;
     const result = await arabicSubjectServices.updateArabicSubject(
       req.body,
       loggedInUser,
-      id,
+      arabic_subject_id,
     );
     sendResponse(res, {
       success: true,
@@ -52,11 +52,11 @@ const updateArabicSubject = catchAsync(
 const updateArabicSubjectSingleField = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TArabicSubjectIdParams;
+    const { arabic_subject_id } = req.params as unknown as TArabicSubjectIdParams;
     const result = await arabicSubjectServices.updateArabicSubjectSingleField(
       req.body,
       loggedInUser,
-      id,
+      arabic_subject_id,
     );
     sendResponse(res, {
       success: true,
@@ -73,9 +73,9 @@ const updateArabicSubjectSingleField = catchAsync(
 const deleteArabicSubject = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TArabicSubjectIdParams;
+    const { arabic_subject_id } = req.params as unknown as TArabicSubjectIdParams;
     const result = await arabicSubjectServices.deleteArabicSubject(
-      id,
+      arabic_subject_id,
       loggedInUser,
     );
     sendResponse(res, {
@@ -107,8 +107,8 @@ const getAllArabicSubjects = catchAsync(
 // ==========================================================
 const getSingleArabicSubject = catchAsync(
   async (req: Request, res: Response) => {
-    const { id } = req.params as unknown as TArabicSubjectIdParams;
-    const result = await arabicSubjectServices.getSingleArabicSubject(id);
+    const { arabic_subject_id } = req.params as unknown as TArabicSubjectIdParams;
+    const result = await arabicSubjectServices.getSingleArabicSubject(arabic_subject_id);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,

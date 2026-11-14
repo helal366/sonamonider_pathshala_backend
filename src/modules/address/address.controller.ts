@@ -8,7 +8,7 @@ import { userAddressServices } from "./address.service.js";
 import { TAddressOwnerIdParamsZodSchema } from "./address.zodValidation.js";
 
 // ============================================================
-// UPDATE ADDRESS CONTROLLER
+// CREATE ADDRESS CONTROLLER
 // ============================================================
 const createAddress = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -36,12 +36,12 @@ const deleteAddress = catchAsync(
   async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
-    const { address_id } = req.params;
+    const { user_id } = req.params;
 
     const result = await userAddressServices.deleteAddress(
       loggedInUser,
       payload,
-      address_id,
+      user_id,
     );
 
     sendResponse(res, {
@@ -52,6 +52,7 @@ const deleteAddress = catchAsync(
     });
   },
 );
+
 // ============================================================
 // UPDATE ADDRESS FIELD CONTROLLER
 // ============================================================
@@ -59,12 +60,12 @@ const updateUserAddressField = catchAsync(
   async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
-    const { address_id } = req.params;
+    const { user_id } = req.params;
 
     const result = await userAddressServices.updateUserAddressFiled(
       loggedInUser,
       payload,
-      address_id,
+      user_id,
     );
 
     sendResponse(res, {
@@ -75,6 +76,7 @@ const updateUserAddressField = catchAsync(
     });
   },
 );
+
 export const userAddressController = {
   createAddress,
   deleteAddress,
