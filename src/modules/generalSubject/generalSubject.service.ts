@@ -3,9 +3,9 @@ import { StatusCodes } from "http-status-codes";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
 import { prisma } from "../../lib/prisma.js";
 import {
-  TCreateSubjectPayload,
-  TUpdateSubjectPayload,
-  TUpdateSubjectSingleFieldPayload,
+  TCreateGeneralSubjectPayload,
+  TUpdateGeneralSubjectPayload,
+  TUpdateGeneralSubjectSingleFieldPayload,
 } from "./generalSubject.zodValidation.js";
 
 type LoggedInUser = NonNullable<Express.Request["user"]>;
@@ -17,7 +17,7 @@ const findNameConflict = async (name: string, id?: string) =>
   });
 
 const createSubject = async (
-  payload: TCreateSubjectPayload,
+  payload: TCreateGeneralSubjectPayload,
   user: LoggedInUser,
 ) => {
   const subjectName = payload.general_subject_name.trim().toUpperCase();
@@ -39,7 +39,10 @@ const createSubject = async (
         action: "CREATE",
         changed_by_id: user.user_id,
         old_value: Prisma.JsonNull,
-        new_value: { general_subject_name: subjectName, created_by_id: user.user_id },
+        new_value: {
+          general_subject_name: subjectName,
+          created_by_id: user.user_id,
+        },
       },
     });
     return subject;
@@ -47,7 +50,7 @@ const createSubject = async (
 };
 
 const updateSubject = async (
-  payload: TUpdateSubjectPayload,
+  payload: TUpdateGeneralSubjectPayload,
   user: LoggedInUser,
   id: string,
 ) => {
@@ -81,7 +84,7 @@ const updateSubject = async (
 };
 
 const updateSubjectSingleField = async (
-  payload: TUpdateSubjectSingleFieldPayload,
+  payload: TUpdateGeneralSubjectSingleFieldPayload,
   user: LoggedInUser,
   id: string,
 ) => {

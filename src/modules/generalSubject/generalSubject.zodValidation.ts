@@ -1,45 +1,55 @@
 import z4 from "zod/v4";
 
-const subjectName = (requiredMessage: string) =>
+const generalSubjectName = (requiredMessage: string) =>
   z4
     .string({ error: requiredMessage })
     .trim()
     .min(1, "Subject name cannot be empty.");
 
-const createSubjectZodSchema = z4.object({
-  general_subject_name: subjectName("Subject name is required."),
+const createGeneralSubjectZodSchema = z4.object({
+  general_subject_name: generalSubjectName("Subject name is required."),
 });
 
-const updateSubjectParamsZodSchema = z4.object({
-  id: z4.uuid({ message: "Invalid subject ID format." }),
+const updateGeneralSubjectIdParamsZodSchema = z4.object({
+  general_subject_id: z4.uuid({ message: "Invalid subject ID format." }),
 });
 
-const updateSubjectZodSchema = createSubjectZodSchema;
+const updateGeneralSubjectZodSchema = createGeneralSubjectZodSchema;
 
-const updateSubjectSingleFieldZodSchema = z4.object({
+const updateGeneralSubjectSingleFieldZodSchema = z4.object({
   field: z4.literal("general_subject_name"),
-  value: subjectName("Subject name is required."),
+  value: generalSubjectName("Subject name is required."),
 });
 
-const deleteSubjectParamsZodSchema = updateSubjectParamsZodSchema;
-const getSingleSubjectParamsZodSchema = updateSubjectParamsZodSchema;
+const deleteGeneralSubjectIdParamsZodSchema =
+  updateGeneralSubjectIdParamsZodSchema;
+const getSingleGeneralSubjectParamsZodSchema =
+  updateGeneralSubjectIdParamsZodSchema;
 
-export type TCreateSubjectPayload = z4.infer<typeof createSubjectZodSchema>;
-export type TUpdateSubjectParams = z4.infer<typeof updateSubjectParamsZodSchema>;
-export type TUpdateSubjectPayload = z4.infer<typeof updateSubjectZodSchema>;
-export type TUpdateSubjectSingleFieldPayload = z4.infer<
-  typeof updateSubjectSingleFieldZodSchema
+export type TCreateGeneralSubjectPayload = z4.infer<
+  typeof createGeneralSubjectZodSchema
 >;
-export type TDeleteSubjectParams = z4.infer<typeof deleteSubjectParamsZodSchema>;
+export type TUpdateGeneralSubjectParams = z4.infer<
+  typeof updateGeneralSubjectIdParamsZodSchema
+>;
+export type TUpdateGeneralSubjectPayload = z4.infer<
+  typeof updateGeneralSubjectZodSchema
+>;
+export type TUpdateGeneralSubjectSingleFieldPayload = z4.infer<
+  typeof updateGeneralSubjectSingleFieldZodSchema
+>;
+export type TDeleteGeneralSubjectParams = z4.infer<
+  typeof deleteGeneralSubjectIdParamsZodSchema
+>;
 export type TGetSingleSubjectParams = z4.infer<
-  typeof getSingleSubjectParamsZodSchema
+  typeof getSingleGeneralSubjectParamsZodSchema
 >;
 
 export const subjectZodSchema = {
-  createSubjectZodSchema,
-  updateSubjectParamsZodSchema,
-  updateSubjectZodSchema,
-  updateSubjectSingleFieldZodSchema,
-  deleteSubjectParamsZodSchema,
-  getSingleSubjectParamsZodSchema,
+  createGeneralSubjectZodSchema,
+  updateGeneralSubjectIdParamsZodSchema,
+  updateGeneralSubjectZodSchema,
+  updateGeneralSubjectSingleFieldZodSchema,
+  deleteGeneralSubjectIdParamsZodSchema,
+  getSingleGeneralSubjectParamsZodSchema,
 };

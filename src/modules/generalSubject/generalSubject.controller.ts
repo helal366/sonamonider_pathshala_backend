@@ -5,9 +5,9 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { sendResponse } from "../../utils/sendResponse.js";
 import { subjectServices } from "./generalSubject.service.js";
 import {
-  TDeleteSubjectParams,
+  TDeleteGeneralSubjectParams,
   TGetSingleSubjectParams,
-  TUpdateSubjectParams,
+  TUpdateGeneralSubjectParams,
 } from "./generalSubject.zodValidation.js";
 
 const createSubject = catchAsync(async (req: Request, res: Response) => {
@@ -23,8 +23,8 @@ const createSubject = catchAsync(async (req: Request, res: Response) => {
 
 const updateSubject = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TUpdateSubjectParams;
-  const result = await subjectServices.updateSubject(req.body, user, id);
+  const { general_subject_id } = req.params as unknown as TUpdateGeneralSubjectParams;
+  const result = await subjectServices.updateSubject(req.body, user, general_subject_id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -36,11 +36,11 @@ const updateSubject = catchAsync(async (req: Request, res: Response) => {
 const updateSubjectSingleField = catchAsync(
   async (req: Request, res: Response) => {
     const user = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TUpdateSubjectParams;
+    const { general_subject_id } = req.params as unknown as TUpdateGeneralSubjectParams;
     const result = await subjectServices.updateSubjectSingleField(
       req.body,
       user,
-      id,
+      general_subject_id,
     );
     sendResponse(res, {
       success: true,
@@ -53,8 +53,8 @@ const updateSubjectSingleField = catchAsync(
 
 const deleteSubject = catchAsync(async (req: Request, res: Response) => {
   const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TDeleteSubjectParams;
-  const result = await subjectServices.deleteSubject(id, user);
+  const { general_subject_id } = req.params as unknown as TDeleteGeneralSubjectParams;
+  const result = await subjectServices.deleteSubject(general_subject_id, user);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -76,8 +76,8 @@ const getAllSubjects = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleSubject = catchAsync(async (req: Request, res: Response) => {
   helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TGetSingleSubjectParams;
-  const result = await subjectServices.getSingleSubject(id);
+  const { general_subject_id } = req.params as unknown as TGetSingleSubjectParams;
+  const result = await subjectServices.getSingleSubject(general_subject_id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

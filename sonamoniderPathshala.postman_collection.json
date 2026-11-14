@@ -2186,7 +2186,7 @@
           "response": []
         },
         {
-          "name": "Update General Subject/:Id",
+          "name": "Update General Subject/:generalSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2195,7 +2195,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_general_subject/{{Id}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_general_subject/{{generalSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2212,7 +2212,7 @@
           "response": []
         },
         {
-          "name": "Update Single General Subject Field/:Id",
+          "name": "Update Single General Subject Field/:generalSubjectId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2221,7 +2221,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_single_general_subject_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/update_single_general_subject_field/{{generalSubjectId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2238,7 +2238,7 @@
           "response": []
         },
         {
-          "name": "Delete General Subject/:Id",
+          "name": "Delete General Subject/:generalSubjectId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2247,7 +2247,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/general_subject/delete_general_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/delete_general_subject/{{generalSubjectId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2267,11 +2267,11 @@
           "response": []
         },
         {
-          "name": "Get General Subject/:Id",
+          "name": "Get General Subject/:generalSubjectId",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/general_subject/get_general_subject/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/general_subject/get_general_subject/{{generalSubjectId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3306,7 +3306,7 @@
           "response": []
         },
         {
-          "name": "Update Quranic Period/:arabicPeriodId",
+          "name": "Update Arabic Period/:arabicPeriodId",
           "request": {
             "method": "PATCH",
             "header": [

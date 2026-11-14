@@ -7,12 +7,13 @@ import { transporter } from "./lib/nodemailer.js";
 
 async function connectDB() {
   try {
-    
     await prisma.$connect();
     console.log("Connected to the database successfully.");
-    
+
     await redisClient.connect();
     console.log("Redis connected successfully.");
+    console.log("Redis is ready:", redisClient.isReady);
+    console.log("Redis is open:", redisClient.isOpen);
 
     await transporter.verify();
     console.log("Nodemailer connected successfully.");

@@ -27,7 +27,10 @@ const createArabicPeriod = async (
     select: { id: true },
   });
   if (arabicPeriod) {
-    throw new AppError(`Arabic period already exists.`, StatusCodes.CONFLICT);
+    throw new AppError(
+      `Arabic period ${cleanArabicPeriodName} already exists.`,
+      StatusCodes.CONFLICT,
+    );
   }
 
   return prisma.$transaction(async (transaction) => {
@@ -180,7 +183,22 @@ const updateArabicPeriodSingleField = async (
 // GET ALL ARABIC PERIOD SERVICE LAYER
 // ==========================================================
 const getAllArabicPeriods = async () => {
-  return prisma.arabicPeriod.findMany();
+  return prisma.arabicPeriod.findMany({
+    select: {
+      arabic_period_name: true,
+      start_time: true,
+      end_time: true,
+      class_routines: {
+        select: {
+          class: {
+            select: {
+              class_name: true,
+            },
+          },
+        },
+      },
+    },
+  });
 };
 
 // ==========================================================
@@ -190,15 +208,17 @@ const getSingleArabicPeriod = async (arabicPeriodId: string) => {
   // Find and check the arabic period existance
   const arabicPeriod = await prisma.arabicPeriod.findUnique({
     where: { id: arabicPeriodId },
-    include: {
+    select: {
+      arabic_period_name: true,
+      start_time: true,
+      end_time: true,
       class_routines: {
-        include: {
+        select: {
           class: {
             select: {
               class_name: true,
             },
           },
-          students: true,
         },
       },
     },

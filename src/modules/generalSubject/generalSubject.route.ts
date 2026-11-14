@@ -13,30 +13,30 @@ const router = Router();
 router.post(
   "/create_general_subject",
   userAuth(Role.SUPER_ADMIN),
-  validateZodSchema(subjectZodSchema.createSubjectZodSchema),
+  validateZodSchema(subjectZodSchema.createGeneralSubjectZodSchema),
   subjectController.createSubject,
 );
 
 router.patch(
-  "/update_general_subject/:id",
+  "/update_general_subject/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
-  validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
-  validateZodSchema(subjectZodSchema.updateSubjectZodSchema),
+  validateZodParams(subjectZodSchema.updateGeneralSubjectIdParamsZodSchema),
+  validateZodSchema(subjectZodSchema.updateGeneralSubjectZodSchema),
   subjectController.updateSubject,
 );
 
 router.patch(
-  "/update_single_general_subject_field/:id",
+  "/update_single_general_subject_field/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
-  validateZodParams(subjectZodSchema.updateSubjectParamsZodSchema),
-  validateZodSchema(subjectZodSchema.updateSubjectSingleFieldZodSchema),
+  validateZodParams(subjectZodSchema.updateGeneralSubjectIdParamsZodSchema),
+  validateZodSchema(subjectZodSchema.updateGeneralSubjectSingleFieldZodSchema),
   subjectController.updateSubjectSingleField,
 );
 
 router.delete(
-  "/delete_general_subject/:id",
+  "/delete_general_subject/:general_subject_id",
   userAuth(Role.SUPER_ADMIN),
-  validateZodParams(subjectZodSchema.deleteSubjectParamsZodSchema),
+  validateZodParams(subjectZodSchema.deleteGeneralSubjectIdParamsZodSchema),
   subjectController.deleteSubject,
 );
 
@@ -47,9 +47,9 @@ router.get(
 );
 
 router.get(
-  "/get_general_subject/:id",
+  "/get_general_subject/:general_subject_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(subjectZodSchema.getSingleSubjectParamsZodSchema),
+  validateZodParams(subjectZodSchema.getSingleGeneralSubjectParamsZodSchema),
   subjectController.getSingleSubject,
 );
 

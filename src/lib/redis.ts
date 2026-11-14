@@ -9,3 +9,16 @@ export const redisClient = createClient({
     port: Number(envVars.REDIS_PORT),
   },
 });
+
+// Handle Redis errors
+redisClient.on("error", (error) => {
+  console.error("Redis Client Error:", error);
+});
+
+redisClient.on("reconnecting", () => {
+  console.log("Redis reconnecting...");
+});
+
+redisClient.on("ready", () => {
+  console.log("Redis is ready.");
+});
