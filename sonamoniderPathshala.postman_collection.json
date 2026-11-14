@@ -1505,7 +1505,7 @@
           "response": []
         },
         {
-          "name": "DELETE Delete/Id",
+          "name": "DELETE Delete/AcademicYearId",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1514,7 +1514,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/delete/{{academicYearId}}",
             "auth": {
               "type": "noauth"
             }
@@ -1522,7 +1522,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:AcademicYearId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1531,7 +1531,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/update_field/{{academicYearId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1564,7 +1564,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/academic_year/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/academic_year/{{academicYearId}}",
             "auth": {
               "type": "noauth"
             }
@@ -1577,7 +1577,7 @@
       "name": "Academic Staff",
       "item": [
         {
-          "name": "Update Subject/:Id",
+          "name": "Update Subject/:academicStaffId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1603,7 +1603,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:academicStaffId",
           "request": {
             "method": "PATCH",
             "header": [

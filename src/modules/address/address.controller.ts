@@ -36,12 +36,12 @@ const deleteAddress = catchAsync(
   async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
-    const { id } = req.params;
+    const { address_id } = req.params;
 
     const result = await userAddressServices.deleteAddress(
       loggedInUser,
       payload,
-      id,
+      address_id,
     );
 
     sendResponse(res, {
@@ -59,12 +59,12 @@ const updateUserAddressField = catchAsync(
   async (req: Request<TAddressOwnerIdParamsZodSchema>, res: Response) => {
     const loggedInUser: TLoggedInUser = helperFunctions.requiredUser(req);
     const payload = req.body;
-    const { id } = req.params;
+    const { address_id } = req.params;
 
     const result = await userAddressServices.updateUserAddressFiled(
       loggedInUser,
       payload,
-      id,
+      address_id,
     );
 
     sendResponse(res, {

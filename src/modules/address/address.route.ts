@@ -21,14 +21,14 @@ router.post(
 );
 
 router.delete(
-  "/address/delete_address/:id",
+  "/address/delete_address/:address_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(addressZodSchema.addressOwnerIdParamsZodSchema),
   validateZodSchema(addressZodSchema.deleteAddressZodSchema),
   userAddressController.deleteAddress,
 );
 router.patch(
-  "/address/update_address_field/:id",
+  "/address/update_address_field/:address_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(addressZodSchema.addressOwnerIdParamsZodSchema),
   validateZodSchema(addressZodSchema.updateAddressFieldZodSchema),

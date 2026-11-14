@@ -156,9 +156,13 @@ const getSingleAcademicYearWithHistory = async (academic_year_id: string) => {
       student: {
         select: {
           id: true,
-          full_name: true,
-          email: true,
-          mobile_number: true,
+          user_primary_data: {
+            select: {
+              full_name: true,
+              email: true,
+              mobile_number: true,
+            },
+          },
           // Includes their current structural active class context
           active_class: {
             select: {

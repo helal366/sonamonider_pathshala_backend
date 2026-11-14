@@ -24,7 +24,7 @@ export type TCreateAcademicYearZodSchema = z4.infer<
 // DELETE ACADEMIC YEAR ZOD SCHEMA
 // ==========================================
 const academicYearIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid academic year ID."),
+  academic_year_id: z4.uuid("Invalid academic year ID."),
 });
 export type TAcademicYearIdParamsZodSchema = z4.infer<
   typeof academicYearIdParamsZodSchema
@@ -41,17 +41,9 @@ export type TUpdateAcademicYearFieldZodSchema = z4.infer<
   typeof updateAcademicYearFieldZodSchema
 >;
 
-// ==========================================
-// GET SINGLE ACADEMIC YEAR ZOD SCHEMA
-// ==========================================
-const getSingleAcademicYearZodSchema = z4.object({
-  id: z4.uuid("Invalid ID format."),
-});
-export type TGetSingleAcademicYearZodSchema = z4.infer<typeof getSingleAcademicYearZodSchema>;
 
 export const academicYearZodSchema = {
   createAcademicYearZodSchema,
   academicYearIdParamsZodSchema,
   updateAcademicYearFieldZodSchema,
-  getSingleAcademicYearZodSchema
 };

@@ -24,7 +24,7 @@ router.post(
 // DELETE ACADEMIC YEAR ROUTE
 // ==========================================
 router.delete(
-  "/delete/:id",
+  "/delete/:academic_year_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(academicYearZodSchema.academicYearIdParamsZodSchema),
   academicYearController.deleteAcademicYear,
@@ -34,7 +34,7 @@ router.delete(
 // UPDATE ACADEMIC YEAR FIELD ROUTE
 // ==========================================
 router.patch(
-  "/update_field/:id",
+  "/update_field/:academic_year_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(academicYearZodSchema.academicYearIdParamsZodSchema),
   validateZodSchema(academicYearZodSchema.updateAcademicYearFieldZodSchema),
@@ -54,9 +54,9 @@ router.get(
 // GET SINGLE ACADEMIC YEAR ROUTE
 // ==========================================
 router.get(
-  "/:id",
+  "/:academic_year_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
-  validateZodParams(academicYearZodSchema.getSingleAcademicYearZodSchema),
+  validateZodParams(academicYearZodSchema.academicYearIdParamsZodSchema),
   academicYearController.getSingleAcademicYearWithHistory,
 );
 export const academicYearRouter: Router = router;

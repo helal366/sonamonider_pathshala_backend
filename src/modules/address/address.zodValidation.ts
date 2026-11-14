@@ -98,7 +98,7 @@ export type TUpdateAddressFieldZodSchema = z4.infer<
 // ADDRESS OWNER ID PARAMS ZOD SCHEMA
 // ============================================================
 export const addressOwnerIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid address owner ID."),
+  address_id: z4.uuid("Invalid address owner ID."),
 });
 export type TAddressOwnerIdParamsZodSchema = z4.infer<
   typeof addressOwnerIdParamsZodSchema

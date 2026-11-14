@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Department, Prisma, Role, Section, Shift } from "#db-client";
+import { Prisma, Role, Section, Shift } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 

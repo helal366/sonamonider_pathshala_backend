@@ -25,10 +25,10 @@ model User {
   active_status ActiveStatus @default(ACTIVE)
   is_deleted    Boolean      @default(false)
 
-  promotion_requests PromotionRequest[]
-
   current_role Role?
   joining_date DateTime
+
+  promotion_requests PromotionRequest[]
 
   current_position_id String?
   current_position    UserPosition? @relation("user_position_relation", fields: [current_position_id], references: [id], onDelete: Restrict, onUpdate: Cascade)

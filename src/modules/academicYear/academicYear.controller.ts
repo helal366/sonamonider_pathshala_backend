@@ -31,7 +31,7 @@ const createAcademicYear = catchAsync(async (req: Request, res: Response) => {
 const deleteAcademicYear = catchAsync(async (req: Request<TAcademicYearIdParamsZodSchema>, res: Response) => {
   const loggedInUser = helperFunctions.requiredUser(req);
   const result = await academicYearServices.deleteAcademicYear(
-    req.params.id,
+    req.params.academic_year_id,
     loggedInUser,
   );
 
@@ -53,7 +53,7 @@ const updateAcademicYearField = catchAsync(
     const result = await academicYearServices.updateAcademicYearField(
       payload,
       loggedInUser,
-      req.params.id,
+      req.params.academic_year_id,
     );
 
     sendResponse(res, {
@@ -86,7 +86,7 @@ const getSingleAcademicYearWithHistory = catchAsync(
     helperFunctions.requiredUser(req);
     const result =
       await academicYearServices.getSingleAcademicYearWithHistory(
-        req.params.id,
+        req.params.academic_year_id,
       );
     sendResponse(res, {
       success: true,
