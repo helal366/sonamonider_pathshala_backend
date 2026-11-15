@@ -130,6 +130,9 @@ const updateQuranicSubject = async (
   return result;
 };
 
+// ============================================================
+// UPDATE QURANIC SUBJECT SINGLE FIELD SERVICE LAYER
+// ============================================================
 const updateQuranicSubjectSingleField = async (
   payload: TUpdateQuranicSubjectSingleFieldPayload,
   loggedInUser: NonNullable<Express.Request["user"]>,
@@ -262,11 +265,14 @@ const deleteQuranicSubject = async (
 const getAllQuranicSubjects = async () => {
   const quranicSubjects = await prisma.quranicSubject.findMany({
     orderBy: { quranic_subject_name: "asc" },
-    include: {
-      _count: {
+    select:{
+      id: true,
+      quranic_subject_name: true,
+       _count: {
         select: { class_history: true, class_routines: true },
       },
     },
+    
   });
 
   return quranicSubjects;
@@ -278,8 +284,10 @@ const getAllQuranicSubjects = async () => {
 const getSingleQuranicSubject = async (id: string) => {
   const quranicSubject = await prisma.quranicSubject.findUnique({
     where: { id },
-    include: {
-      _count: {
+    select:{
+      id: true,
+      quranic_subject_name: true,
+       _count: {
         select: { class_history: true, class_routines: true },
       },
     },

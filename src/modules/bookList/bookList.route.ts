@@ -20,7 +20,7 @@ router.post(
 // =====================================================================
 // DELETE BOOK LIST ROUTE
 // =====================================================================
-router.patch(
+router.delete(
     "/delete_book_list/:book_list_id",
     userAuth(Role.SUPER_ADMIN, Role.TEACHER_ADMIN, Role.ADMIN),
     validateZodParams(bookListZodSchema.bookListIdParamsZodSchema),

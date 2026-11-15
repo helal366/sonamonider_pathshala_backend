@@ -68,7 +68,7 @@ model StandardStudentFeeRate {
 
   section Section
   version Version
-  department Department?
+  department Department
 
   created_by_id String?
   created_by    User?   @relation("assigned_student_fee_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)

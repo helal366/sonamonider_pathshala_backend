@@ -1,4 +1,4 @@
-import { Section, Version } from "#db-client";
+import { Department, Section, Version } from "#db-client";
 import z4 from "zod/v4";
 
 // =====================================================================
@@ -55,6 +55,12 @@ const createBookListZodSchema = z4.object({
         ? "Version is required."
         : "Invalid version format.",
   }),
+  department: z4.enum(Department, {
+    error: (issue) =>
+      issue.input === undefined
+        ? "Department is required."
+        : "Invalid department format.",
+  }).default("GENERAL"),
 });
 export type TCreateBookListZodSchema = z4.infer<typeof createBookListZodSchema>;
 

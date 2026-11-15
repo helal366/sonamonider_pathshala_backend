@@ -153,6 +153,7 @@ const getSingleAcademicYearWithHistory = async (academic_year_id: string) => {
     where: { academic_year_id },
     distinct: ["class_id"],
     select: {
+      id: true,
       student: {
         select: {
           id: true,

@@ -22,6 +22,7 @@ const createBookList = async (
     isBookMain,
     section,
     version,
+    department,
   } = payload;
 
   return await prisma.$transaction(async (transaction) => {
@@ -43,6 +44,7 @@ const createBookList = async (
         isBookMain,
         section,
         version,
+        department,
       },
     });
     // Check duplicate entry
@@ -62,6 +64,7 @@ const createBookList = async (
         isBookMain,
         section,
         version,
+        department,
         created_by_id: LoggedInUser.user_id,
       },
     });
@@ -81,6 +84,7 @@ const createBookList = async (
           publisher,
           section,
           version,
+          department,
         },
       },
     });
@@ -133,6 +137,11 @@ const updateBookListSingleField = async (
 ) => {
   const { field, value } = payload;
   return await prisma.$transaction(async (transaction) => {
+    if (!field) {
+      throw new AppError(`Field is required`, StatusCodes.BAD_REQUEST);
+    }
+    if (value === undefined || value === null) {
+    }
     // Find book list with bookListId
     const bookList = await transaction.booklist.findUnique({
       where: { id: bookListId },
@@ -155,7 +164,10 @@ const updateBookListSingleField = async (
     switch (field) {
       case "book_name":
         if (bookList.book_name === value) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         bookName = value;
         updateData = { book_name: value };
@@ -164,7 +176,10 @@ const updateBookListSingleField = async (
         break;
       case "publisher":
         if (bookList.publisher === value) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         publisher = value;
         updateData = { publisher: value };
@@ -173,7 +188,10 @@ const updateBookListSingleField = async (
         break;
       case "isBookMain":
         if (bookList.isBookMain === value) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         updateData = { isBookMain: value };
         oldValue = { isBookMain: bookList.isBookMain };
@@ -187,7 +205,10 @@ const updateBookListSingleField = async (
           throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
         }
         if (bookList.class_id === targetClass.id) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         classId = targetClass.id;
         updateData = { class: { connect: { id: targetClass.id } } };
@@ -197,7 +218,10 @@ const updateBookListSingleField = async (
       }
       case "section":
         if (bookList.section === value) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         section = value;
         updateData = { section: value };
@@ -206,7 +230,10 @@ const updateBookListSingleField = async (
         break;
       case "version":
         if (bookList.version === value) {
-          throw new AppError(`Field value already exists`, StatusCodes.CONFLICT);
+          throw new AppError(
+            `Field value already exists`,
+            StatusCodes.CONFLICT,
+          );
         }
         version = value;
         updateData = { version: value };
@@ -257,9 +284,22 @@ const updateBookListSingleField = async (
 // =====================================================================
 const getAllBookList = async () => {
   return await prisma.booklist.findMany({
-    include: {
+    orderBy: {
+      class: {
+        class_name: "desc",
+      },
+    },
+    select: {
+      id: true,
+      book_name: true,
+      publisher: true,
+      isBookActive: true,
+      isBookMain: true,
+      subject_group: true,
+      section: true,
+      version: true,
+      department: true,
       class: { select: { class_name: true } },
-      created_by: { select: { full_name: true, mobile_number: true } },
     },
   });
 };
@@ -279,7 +319,21 @@ const getBookListByClass = async (class_id: string) => {
     }
 
     // Get book list by class
-    return transaction.booklist.findMany({ where: { class_id } });
+    return transaction.booklist.findMany({
+      where: { class_id },
+      select: {
+        id: true,
+        book_name: true,
+        publisher: true,
+        isBookActive: true,
+        isBookMain: true,
+        subject_group: true,
+        section: true,
+        version: true,
+        department: true,
+        class: { select: { class_name: true } },
+      },
+    });
   });
 };
 
@@ -291,31 +345,36 @@ const getSingleBookList = async (bookListId: string) => {
     // Find the book list
     const bookList = await transaction.booklist.findUnique({
       where: { id: bookListId },
-      include: {
-        class: {
-          select: {
-            class_name: true,
-          },
-        },
+      select: {
+        id: true,
+        book_name: true,
+        publisher: true,
+        isBookActive: true,
+        isBookMain: true,
+        subject_group: true,
+        section: true,
+        version: true,
+        department: true,
+        class: { select: { class_name: true } },
       },
     });
-    
+
     // Check the existance
     if (!bookList) {
       throw new AppError(`The book list not found.`, StatusCodes.NOT_FOUND);
-    };
+    }
 
-    // Return 
-    return bookList
+    // Return
+    return bookList;
   });
 };
 
 // =====================================================================
 // GET BOOK LIST BY PUBLISHER SERVICE LAYER
 // =====================================================================
-const getBookListPublisher = async(publisher: string)=>{
-  return await prisma.booklist.findMany({where: {publisher}})
-}
+const getBookListPublisher = async (publisher: string) => {
+  return await prisma.booklist.findMany({ where: { publisher } });
+};
 export const bookListServices = {
   createBookList,
   deleteBookList,
@@ -323,5 +382,5 @@ export const bookListServices = {
   getAllBookList,
   getBookListByClass,
   getSingleBookList,
-  getBookListPublisher
+  getBookListPublisher,
 };

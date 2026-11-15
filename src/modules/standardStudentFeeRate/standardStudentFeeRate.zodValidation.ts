@@ -26,9 +26,8 @@ const createStandardStudentFeeRateZodSchema = z4.object({
   section: z4.enum(Section, "Invalid section format."),
   version: z4.enum(Version, "Invalid version format."),
   department: z4
-    .enum(Department, "Invalid department format.")
-    .nullable()
-    .optional(),
+    .enum(Department, "Invalid department format.").default("GENERAL")
+
 });
 
 export type TCreateStandardStudentFeeRateZodSchema = z4.infer<
@@ -60,7 +59,7 @@ const updateStandardStudentFeeRateFieldZodSchema = z4.discriminatedUnion(
     }),
     z4.object({
       field: z4.literal("department"),
-      value: z4.enum(Department, "Invalid department format.").nullable(),
+      value: z4.enum(Department, "Invalid department format."),
     }),
     z4.object({
       field: z4.literal("class_ids"),

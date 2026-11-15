@@ -138,7 +138,7 @@ const getSingleQuranicPeriod = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: "Quranic  period details retrieved successfully.",
+      message: "Quranic period details retrieved successfully.",
       data: result,
     });
   },

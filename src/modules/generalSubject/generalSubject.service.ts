@@ -132,13 +132,21 @@ const deleteSubject = async (id: string, user: LoggedInUser) => {
 const getAllSubjects = () =>
   prisma.generalSubject.findMany({
     orderBy: { general_subject_name: "asc" },
-    include: { _count: { select: { class_routines: true } } },
+    select: {
+      id: true,
+      general_subject_name: true,
+      _count: { select: { class_routines: true } } 
+    }
   });
 
 const getSingleSubject = async (id: string) => {
   const subject = await prisma.generalSubject.findUnique({
     where: { id },
-    include: { _count: { select: { class_routines: true } } },
+    select: {
+      id: true,
+      general_subject_name: true,
+      _count: { select: { class_routines: true } } 
+    }
   });
   if (!subject)
     throw new AppError(

@@ -327,13 +327,25 @@ const deletePeriod = async (id: string, user: LoggedInUser) => {
 const getAllPeriods = () =>
   prisma.generalPeriod.findMany({
     orderBy: { start_time: "asc" },
-    include: { _count: { select: { class_routines: true } } },
+    select: {
+      id: true,
+      general_period_name: true,
+      start_time: true,
+      end_time: true,
+      _count: { select: { class_routines: true } }
+    }
   });
 
 const getSinglePeriod = async (id: string) => {
   const period = await prisma.generalPeriod.findUnique({
     where: { id },
-    include: { _count: { select: { class_routines: true } } },
+    select: {
+      id: true,
+      general_period_name: true,
+      start_time: true,
+      end_time: true,
+      _count: { select: { class_routines: true } }
+    }
   });
   if (!period)
     throw new AppError(

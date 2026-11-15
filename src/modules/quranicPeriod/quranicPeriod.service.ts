@@ -444,9 +444,13 @@ const deleteQuranicPeriod = async (
 const getAllQuranicPeriods = async () => {
   const periods = await prisma.quranicPeriod.findMany({
     orderBy: { start_time: "asc" },
-    include: {
+    select: {
+      id: true,
+      quranic_period_name: true,
+      start_time: true,
+      end_time: true,
       _count: { select: { class_history_quranic_periods: true } },
-    },
+    }
   });
 
   return periods;
@@ -458,9 +462,13 @@ const getAllQuranicPeriods = async () => {
 const getSingleQuranicPeriod = async (id: string) => {
   const period = await prisma.quranicPeriod.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      quranic_period_name: true,
+      start_time: true,
+      end_time: true,
       _count: { select: { class_history_quranic_periods: true } },
-    },
+    }
   });
 
   if (!period) {

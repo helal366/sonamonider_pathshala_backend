@@ -3052,9 +3052,9 @@
           "response": []
         },
         {
-          "name": "Delete Book List/:Id",
+          "name": "Delete Book List/:bookListId",
           "request": {
-            "method": "PATCH",
+            "method": "DELETE",
             "header": [
               {
                 "key": "Content-Type",
@@ -3069,7 +3069,7 @@
           "response": []
         },
         {
-          "name": "Update Single Field/:Id",
+          "name": "Update Single Field/:bookListId",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3107,7 +3107,7 @@
           "response": []
         },
         {
-          "name": "GET Book List By Class/Class Id",
+          "name": "GET Book List By Class/ClassId",
           "request": {
             "method": "GET",
             "header": [],
@@ -3119,7 +3119,7 @@
           "response": []
         },
         {
-          "name": "GET Single Book List/Id",
+          "name": "GET Single Book List/bookListId",
           "request": {
             "method": "GET",
             "header": [],
