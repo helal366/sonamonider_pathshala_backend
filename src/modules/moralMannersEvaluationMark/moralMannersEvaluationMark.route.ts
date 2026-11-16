@@ -18,20 +18,20 @@ router.post(
   moralMannersEvaluationMarkController.create,
 );
 router.delete(
-  "/:id",
+  "/:moral_manners_evaluation_mark_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.moralMannersEvaluationMarkIdParamsZodSchema),
   moralMannersEvaluationMarkController.remove,
 );
-router.put(
-  "/:id",
+router.patch(
+  "/:moral_manners_evaluation_mark_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.moralMannersEvaluationMarkIdParamsZodSchema),
   validateZodSchema(schema.updateMoralMannersEvaluationMarkZodSchema),
   moralMannersEvaluationMarkController.update,
 );
 router.patch(
-  "/update_field/:id",
+  "/update_field/:moral_manners_evaluation_mark_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.moralMannersEvaluationMarkIdParamsZodSchema),
   validateZodSchema(schema.updateMoralMannersEvaluationMarkFieldZodSchema),
@@ -43,7 +43,7 @@ router.get(
   moralMannersEvaluationMarkController.getAll,
 );
 router.get(
-  "/:id",
+  "/:moral_manners_evaluation_mark_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.moralMannersEvaluationMarkIdParamsZodSchema),
   moralMannersEvaluationMarkController.getById,

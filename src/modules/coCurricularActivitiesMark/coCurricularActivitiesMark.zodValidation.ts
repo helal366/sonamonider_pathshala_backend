@@ -40,7 +40,7 @@ const updateCoCurricularActivitiesMarkZodSchema = z4.object(
   coCurricularActivitiesMarkFields,
 );
 const coCurricularActivitiesMarkIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid co-curricular activities mark ID format."),
+  co_curricular_activities_id: z4.uuid("Invalid co-curricular activities mark ID format."),
 });
 
 const updateCoCurricularActivitiesMarkFieldZodSchema = z4.discriminatedUnion(

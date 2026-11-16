@@ -66,7 +66,9 @@ const updateHalfYearlyExamMarkFieldZodSchema = z4.discriminatedUnion(
   ],
 );
 const halfYearlyExamMarkIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid half-yearly exam mark ID format."),
+  half_yearly_exam_mark_id: z4.uuid(
+    "Invalid half-yearly exam mark ID format.",
+  ),
 });
 
 export type TCreateHalfYearlyExamMark = z4.infer<

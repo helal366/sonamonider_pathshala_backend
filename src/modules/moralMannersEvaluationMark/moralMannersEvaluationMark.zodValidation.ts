@@ -40,7 +40,9 @@ const updateMoralMannersEvaluationMarkZodSchema = z4.object(
   moralMannersEvaluationMarkFields,
 );
 const moralMannersEvaluationMarkIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid moral manners evaluation mark ID format."),
+  moral_manners_evaluation_mark_id: z4.uuid(
+    "Invalid moral manners evaluation mark ID format.",
+  ),
 });
 
 const updateMoralMannersEvaluationMarkFieldZodSchema = z4.discriminatedUnion(

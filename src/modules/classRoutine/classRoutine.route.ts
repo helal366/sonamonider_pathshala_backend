@@ -24,7 +24,7 @@ router.post(
 // UPDATE CLASS ROUTINE ROUTE
 // ====================================================
 router.patch(
-  "/update_class_routine/:id",
+  "/update_class_routine/:class_routine_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(classRoutineZodSchema.updateClassRoutineParamsZodSchema),
   validateZodSchema(classRoutineZodSchema.updateClassRoutineZodSchema),
@@ -35,7 +35,7 @@ router.patch(
 // UPDATE SINGLE CLASS ROUTINE ROUTE
 // ====================================================
 router.patch(
-  "/update_single_class_routine_field/:id",
+  "/update_single_class_routine_field/:class_routine_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(classRoutineZodSchema.updateClassRoutineParamsZodSchema),
   validateZodSchema(
@@ -48,7 +48,7 @@ router.patch(
 // DELETE CLASS ROUTINE ROUTE
 // ====================================================
 router.delete(
-  "/delete_class_routine/:id",
+  "/delete_class_routine/:class_routine_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(classRoutineZodSchema.deleteClassRoutineParamsZodSchema),
   classRoutineController.deleteClassRoutine,
@@ -67,7 +67,7 @@ router.get(
 // GET SINGLE CLASS ROUTINE ROUTE
 // ====================================================
 router.get(
-  "/get_class_routine/:id",
+  "/get_class_routine/:class_routine_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
   validateZodParams(classRoutineZodSchema.getSingleClassRoutineParamsZodSchema),
   classRoutineController.getSingleClassRoutine,

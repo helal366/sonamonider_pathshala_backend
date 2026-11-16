@@ -58,6 +58,16 @@ router.get(
 );
 
 // ===================================================================
+// GET EXAM SUBJECT BY CLASS ID ROUTE
+// ===================================================================
+router.get(
+    "/exam_subject_by_class_id/:class_id",
+    userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN),
+    validateZodParams(examSubjectZodSchema.classIdParamsZodSchema),
+    examSubjectController.getExamSubjectByClassId
+)
+
+// ===================================================================
 // GET EXAM SUBJECT BY ID ROUTE
 // ===================================================================
 router.get(
@@ -66,4 +76,6 @@ router.get(
     validateZodParams(examSubjectZodSchema.examSubjectIdParamsZodSchema),
     examSubjectController.getExamSubjectById
 )
+
+
 export const examSubjectRouter:Router = router;

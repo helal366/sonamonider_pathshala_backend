@@ -104,8 +104,8 @@ const routineTimes = async (
   );
   if (periodCount.length !== 1) {
     throw new AppError(
-      `"Provide exactly one. General period or quranic period or arabic period.",`,
-      StatusCodes.BAD_REQUEST,
+      "The selected period was not found.",
+      StatusCodes.NOT_FOUND,
     );
   }
   const period = generalPeriod || quranicPeriod || arabicPeriod;

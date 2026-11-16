@@ -172,7 +172,7 @@ const updateClassRoutinePayload = z4
   .superRefine(periodSelection);
 
 const updateClassRoutineParamsZodSchema = z4.object({
-  id: uuid("class routine"),
+  class_routine_id: uuid("class routine"),
 });
 
 const updateClassRoutineSingleFieldZodSchema = z4.discriminatedUnion("field", [

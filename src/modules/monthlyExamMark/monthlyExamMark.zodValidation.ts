@@ -35,7 +35,7 @@ const updateMonthlyExamMarkFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({ field: z4.literal("october_mark"), value: mark }),
 ]);
 const monthlyExamMarkIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid monthly exam mark ID format."),
+  monthly_exam_mark_id: z4.uuid("Invalid monthly exam mark ID format."),
 });
 
 export type TCreateMonthlyExamMark = z4.infer<

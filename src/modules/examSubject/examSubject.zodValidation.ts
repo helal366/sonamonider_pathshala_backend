@@ -4,12 +4,21 @@ import z4 from "zod/v4";
 // EXAM SUBJECT ID PARAMS ZOD SCHEMA
 // ===================================================================
 const examSubjectIdParamsZodSchema = z4.object({
-  exam_subject_id: z4.uuid("Invalid exam subject ID."),
+  exam_subject_id: z4.uuid("Invalid exam subject ID format."),
 });
 export type TExamSubjectIdParamsZodSchema = z4.infer<
   typeof examSubjectIdParamsZodSchema
 >;
 
+// ===================================================================
+// EXAM SUBJECT ID PARAMS ZOD SCHEMA
+// ===================================================================
+const classIdParamsZodSchema = z4.object({
+  class_id: z4.uuid("Invalid class ID format.")
+});
+export type TClassIdParamsZodSchema = z4.infer<
+  typeof classIdParamsZodSchema
+>;
 // ===================================================================
 // CREATE EXAM SUBJECT ZOD SCHEMA
 // ===================================================================
@@ -112,6 +121,7 @@ export type TUpdateExamSubjectSingleFieldZodSchema = z4.infer<typeof updateExamS
 
 export const examSubjectZodSchema = {
   examSubjectIdParamsZodSchema,
+  classIdParamsZodSchema,
   createExamSubjectZodSchema,
   updateExamSubjectZodSchema,
   updateExamSubjectSingleFieldZodSchema,

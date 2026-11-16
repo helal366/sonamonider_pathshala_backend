@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions.js";
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateSpouseInformationZodSchema,
@@ -226,18 +227,11 @@ const deleteSpouseInformation = async (
       data: {
         entity_id: spouseInformation.id,
         entity_name: "spouseInformation",
-        old_value: {
+        old_value: toAuditJson({
+          ...spouseInformation,
           user_id,
-          full_name: spouseInformation.full_name,
-          contact_no: spouseInformation.contact_no,
-          father_name: spouseInformation.father_name,
-          father_contact_no: spouseInformation.father_contact_no,
-          mother_name: spouseInformation.mother_name,
-          mother_contact_no: spouseInformation.mother_contact_no,
-          occupation: spouseInformation.occupation,
-          job_title: spouseInformation.job_title,
-          monthly_income: spouseInformation.monthly_income,
-        },
+          user_full_name: targetUser.full_name,
+        }),
         new_value: Prisma.JsonNull,
         action: "DELETE",
         changed_by_id: loggedInUser.user_id,
@@ -251,21 +245,7 @@ const deleteSpouseInformation = async (
         data: {
           entity_id: presentAddress.id,
           entity_name: "presentAddress",
-          old_value: {
-            spouse_id: spouseInformation.id,
-            house_no: presentAddress.house_no,
-            house_name: presentAddress.house_name,
-            plot_no: presentAddress.plot_no,
-            road_no: presentAddress.road_no,
-            neighbourhood: presentAddress.neighbourhood,
-            region: presentAddress.region,
-            village: presentAddress.village,
-            post_code: presentAddress.post_code,
-            post_office: presentAddress.post_office,
-            thana: presentAddress.thana,
-            district: presentAddress.district,
-            country: presentAddress.country,
-          },
+          old_value: toAuditJson(presentAddress),
           new_value: Prisma.JsonNull,
           action: "DELETE",
           changed_by_id: loggedInUser.user_id,
@@ -280,21 +260,7 @@ const deleteSpouseInformation = async (
         data: {
           entity_id: permanentAddress.id,
           entity_name: "permanentAddress",
-          old_value: {
-            spouse_id: spouseInformation.id,
-            house_no: permanentAddress.house_no,
-            house_name: permanentAddress.house_name,
-            plot_no: permanentAddress.plot_no,
-            road_no: permanentAddress.road_no,
-            neighbourhood: permanentAddress.neighbourhood,
-            region: permanentAddress.region,
-            village: permanentAddress.village,
-            post_code: permanentAddress.post_code,
-            post_office: permanentAddress.post_office,
-            thana: permanentAddress.thana,
-            district: permanentAddress.district,
-            country: permanentAddress.country,
-          },
+          old_value: toAuditJson(permanentAddress),
           new_value: Prisma.JsonNull,
           action: "DELETE",
           changed_by_id: loggedInUser.user_id,

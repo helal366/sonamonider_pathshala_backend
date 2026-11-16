@@ -23,46 +23,52 @@ const create = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const remove = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result = await monthlyExamMarkServices.deleteMonthlyExamMark(
-    req.params.id,
-    helperFunctions.requiredUser(req),
-  );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Monthly exam mark deleted successfully.",
-    data: result,
-  });
-});
+const remove = catchAsync(
+  async (req: Request<{ monthly_exam_mark_id: string }>, res: Response) => {
+    const result = await monthlyExamMarkServices.deleteMonthlyExamMark(
+      req.params.monthly_exam_mark_id,
+      helperFunctions.requiredUser(req),
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Monthly exam mark deleted successfully.",
+      data: result,
+    });
+  },
+);
 
-const update = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result = await monthlyExamMarkServices.updateMonthlyExamMark(
-    req.params.id,
-    req.body as TUpdateMonthlyExamMark,
-    helperFunctions.requiredUser(req),
-  );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Monthly exam mark updated successfully.",
-    data: result,
-  });
-});
+const update = catchAsync(
+  async (req: Request<{ monthly_exam_mark_id: string }>, res: Response) => {
+    const result = await monthlyExamMarkServices.updateMonthlyExamMark(
+      req.params.monthly_exam_mark_id,
+      req.body as TUpdateMonthlyExamMark,
+      helperFunctions.requiredUser(req),
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Monthly exam mark updated successfully.",
+      data: result,
+    });
+  },
+);
 
-const updateField = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result = await monthlyExamMarkServices.updateMonthlyExamMarkField(
-    req.params.id,
-    req.body as TUpdateMonthlyExamMarkField,
-    helperFunctions.requiredUser(req),
-  );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Monthly exam mark field updated successfully.",
-    data: result,
-  });
-});
+const updateField = catchAsync(
+  async (req: Request<{ monthly_exam_mark_id: string }>, res: Response) => {
+    const result = await monthlyExamMarkServices.updateMonthlyExamMarkField(
+      req.params.monthly_exam_mark_id,
+      req.body as TUpdateMonthlyExamMarkField,
+      helperFunctions.requiredUser(req),
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Monthly exam mark field updated successfully.",
+      data: result,
+    });
+  },
+);
 
 const getAll = catchAsync(async (req: Request, res: Response) => {
   helperFunctions.requiredUser(req);
@@ -75,16 +81,20 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getById = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  helperFunctions.requiredUser(req);
-  const result = await monthlyExamMarkServices.getMonthlyExamMarkById(req.params.id);
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Monthly exam mark retrieved successfully.",
-    data: result,
-  });
-});
+const getById = catchAsync(
+  async (req: Request<{ monthly_exam_mark_id: string }>, res: Response) => {
+    helperFunctions.requiredUser(req);
+    const result = await monthlyExamMarkServices.getMonthlyExamMarkById(
+      req.params.monthly_exam_mark_id,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Monthly exam mark retrieved successfully.",
+      data: result,
+    });
+  },
+);
 
 export const monthlyExamMarkController = {
   create,

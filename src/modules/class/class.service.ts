@@ -138,6 +138,7 @@ const getAllClassNames = async () => {
       class_name: true,
     },
   });
+  return classes
 };
 
 // =============================================
@@ -173,6 +174,11 @@ const getSingleClassByClassId = async (class_id: string) => {
           section: true,
           version: true,
           department: true,
+          class: {
+            select: {
+              class_name: true
+            }
+          }
         },
       },
     },

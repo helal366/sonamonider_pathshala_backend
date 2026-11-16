@@ -53,7 +53,7 @@ router.get(
 // GET SINGLE POSITION ROUTE
 // =============================================
 router.get(
-  "/:id",
+  "/:position_id",
   userAuth(Role.SUPER_ADMIN),
   validateZodParams(positionZodSchema.getSinglePositionParamsZodSchema),
   positionController.getSinglePosition,

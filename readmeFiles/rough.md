@@ -68,3 +68,7 @@ Medium — student username generation can conflict across roles. Usernames are 
   "action_status": "APPROVED",
   "effective_date": "2026-10-27T00:00:00.000Z"
 }
+
+
+********************************************
+i have updated the zod and route file of coCurricularActivitiesMark module. the change is #sym:co_curricular_activities_id instead of id. now check the other files , controller and service layer. do i need to use #sym:co_curricular_activities_id word in controller ? here i see req: Request<{ id: string }> and the file is not showing any error.

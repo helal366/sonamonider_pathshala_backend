@@ -236,7 +236,7 @@ const updateExamSubject = async (
           changed_by_id: loggedInUser.user_id,
           action: "UPDATE",
           old_value: toAuditJson(examSubject),
-          new_value: toAuditJson(updated), 
+          new_value: toAuditJson(updated),
         },
       });
       return updated;
@@ -282,6 +282,17 @@ const updateSingleFieldExamSubject = async (
         [field]: value,
         updated_by_id: loggedInUser.user_id,
       },
+      select: {
+        exam_subject_name: true,
+        section: true,
+        version: true,
+        department: true,
+        class: {
+          select: {
+            class_name: true,
+          },
+        },
+      },
     });
     await transaction.auditLog.create({
       data: {
@@ -308,14 +319,38 @@ const getAllExamSubjects = async () => {
   const examSubjects = await prisma.examSubject.findMany();
   return examSubjects;
 };
-
+// ===================================================================
+// GET EXAM SUBJECTs BY CLASS ID SERVICE LAYER
+// ===================================================================
+const getExamSubjectByClassId = async(class_id:string)=>{
+  const theClass = await prisma.class.findUnique({
+    where:{id: class_id},
+    select:{id:true}
+  });
+  if(!theClass){
+    throw new AppError(`Provided class not found.`, StatusCodes.NOT_FOUND)
+  }
+  const examSubjects = await prisma.examSubject.findMany({
+    where: {class_id}
+  });
+  return examSubjects
+}
 // ===================================================================
 // GET EXAM SUBJECT BY ID SERVICE LAYER
 // ===================================================================
 const getExamSubjectById = async (exam_subject_id: string) => {
   const examSubject = await prisma.examSubject.findUnique({
     where: { id: exam_subject_id },
-    include: {
+    select: {
+      exam_subject_name: true,
+      section: true,
+      version: true,
+      department: true,
+      class: {
+        select: {
+          class_name: true,
+        },
+      },
       half_yearly_exam_marks: {
         select: {
           full_mark: true,
@@ -329,11 +364,12 @@ const getExamSubjectById = async (exam_subject_id: string) => {
           highest_mark: true,
           obtained_mark: true,
         },
-      },
+      }
     },
   });
-  return examSubject
+  return examSubject;
 };
+
 export const examSubjectServices = {
   createExamSubject,
   deleteExamSubject,
@@ -341,4 +377,5 @@ export const examSubjectServices = {
   updateSingleFieldExamSubject,
   getAllExamSubjects,
   getExamSubjectById,
+  getExamSubjectByClassId
 };

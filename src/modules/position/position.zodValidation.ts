@@ -66,7 +66,7 @@ export type TDeletePositionZodSchema =z4.infer<typeof deletePositionZodSchema>;
 // GET SINGLE POSITION BY ID ZOD SCHEMA
 // ========================================================
 const getSinglePositionParamsZodSchema = z4.object({
-  id: z4.uuid({ 
+  position_id: z4.uuid({ 
     message: "Invalid ID format. Must be a valid UUID." 
   }),
 });

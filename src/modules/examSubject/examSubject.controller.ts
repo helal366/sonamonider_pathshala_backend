@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { helperFunctions } from "../../helperFunctions/helpers/helperFunctions"
-import { TCreateExamSubjectZodSchema, TExamSubjectIdParamsZodSchema, TUpdateExamSubjectSingleFieldZodSchema, TUpdateExamSubjectZodSchema } from "./examSubject.zodValidation";
+import { TClassIdParamsZodSchema, TCreateExamSubjectZodSchema, TExamSubjectIdParamsZodSchema, TUpdateExamSubjectSingleFieldZodSchema, TUpdateExamSubjectZodSchema } from "./examSubject.zodValidation";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { examSubjectServices } from "./examSubject.service";
@@ -76,7 +76,7 @@ const updateSingleFieldExamSubject = catchAsync(async(req:Request, res:Response)
     sendResponse(res, {
         success: true,
         statusCode: StatusCodes.OK,
-        message: `Exam subject field ${payload.field} updated successfully.`,
+        message: `Exam subject field updated successfully.`,
         data: result
     })
 });
@@ -95,9 +95,24 @@ const getAllExamSubjects = catchAsync(async(req:Request, res:Response)=>{
         data: result
     })
 });
+// ===================================================================
+// GET EXAM SUBJECTs BY CLASS ID CONTROLLER
+// ===================================================================
+const getExamSubjectByClassId= catchAsync(async(req:Request, res:Response)=>{
+    helperFunctions.requiredUser(req);
+    const {class_id} = req.params as unknown as TClassIdParamsZodSchema;
+    const result = await examSubjectServices.getExamSubjectByClassId(class_id);
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: `Exam subjects by class ID retrieved successfully.`,
+        data: result
+    })
+
+})
 
 // ===================================================================
-// GET EXAM SUBJECT BY ID SERVICE LAYER
+// GET EXAM SUBJECT BY ID CONTROLLER
 // ===================================================================
 const getExamSubjectById = catchAsync(async(req:Request, res:Response)=>{
     const {exam_subject_id} = req.params as unknown as TExamSubjectIdParamsZodSchema;
@@ -116,5 +131,6 @@ export const examSubjectController = {
     updateExamSubject,
     updateSingleFieldExamSubject,
     getAllExamSubjects,
+    getExamSubjectByClassId,
     getExamSubjectById
 }

@@ -27,30 +27,35 @@ const createClassRoutine = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateClassRoutine = catchAsync(async (req: Request, res: Response) => {
-  const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TUpdateClassRoutineParams;
-  const result = await classRoutineServices.updateClassRoutine(
-    req.body as TUpdateClassRoutinePayload,
-    user,
-    id,
-  );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Class routine updated successfully.",
-    data: result,
-  });
-});
+const updateClassRoutine = catchAsync(
+  async (
+    req: Request<TUpdateClassRoutineParams>,
+    res: Response,
+  ) => {
+    const user = helperFunctions.requiredUser(req);
+    const { class_routine_id } = req.params;
+    const result = await classRoutineServices.updateClassRoutine(
+      req.body as TUpdateClassRoutinePayload,
+      user,
+      class_routine_id,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Class routine updated successfully.",
+      data: result,
+    });
+  },
+);
 
 const updateClassRoutineSingleField = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TUpdateClassRoutineParams>, res: Response) => {
     const user = helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TUpdateClassRoutineParams;
+    const { class_routine_id } = req.params;
     const result = await classRoutineServices.updateClassRoutineSingleField(
       req.body as TUpdateClassRoutineSingleFieldPayload,
       user,
-      id,
+      class_routine_id,
     );
     sendResponse(res, {
       success: true,
@@ -61,17 +66,22 @@ const updateClassRoutineSingleField = catchAsync(
   },
 );
 
-const deleteClassRoutine = catchAsync(async (req: Request, res: Response) => {
-  const user = helperFunctions.requiredUser(req);
-  const { id } = req.params as unknown as TDeleteClassRoutineParams;
-  const result = await classRoutineServices.deleteClassRoutine(id, user);
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Class routine deleted successfully.",
-    data: result,
-  });
-});
+const deleteClassRoutine = catchAsync(
+  async (req: Request<TDeleteClassRoutineParams>, res: Response) => {
+    const user = helperFunctions.requiredUser(req);
+    const { class_routine_id } = req.params;
+    const result = await classRoutineServices.deleteClassRoutine(
+      class_routine_id,
+      user,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Class routine deleted successfully.",
+      data: result,
+    });
+  },
+);
 
 const getAllClassRoutines = catchAsync(async (req: Request, res: Response) => {
   helperFunctions.requiredUser(req);
@@ -85,10 +95,11 @@ const getAllClassRoutines = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleClassRoutine = catchAsync(
-  async (req: Request, res: Response) => {
+  async (req: Request<TGetSingleClassRoutineParams>, res: Response) => {
     helperFunctions.requiredUser(req);
-    const { id } = req.params as unknown as TGetSingleClassRoutineParams;
-    const result = await classRoutineServices.getSingleClassRoutine(id);
+    const { class_routine_id } = req.params;
+    const result =
+      await classRoutineServices.getSingleClassRoutine(class_routine_id);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,

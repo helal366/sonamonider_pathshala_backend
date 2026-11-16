@@ -60,7 +60,7 @@ const updateAnnualExamMarkFieldZodSchema = z4.discriminatedUnion("field", [
   }),
 ]);
 const annualExamMarkIdParamsZodSchema = z4.object({
-  id: z4.uuid("Invalid annual exam mark ID format."),
+  annual_exam_mark_id: z4.uuid("Invalid annual exam mark ID format."),
 });
 
 export type TCreateAnnualExamMark = z4.infer<

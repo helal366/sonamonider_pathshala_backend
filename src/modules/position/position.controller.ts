@@ -74,9 +74,9 @@ const getAllPositions = catchAsync(async (req: Request, res: Response) => {
 // GET SINGLE POSITION CONTROLLER
 // ===================================================
 const getSinglePosition = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params as unknown as TGetSinglePositionParamsZodSchema;
+  const { position_id } = req.params as unknown as TGetSinglePositionParamsZodSchema;
 
-  const result = await positionServices.getSinglePosition(id);
+  const result = await positionServices.getSinglePosition(position_id);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

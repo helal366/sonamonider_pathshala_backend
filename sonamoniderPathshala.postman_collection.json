@@ -24,6 +24,14 @@
       "value": "00000000-0000-4000-8000-000000000027"
     },
     {
+      "key": "generalSubjectId",
+      "value": "00000000-0000-4000-8000-000000000030"
+    },
+    {
+      "key": "classRoutineId",
+      "value": "00000000-0000-4000-8000-000000000031"
+    },
+    {
       "key": "classId",
       "value": "00000000-0000-4000-8000-000000000002"
     },
@@ -106,6 +114,18 @@
     {
       "key": "moralMannersEvaluationMarkId",
       "value": "00000000-0000-4000-8000-000000000020"
+    },
+    {
+      "key": "monthlyExamMarkId",
+      "value": "00000000-0000-4000-8000-000000000027"
+    },
+    {
+      "key": "halfYearlyExamMarkId",
+      "value": "00000000-0000-4000-8000-000000000028"
+    },
+    {
+      "key": "annualExamMarkId",
+      "value": "00000000-0000-4000-8000-000000000029"
     },
     {
       "key": "bookListId",
@@ -786,11 +806,11 @@
           "response": []
         },
         {
-          "name": "Get Record",
+          "name": "Get Record/:positionId",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/position/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/position/{{positionId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2118,7 +2138,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2427,7 +2447,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_ids\": [\n    \"00000000-0000-4000-8000-000000000002\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"00000000-0000-4000-8000-000000000010\"\n  ],\n  \"general_period_id\": \"00000000-0000-4000-8000-000000000022\",\n  \"general_subject_ids\": [\n    \"00000000-0000-4000-8000-000000000023\"\n  ]\n}",
+              "raw": "{\n  \"class_ids\": [\n    \"{{classId}}\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"{{academicStaffId}}\"\n  ],\n  \"general_period_id\": \"{{generalPeriodId}}\",\n  \"general_subject_ids\": [\n    \"{{generalSubjectId}}\"\n  ],\n  \"quranic_subject_ids\": [],\n  \"arabic_subject_ids\": []\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2438,7 +2458,7 @@
           "response": []
         },
         {
-          "name": "Update Class Routine/:Id",
+          "name": "Update Class Routine/:class_routine_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2447,13 +2467,13 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_class_routine/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_class_routine/{{classRoutineId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_ids\": [\n    \"00000000-0000-4000-8000-000000000002\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"00000000-0000-4000-8000-000000000010\"\n  ],\n  \"general_period_id\": \"00000000-0000-4000-8000-000000000022\",\n  \"general_subject_ids\": [\n    \"00000000-0000-4000-8000-000000000023\"\n  ],\n  \"quranic_subject_ids\": [],\n  \"arabic_subject_ids\": []\n}",
+              "raw": "{\n  \"class_ids\": [\n    \"{{classId}}\"\n  ],\n  \"shift\": \"DAY\",\n  \"teacher_ids\": [\n    \"{{academicStaffId}}\"\n  ],\n  \"general_period_id\": \"{{generalPeriodId}}\",\n  \"general_subject_ids\": [\n    \"{{generalSubjectId}}\"\n  ],\n  \"quranic_subject_ids\": [],\n  \"arabic_subject_ids\": []\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2464,7 +2484,7 @@
           "response": []
         },
         {
-          "name": "Update Single Class Routine Field/:Id",
+          "name": "Update Single Class Routine Field/:class_routine_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2473,7 +2493,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_single_class_routine_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/update_single_class_routine_field/{{classRoutineId}}",
             "auth": {
               "type": "noauth"
             },
@@ -2490,7 +2510,7 @@
           "response": []
         },
         {
-          "name": "Delete Class Routine/:Id",
+          "name": "Delete Class Routine/:class_routine_id",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2499,7 +2519,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/class_routine/delete_class_routine/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/delete_class_routine/{{classRoutineId}}",
             "auth": {
               "type": "noauth"
             }
@@ -2519,11 +2539,11 @@
           "response": []
         },
         {
-          "name": "Get Class Routine/:Id",
+          "name": "Get Class Routine/:class_routine_id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/class_routine/get_class_routine/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/class_routine/get_class_routine/{{classRoutineId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3250,6 +3270,18 @@
           "response": []
         },
         {
+          "name": "Get Exam Subjects By Class Id/:Class Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/exam_subject/exam_subject_by_class_id/{{classId}}",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get Exam Subject By Id/:Exam Subject Id",
           "request": {
             "method": "GET",
@@ -3504,7 +3536,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"class_history_id\": \"{{classHistoryId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3515,7 +3547,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3524,7 +3556,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{coCurricularActivitiesMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3532,22 +3564,22 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Update Record/:co_curricular_activities_id",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{coCurricularActivitiesMarkId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "raw": "{\n  \"al_quran_grade\": \"A\",\n  \"conversation\": \"A\",\n  \"akhlake_hasanah\": \"A\",\n  \"cultural_activities\": \"A\",\n  \"sports_scouts\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"class_history_id\": \"{{classHistoryId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3558,7 +3590,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:co_curricular_activities_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3567,7 +3599,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/update_field/{{coCurricularActivitiesMarkId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3600,7 +3632,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/co_curricular_activities_mark/{{coCurricularActivitiesMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3628,7 +3660,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"class_history_id\": \"{{classHistoryId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3639,7 +3671,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3648,7 +3680,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{moralMannersEvaluationMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3656,7 +3688,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Update Record/:moral_manners_evaluation_mark_id",
           "request": {
             "method": "PUT",
             "header": [
@@ -3665,13 +3697,13 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{moralMannersEvaluationMarkId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\"\n}",
+              "raw": "{\n  \"cleanliness\": \"A\",\n  \"class_performance\": \"A\",\n  \"speaking_the_truth\": \"A\",\n  \"speaking_the_correct\": \"A\",\n  \"salat_religious_work\": \"A\",\n  \"exam_type\": \"HALF_YEARLY\",\n  \"class_history_id\": \"{{classHistoryId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3682,7 +3714,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:moral_manners_evaluation_mark_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3691,7 +3723,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/update_field/{{moralMannersEvaluationMarkId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3724,7 +3756,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/moral_manners_evaluation_mark/{{moralMannersEvaluationMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3752,7 +3784,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
+              "raw": "{\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3763,7 +3795,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3772,7 +3804,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{monthlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3780,22 +3812,22 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Update Record/:monthly_exam_mark_id",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{monthlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
+              "raw": "{\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"january_mark\": 85,\n  \"february_mark\": 85,\n  \"march_mark\": 85,\n  \"april_mark\": 85,\n  \"july_mark\": 85,\n  \"august_mark\": 85,\n  \"september_mark\": 85,\n  \"october_mark\": 85\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3806,7 +3838,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:monthly_exam_mark_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3815,7 +3847,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/update_field/{{monthlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3848,7 +3880,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/monthly_exam_mark/{{monthlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3876,7 +3908,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"exam_subject_id\": \"{{examSubjectId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3887,7 +3919,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -3896,7 +3928,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{halfYearlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -3904,22 +3936,22 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Update Record/:half_yearly_exam_mark_id",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{halfYearlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"exam_subject_id\": \"{{examSubjectId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3930,7 +3962,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:half_yearly_exam_mark_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -3939,7 +3971,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/update_field/{{halfYearlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
@@ -3972,7 +4004,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/half_yearly_exam_mark/{{halfYearlyExamMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -4000,7 +4032,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"exam_subject_id\": \"{{examSubjectId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4011,7 +4043,7 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Delete Record",
           "request": {
             "method": "DELETE",
             "header": [
@@ -4020,7 +4052,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{annualExamMarkId}}",
             "auth": {
               "type": "noauth"
             }
@@ -4028,22 +4060,22 @@
           "response": []
         },
         {
-          "name": "Update Record",
+          "name": "Update Record/:annual_exam_mark_id",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{annualExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"student_result_id\": \"00000000-0000-4000-8000-000000000004\",\n  \"book_list_id\": \"00000000-0000-4000-8000-000000000021\"\n}",
+              "raw": "{\n  \"full_mark\": 100,\n  \"highest_mark\": 95,\n  \"obtained_mark\": 85,\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"exam_subject_id\": \"{{examSubjectId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4054,7 +4086,7 @@
           "response": []
         },
         {
-          "name": "Update Field/:Id",
+          "name": "Update Field/:annual_exam_mark_id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -4063,7 +4095,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/update_field/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/update_field/{{annualExamMarkId}}",
             "auth": {
               "type": "noauth"
             },
@@ -4096,7 +4128,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{userId}}",
+            "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{annualExamMarkId}}",
             "auth": {
               "type": "noauth"
             }

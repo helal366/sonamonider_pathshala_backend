@@ -23,49 +23,64 @@ const create = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const remove = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await moralMannersEvaluationMarkServices.deleteMoralMannersEvaluationMark(
-      req.params.id,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Moral manners evaluation mark deleted successfully.",
-    data: result,
-  });
-});
+const remove = catchAsync(
+  async (
+    req: Request<{ moral_manners_evaluation_mark_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await moralMannersEvaluationMarkServices.deleteMoralMannersEvaluationMark(
+        req.params.moral_manners_evaluation_mark_id,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Moral manners evaluation mark deleted successfully.",
+      data: result,
+    });
+  },
+);
 
-const update = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await moralMannersEvaluationMarkServices.updateMoralMannersEvaluationMark(
-      req.params.id,
-      req.body as TUpdateMoralMannersEvaluationMark,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Moral manners evaluation mark updated successfully.",
-    data: result,
-  });
-});
+const update = catchAsync(
+  async (
+    req: Request<{ moral_manners_evaluation_mark_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await moralMannersEvaluationMarkServices.updateMoralMannersEvaluationMark(
+        req.params.moral_manners_evaluation_mark_id,
+        req.body as TUpdateMoralMannersEvaluationMark,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Moral manners evaluation mark updated successfully.",
+      data: result,
+    });
+  },
+);
 
-const updateField = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await moralMannersEvaluationMarkServices.updateMoralMannersEvaluationMarkField(
-      req.params.id,
-      req.body as TUpdateMoralMannersEvaluationMarkField,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Moral manners evaluation mark field updated successfully.",
-    data: result,
-  });
-});
+const updateField = catchAsync(
+  async (
+    req: Request<{ moral_manners_evaluation_mark_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await moralMannersEvaluationMarkServices.updateMoralMannersEvaluationMarkField(
+        req.params.moral_manners_evaluation_mark_id,
+        req.body as TUpdateMoralMannersEvaluationMarkField,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Moral manners evaluation mark field updated successfully.",
+      data: result,
+    });
+  },
+);
 
 const getAll = catchAsync(async (_req: Request, res: Response) => {
   helperFunctions.requiredUser(_req);
@@ -79,19 +94,24 @@ const getAll = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
-const getById = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  helperFunctions.requiredUser(req);
-  const result =
-    await moralMannersEvaluationMarkServices.getMoralMannersEvaluationMarkById(
-      req.params.id,
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Moral manners evaluation mark retrieved successfully.",
-    data: result,
-  });
-});
+const getById = catchAsync(
+  async (
+    req: Request<{ moral_manners_evaluation_mark_id: string }>,
+    res: Response,
+  ) => {
+    helperFunctions.requiredUser(req);
+    const result =
+      await moralMannersEvaluationMarkServices.getMoralMannersEvaluationMarkById(
+        req.params.moral_manners_evaluation_mark_id,
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Moral manners evaluation mark retrieved successfully.",
+      data: result,
+    });
+  },
+);
 
 export const moralMannersEvaluationMarkController = {
   create,

@@ -18,20 +18,20 @@ router.post(
   coCurricularActivitiesMarkController.create,
 );
 router.delete(
-  "/:id",
+  "/:co_curricular_activities_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.coCurricularActivitiesMarkIdParamsZodSchema),
   coCurricularActivitiesMarkController.remove,
 );
-router.put(
-  "/:id",
+router.patch(
+  "/:co_curricular_activities_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.coCurricularActivitiesMarkIdParamsZodSchema),
   validateZodSchema(schema.updateCoCurricularActivitiesMarkZodSchema),
   coCurricularActivitiesMarkController.update,
 );
 router.patch(
-  "/update_field/:id",
+  "/update_field/:co_curricular_activities_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.coCurricularActivitiesMarkIdParamsZodSchema),
   validateZodSchema(schema.updateCoCurricularActivitiesMarkFieldZodSchema),
@@ -43,7 +43,7 @@ router.get(
   coCurricularActivitiesMarkController.getAll,
 );
 router.get(
-  "/:id",
+  "/:co_curricular_activities_id",
   userAuth(...authorizedRoles),
   validateZodParams(schema.coCurricularActivitiesMarkIdParamsZodSchema),
   coCurricularActivitiesMarkController.getById,

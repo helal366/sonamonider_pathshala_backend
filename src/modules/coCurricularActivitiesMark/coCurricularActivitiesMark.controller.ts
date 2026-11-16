@@ -23,49 +23,64 @@ const create = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const remove = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await coCurricularActivitiesMarkServices.deleteCoCurricularActivitiesMark(
-      req.params.id,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Co-curricular activities mark deleted successfully.",
-    data: result,
-  });
-});
+const remove = catchAsync(
+  async (
+    req: Request<{ co_curricular_activities_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await coCurricularActivitiesMarkServices.deleteCoCurricularActivitiesMark(
+        req.params.co_curricular_activities_id,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Co-curricular activities mark deleted successfully.",
+      data: result,
+    });
+  },
+);
 
-const update = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await coCurricularActivitiesMarkServices.updateCoCurricularActivitiesMark(
-      req.params.id,
-      req.body as TUpdateCoCurricularActivitiesMark,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Co-curricular activities mark updated successfully.",
-    data: result,
-  });
-});
+const update = catchAsync(
+  async (
+    req: Request<{ co_curricular_activities_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await coCurricularActivitiesMarkServices.updateCoCurricularActivitiesMark(
+        req.params.co_curricular_activities_id,
+        req.body as TUpdateCoCurricularActivitiesMark,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Co-curricular activities mark updated successfully.",
+      data: result,
+    });
+  },
+);
 
-const updateField = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  const result =
-    await coCurricularActivitiesMarkServices.updateCoCurricularActivitiesMarkField(
-      req.params.id,
-      req.body as TUpdateCoCurricularActivitiesMarkField,
-      helperFunctions.requiredUser(req),
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Co-curricular activities mark field updated successfully.",
-    data: result,
-  });
-});
+const updateField = catchAsync(
+  async (
+    req: Request<{ co_curricular_activities_id: string }>,
+    res: Response,
+  ) => {
+    const result =
+      await coCurricularActivitiesMarkServices.updateCoCurricularActivitiesMarkField(
+        req.params.co_curricular_activities_id,
+        req.body as TUpdateCoCurricularActivitiesMarkField,
+        helperFunctions.requiredUser(req),
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Co-curricular activities mark field updated successfully.",
+      data: result,
+    });
+  },
+);
 
 const getAll = catchAsync(async (_req: Request, res: Response) => {
   helperFunctions.requiredUser(_req);
@@ -79,19 +94,24 @@ const getAll = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
-const getById = catchAsync(async (req: Request<{ id: string }>, res: Response) => {
-  helperFunctions.requiredUser(req);
-  const result =
-    await coCurricularActivitiesMarkServices.getCoCurricularActivitiesMarkById(
-      req.params.id,
-    );
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Co-curricular activities mark retrieved successfully.",
-    data: result,
-  });
-});
+const getById = catchAsync(
+  async (
+    req: Request<{ co_curricular_activities_id: string }>,
+    res: Response,
+  ) => {
+    helperFunctions.requiredUser(req);
+    const result =
+      await coCurricularActivitiesMarkServices.getCoCurricularActivitiesMarkById(
+        req.params.co_curricular_activities_id,
+      );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Co-curricular activities mark retrieved successfully.",
+      data: result,
+    });
+  },
+);
 
 export const coCurricularActivitiesMarkController = {
   create,
