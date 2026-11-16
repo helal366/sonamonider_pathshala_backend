@@ -14,11 +14,11 @@ import { Prisma, Role, Section, Shift } from "#db-client";
 const isManagement = ["MANAGEMENT"];
 
 const userExistence = async ({
-  role_name: role,
+  role_name,
   full_name,
   mobile_number,
 }: IExistencePayload) => {
-  if (isManagement.includes(role)) {
+  if (isManagement.includes(role_name)) {
     return await prisma.managementStaff.findFirst({
       where: {
         user_primary_data: {
@@ -36,7 +36,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === Role.STUDENT) {
+  } else if (role_name === Role.STUDENT) {
     return await prisma.student.findFirst({
       where: {
         user_primary_data: {
@@ -54,7 +54,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === Role.ACADEMIC) {
+  } else if (role_name === Role.ACADEMIC) {
     return await prisma.academicStaff.findFirst({
       where: {
         user_primary_data: {
@@ -72,7 +72,7 @@ const userExistence = async ({
         },
       },
     });
-  } else if (role === Role.GOVERNING_BODY) {
+  } else if (role_name === Role.GOVERNING_BODY) {
     return await prisma.governingBody.findFirst({
       where: {
         user_primary_data: {
@@ -511,11 +511,11 @@ const checkStudentCreationRequirements = async (
     quranic_class_period_ids.map(async (id) => {
       const checkExisting = await transaction.quranicPeriod.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, quranic_period_name:true },
       });
       if (!checkExisting) {
         throw new AppError(
-          `Invalid quranic class period ID: ${id}`,
+          `Invalid quranic period ID: ${id}`,
           StatusCodes.NOT_FOUND,
         );
       }

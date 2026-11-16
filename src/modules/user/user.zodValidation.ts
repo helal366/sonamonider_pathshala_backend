@@ -111,7 +111,7 @@ const userCreateZodSchema = z4
       .int("Roll number must be an integer.")
       .min(1, "Roll number must be greater than 0.")
       .optional(),
-    quranic_subject_name: z4.string().trim().optional(),
+    quranic_subject_name: z4.string().trim(),
     quranic_class_period_ids: z4
       .array(
         z4.uuid({
@@ -120,8 +120,7 @@ const userCreateZodSchema = z4
       )
       .refine((ids) => new Set(ids).size === ids.length, {
         message: "Quranic class period IDs must be unique.",
-      })
-      .optional(),
+      }),
     arabic_subject_names: z4
       .array(z4.string("Invalid Arabic Subject name."))
       .optional(),

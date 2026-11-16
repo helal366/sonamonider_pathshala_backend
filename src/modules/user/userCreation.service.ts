@@ -232,6 +232,22 @@ const createUser = async (
                 quranic_period: { connect: { id } },
               })),
             },
+            ...(payload.arabic_subject_names?.length ? {
+                  class_history_arabic_subjects: {
+                    create: payload.arabic_subject_names.map((subject)=>({
+                      arabic_subject: {connect: {arabic_subject_name:subject}}
+                    }))
+                  }
+                }: 
+                {}) ,
+                ...(payload.arabic_period_ids?.length ? {
+                  class_history_arabic_period_ids: {
+                    create: payload.arabic_period_ids.map((id)=>({
+                      arabic_period: {connect:{id}}
+                    }))
+                  }
+                }:
+              {}) , 
             created_by: { connect: { id: loggedInUser.user_id } },
           },
         });
