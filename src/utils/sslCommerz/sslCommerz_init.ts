@@ -4,18 +4,54 @@ import SSLCommerzPayment from "sslcommerz-lts";
 import { BACKEND_URL } from "../../helperFunctions/helpers/helperFunctions.js";
 import { findData } from "./findData.js";
 import { BillingFrequency, StudentFeeType } from "#db-client";
+import { prisma } from "../../lib/prisma.js";
 interface ISSLCOMMERZ_INIT_PAYLOAD {
-    student_id: string;
-    amount: number; 
-    fee_name: StudentFeeType;
-    fee_frequency:BillingFrequency;
-    academic_year_name: string;
+  student_id: string;
+  fee_type: StudentFeeType;
+  billing_frequency: BillingFrequency;
+  academic_year_name: string;
+  billing_period_key: string;
 }
 
-export const sslCommerzInit = async ({student_id, academic_year_name,amount, fee_name, fee_frequency}:ISSLCOMMERZ_INIT_PAYLOAD) => {
-  const {studentClassHistory, studentName, studentEmail, studentMobileNmber, postCode, address, thana, district, country} =
-    await findData({student_id, academic_year_name});
-  const currentBackendUrl = BACKEND_URL;  //backend rul
+export const sslCommerzInit = async ({
+  student_id,
+  academic_year_name,
+  fee_type,
+  billing_frequency,
+  billing_period_key,
+}: ISSLCOMMERZ_INIT_PAYLOAD) => {
+  const {
+    studentClassHistory,
+    studentName,
+    studentEmail,
+    studentMobileNmber,
+    postCode,
+    address,
+    thana,
+    district,
+    country,
+  } = await findData({ student_id, academic_year_name });
+
+  const section = studentClassHistory?.section;
+  const version = studentClassHistory?.version;
+  const department = studentClassHistory?.department;
+  const shift = studentClassHistory?.shift;
+  const class_name = studentClassHistory?.class.class_name;
+  const classHistoryId = studentClassHistory;
+
+  const studentFeeRate = await prisma.studentFeeRate.findFirst({
+    where: {
+      class_history_id: classHistoryId,
+      fee_type,
+      billing_frequency
+    },
+    select: {
+      id: true,
+      amount_to_pay: true
+    }
+  })
+
+  const currentBackendUrl = BACKEND_URL; //backend rul
   const store_id = envVars.SSL_COMMERZ_STORE_ID;
   const store_passwd = envVars.SSL_COMMERZ_STORE_PASSWORD;
   const isLive = envVars.NODE_ENV === "production";
@@ -32,8 +68,8 @@ export const sslCommerzInit = async ({student_id, academic_year_name,amount, fee
     ipn_url: `${currentBackendUrl}/ipn-success-payment`,
     // ipn_url: `${currentURL}/ipn-success-payment`,
     shipping_method: "NO",
-    product_name: fee_name,
-    product_category: fee_frequency,
+    product_name: fee_type,
+    product_category: billing_frequency,
     product_profile: "general",
     cus_name: studentName,
     cus_email: studentEmail,
@@ -46,7 +82,7 @@ export const sslCommerzInit = async ({student_id, academic_year_name,amount, fee
 
     // CRITICAL: Pass your relations through SSLCommerz variables
     value_a: student_id,
-    // value_b: rentalRequest.tenantId,
+    value_b: billing_period_key,
     // value_c: rentalRequest.landlordId,
     // value_d: rentalRequest.propertyId,
   };

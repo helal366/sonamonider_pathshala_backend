@@ -24,7 +24,8 @@ export const findData=async({student_id, academic_year_name}:IStudentPaymentData
                     class: {
                         select:{class_name : true,}
                     }
-                }
+                },
+                
             }
         }
     });
