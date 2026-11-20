@@ -27,7 +27,7 @@ const studentReadmission = async (
     target_year_name,
     roll_number,
     quranic_subject_name,
-    quranic_class_period_ids,
+    quranic_period_ids,
   } = payload;
   const cleanShiftName = target_shift_name;
   const cleanYearName = target_year_name.trim();
@@ -144,14 +144,14 @@ const studentReadmission = async (
       const studentsRequirementPayload = {
         transaction,
         active_class_id: payload.target_class_id,
-        year_name: payload.target_year_name,
+        academic_year_name: payload.target_year_name,
         shift_name: cleanShiftName, //payload.target_shift_name,
         roll_number: roll_number,
         section: payload.section,
         version: payload.version,
         department: payload.department ?? Department.GENERAL,
         quranic_subject_name,
-        quranic_class_period_ids: quranic_class_period_ids,
+        quranic_period_ids: quranic_period_ids,
       };
       const {
         activeClassID,
@@ -164,7 +164,7 @@ const studentReadmission = async (
         version,
         department,
         existingQuranicSubject,
-        quranicClassPeriodIDs,
+        quranicPeriodIDs,
       } = await userHelperFunction.checkStudentCreationRequirements(
         studentsRequirementPayload,
       );
@@ -200,7 +200,7 @@ const studentReadmission = async (
           department,
           quranic_subject: { connect: { id: existingQuranicSubject.id } },
           class_history_quranic_periods: {
-            create: quranicClassPeriodIDs.map((id: string) => ({
+            create: quranicPeriodIDs.map((id: string) => ({
               quranic_period: { connect: { id } },
             })),
           },
@@ -225,7 +225,7 @@ const studentReadmission = async (
           version,
           department,
           quranic_subject_id: existingQuranicSubject.id,
-          quranic_class_period_ids: quranicClassPeriodIDs,
+          quranic_period_ids: quranicPeriodIDs,
         },
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
@@ -365,7 +365,7 @@ const oldStudentAdmission = async (
     target_year_name,
     roll_number,
     quranic_subject_name,
-    quranic_class_period_ids,
+    quranic_period_ids,
   } = payload;
   const targetYear = target_year_name;
   const cleanShiftName = target_shift_name;
@@ -449,14 +449,14 @@ const oldStudentAdmission = async (
     const studentsRequirementPayload = {
       transaction,
       active_class_id: payload.target_class_id,
-      year_name: payload.target_year_name,
+      academic_year_name: payload.target_year_name,
       shift_name: cleanShiftName, //payload.target_shift_name,
       roll_number: roll_number,
       section: payload.section,
       version: payload.version,
       department: payload.department ?? Department.GENERAL,
       quranic_subject_name,
-      quranic_class_period_ids: quranic_class_period_ids,
+      quranic_period_ids: quranic_period_ids,
     };
 
     const {
@@ -470,7 +470,7 @@ const oldStudentAdmission = async (
       version,
       department,
       existingQuranicSubject,
-      quranicClassPeriodIDs,
+      quranicPeriodIDs,
     } = await userHelperFunction.checkStudentCreationRequirements(
       studentsRequirementPayload,
     );
@@ -530,7 +530,7 @@ const oldStudentAdmission = async (
         department,
         quranic_subject: { connect: { id: existingQuranicSubject.id } },
         class_history_quranic_periods: {
-          create: quranicClassPeriodIDs.map((id: string) => ({
+          create: quranicPeriodIDs.map((id: string) => ({
             quranic_period: { connect: { id } },
           })),
         },
@@ -553,7 +553,7 @@ const oldStudentAdmission = async (
         version,
         department,
         quranic_subject_id: existingQuranicSubject.id,
-        quranic_class_period_ids: quranicClassPeriodIDs,
+        quranic_period_ids: quranicPeriodIDs,
       },
       action: "CREATE",
       changed_by_id: loggedInUser.user_id,

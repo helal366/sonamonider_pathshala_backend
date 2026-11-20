@@ -9,6 +9,7 @@ import {
   TStandardStudentFeeRateIdParamsZodSchema,
   TCreateStandardStudentFeeRateZodSchema,
   TUpdateStandardStudentFeeRateFieldZodSchema,
+  TGetStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema,
 } from "./standardStudentFeeRate.zodValidation.js";
 
 const createStandardStudentFeeRate = catchAsync(
@@ -111,6 +112,29 @@ const getStandardStudentFeeRatesByClassId = catchAsync(
     });
   },
 );
+const getStandardStudentFeeRatesByClassIdSectionVersionDepartment = catchAsync(
+  async (
+    req: Request<TGetStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema>,
+    res: Response,
+  ) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result =
+      await standardStudentFeeRateServices.getStandardStudentFeeRatesByClassIdSectionVersionDepartment(
+        req.params.class_id,
+        req.params.section,
+        req.params.version,
+        req.params.department,
+        loggedInUser,
+      );
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Standard student fee rates retrieved successfully.",
+      data: result,
+    });
+  },
+);
 
 export const standardStudentFeeRateController = {
   createStandardStudentFeeRate,
@@ -118,4 +142,5 @@ export const standardStudentFeeRateController = {
   deleteStandardStudentFeeRate,
   getAllStandardStudentFeeRates,
   getStandardStudentFeeRatesByClassId,
+  getStandardStudentFeeRatesByClassIdSectionVersionDepartment
 };

@@ -1,4 +1,4 @@
-import { Prisma } from "#db-client";
+import { Department, Prisma, Section, Version } from "#db-client";
 import { StatusCodes } from "http-status-codes";
 import { TLoggedInUser } from "../../commonInterfaces/interfaces.js";
 import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
@@ -278,7 +278,79 @@ const getStandardStudentFeeRatesByClassId = async (
       { fee_type: "asc" },
       { billing_frequency: "asc" },
     ],
-    include: standardStudentFeeRateInclude,
+select: {
+  id: true,
+  fee_type: true,
+  billing_frequency: true, 
+  amount: true,
+  ic_registration_fee : true,
+  ic_duration_hrs: true,
+  qc_duration_hrs : true,
+  assigned_classes: {
+  select: {
+    class: {
+      select: {
+        id: true,
+        class_name: true
+      }
+    }
+  }
+  },
+  section: true,
+  version: true,
+  department: true
+
+}
+  });
+};
+
+const getStandardStudentFeeRatesByClassIdSectionVersionDepartment = async (
+  classId: string,
+  section:Section,
+  version:Version,
+  department: Department,
+  loggedInUser: TLoggedInUser,
+) => {
+  assertManagementAccountant(loggedInUser);
+  const foundClass = await prisma.class.findUnique({
+    where: { id: classId },
+    select: { id: true },
+  });
+  if (!foundClass) {
+    throw new AppError("Class not found.", StatusCodes.NOT_FOUND);
+  }
+
+  return prisma.standardStudentFeeRate.findMany({
+    where: { assigned_classes: { some: { class_id: classId } }, section, version, department},
+    orderBy: [
+      { section: "asc" },
+      { version: "asc" },
+      { fee_type: "asc" },
+      { billing_frequency: "asc" },
+    ],
+select: {
+  id: true,
+  fee_type: true,
+  billing_frequency: true, 
+  amount: true,
+  ic_registration_fee : true,
+  ic_duration_hrs: true,
+  qc_duration_hrs : true,
+  assigned_classes: {
+  select: {
+    class: {
+      select: {
+        id: true,
+        class_name: true
+      }
+    }
+  }
+  },
+  section: true,
+  version: true,
+  department: true
+
+}
   });
 };
 
@@ -288,4 +360,5 @@ export const standardStudentFeeRateServices = {
   deleteStandardStudentFeeRate,
   getAllStandardStudentFeeRates,
   getStandardStudentFeeRatesByClassId,
+  getStandardStudentFeeRatesByClassIdSectionVersionDepartment
 };

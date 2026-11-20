@@ -41,23 +41,79 @@ const createStudentFeeRate = async (
   loggedInUser: TLoggedInUser,
 ) => {
   assertManagementAccountant(loggedInUser);
-  return prisma.$transaction(async (tx) => {
-    const classHistory = await tx.classHistory.findUnique({
+  return prisma.$transaction(async (transaction) => {
+    const classHistory = await transaction.classHistory.findUnique({
       where: { id: payload.class_history_id },
-      select: { id: true },
+      select: {
+        id: true,
+        academic_year: {
+          select: {academic_year_name: true}
+        },
+        shift: true,
+        section: true,
+        version: true,
+        department: true,
+        class_id: true,
+      },
     });
     if (!classHistory) {
       throw new AppError("Class history not found.", StatusCodes.NOT_FOUND);
     }
 
-    const created = await tx.studentFeeRate.create({
+    const standardStudentFeeRates = await transaction.standardStudentFeeRate.findMany({
+      where: {
+        fee_type: payload.fee_type,
+        billing_frequency: payload.billing_frequency,
+        section: classHistory.section,
+        version: classHistory.version,
+        department: classHistory.department,
+        assigned_classes: {
+          some: {
+            class_id: classHistory.class_id
+          }
+        }
+      },
+    });
+    if (standardStudentFeeRates.length === 0) {
+      throw new AppError(
+        "Standard student fee rate not found for the student.",
+        StatusCodes.NOT_FOUND,
+      );
+    };
+    if (standardStudentFeeRates.length > 1) {
+      throw new AppError(
+        "Multiple standard student fee rates match this class history and fee type.",
+        StatusCodes.CONFLICT,
+      );
+    };
+    const standardStudentFeeRate = standardStudentFeeRates[0];
+    if (!standardStudentFeeRate) {
+      throw new AppError(
+        "Standard student fee rate not found for the student.",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    const discountAmount = new Prisma.Decimal(payload.discount_amount);
+    if (discountAmount.greaterThan(standardStudentFeeRate.amount)) {
+      throw new AppError(
+        "Discount amount cannot be greater than actual amount.",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+    const amountToPay = standardStudentFeeRate.amount.minus(discountAmount);
+    const created = await transaction.studentFeeRate.create({
       data: {
-        ...payload,
+        class_history_id: payload.class_history_id,
+        fee_type: payload.fee_type,
+        billing_frequency: payload.billing_frequency,
+        amount: standardStudentFeeRate.amount,
+        discount_amount: discountAmount,
+        amount_to_pay: amountToPay,
         created_by_id: loggedInUser.user_id,
       },
     });
 
-    await tx.auditLog.create({
+    await transaction.auditLog.create({
       data: {
         entity_id: created.id,
         entity_name: "studentFeeRate",
@@ -183,7 +239,7 @@ const getStudentFeeRateByStudentId = async (
           },
         },
         include: {
-          student_class_fee_rates: true
+          student_fee_rates: true
         }
       },
       
@@ -201,7 +257,7 @@ const getStudentFeeRateByStudentId = async (
   }
 
   return student.class_history.flatMap(
-    (history) => history.student_class_fee_rates,
+    (history) => history.student_fee_rates,
   );
 };
 
@@ -235,7 +291,7 @@ const getStudentFeePaymentsByStudentId = async (
           }
         },
         include: {
-          student_class_fee_payments: true
+          student_fee_payments: true
         }
       }
     },
@@ -250,7 +306,7 @@ const getStudentFeePaymentsByStudentId = async (
       StatusCodes.NOT_FOUND,
     );
   }
-  return student.class_history.flatMap((history)=>history.student_class_fee_payments);
+  return student.class_history.flatMap((history)=>history.student_fee_payments);
 };
 
 // ======================================================

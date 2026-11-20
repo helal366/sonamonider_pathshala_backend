@@ -136,7 +136,7 @@
       "value": "00000000-0000-4000-8000-000000000026"
     },
     {
-      "key": "assignedStudentFeeRateId",
+      "key": "standardStudentFeeRateId",
       "value": "00000000-0000-4000-8000-000000000022"
     },
     {
@@ -185,7 +185,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_name\": \"01712345678\",\n  \"user_password\": \"password123\"\n}",
+              "raw": "{\n  \"user_name\": \"01671588904\",\n  \"user_password\": \"password123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1427,7 +1427,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1470,7 +1470,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_class_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
+              "raw": "{\n  \"target_class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"target_shift_name\": \"DAY\",\n  \"target_year_name\": \"2026\",\n  \"roll_number\": 1,\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"quranic_subject_name\": \"Nazera\",\n  \"quranic_period_ids\": [\n    \"00000000-0000-4000-8000-000000000012\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2772,10 +2772,10 @@
       ]
     },
     {
-      "name": "Assigned Student Fee Rate",
+      "name": "Standard Student Fee Rate",
       "item": [
         {
-          "name": "Get All Assigned Student Fee Rates",
+          "name": "Get All Standard Student Fee Rates",
           "request": {
             "method": "GET",
             "header": [],
@@ -2794,11 +2794,11 @@
           "response": []
         },
         {
-          "name": "Get Assigned Student Fee Rates By Class Id",
+          "name": "Get Standard Student Fee Rates By Class Id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/get_assigned_student_fee_rates_by_class_id/{{classId}}",
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/get_standard_student_fee_rates_by_class_id/{{classId}}",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -2813,7 +2813,26 @@
           "response": []
         },
         {
-          "name": "Create Assigned Student Fee Rate",
+          "name": "Get Standard Student Fee Rates By Class Id, Section, Version, and Department",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/get_standard_student_fee_rates_by_class_id_section_version_department/{{classId}}/SCHOOL/ENGLISH/GENERAL",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Standard Student Fee Rate",
           "request": {
             "method": "POST",
             "header": [
@@ -2822,7 +2841,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/create_assigned_student_fee_rate",
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/create_standard_student_fee_rate",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -2835,7 +2854,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000,\n  \"class_id\": \"00000000-0000-4000-8000-000000000002\",\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\"\n}",
+              "raw": "{\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000,\n  \"class_ids\": [\n    \"00000000-0000-4000-8000-000000000002\"\n  ],\n  \"section\": \"SCHOOL\",\n  \"version\": \"ENGLISH\",\n  \"department\": \"GENERAL\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2846,7 +2865,7 @@
           "response": []
         },
         {
-          "name": "Update Assigned Student Fee Rate Field",
+          "name": "Update Standard Student Fee Rate Field/:id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2855,7 +2874,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/update_assigned_student_fee_rate_field/{{assignedStudentFeeRateId}}",
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/update_standard_student_fee_rate_field/{{standardStudentFeeRateId}}",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -2879,11 +2898,11 @@
           "response": []
         },
         {
-          "name": "Delete Assigned Student Fee Rate",
+          "name": "Delete Standard Student Fee Rate/:id",
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/delete_assigned_student_fee_rate/{{assignedStudentFeeRateId}}",
+            "url": "{{baseUrl}}/api/v1/smps/assigned_student_fee_rate/delete_standard_student_fee_rate/{{standardStudentFeeRateId}}",
             "auth": {
               "type": "bearer",
               "bearer": [

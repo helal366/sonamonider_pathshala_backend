@@ -52,7 +52,7 @@ const studentReadmissionZodSchema = z4
       .string()
       .trim()
       .min(1, "Quranic class name is required."),
-    quranic_class_period_ids: z4
+    quranic_period_ids: z4
       .array(
         z4.uuid({
           error: "Each period ID must be a valid UUID string format.",
@@ -160,7 +160,7 @@ const oldStudentAdmissionZodSchema = z4.object({
     .string()
     .trim()
     .min(1, "Quranic class name is required."),
-  quranic_class_period_ids: z4
+  quranic_period_ids: z4
     .array(
       z4.uuid({ error: "Each period ID must be a valid UUID string format." }),
     )

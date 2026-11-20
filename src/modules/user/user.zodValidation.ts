@@ -97,7 +97,7 @@ const userCreateZodSchema = z4
       ),
 
     active_class_id: z4.string().trim().optional(),
-    year_name: z4
+    academic_year_name: z4
       .string()
       .trim()
       .regex(/^\d{4}$/, "Academic year must be a four-digit year.")
@@ -105,14 +105,14 @@ const userCreateZodSchema = z4
     shift_name: z4.enum(Shift).optional(),
     section: z4.enum(Section).optional(),
     version: z4.enum(Version).optional(),
-    department: z4.enum(Department).optional(),    
+    department: z4.enum(Department).optional(),
     roll_number: z4.coerce
       .number("Invalid roll number.")
       .int("Roll number must be an integer.")
       .min(1, "Roll number must be greater than 0.")
       .optional(),
     quranic_subject_name: z4.string().trim(),
-    quranic_class_period_ids: z4
+    quranic_period_ids: z4
       .array(
         z4.uuid({
           error: "Each period ID must be a valid UUID string format.",
@@ -124,10 +124,7 @@ const userCreateZodSchema = z4
     arabic_subject_names: z4
       .array(z4.string("Invalid Arabic Subject name."))
       .optional(),
-    arabic_period_ids: z4.array(
-      z4.uuid("Invalid Arabic Period ID")
-    ).optional(),
-
+    arabic_period_ids: z4.array(z4.uuid("Invalid Arabic Period ID")).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.role_name?.trim().toUpperCase() === "STUDENT") {
@@ -139,11 +136,11 @@ const userCreateZodSchema = z4
         });
       }
 
-      if (!data.year_name || data.year_name.trim() === "") {
+      if (!data.academic_year_name || data.academic_year_name.trim() === "") {
         ctx.addIssue({
           code: "custom",
           message: "Academic year name is required for students.",
-          path: ["year_name"],
+          path: ["academic_year_name"],
         });
       }
 
@@ -177,8 +174,8 @@ const userCreateZodSchema = z4
           path: ["section"],
         });
       }
-      if(!data.department){
-        data.department = Department.GENERAL
+      if (!data.department) {
+        data.department = Department.GENERAL;
       }
       if (
         data.shift_name === Shift.MORNING &&
@@ -208,15 +205,12 @@ const userCreateZodSchema = z4
         });
       }
 
-      if (
-        !data.quranic_class_period_ids ||
-        data.quranic_class_period_ids.length === 0
-      ) {
+      if (!data.quranic_period_ids || data.quranic_period_ids.length === 0) {
         ctx.addIssue({
           code: "custom",
           message:
             "At least one Quranic class period is required for students.",
-          path: ["quranic_class_period_ids"],
+          path: ["quranic_period_ids"],
         });
       }
 
@@ -224,7 +218,7 @@ const userCreateZodSchema = z4
       if (
         data.arabic_subject_names &&
         data.arabic_subject_names.length > 0 &&
-        (!data.arabic_period_ids || data.arabic_period_ids?.length ===0)
+        (!data.arabic_period_ids || data.arabic_period_ids?.length === 0)
       ) {
         ctx.addIssue({
           code: "custom",
@@ -235,7 +229,8 @@ const userCreateZodSchema = z4
       }
 
       if (
-        (data.arabic_period_ids && data.arabic_period_ids.length > 0) &&
+        data.arabic_period_ids &&
+        data.arabic_period_ids.length > 0 &&
         (!data.arabic_subject_names || data.arabic_subject_names.length === 0)
       ) {
         ctx.addIssue({

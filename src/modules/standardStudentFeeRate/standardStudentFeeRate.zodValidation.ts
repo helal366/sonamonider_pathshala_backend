@@ -104,10 +104,22 @@ const classIdParamsZodSchema = z4.object({
 export type TStandardStudentFeeRateClassIdParamsZodSchema = z4.infer<
   typeof classIdParamsZodSchema
 >;
+const getStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema =
+  z4.object({
+    class_id: z4.uuid("Invalid class ID."),
+    section: z4.enum(Section, "Invalid section format."),
+    version: z4.enum(Version, "Invalid version format."),
+    department: z4.enum(Department, "Invalid department format."),
+  });
 
+export type TGetStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema =
+  z4.infer<
+    typeof getStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema
+  >;
 export const standardStudentFeeRateZodSchema = {
   createStandardStudentFeeRateZodSchema,
   updateStandardStudentFeeRateFieldZodSchema,
   standardStudentFeeRateIdParamsZodSchema,
   classIdParamsZodSchema,
+  getStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema
 };

@@ -59,4 +59,15 @@ router.get(
   standardStudentFeeRateController.getStandardStudentFeeRatesByClassId,
 );
 
+router.get(
+  "/get_standard_student_fee_rates_by_class_id_section_version_department/:class_id/:section/:version/:department",
+  userAuth(...feeManagementRoles),
+  validateZodParams(
+    standardStudentFeeRateZodSchema
+      .getStandardStudentFeeRatesByClassIdSectionVersionDepartmentParamsZodSchema
+  ),
+  standardStudentFeeRateController
+    .getStandardStudentFeeRatesByClassIdSectionVersionDepartment,
+);
+
 export const standardStudentFeeRateRouter: Router = router;

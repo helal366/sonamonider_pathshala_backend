@@ -1,4 +1,15 @@
-import { ActiveStatus, BloodGroup, Department, Gender, Prisma, Religion, Role, Section, Shift, Version } from "#db-client";
+import {
+  ActiveStatus,
+  BloodGroup,
+  Department,
+  Gender,
+  Prisma,
+  Religion,
+  Role,
+  Section,
+  Shift,
+  Version,
+} from "#db-client";
 
 // ==========================================
 // CREATE USER
@@ -24,7 +35,7 @@ export const VALID_USER_ROLES_USER_CREATE = [
   Role.MANAGEMENT,
   Role.ACADEMIC,
   Role.STUDENT,
-  Role.GOVERNING_BODY
+  Role.GOVERNING_BODY,
 ] as const;
 
 export type TCleanRolesUserCreation =
@@ -139,15 +150,15 @@ export type UserDeleteValue =
 
 export interface IStudentRequirementsPayload {
   active_class_id: string | undefined;
-  year_name: string | undefined;
+  academic_year_name: string | undefined;
   shift_name: Shift | undefined;
   roll_number: number | undefined;
   section: Section;
   version: Version;
   department: Department;
   quranic_subject_name: string | undefined;
-  quranic_class_period_ids: string[] | undefined;
-  transaction: Prisma.TransactionClient ;
+  quranic_period_ids: string[] | undefined;
+  transaction: Prisma.TransactionClient;
   arabic_subject_names?: string[] | undefined;
   arabic_period_ids?: string[] | undefined;
 }

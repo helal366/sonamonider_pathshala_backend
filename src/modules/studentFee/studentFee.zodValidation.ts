@@ -9,26 +9,26 @@ const createStudentFeeRateZodSchema = z4
     class_history_id: z4.uuid("Invalid class ID."),
     fee_type: z4.enum(StudentFeeType, "Invalid student fee type."),
     billing_frequency: z4.enum(BillingFrequency, "Invalid billing frequency."),
-    amount: z4.number().nonnegative("Amount cannot be negative."),
+    // amount: z4.number().nonnegative("Amount cannot be negative."),
     discount_amount: z4.number().nonnegative("Amount cannot be negative."),
-    amount_to_pay: z4.number().nonnegative("Amount cannot be negative."),
+    // amount_to_pay: z4.number().nonnegative("Amount cannot be negative."),
   })
-  .superRefine((data, ctx) => {
-    if (data.discount_amount > data.amount) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["discount_amount"],
-        message: "Discount amount can not be greater than actual amount.",
-      });
-    }
-    if (data.amount_to_pay !== data.amount - data.discount_amount) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["amount_to_pay"],
-        message: "Amount to pay must equal amount minus discount amount.",
-      });
-    }
-  });
+  // .superRefine((data, ctx) => {
+  //   if (data.discount_amount > data.amount) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       path: ["discount_amount"],
+  //       message: "Discount amount can not be greater than actual amount.",
+  //     });
+  //   }
+  //   if (data.amount_to_pay !== data.amount - data.discount_amount) {
+  //     ctx.addIssue({
+  //       code: "custom",
+  //       path: ["amount_to_pay"],
+  //       message: "Amount to pay must equal amount minus discount amount.",
+  //     });
+  //   }
+  // });
 
 export type TCreateStudentFeeRateZodSchema = z4.infer<
   typeof createStudentFeeRateZodSchema

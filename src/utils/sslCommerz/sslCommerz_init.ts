@@ -5,6 +5,8 @@ import { BACKEND_URL } from "../../helperFunctions/helpers/helperFunctions.js";
 import { findData } from "./findData.js";
 import { BillingFrequency, StudentFeeType } from "#db-client";
 import { prisma } from "../../lib/prisma.js";
+import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { StatusCodes } from "http-status-codes";
 interface ISSLCOMMERZ_INIT_PAYLOAD {
   student_id: string;
   fee_type: StudentFeeType;
@@ -37,7 +39,7 @@ export const sslCommerzInit = async ({
   const department = studentClassHistory?.department;
   const shift = studentClassHistory?.shift;
   const class_name = studentClassHistory?.class.class_name;
-  const classHistoryId = studentClassHistory;
+  const classHistoryId = studentClassHistory?.id;
 
   const studentFeeRate = await prisma.studentFeeRate.findFirst({
     where: {
@@ -49,7 +51,10 @@ export const sslCommerzInit = async ({
       id: true,
       amount_to_pay: true
     }
-  })
+  });
+  if(!studentFeeRate){
+    throw new AppError(`Student fee rate not found.`,StatusCodes.NOT_FOUND)
+  }
 
   const currentBackendUrl = BACKEND_URL; //backend rul
   const store_id = envVars.SSL_COMMERZ_STORE_ID;
@@ -59,7 +64,7 @@ export const sslCommerzInit = async ({
   const initiate = {
     store_id,
     store_passwd,
-    total_amount: amount,
+    total_amount: studentFeeRate.amount_to_pay.toString(),
     currency: "BDT",
     tran_id: transactionId, // use unique tran_id for each api call
     success_url: `${currentBackendUrl}/api/payments/confirm`, // Added tracking query parameters

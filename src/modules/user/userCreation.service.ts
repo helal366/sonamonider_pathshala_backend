@@ -66,10 +66,10 @@ const createUser = async (
   const otpKey = `new_user_welcome_otp:${email}`;
   const newUser = await prisma.$transaction(
     async (transaction) => {
-      // MAKE STUDENT REQUIREMENTS 
+      // MAKE STUDENT REQUIREMENTS
       let studentRequirements = undefined;
       if (cleanRole === Role.STUDENT) {
-                // CHECK SECTION
+        // CHECK SECTION
         if (!payload.section) {
           throw new AppError("Section is required.", StatusCodes.NOT_FOUND);
         }
@@ -78,23 +78,22 @@ const createUser = async (
         if (!payload.version) {
           throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
         }
-      studentRequirements =
-        await userHelperFunction.checkStudentCreationRequirements({
-          transaction,
-          active_class_id: payload.active_class_id,
-          year_name: payload.year_name,
-          shift_name: payload.shift_name,
-          roll_number: payload.roll_number,
-          section: payload.section,
-          version: payload.version,
-          department: payload.department ?? Department.GENERAL,
-          quranic_subject_name: payload.quranic_subject_name,
-          quranic_class_period_ids: payload.quranic_class_period_ids,
-          arabic_subject_names: payload.arabic_subject_names,
-          arabic_period_ids: payload.arabic_period_ids,
-        });
-    }
-
+        studentRequirements =
+          await userHelperFunction.checkStudentCreationRequirements({
+            transaction,
+            active_class_id: payload.active_class_id,
+            academic_year_name: payload.academic_year_name,
+            shift_name: payload.shift_name,
+            roll_number: payload.roll_number,
+            section: payload.section,
+            version: payload.version,
+            department: payload.department ?? Department.GENERAL,
+            quranic_subject_name: payload.quranic_subject_name,
+            quranic_period_ids: payload.quranic_period_ids,
+            arabic_subject_names: payload.arabic_subject_names,
+            arabic_period_ids: payload.arabic_period_ids,
+          });
+      }
 
       // CALLING THE HELPER FUNCTION HERE
       const { profileData, targetEntityName } =
@@ -201,8 +200,11 @@ const createUser = async (
       // STUDENT CREATION
       // ======================
       if (cleanRole === Role.STUDENT && subProfileId) {
-        if(!studentRequirements){
-          throw new AppError(`Student requirements not found.`, StatusCodes.NOT_FOUND)
+        if (!studentRequirements) {
+          throw new AppError(
+            `Student requirements not found.`,
+            StatusCodes.NOT_FOUND,
+          );
         }
         // CHECK SECTION
         if (!payload.section) {
@@ -213,44 +215,91 @@ const createUser = async (
         if (!payload.version) {
           throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
         }
+        const standardStudentFeeRates =
+          await userHelperFunction.getStandardStudentFeeRatesForClass({
+            transaction,
+            class_id: studentRequirements.activeClassID,
+            section: studentRequirements.section,
+            version: studentRequirements.version,
+            department: studentRequirements.department,
+          });
 
         const classHistory = await transaction.classHistory.create({
           data: {
             student: { connect: { id: subProfileId } },
             class: { connect: { id: studentRequirements.activeClassID } },
-            academic_year: { connect: { id: studentRequirements.academicYear.id } },
+            academic_year: {
+              connect: { id: studentRequirements.academicYear.id },
+            },
             shift: studentRequirements.existingShift,
             roll_number: studentRequirements.rollNumber,
             start_date: studentRequirements.academicStartDate,
             end_date: studentRequirements.academicEndDate,
-            quranic_subject: { connect: { id: studentRequirements.existingQuranicSubject.id } },
+            quranic_subject: {
+              connect: { id: studentRequirements.existingQuranicSubject.id },
+            },
             section: studentRequirements.section,
             version: studentRequirements.version,
             department: studentRequirements.department,
             class_history_quranic_periods: {
-              create: studentRequirements.quranicClassPeriodIDs.map((id: string) => ({
-                quranic_period: { connect: { id } },
+              create: studentRequirements.quranicPeriodIDs.map(
+                (id: string) => ({
+                  quranic_period: { connect: { id } },
+                }),
+              ),
+            },
+            ...(payload.arabic_subject_names?.length
+              ? {
+                  class_history_arabic_subjects: {
+                    create: payload.arabic_subject_names.map((subject) => ({
+                      arabic_subject: {
+                        connect: { arabic_subject_name: subject },
+                      },
+                    })),
+                  },
+                }
+              : {}),
+            ...(payload.arabic_period_ids?.length
+              ? {
+                  class_history_arabic_period_ids: {
+                    create: payload.arabic_period_ids.map((id) => ({
+                      arabic_period: { connect: { id } },
+                    })),
+                  },
+                }
+              : {}),
+            student_fee_rates: {
+              create: standardStudentFeeRates.map((standardFeeRate) => ({
+                fee_type: standardFeeRate.fee_type,
+                billing_frequency: standardFeeRate.billing_frequency,
+                amount: standardFeeRate.amount,
+                amount_to_pay: standardFeeRate.amount,
+                created_by_id: loggedInUser.user_id,
               })),
             },
-            ...(payload.arabic_subject_names?.length ? {
-                  class_history_arabic_subjects: {
-                    create: payload.arabic_subject_names.map((subject)=>({
-                      arabic_subject: {connect: {arabic_subject_name:subject}}
-                    }))
-                  }
-                }: 
-                {}) ,
-                ...(payload.arabic_period_ids?.length ? {
-                  class_history_arabic_period_ids: {
-                    create: payload.arabic_period_ids.map((id)=>({
-                      arabic_period: {connect:{id}}
-                    }))
-                  }
-                }:
-              {}) , 
             created_by: { connect: { id: loggedInUser.user_id } },
           },
+          include: {
+            student_fee_rates: true,
+          },
         });
+
+        for (const feeRate of classHistory.student_fee_rates) {
+          auditRecords.push({
+            entity_id: feeRate.id,
+            entity_name: "studentFeeRate",
+            old_value: Prisma.JsonNull,
+            new_value: {
+              class_history_id: classHistory.id,
+              fee_type: feeRate.fee_type,
+              billing_frequency: feeRate.billing_frequency,
+              amount: feeRate.amount.toString(),
+              amount_to_pay: feeRate.amount_to_pay.toString(),
+            },
+            action: "CREATE",
+            changed_by_id: loggedInUser.user_id,
+          });
+        }
 
         auditRecords.push({
           entity_id: classHistory.id,
@@ -268,7 +317,7 @@ const createUser = async (
             version: studentRequirements.version,
             department: studentRequirements.department,
             quranic_class_id: studentRequirements.existingQuranicSubject.id,
-            quranic_class_period_ids: studentRequirements.quranicClassPeriodIDs,
+            quranic_period_ids: studentRequirements.quranicPeriodIDs,
           },
           action: "CREATE",
           changed_by_id: loggedInUser.user_id,
@@ -291,7 +340,6 @@ const createUser = async (
 
       // Bulk resolve tracking inputs
       await transaction.auditLog.createMany({ data: auditRecords });
-
       return createdUser;
     },
     { timeout: 30000 },

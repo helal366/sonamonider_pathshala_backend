@@ -9,7 +9,7 @@ import {
   IStudentRequirementsPayload,
   IUserCount,
 } from "./user.interface.js";
-import { Prisma, Role, Section, Shift } from "#db-client";
+import { Department, Prisma, Role, Section, Shift, Version } from "#db-client";
 
 const isManagement = ["MANAGEMENT"];
 
@@ -297,20 +297,81 @@ const buildInitialAuditRecords = (
   ];
 };
 
+const getStandardStudentFeeRatesForClass = async ({
+  transaction,
+  class_id,
+  section,
+  version,
+  department,
+}: {
+  transaction: Prisma.TransactionClient;
+  class_id: string;
+  section: Section;
+  version: Version;
+  department: Department;
+}) => {
+  const standardStudentFeeRates =
+    await transaction.standardStudentFeeRate.findMany({
+      where: {
+        section,
+        version,
+        department,
+        // assigned_classes: {
+        //   some: { class_id },
+        // },
+      },
+      select: {
+        id: true,
+        fee_type: true,
+        billing_frequency: true,
+        amount: true,
+        section: true,
+        version: true,
+        department: true,
+        assigned_classes: {
+          select: {
+            class_id: true,
+          },
+        },
+      },
+    });
+  console.dir(standardStudentFeeRates, { depth: null });
+  if (standardStudentFeeRates.length === 0) {
+    throw new AppError(
+      "No standard student fee rates are configured for this class.",
+      StatusCodes.NOT_FOUND,
+    );
+  }
+
+  const feeRateKeys = new Set<string>();
+  for (const standardFeeRate of standardStudentFeeRates) {
+    const feeRateKey = `${standardFeeRate.fee_type}:${standardFeeRate.billing_frequency}`;
+    if (feeRateKeys.has(feeRateKey)) {
+      throw new AppError(
+        `Multiple standard student fee rates are configured for ${standardFeeRate.fee_type} (${standardFeeRate.billing_frequency}).`,
+        StatusCodes.CONFLICT,
+      );
+    }
+    feeRateKeys.add(feeRateKey);
+  }
+
+  return standardStudentFeeRates;
+};
+
 const checkStudentCreationRequirements = async (
   studentsRequirementPayload: IStudentRequirementsPayload,
 ) => {
   const {
     transaction,
     active_class_id,
-    year_name,
+    academic_year_name,
     shift_name,
     roll_number,
     section,
     version,
     department,
     quranic_subject_name,
-    quranic_class_period_ids,
+    quranic_period_ids,
     arabic_subject_names,
     arabic_period_ids,
   } = studentsRequirementPayload;
@@ -379,30 +440,34 @@ const checkStudentCreationRequirements = async (
     throw new AppError(`The class is not active.`, StatusCodes.BAD_REQUEST);
   }
   // CHECK THE YEAR NAME
-  if (!year_name) {
+  if (!academic_year_name) {
     throw new AppError(
       `Academic year is required for student entry.`,
       StatusCodes.NOT_FOUND,
     );
   }
-  const cleanYearName = year_name.trim();
-  if (!/^\d{4}$/.test(cleanYearName)) {
+  const cleanAcademicYearName = academic_year_name.trim();
+  if (!/^\d{4}$/.test(cleanAcademicYearName)) {
     throw new AppError(
       "Academic year must be a four-digit year.",
       StatusCodes.BAD_REQUEST,
     );
   }
-  const academicStartDate = new Date(`${cleanYearName}-01-01T00:00:00.000Z`);
-  const academicEndDate = new Date(`${cleanYearName}-12-31T23:59:59.999Z`);
+  const academicStartDate = new Date(
+    `${cleanAcademicYearName}-01-01T00:00:00.000Z`,
+  );
+  const academicEndDate = new Date(
+    `${cleanAcademicYearName}-12-31T23:59:59.999Z`,
+  );
 
   const academicYear = await transaction.academicYear.findUnique({
-    where: { academic_year_name: cleanYearName },
+    where: { academic_year_name: cleanAcademicYearName },
     select: { id: true },
   });
 
   if (!academicYear) {
     throw new AppError(
-      `Provided Academic Year ${year_name} not found`,
+      `Provided Academic Year ${academic_year_name} not found`,
       StatusCodes.NOT_FOUND,
     );
   }
@@ -487,31 +552,29 @@ const checkStudentCreationRequirements = async (
   }
 
   // CHECK QURANIC CLASS PERIOD
-  if (!quranic_class_period_ids) {
+  if (!quranic_period_ids) {
     throw new AppError(
       `Quranic class period not found.`,
       StatusCodes.NOT_FOUND,
     );
   }
-  if (quranic_class_period_ids.length === 0) {
+  if (quranic_period_ids.length === 0) {
     throw new AppError(
       `Minimum one quranic class period ID is required.`,
       StatusCodes.NOT_FOUND,
     );
   }
-  if (
-    new Set(quranic_class_period_ids).size !== quranic_class_period_ids.length
-  ) {
+  if (new Set(quranic_period_ids).size !== quranic_period_ids.length) {
     throw new AppError(
       "Quranic class period IDs must be unique.",
       StatusCodes.BAD_REQUEST,
     );
   }
   await Promise.all(
-    quranic_class_period_ids.map(async (id) => {
+    quranic_period_ids.map(async (id) => {
       const checkExisting = await transaction.quranicPeriod.findUnique({
         where: { id },
-        select: { id: true, quranic_period_name:true },
+        select: { id: true, quranic_period_name: true },
       });
       if (!checkExisting) {
         throw new AppError(
@@ -533,7 +596,7 @@ const checkStudentCreationRequirements = async (
     version,
     department,
     existingQuranicSubject,
-    quranicClassPeriodIDs: quranic_class_period_ids,
+    quranicPeriodIDs: quranic_period_ids,
     arabicSubjectNames: arabic_subject_names,
     arabicSubjectPeriod: arabic_period_ids,
   };
@@ -547,4 +610,5 @@ export const userHelperFunction = {
   findSubProfileId,
   buildInitialAuditRecords,
   checkStudentCreationRequirements,
+  getStandardStudentFeeRatesForClass,
 };
