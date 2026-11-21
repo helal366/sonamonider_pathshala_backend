@@ -1,8 +1,11 @@
 model MonthlyExamMark {
   id              String          @id @default(uuid())
 
-  class_history_id String @unique
+  class_history_id String 
   class_history ClassHistory @relation(fields: [class_history_id], references: [id])
+
+  exam_subject_id String 
+  exam_subject ExamSubject @relation(fields: [exam_subject_id], references: [id]) 
 
   january_mark    Decimal         @db.Decimal(10, 2)
   february_mark   Decimal         @db.Decimal(10, 2)
@@ -22,6 +25,7 @@ model MonthlyExamMark {
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
 
+  @@unique([class_history_id, exam_subject_id])
   @@map("monthly_exam_marks")
 }
 
@@ -132,6 +136,8 @@ model ExamSubject {
   
   class_id String
   class Class @relation(fields: [class_id], references: [id])
+
+  monthlyExamMarks   MonthlyExamMark[]
 
   section Section
   version Version

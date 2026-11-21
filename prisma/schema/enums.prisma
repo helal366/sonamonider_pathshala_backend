@@ -142,6 +142,7 @@ enum ExamSubjectName {
   BENGALI
   BENGALI_1ST
   BENGALI_2ND
+  CONVERSATION
   ELEMENTARY_MATHEMATICS
   ICT
   MATHEMATICS
@@ -170,8 +171,8 @@ enum Section {
 }
 
 enum Version {
-  BENGALI
   ENGLISH
+  ARABIC
 }
 
 enum Department {

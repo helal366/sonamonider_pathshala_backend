@@ -29,7 +29,7 @@ Medium — student username generation can conflict across roles. Usernames are 
 "roll_number": 1,
 "shift_name": "MORNING",
 "section":"MADRASHA",
-"version":"BENGALI",
+"version":"ENGLISH",
 "department": "GENERAL",
 "quranic_subject_name":"NURANI_AMMAPARA",
 "quranic_period_ids": ["75d13d6f-e3cb-434b-a160-2f6fffaf36bf", "7fcfa5fb-8c3e-4728-97e0-431ae888cd1c"],

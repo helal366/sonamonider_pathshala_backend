@@ -316,9 +316,9 @@ const getStandardStudentFeeRatesForClass = async ({
         section,
         version,
         department,
-        // assigned_classes: {
-        //   some: { class_id },
-        // },
+        assigned_classes: {
+          some: { class_id },
+        },
       },
       select: {
         id: true,
@@ -335,7 +335,7 @@ const getStandardStudentFeeRatesForClass = async ({
         },
       },
     });
-  console.dir(standardStudentFeeRates, { depth: null });
+  // console.dir(standardStudentFeeRates, { depth: null });
   if (standardStudentFeeRates.length === 0) {
     throw new AppError(
       "No standard student fee rates are configured for this class.",

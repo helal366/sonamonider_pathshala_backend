@@ -41,7 +41,7 @@ CREATE TYPE "StudentFeeType" AS ENUM ('MONTHLY_TUITION_FEE', 'SESSION_FEE', 'ADM
 CREATE TYPE "BillingFrequency" AS ENUM ('MONTHLY', 'HALF_YEARLY', 'YEARLY', 'ONE_TIME');
 
 -- CreateEnum
-CREATE TYPE "ExamSubjectName" AS ENUM ('AGRICULTURE', 'ARABIC', 'ARABIC_1ST', 'ARABIC_2ND', 'AQUAEED_AND_FIQH', 'BANGLADESH_AND_GLOBAL_STUDIES', 'BENGALI', 'BENGALI_1ST', 'BENGALI_2ND', 'ELEMENTARY_MATHEMATICS', 'ICT', 'MATHEMATICS', 'ELEMENTARY_SCIENCE', 'HOME_SCIENCE', 'SCIENCE', 'ENGLISH', 'ENGLISH_1ST', 'ENGLISH_2ND', 'TEACHING_OF_ISLAM', 'RELIGION', 'VOCATIONAL_EDUCATION', 'LEARNING_WITH_HAPPINESS');
+CREATE TYPE "ExamSubjectName" AS ENUM ('AGRICULTURE', 'ARABIC', 'ARABIC_1ST', 'ARABIC_2ND', 'AQUAEED_AND_FIQH', 'BANGLADESH_AND_GLOBAL_STUDIES', 'BENGALI', 'BENGALI_1ST', 'BENGALI_2ND', 'CONVERSATION', 'ELEMENTARY_MATHEMATICS', 'ICT', 'MATHEMATICS', 'ELEMENTARY_SCIENCE', 'HOME_SCIENCE', 'SCIENCE', 'ENGLISH', 'ENGLISH_1ST', 'ENGLISH_2ND', 'TEACHING_OF_ISLAM', 'RELIGION', 'VOCATIONAL_EDUCATION', 'LEARNING_WITH_HAPPINESS');
 
 -- CreateEnum
 CREATE TYPE "Shift" AS ENUM ('MORNING', 'DAY', 'BOYS', 'GIRLS');
@@ -50,7 +50,7 @@ CREATE TYPE "Shift" AS ENUM ('MORNING', 'DAY', 'BOYS', 'GIRLS');
 CREATE TYPE "Section" AS ENUM ('MADRASHA', 'SCHOOL');
 
 -- CreateEnum
-CREATE TYPE "Version" AS ENUM ('BENGALI', 'ENGLISH');
+CREATE TYPE "Version" AS ENUM ('ENGLISH', 'ARABIC');
 
 -- CreateEnum
 CREATE TYPE "Department" AS ENUM ('SCIENCE', 'ARTS', 'COMMERCE', 'GENERAL');
@@ -192,7 +192,7 @@ CREATE TABLE "book_list" (
     "class_id" TEXT NOT NULL,
     "section" "Section" NOT NULL,
     "version" "Version" NOT NULL,
-    "department" "Department",
+    "department" "Department" NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -265,6 +265,7 @@ CREATE TABLE "class_routines" (
 CREATE TABLE "monthly_exam_marks" (
     "id" TEXT NOT NULL,
     "class_history_id" TEXT NOT NULL,
+    "exam_subject_id" TEXT NOT NULL,
     "january_mark" DECIMAL(10,2) NOT NULL,
     "february_mark" DECIMAL(10,2) NOT NULL,
     "march_mark" DECIMAL(10,2) NOT NULL,
@@ -644,10 +645,9 @@ CREATE TABLE "staff_payments" (
 CREATE TABLE "students" (
     "id" TEXT NOT NULL,
     "active_class_id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "current_position_id" TEXT,
-    "current_role_id" TEXT,
     "current_role" "Role",
+    "current_position_id" TEXT,
+    "user_id" TEXT NOT NULL,
     "responsible_teacher_id" TEXT,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
@@ -706,7 +706,7 @@ CREATE TABLE "standard_student_fee_rates" (
     "qc_duration_hrs" DECIMAL(10,2),
     "section" "Section" NOT NULL,
     "version" "Version" NOT NULL,
-    "department" "Department",
+    "department" "Department" NOT NULL,
     "created_by_id" TEXT,
     "updated_by_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -891,7 +891,7 @@ CREATE INDEX "class_history_quranic_periods_quranic_period_id_idx" ON "class_his
 CREATE UNIQUE INDEX "class_history_quranic_periods_class_history_id_quranic_peri_key" ON "class_history_quranic_periods"("class_history_id", "quranic_period_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "monthly_exam_marks_class_history_id_key" ON "monthly_exam_marks"("class_history_id");
+CREATE UNIQUE INDEX "monthly_exam_marks_class_history_id_exam_subject_id_key" ON "monthly_exam_marks"("class_history_id", "exam_subject_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "half_yearly_exam_marks_class_history_id_exam_subject_id_key" ON "half_yearly_exam_marks"("class_history_id", "exam_subject_id");
@@ -1143,6 +1143,9 @@ ALTER TABLE "class_routines" ADD CONSTRAINT "class_routines_updated_by_id_fkey" 
 ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_class_history_id_fkey" FOREIGN KEY ("class_history_id") REFERENCES "class_history"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_exam_subject_id_fkey" FOREIGN KEY ("exam_subject_id") REFERENCES "exam_subjects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "monthly_exam_marks" ADD CONSTRAINT "monthly_exam_marks_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -1365,10 +1368,10 @@ ALTER TABLE "staff_payments" ADD CONSTRAINT "staff_payments_updated_by_id_fkey" 
 ALTER TABLE "students" ADD CONSTRAINT "students_active_class_id_fkey" FOREIGN KEY ("active_class_id") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "students" ADD CONSTRAINT "students_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_current_position_id_fkey" FOREIGN KEY ("current_position_id") REFERENCES "user_positions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "students" ADD CONSTRAINT "students_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_responsible_teacher_id_fkey" FOREIGN KEY ("responsible_teacher_id") REFERENCES "academic_staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;

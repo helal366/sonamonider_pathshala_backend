@@ -6,14 +6,14 @@ import {
   StudentFeeType,
   Version,
 } from "#db-client";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../../lib/prisma";
 
 type SeedRate = {
   fee_type: StudentFeeType | { in: StudentFeeType[] };
   billing_frequency: BillingFrequency;
   amount: number;
   class_names: string[];
-  version: Version;
+  version: Version | { in: Version[] };
   section: Section | { in: Section[] };
   department: Department | { in: Department[] };
   ic_registration_fee?: number;
@@ -29,11 +29,13 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["PLAYGROUP"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 
   {
@@ -41,40 +43,48 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2500,
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
     billing_frequency: "MONTHLY",
     amount: 2700,
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
     billing_frequency: "MONTHLY",
     amount: 3000,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_TUITION_FEE",
     billing_frequency: "MONTHLY",
     amount: 3500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -85,7 +95,9 @@ const standardMonthlyTuitionFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 3200,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -101,11 +113,13 @@ const standardsessionFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 5000,
     class_names: ["PLAYGROUP"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "SESSION_FEE",
@@ -125,11 +139,13 @@ const standardsessionFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 
@@ -139,51 +155,61 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1000,
     class_names: ["PLAYGROUP"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
     billing_frequency: "MONTHLY",
     amount: 1200,
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
     billing_frequency: "MONTHLY",
     amount: 1500,
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "MONTHLY_ACADEMIC_EVALUATION_FEE",
     billing_frequency: "MONTHLY",
     amount: 2500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -194,7 +220,9 @@ const standardIdCardSheetSuggestionSyllabusFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -210,18 +238,22 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "LABORATORY_LIBRARY_FEE",
     billing_frequency: "YEARLY",
     amount: 1000,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -232,7 +264,9 @@ const standardLaboratoryLibraryFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -250,11 +284,13 @@ const standardExamFeeRate = defineRates([
     billing_frequency: "YEARLY",
     amount: 500,
     class_names: ["PLAYGROUP", "NURSERY", "KINDERGARTEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: {
@@ -269,11 +305,13 @@ const standardExamFeeRate = defineRates([
       "GRADE_FOUR",
       "GRADE_FIVE",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: {
@@ -288,11 +326,13 @@ const standardExamFeeRate = defineRates([
       "GRADE_NINE",
       "GRADE_TEN",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 
@@ -304,11 +344,13 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1000,
     ic_registration_fee: 500,
     class_names: ["GRADE_ONE", "GRADE_TWO"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "INTENSIVE_CARE_FEE",
@@ -317,11 +359,13 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1200,
     ic_registration_fee: 500,
     class_names: ["GRADE_THREE", "GRADE_FOUR"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "INTENSIVE_CARE_FEE",
@@ -330,11 +374,13 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 1500,
     ic_registration_fee: 500,
     class_names: ["GRADE_FIVE", "GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "INTENSIVE_CARE_FEE",
@@ -343,7 +389,9 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 2500,
     ic_registration_fee: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -356,7 +404,9 @@ const standardIntensiveCareFeeRate = defineRates([
     amount: 2000,
     ic_registration_fee: 500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -385,11 +435,13 @@ const standardQuranicEveningFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardQuranicEveningNineTenFeeRate = defineRates([
@@ -398,17 +450,16 @@ const standardQuranicEveningNineTenFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1000,
     qc_duration_hrs: 2.0,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE]
-    }
+      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE],
+    },
   },
 ]);
 
@@ -431,11 +482,13 @@ const standardQuranicNightFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardQuranicNightFeeNineTenRate = defineRates([
@@ -444,17 +497,16 @@ const standardQuranicNightFeeNineTenRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1000,
     qc_duration_hrs: 2.0,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE]
-    }
+      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE],
+    },
   },
 ]);
 
@@ -476,11 +528,13 @@ const standardTransferCertificateFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardTransferCertificateNineTenFeeRate = defineRates([
@@ -488,17 +542,16 @@ const standardTransferCertificateNineTenFeeRate = defineRates([
     fee_type: "TRANSFER_CERTIFICATION_FEE",
     billing_frequency: "ONE_TIME",
     amount: 500,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE]
-    }
+      in: [Department.SCIENCE, Department.ARTS, Department.COMMERCE],
+    },
   },
 ]);
 
@@ -520,7 +573,9 @@ const standardOtherCertificateFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -532,16 +587,15 @@ const standardOtherCertificateNineTenFeeRate = defineRates([
     fee_type: "OTHER_CERTIFICATE_FEE",
     billing_frequency: "ONE_TIME",
     amount: 300,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: [Department.SCIENCE, Department.COMMERCE, Department.ARTS]
+      in: [Department.SCIENCE, Department.COMMERCE, Department.ARTS],
     },
   },
 ]);
@@ -564,11 +618,13 @@ const standardResidentialFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardResidentialNineTenFeeRate = defineRates([
@@ -576,17 +632,16 @@ const standardResidentialNineTenFeeRate = defineRates([
     fee_type: "RESIDENTIAL_FEE",
     billing_frequency: "MONTHLY",
     amount: 6500,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: [Department.SCIENCE, Department.COMMERCE, Department.ARTS]
-    }
+      in: [Department.SCIENCE, Department.COMMERCE, Department.ARTS],
+    },
   },
 ]);
 
@@ -608,11 +663,13 @@ const standardAdmissionFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardAdmissionNineTenFeeRate = defineRates([
@@ -620,17 +677,16 @@ const standardAdmissionNineTenFeeRate = defineRates([
     fee_type: "ADMISSION_FEE",
     billing_frequency: "YEARLY",
     amount: 5000,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: ["SCIENCE", "ARTS", "COMMERCE"]
-    }
+      in: ["SCIENCE", "ARTS", "COMMERCE"],
+    },
   },
 ]);
 
@@ -652,11 +708,13 @@ const standardDayCareFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardDayCareNineTenFeeRate = defineRates([
@@ -664,17 +722,16 @@ const standardDayCareNineTenFeeRate = defineRates([
     fee_type: "DAYCARE_FEE",
     billing_frequency: "MONTHLY",
     amount: 5500,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: ["SCIENCE", "COMMERCE", "ARTS"]
-    }
+      in: ["SCIENCE", "COMMERCE", "ARTS"],
+    },
   },
 ]);
 
@@ -696,11 +753,13 @@ const standardEstablishmentFeeRate = defineRates([
       "GRADE_SEVEN",
       "GRADE_EIGHT",
     ],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
 ]);
 const standardEstablishmentNineTenFeeRate = defineRates([
@@ -708,17 +767,16 @@ const standardEstablishmentNineTenFeeRate = defineRates([
     fee_type: "ESTABLISHMENT_FEE",
     billing_frequency: "ONE_TIME",
     amount: 5000,
-    class_names: [
-      "GRADE_NINE",
-      "GRADE_TEN",
-    ],
-    version: "BENGALI",
+    class_names: ["GRADE_NINE", "GRADE_TEN"],
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
     department: {
-      in: ["SCIENCE", "ARTS", "COMMERCE"]
-    }
+      in: ["SCIENCE", "ARTS", "COMMERCE"],
+    },
   },
 ]);
 
@@ -728,51 +786,61 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 1000,
     class_names: ["PLAYGROUP"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
     billing_frequency: "MONTHLY",
     amount: 1200,
     class_names: ["NURSERY", "KINDERGARTEN", "GRADE_ONE", "GRADE_TWO"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
     billing_frequency: "MONTHLY",
     amount: 1500,
     class_names: ["GRADE_THREE", "GRADE_FOUR", "GRADE_FIVE"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_SIX", "GRADE_SEVEN", "GRADE_EIGHT"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
-    department: "GENERAL"
+    department: "GENERAL",
   },
   {
     fee_type: "ID_CARD_SHEET_SUGGESTION_SYLLABUS_FEE",
     billing_frequency: "MONTHLY",
     amount: 2500,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -783,7 +851,9 @@ const standardMonthlyAcademicEvaluationFeeRate = defineRates([
     billing_frequency: "MONTHLY",
     amount: 2000,
     class_names: ["GRADE_NINE", "GRADE_TEN"],
-    version: "BENGALI",
+    version: {
+      in: [Version.ENGLISH, Version.ARABIC],
+    },
     section: {
       in: [Section.MADRASHA, Section.SCHOOL],
     },
@@ -820,9 +890,7 @@ const getRateKey = (rate: {
     rate.fee_type,
     rate.billing_frequency,
     Number(rate.amount),
-    rate.ic_registration_fee == null
-      ? null
-      : Number(rate.ic_registration_fee),
+    rate.ic_registration_fee == null ? null : Number(rate.ic_registration_fee),
     rate.ic_duration_hrs == null ? null : Number(rate.ic_duration_hrs),
     rate.qc_duration_hrs == null ? null : Number(rate.qc_duration_hrs),
     rate.section,
@@ -910,49 +978,52 @@ export const runStandardStudentFeeRateSeed = async () => {
 
     const feeTypes = expandSelection(rate.fee_type);
     const sections = expandSelection(rate.section);
+    const versions = expandSelection(rate.version);
     const departments = expandSelection(rate.department);
 
     for (const feeType of feeTypes) {
       for (const section of sections) {
-        for (const department of departments) {
-          const rateKey = getRateKey({
-            fee_type: feeType,
-            billing_frequency: rate.billing_frequency,
-            amount: rate.amount,
-            ic_registration_fee: rate.ic_registration_fee,
-            ic_duration_hrs: rate.ic_duration_hrs,
-            qc_duration_hrs: rate.qc_duration_hrs,
-            section,
-            version: rate.version,
-            department,
-            class_ids: classIds,
-          });
-          if (existingRateKeys.has(rateKey)) {
-            skippedCount += 1;
-            continue;
-          }
+        for (const version of versions) {
+          for (const department of departments) {
+            const rateKey = getRateKey({
+              fee_type: feeType,
+              billing_frequency: rate.billing_frequency,
+              amount: rate.amount,
+              ic_registration_fee: rate.ic_registration_fee,
+              ic_duration_hrs: rate.ic_duration_hrs,
+              qc_duration_hrs: rate.qc_duration_hrs,
+              section,
+              version,
+              department,
+              class_ids: classIds,
+            });
+            if (existingRateKeys.has(rateKey)) {
+              skippedCount += 1;
+              continue;
+            }
 
-          const id = randomUUID();
-          ratesToCreate.push({
-            id,
-            fee_type: feeType,
-            billing_frequency: rate.billing_frequency,
-            amount: rate.amount,
-            ic_registration_fee: rate.ic_registration_fee,
-            ic_duration_hrs: rate.ic_duration_hrs,
-            qc_duration_hrs: rate.qc_duration_hrs,
-            section,
-            version: rate.version,
-            department,
-          });
-          classAssociationsToCreate.push(
-            ...classIds.map((class_id) => ({
-              class_id,
-              standard_student_fee_rate_id: id,
-            })),
-          );
-          existingRateKeys.add(rateKey);
-          createdCount += 1;
+            const id = randomUUID();
+            ratesToCreate.push({
+              id,
+              fee_type: feeType,
+              billing_frequency: rate.billing_frequency,
+              amount: rate.amount,
+              ic_registration_fee: rate.ic_registration_fee,
+              ic_duration_hrs: rate.ic_duration_hrs,
+              qc_duration_hrs: rate.qc_duration_hrs,
+              section,
+              version,
+              department,
+            });
+            classAssociationsToCreate.push(
+              ...classIds.map((class_id) => ({
+                class_id,
+                standard_student_fee_rate_id: id,
+              })),
+            );
+            existingRateKeys.add(rateKey);
+            createdCount += 1;
+          }
         }
       }
     }

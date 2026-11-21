@@ -6,8 +6,8 @@ import {
   Version,
 } from "#db-client";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction";
-import { prisma } from "../../lib/prisma";
+import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction";
+import { prisma } from "../../../lib/prisma";
 
 const classIdCache = new Map<string, Promise<string>>();
 type SeedBook = Omit<
@@ -27,7 +27,7 @@ const defineBookList = (
   books.map((book) => ({
     ...book,
     class_name,
-    version: Version.BENGALI,
+    version: Version.ENGLISH,
     section,
     department,
   }));
@@ -840,68 +840,73 @@ const bookListGradeThreeMadrasha = defineBookList(
     },
   ],
 );
-const bookListGradeFourSchool = defineBookList("GRADE_FOUR", Section.SCHOOL, Department.GENERAL , [
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH,
-  },
-  {
-    book_name: "আমার বাংলা বই",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI,
-  },
-  {
-    book_name: "প্রাথমিক গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
-  },
-  {
-    book_name: "প্রাথমিক বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "ইসলাম ও নৈতিক শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION,
-  },
-  {
-    book_name: "Spoken English Work Book-2",
-    publisher: "Standard/(Metro)/(Metro)",
-    isBookMain: false,
-  },
-  {
-    book_name: "নাদিয়া আমপারা",
-    publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    isBookMain: false,
-  },
-  {
-    book_name: "তা'লীমুল ইসলাম",
-    publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    isBookMain: false,
-  },
-  {
-    book_name: "আদর্শ মানব মুহাম্মদ (সা.)",
-    publisher: "বাংলাদেশ ইসলামিক সেন্টার ঢাকা",
-    isBookMain: false,
-  },
-]);
+const bookListGradeFourSchool = defineBookList(
+  "GRADE_FOUR",
+  Section.SCHOOL,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "আমার বাংলা বই",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "প্রাথমিক গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
+    },
+    {
+      book_name: "প্রাথমিক বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "ইসলাম ও নৈতিক শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.RELIGION,
+    },
+    {
+      book_name: "Spoken English Work Book-2",
+      publisher: "Standard/(Metro)/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "নাদিয়া আমপারা",
+      publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
+      isBookMain: false,
+    },
+    {
+      book_name: "তা'লীমুল ইসলাম",
+      publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
+      isBookMain: false,
+    },
+    {
+      book_name: "আদর্শ মানব মুহাম্মদ (সা.)",
+      publisher: "বাংলাদেশ ইসলামিক সেন্টার ঢাকা",
+      isBookMain: false,
+    },
+  ],
+);
 const bookListGradeFourMadrasha = defineBookList(
   "GRADE_FOUR",
   Section.MADRASHA,
-  Department.GENERAL ,
+  Department.GENERAL,
   [
     {
       book_name: "English For Today",
@@ -973,68 +978,73 @@ const bookListGradeFourMadrasha = defineBookList(
     },
   ],
 );
-const bookListGradeFiveSchool = defineBookList("GRADE_FIVE", Section.SCHOOL, Department.GENERAL , [
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH,
-  },
-  {
-    book_name: "আমার বাংলা বই",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI,
-  },
-  {
-    book_name: "প্রাথমিক গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
-  },
-  {
-    book_name: "প্রাথমিক বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "ইসলাম ও নৈতিক শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION,
-  },
-  {
-    book_name: "Spoken English Work Book-3",
-    publisher: "Standard/(Metro)/(Metro)",
-    isBookMain: false,
-  },
-  {
-    book_name: "নাদিয়া আমপারা",
-    publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
-    isBookMain: false,
-  },
-  {
-    book_name: "তা'লীমুল ইসলাম",
-    publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
-    isBookMain: false,
-  },
-  {
-    book_name: "মোরা বড় হতে চাই",
-    publisher: "আই সি এস পাবলিকেশন্স",
-    isBookMain: false,
-  },
-]);
+const bookListGradeFiveSchool = defineBookList(
+  "GRADE_FIVE",
+  Section.SCHOOL,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH,
+    },
+    {
+      book_name: "আমার বাংলা বই",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI,
+    },
+    {
+      book_name: "প্রাথমিক গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_MATHEMATICS,
+    },
+    {
+      book_name: "প্রাথমিক বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ELEMENTARY_SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "ইসলাম ও নৈতিক শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.RELIGION,
+    },
+    {
+      book_name: "Spoken English Work Book-3",
+      publisher: "Standard/(Metro)/(Metro)",
+      isBookMain: false,
+    },
+    {
+      book_name: "নাদিয়া আমপারা",
+      publisher: "নাদিয়াতুল কুরআন প্রকাশনী",
+      isBookMain: false,
+    },
+    {
+      book_name: "তা'লীমুল ইসলাম",
+      publisher: "প্রকাশনা ও গবেষনা বিভাগ- তা'লীমুল মিল্লাত",
+      isBookMain: false,
+    },
+    {
+      book_name: "মোরা বড় হতে চাই",
+      publisher: "আই সি এস পাবলিকেশন্স",
+      isBookMain: false,
+    },
+  ],
+);
 const bookListGradeFiveMadrasha = defineBookList(
   "GRADE_FIVE",
   Section.MADRASHA,
-  Department.GENERAL ,
+  Department.GENERAL,
   [
     {
       book_name: "English For Today",
@@ -1106,265 +1116,280 @@ const bookListGradeFiveMadrasha = defineBookList(
     },
   ],
 );
-const bookListGradeSixSchool = defineBookList("GRADE_SIX", Section.SCHOOL, Department.GENERAL ,[
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_1ST,
-  },
-  {
-    book_name: "English Grammer and Composition",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_2ND,
-  },
-  {
-    book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_2ND,
-  },
-  {
-    book_name: "গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS,
-  },
-  {
-    book_name: "বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ICT,
-  },
-  {
-    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-  },
-  {
-    book_name: "লার্নিং উইথ হ্যাপিনেস",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
-  },
-  {
-    book_name: "আমার কারিগরি শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
-  },
-  {
-    book_name: "ইসলাম শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION,
-  },
-]);
-const bookListGradeSixMadrasha = defineBookList("GRADE_SIX", Section.MADRASHA, Department.GENERAL ,[
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_1ST,
-  },
-  {
-    book_name: "English Grammer and Composition",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_2ND,
-  },
-  {
-    book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_2ND,
-  },
-  {
-    book_name: "গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS,
-  },
-  {
-    book_name: "বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ICT,
-  },
-  {
-    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-  },
-  {
-    book_name: "লার্নিং উইথ হ্যাপিনেস",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
-  },
-  {
-    book_name: "আমার কারিগরি শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
-  },
-  {
-    book_name: "আল লুগাতুল আরাবিয়্যাতুল ইত্তিসালিয্যাহ",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ARABIC_1ST,
-  },
-  {
-    book_name: "কাওয়াইদুল আরাবিয়্যাতুল",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ARABIC_2ND,
-  },
-  {
-    book_name: "আকাইদ ও ফিকহ",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
-  },
-]);
-const bookListGradeSevenSchool = defineBookList("GRADE_SEVEN", Section.SCHOOL, Department.GENERAL ,[
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_1ST,
-  },
-  {
-    book_name: "English Grammer and Composition",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_2ND,
-  },
-  {
-    book_name: "সপ্তবর্ণা (বাংলা সাহিত্যের মূল বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_2ND,
-  },
-  {
-    book_name: "গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS,
-  },
-  {
-    book_name: "বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ICT,
-  },
-  {
-    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-  },
-  {
-    book_name: "কর্ম ও জীবনমুখী শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
-  },
-  {
-    book_name: "কৃষি শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.AGRICULTURE,
-  },
-  {
-    book_name: "গার্হস্থ্যবিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.HOME_SCIENCE,
-  },
-  {
-    book_name: "ইসলাম শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION,
-  },
-]);
+const bookListGradeSixSchool = defineBookList(
+  "GRADE_SIX",
+  Section.SCHOOL,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+    {
+      book_name: "লার্নিং উইথ হ্যাপিনেস",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
+    },
+    {
+      book_name: "আমার কারিগরি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+    },
+    {
+      book_name: "ইসলাম শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.RELIGION,
+    },
+  ],
+);
+const bookListGradeSixMadrasha = defineBookList(
+  "GRADE_SIX",
+  Section.MADRASHA,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "চারুপাঠ (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+    {
+      book_name: "লার্নিং উইথ হ্যাপিনেস",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.LEARNING_WITH_HAPPINESS,
+    },
+    {
+      book_name: "আমার কারিগরি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+    },
+    {
+      book_name: "আল লুগাতুল আরাবিয়্যাতুল ইত্তিসালিয্যাহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_1ST,
+    },
+    {
+      book_name: "কাওয়াইদুল আরাবিয়্যাতুল",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ARABIC_2ND,
+    },
+    {
+      book_name: "আকাইদ ও ফিকহ",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AQUAEED_AND_FIQH,
+    },
+  ],
+);
+const bookListGradeSevenSchool = defineBookList(
+  "GRADE_SEVEN",
+  Section.SCHOOL,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "সপ্তবর্ণা (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন/সহায়ক বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+    {
+      book_name: "কর্ম ও জীবনমুখী শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.VOCATIONAL_EDUCATION,
+    },
+    {
+      book_name: "কৃষি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AGRICULTURE,
+    },
+    {
+      book_name: "গার্হস্থ্যবিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.HOME_SCIENCE,
+    },
+    {
+      book_name: "ইসলাম শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.RELIGION,
+    },
+  ],
+);
 const bookListGradeSevenMadrasha = defineBookList(
   "GRADE_SEVEN",
   Section.MADRASHA,
-  Department.GENERAL ,
+  Department.GENERAL,
   [
     {
       book_name: "English For Today",
@@ -1463,89 +1488,94 @@ const bookListGradeSevenMadrasha = defineBookList(
     },
   ],
 );
-const bookListGradeEightSchool = defineBookList("GRADE_EIGHT", Section.SCHOOL, Department.GENERAL ,[
-  {
-    book_name: "English For Today",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_1ST,
-  },
-  {
-    book_name: "English Grammer and Composition",
-    publisher: "Text Book",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ENGLISH_2ND,
-  },
-  {
-    book_name: "সাহিত্য-কণিকা (বাংলা সাহিত্যের মূল বই)",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন)",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_1ST,
-  },
-  {
-    book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
-    publisher: "বোর্ড বই",
-    isBookMain: false,
-    subject_group: ExamSubjectName.BENGALI_2ND,
-  },
-  {
-    book_name: "গণিত",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.MATHEMATICS,
-  },
-  {
-    book_name: "বিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.SCIENCE,
-  },
-  {
-    book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
-  },
-  {
-    book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.ICT,
-  },
-  {
-    book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-  },
-  {
-    book_name: "ইসলাম শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.RELIGION,
-  },
-  {
-    book_name: "কৃষি শিক্ষা",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.AGRICULTURE,
-  },
-  {
-    book_name: "গার্হস্থ্যবিজ্ঞান",
-    publisher: "বোর্ড বই",
-    isBookMain: true,
-    subject_group: ExamSubjectName.HOME_SCIENCE,
-  },
-]);
+const bookListGradeEightSchool = defineBookList(
+  "GRADE_EIGHT",
+  Section.SCHOOL,
+  Department.GENERAL,
+  [
+    {
+      book_name: "English For Today",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_1ST,
+    },
+    {
+      book_name: "English Grammer and Composition",
+      publisher: "Text Book",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ENGLISH_2ND,
+    },
+    {
+      book_name: "সাহিত্য-কণিকা (বাংলা সাহিত্যের মূল বই)",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "আনন্দ পাঠ (বাংলা দ্রুত পঠন)",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_1ST,
+    },
+    {
+      book_name: "বাংলা ব্যাকরণ ও নির্মিতি",
+      publisher: "বোর্ড বই",
+      isBookMain: false,
+      subject_group: ExamSubjectName.BENGALI_2ND,
+    },
+    {
+      book_name: "গণিত",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.MATHEMATICS,
+    },
+    {
+      book_name: "বিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.SCIENCE,
+    },
+    {
+      book_name: "বাংলাদেশ ও বিশ্বপরিচয়",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.BANGLADESH_AND_GLOBAL_STUDIES,
+    },
+    {
+      book_name: "তথ্য ও যোগাযোগ প্রযুক্তি",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.ICT,
+    },
+    {
+      book_name: "শারীরিক শিক্ষা ও স্বাস্থ্য",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+    },
+    {
+      book_name: "ইসলাম শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.RELIGION,
+    },
+    {
+      book_name: "কৃষি শিক্ষা",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.AGRICULTURE,
+    },
+    {
+      book_name: "গার্হস্থ্যবিজ্ঞান",
+      publisher: "বোর্ড বই",
+      isBookMain: true,
+      subject_group: ExamSubjectName.HOME_SCIENCE,
+    },
+  ],
+);
 const bookListGradeEightMadrasha = defineBookList(
   "GRADE_EIGHT",
   Section.MADRASHA,
-  Department.GENERAL ,
+  Department.GENERAL,
   [
     {
       book_name: "English For Today",

@@ -16,7 +16,7 @@ model ClassHistory {
 
   student_fee_rates StudentFeeRate[]
   student_fee_payments   StudentFeePayment[]
-  monthly_exam_marks   MonthlyExamMark?
+  monthly_exam_marks   MonthlyExamMark[]
   half_yearly_exam_mark HalfYearlyExamMark[]
   annual_exam_mark      AnnualExamMark[]
   cocurricular_activities_mark  CoCurricularActivitiesMark[]

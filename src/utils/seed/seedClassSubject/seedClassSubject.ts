@@ -1,18 +1,29 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 // =========================================================
 // SEED ACADEMIC YEARS
 // =========================================================
-const academicYears = ["2020","2021","2022","2023","2024","2025", "2026", "2027"];
-const seedAcademicYears = async()=>{
-    console.log("Seeding years...");
-    const dataToInsert = academicYears.map((year)=> ({
-        academic_year_name: year
-    }));
-    const result =await prisma.academicYear.createMany({
-        data: dataToInsert,
-        skipDuplicates: true
-    });
-    console.log(`Academic years seeding done. Created ${result.count} new academic years.`);
+const academicYears = [
+  "2020",
+  "2021",
+  "2022",
+  "2023",
+  "2024",
+  "2025",
+  "2026",
+  "2027",
+];
+const seedAcademicYears = async () => {
+  console.log("Seeding years...");
+  const dataToInsert = academicYears.map((year) => ({
+    academic_year_name: year,
+  }));
+  const result = await prisma.academicYear.createMany({
+    data: dataToInsert,
+    skipDuplicates: true,
+  });
+  console.log(
+    `Academic years seeding done. Created ${result.count} new academic years.`,
+  );
 };
 // =========================================================
 // SEED CLASSES
@@ -86,7 +97,7 @@ const quranicPeriods = [
     end_time: "08:30 AM",
   },
   {
-    quranic_period_name: "NURANI_NURSERY_MORNING",
+    quranic_period_name: "NURANI_MORNING",
     start_time: "07:01 AM",
     end_time: "07:50 AM",
   },
@@ -299,7 +310,12 @@ const seedArabicPeriods = async () => {
 // ========================================================
 // SEED ARABIC PERIODS
 // ========================================================
-const arabicSubjects = ["ARABIC", "ARABIC_1ST", "ARABIC_2ND", "AQUAEED_AND_FIQH"];
+const arabicSubjects = [
+  "ARABIC",
+  "ARABIC_1ST",
+  "ARABIC_2ND",
+  "AQUAEED_AND_FIQH",
+];
 const seedArabicSubjects = async () => {
   console.log("Seeding arabic periods...");
   const result = await prisma.arabicSubject.createMany({

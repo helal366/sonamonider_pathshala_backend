@@ -1,8 +1,8 @@
 import { Gender, Role, SubjectForSubjectTeacher } from "#db-client";
 import { StatusCodes } from "http-status-codes";
-import { envVars } from "../../config/index.js";
-import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFunction.js";
-import { prisma } from "../../lib/prisma.js";
+import { envVars } from "../../../config/index.js";
+import { AppError } from "../../../helperFunctions/globalError/globalErrorHelperFunction.js";
+import { prisma } from "../../../lib/prisma.js";
 import bcrypt from "bcryptjs";
 
 // Seed positions

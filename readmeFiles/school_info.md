@@ -1,13 +1,15 @@
-## ROLES (enum): 
+## ROLES (enum):
+
 SUPER_ADMIN
 TEACHER_ADMIN
 ADMIN
 MANAGEMENT
 ACADEMIC
-STUDENT 
+STUDENT
 GOVERNING_BODY
 
 ## POSITIONS:
+
 PRINCIPAL
 VICE_PRINCIPAL
 ADMINISTRATIVE_INCHARGE
@@ -27,13 +29,13 @@ AAYA
 GUARD
 CLEANER
 
-
 <!-- academic staff role : ACADEMIC, TEACHER_ADMIN -->
 <!-- administrative staff role: MANAGEMENT, ADMIN,  SUPER_ADMIN -->
 <!-- student role : STUDENT -->
 <!-- governing body role: GOVERNING_BODY -->
 
 ## CLASSES:
+
 - PLAYGROUP
 - NURSERY
 - GRADE_ONE
@@ -51,20 +53,24 @@ CLEANER
 - GRADE_NAZERA
 
 ## SECTIONS (enum)
-- SCHOOL 
+
+- SCHOOL
 - MADRASHA
 
 ## VERSIONS (enum)
-- BENGALI
+
 - ENGLISH
+- ARABIC
 
 ## SHIFTS: (enum)
-- MORNING     For PLAYGROUP, NURSERY, KG, GRADE_ONE, GRADE_TWO
-- DAY         For PLAYGROUP, NURSERY, KG, GRADE_ONE, GRADE_TWO
-- BOYS        For GRADE_THREE to GRADE_TEN
-- GIRLS       For GRADE_THREE to GRADE_TEN
+
+- MORNING For PLAYGROUP, NURSERY, KG, GRADE_ONE, GRADE_TWO
+- DAY For PLAYGROUP, NURSERY, KG, GRADE_ONE, GRADE_TWO
+- BOYS For GRADE_THREE to GRADE_TEN
+- GIRLS For GRADE_THREE to GRADE_TEN
 
 ## GENERAL PERIODS:
+
 - 1ST_PERIOD: 08:01AM - 08:45AM
 - TIFFIN_PERIOD: 08:46AM - 09:00AM
 - 2ND_PERIOD: 09:01AM - 09:45AM
@@ -81,11 +87,13 @@ CLEANER
 - NURSERY_DAY_GENERAL_TWO: 12:31PM - 01:00PM
 
 ## GENERAL SUBJECTS:
+
 - ENGLISH
 - SPOKEN HOUR
 - BENGALI
 
 ## QURANIC SUBJECTS:
+
 - NURANI_PLAYGROUP
 - NURANI_NURSERY
 - NURANI_PRELIMINARY
@@ -98,10 +106,11 @@ CLEANER
 - HIFZ
 
 ## QURANIC PERIODS SCHEDULING/TIMING:
+
 **QURANIC PERIODS: **
 
 - NURANI_PLAY_MORNING: 08:01AM - 08:30AM
-- NURANI_NURSERY_MORNING: 07:01AM - 07:50AM
+- NURANI_MORNING: 07:01AM - 07:50AM
 - HIFZ_MORNING: 06:01AM - 07:50AM
 - ASSEMBLY: 07:51AM - 08:00AM
 
@@ -115,39 +124,41 @@ CLEANER
 - HIFZ_GIRLS: 08:01AM to 09:00AM
 
 ## ARABIC SUBJECTS
+
 - ARABIC
 - ARABIC_1ST
 - ARABIC_2ND
 - AQUAEED_AND_FIQH
 
 ## ARABIC PERIODS SCHEDULING/TIMING:
+
 - ARABIC_ONE: 10:16AM - 11:15AM
 - ARABIC_TWO: 11:16AM - 12:00PM
 - ARABIC_THREE: 09:01AM - 09:45AM
 - ARABIC_GIRLS_ONE: 09:01AM - 09:45AM
 
-
-
 ## SUBJECTS FOR SUBJECT TEACHER (enum created)
+
 - QURAN
 - BENGALI
 - ARABIC
 - ENGLISH
 - MATHEMATICS
 
-
-
 ## CONNECTION BETWEEN CLASS AND BRANCH:
+
 PLAYGROUP, NURSERY, KG, GRADE_ONE AND GRADE_TWO---> MORNING and DAY
 OTHER CLASSES ---> BOYS and GIRLS
 
 ## HONOURABLE RESPONSIBILITIES FOR TEACHERS:
+
 SUBJECT_TEACHER
 GROUP_TEACHER
 GRADE_TEACHER
 RESPONSIBLE_TEACHER
 
 ## NURANI CURRICULUM FOR DIFFERENT CLASSES:
+
 NURANI_PLAYGROUP: ARABIC ALPHABET
 NURANI_NURSERY: ARABIC WORD MAKING
 NURANI_PRELIMINARY: কায়েদা শুরু থেকে মাদ্দ অধ্যায় পর্যন্ত
@@ -155,43 +166,43 @@ NURANI_ADVANCE: হরকত অধ্যায় থেকে শেষ পর্
 NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 
 ## **CLASS SCHEDULING/TIMING: **
-* PLAYGROUP with MORNING BRANCH: 08:00 to 10:30
-* PLAYGROUP with DAY BRANCH: 10:45 AM to 13:00 
-* NURSERY with MORNING BRANCH: 
-    \- 08:00 to 10:15 and NURANI_MORNING and NURANI_EVENING (optional)--->(Nurani/Ampara)
-    \- 08:00 to 10:15 and HIFZ_MORNING and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
-    
-* NURSERY with DAY BRANCH:
-    \- 10:30 to 13:00 (only school)
-    \- 10:30 to 13:00 and NURANI_MORNING (optional) and NURANI_EVENING (optional) --->(Nurani/Ampara)
-    \- 10:30 to 13:00 and HIFZ_MORNING(optional) and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
-* KG, GRADE_ONE, GRADE_TWO with MORNING BRANCH: 
-    \- 08:00 to 10:30 and NURANI_MORNING and NURANI_EVENING(optional)--->(Nurani/Ampara)
-    \- 08:00 to 10:30 and HIFZ_MORNING and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- PLAYGROUP with MORNING BRANCH: 08:00 to 10:30
+- PLAYGROUP with DAY BRANCH: 10:45 AM to 13:00
+- NURSERY with MORNING BRANCH:
+  \- 08:00 to 10:15 and NURANI_MORNING and NURANI_EVENING (optional)--->(Nurani/Ampara)
+  \- 08:00 to 10:15 and HIFZ_MORNING and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- NURSERY with DAY BRANCH:
+  \- 10:30 to 13:00 (only school)
+  \- 10:30 to 13:00 and NURANI_MORNING (optional) and NURANI_EVENING (optional) --->(Nurani/Ampara)
+  \- 10:30 to 13:00 and HIFZ_MORNING(optional) and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
-* KG, GRADE_ONE, GRADE_TWO with DAY BRANCH:
-    \- 09:45 to 13:00 
-    \- 09:45 to 13:00 and NURANI_MORNING (optional) and NURANI_EVENING(optional)--->(Nurani/Ampara)
-    \- 09:45 to 13:00 and HIFZ_MORNING(optional) and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- KG, GRADE_ONE, GRADE_TWO with MORNING BRANCH:
+  \- 08:00 to 10:30 and NURANI_MORNING and NURANI_EVENING(optional)--->(Nurani/Ampara)
+  \- 08:00 to 10:30 and HIFZ_MORNING and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
-* GRADE_THREE, GRADE_FOUR and GRADE_FIVE with BOYS BRANCH: 
-    \-  NURANI_MORNING and 08:00 to 11:30 and NURANI_EVENING (optional)--->(Nurani/Ampara)
-    \-  HIFZ_MORNING and 08:00 tp 11:30 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
-* GRADE_THREE, GRADE_FOUR and GRADE_FIVE with GIRLS BRANCH:
-    \- NURANI_GIRLS and 10:30 to 14:20 and NURANI_EVENING(optional)--->(Nurani/Ampara)
-    \- HIFZ_GIRLS and 10:30 to 14:20 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- KG, GRADE_ONE, GRADE_TWO with DAY BRANCH:
+  \- 09:45 to 13:00
+  \- 09:45 to 13:00 and NURANI_MORNING (optional) and NURANI_EVENING(optional)--->(Nurani/Ampara)
+  \- 09:45 to 13:00 and HIFZ_MORNING(optional) and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
-* GRADE_SIX to GRADE_TEN with BOYS BRANCH:
-    \- NURANI_MORNING and 08:00 to 12:30 and NURANI_EVENING(optional)--->(Nurani/Ampara)
-    \- HIFZ_MORNING and 08:00 tp 12:30 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- GRADE_THREE, GRADE_FOUR and GRADE_FIVE with BOYS BRANCH:
+  \- NURANI_MORNING and 08:00 to 11:30 and NURANI_EVENING (optional)--->(Nurani/Ampara)
+  \- HIFZ_MORNING and 08:00 tp 11:30 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- GRADE_THREE, GRADE_FOUR and GRADE_FIVE with GIRLS BRANCH:
+  \- NURANI_GIRLS and 10:30 to 14:20 and NURANI_EVENING(optional)--->(Nurani/Ampara)
+  \- HIFZ_GIRLS and 10:30 to 14:20 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
-* GRADE_SIX to GRADE_TEN with GIRLS BRANCH:
-    \- NURANI_GIRLS and 10:30 to 14:50 and NURANI_EVENING (optional)--->(Nurani/Ampara)
-    \- HIFZ_GIRLS and 10:30 to 14:20 and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
+- GRADE_SIX to GRADE_TEN with BOYS BRANCH:
+  \- NURANI_MORNING and 08:00 to 12:30 and NURANI_EVENING(optional)--->(Nurani/Ampara)
+  \- HIFZ_MORNING and 08:00 tp 12:30 and HIFZ_EVENING(optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
+- GRADE_SIX to GRADE_TEN with GIRLS BRANCH:
+  \- NURANI_GIRLS and 10:30 to 14:50 and NURANI_EVENING (optional)--->(Nurani/Ampara)
+  \- HIFZ_GIRLS and 10:30 to 14:20 and HIFZ_EVENING (optional) and HIFZ_NIGHT(optional) --->(Hifz/Nazera)
 
 ## STUDENTS FEES:
+
 - monthly_tuition_fee
 - session/admission_fee
 - monthly_academic_evaluation_fee
@@ -209,12 +220,14 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 - residential_dayCare_establishment_charge
 
 ## STAFF SALARY:
+
 - monthly_salary
 - eid_bonus [eid_ul_fitr and eid_ul_azha]
 - performance_bonus [yearly]
 - increment
 
 ### Payment records
+
 - Each student has an individual fee rate for each fee type. Rates have effective dates so a rate change does not overwrite the previous rate.
 - Each student fee payment records the full amount paid, payment date, fee type, and billing period. Only one payment is allowed for a student, fee type, and billing period; the application should validate the amount against the effective fee rate.
 - Use `YYYY-MM` for monthly billing periods, `YYYY-H1` or `YYYY-H2` for half-yearly billing periods, and `YYYY` for yearly billing periods. One-time fees use a stable period key such as `YYYY`.
@@ -224,44 +237,48 @@ NURANI_AMPARA: শুরু থেকে শেষ পর্যন্ত
 ## Extra curriculum activities:
 
 ### Cultural club:
-* সংগীত
-* অভিনয়
-* বিতর্ক
-* আবৃতি
-* বক্তৃতা
-* উপস্থাপনা
-* art
-* দেয়াল লিখন (caligraphy)
+
+- সংগীত
+- অভিনয়
+- বিতর্ক
+- আবৃতি
+- বক্তৃতা
+- উপস্থাপনা
+- art
+- দেয়াল লিখন (caligraphy)
 
 ### Quran club:
-* কেরাত
-* after school maktab
-* senior citizen quran learning
+
+- কেরাত
+- after school maktab
+- senior citizen quran learning
 
 ### Language club:
-* Spoken english
-* Spoken arabic
-* Phoenetics
-* Reading (Presentation)
-* Cursive writing 
-* শুদ্ধ বাংলা উচ্চারণ
+
+- Spoken english
+- Spoken arabic
+- Phoenetics
+- Reading (Presentation)
+- Cursive writing
+- শুদ্ধ বাংলা উচ্চারণ
 
 ### Science club:
-* ক্ষুদে বিজ্ঞানী (with project)
-* ক্ষুদে ডাক্তার (with project)
-* Basic computer learning
-* Robotics
-* Basic IT with basic AI
+
+- ক্ষুদে বিজ্ঞানী (with project)
+- ক্ষুদে ডাক্তার (with project)
+- Basic computer learning
+- Robotics
+- Basic IT with basic AI
 
 ### Scout and sports club:
-* PT Parade (শারীরিক শিক্ষা কুচকাওয়াজ বা শারীরিক কসরত প্রদর্শনী।)
-* Martial arts/Karate
-* Swimming
+
+- PT Parade (শারীরিক শিক্ষা কুচকাওয়াজ বা শারীরিক কসরত প্রদর্শনী।)
+- Martial arts/Karate
+- Swimming
 
 -- AddUniqueConstraintForSingleResponsibleTeacher
-CREATE UNIQUE INDEX student_single_active_responsibility_idx 
-ON "students_responsibility" ("student_id") 
+CREATE UNIQUE INDEX student_single_active_responsibility_idx
+ON "students_responsibility" ("student_id")
 WHERE "isActive" = true;
-
 
 pnpm exec prisma validate

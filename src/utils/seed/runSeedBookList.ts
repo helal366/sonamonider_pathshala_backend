@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { runBookList } from "./seedBookList.js";
+import { runBookList } from "./seedBookList/seedBookList.js";
 
 const main = async () => {
   await prisma.$connect();
