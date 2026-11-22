@@ -244,7 +244,7 @@ export async function validateStudentData(payload: StudentDataPayload) {
     quranic_period_ids.map(async (id) => {
       const checkExisting = await prisma.quranicPeriod.findUnique({
         where: { id },
-        select: { id: true, quranic_period_name: true },
+        select: { id: true},
       });
       if (!checkExisting) {
         throw new AppError(
@@ -325,7 +325,7 @@ export async function findQuranicPeriodIds(
         select: { id: true },
       });
       if (!period) {
-        throw new AppError(`Quranic period not found.`, StatusCodes.NOT_FOUND);
+        throw new AppError(`Quranic period: ${name} not found.`, StatusCodes.NOT_FOUND);
       }
       return period.id;
     }),
@@ -333,15 +333,32 @@ export async function findQuranicPeriodIds(
   return quranicPeriodIds;
 }
 
+export async function findArabicPeriodIds(payload:string[]): Promise<string[]>{
+  const arabicPeriodIds = await Promise.all(
+    payload.map(async (name)=>{
+      const period = await prisma.arabicPeriod.findUnique({
+        where: {arabic_period_name: name},
+        select: {id: true}
+      });
+      if(!period){
+        throw new AppError(`Arabic period: ${name} not found.`, StatusCodes.NOT_FOUND)
+      }
+      return period.id
+    })
+  )
+  return arabicPeriodIds
+}
+
 export async function checkClassExisting(class_name: string) {
+  const cleanClassName = class_name.trim().toUpperCase()
   const classExist = await prisma.class.findUnique({
-    where: { class_name },
+    where: { class_name: cleanClassName },
     select: {
       id: true,
     },
   });
   if (!classExist) {
-    throw new AppError(`Class not found.`, StatusCodes.NOT_FOUND);
+    throw new AppError(`Class: ${class_name} not found.`, StatusCodes.NOT_FOUND);
   }
   return classExist.id;
 }

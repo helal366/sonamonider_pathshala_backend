@@ -18,7 +18,8 @@
     "db:migrate": "prisma migrate dev",
     "seed": "pnpm exec tsx src/utils/seed/runSeed.ts",
     "seedBookList": "pnpm exec tsx src/utils/seed/runSeedBookList.ts",
-    "seedStudent": "pnpm exec tsx src/utils/seed/runSeedStudent.ts",
+    "seedStudent": "pnpm exec tsx src/utils/seed/runSeedStudentOne.ts",
+    "seedStudent2": "pnpm exec tsx src/utils/seed/runSeedStudentTwo.ts",
     "db:push": "prisma db push --force-reset",
     "db:reset": "rm -rf prisma/migrations && prisma db push --force-reset && prisma migrate reset --force"
   },

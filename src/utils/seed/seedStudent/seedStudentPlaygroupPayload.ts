@@ -7,7 +7,7 @@ import {
 // ===================================================
 // payload PlaygroupSchoolMuhsinaHasanMahima
 // ===================================================
-export const playgroupSchoolMuhsinaHasanMahima = async () => {
+const playgroupSchoolMuhsinaHasanMahima = async () => {
   const full_name = "Muhsina Hasan Mahima";
   const mobile_number = "01715261642";
   const email = "muhsina@gmail.com";
@@ -55,7 +55,7 @@ export const playgroupSchoolMuhsinaHasanMahima = async () => {
 // payload PlaygroupSchoolKurratulAyinBarakah
 // ===================================================
 
-export const playgroupSchoolKurratulAyinBarakah = async () => {
+const playgroupSchoolKurratulAyinBarakah = async () => {
   const full_name = "Kurratul Ayin Barakah";
   const mobile_number = "01796191300";
   const email = "kurratul@gmail.com";
@@ -102,7 +102,7 @@ export const playgroupSchoolKurratulAyinBarakah = async () => {
 // ===================================================
 // payload PlaygroupMadrashaMohammadMostofa
 // ===================================================
-export const playgroupMadrashaMohammadMostofa = async () => {
+const playgroupMadrashaMohammadMostofa = async () => {
   const full_name = "Mohammad Mostofa";
   const mobile_number = "01915365750";
   const email = "mohammadmostofa@gmail.com";
@@ -149,7 +149,7 @@ export const playgroupMadrashaMohammadMostofa = async () => {
 // ===================================================
 // payload PlaygroupMadrashaTahmidHossainBayejid
 // ===================================================
-export const playgroupMadrashaTahmidHossainBayejid = async () => {
+const playgroupMadrashaTahmidHossainBayejid = async () => {
   const full_name = "Tahmid Hossain Bayejid";
   const mobile_number = "01722190808";
   const email = "tahmidhossain@gmail.com";

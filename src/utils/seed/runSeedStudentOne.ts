@@ -1,10 +1,10 @@
 import { prisma } from "../../lib/prisma.js";
-import { runStudentSeeding } from "./seedStudent/seedStudent.js";
+import { runStudentOneSeeding } from "./seedStudent/seedStudentOne.js";
 
 const main = async () => {
   await prisma.$connect();
 
-  await runStudentSeeding();
+  await runStudentOneSeeding();
 };
 
 main()

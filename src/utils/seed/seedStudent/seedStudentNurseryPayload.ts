@@ -7,7 +7,7 @@ import {
 // ===================================================
 // payload NurserySchoolMaryamBari
 // ===================================================
-export const nurserySchoolMaryamBari = async () => {
+const nurserySchoolMaryamBari = async () => {
   const full_name = "Maryam Bari";
   const mobile_number = "01727661987";
   const email = "maryam@gmail.com";
@@ -54,7 +54,7 @@ export const nurserySchoolMaryamBari = async () => {
 // ===================================================
 // payload NurserySchoolAfrahaRahman
 // ===================================================
-export const nurserySchoolAfrahaRahman = async () => {
+const nurserySchoolAfrahaRahman = async () => {
   const full_name = "Afraha Rahman";
   const mobile_number = "01830094935";
   const email = "afraha@gmail.com";
@@ -101,7 +101,7 @@ export const nurserySchoolAfrahaRahman = async () => {
 // ===================================================
 // payload NurseryMadrashaRumaisaReza
 // ===================================================
-export const nurseryMadrashaRumaisaReza = async () => {
+const nurseryMadrashaRumaisaReza = async () => {
   const full_name = "Rumaisa Reza";
   const mobile_number = "01830094935";
   const email = "rumaisa@gmail.com";
@@ -148,7 +148,7 @@ export const nurseryMadrashaRumaisaReza = async () => {
 // ===================================================
 // payload NurseryMadrashaAhnafTahmid
 // ===================================================
-export const nurseryMadrashaAhnafTahmid = async () => {
+const nurseryMadrashaAhnafTahmid = async () => {
   const full_name = "Ahnaf Tahmid";
   const mobile_number = "01717718828";
   const email = "ahnaftahmid@gmail.com";
