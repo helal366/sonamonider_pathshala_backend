@@ -323,9 +323,9 @@ const createGradeOneMadrashaTasnimIslamPori = async () => {
 // ===================================================
 // PLAYGROUP, NURSERY, GRADE_ONE
 // ===================================================
-// SEED INITIAL STUDENTS ONE
+// SEED STUDENTS 1
 // ===================================================
-export const runStudentOneSeeding = async () => {
+export const runStudent1Seeding = async () => {
   await createPlaygroupSchoolMuhsinaHasanMahima();
   await createPlaygroupSchoolKurratulAyinBarakah();
   await createPlaygroupMadrashaMohammadMostofa();
