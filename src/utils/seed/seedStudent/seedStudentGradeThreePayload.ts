@@ -24,7 +24,7 @@ const gradeThreeSchoolMaimunaAkterTuba = async () => {
   const version = Version.ENGLISH;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_PRELIMINARY";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const joining_date = `${academic_year_name}-01-01`;
 
@@ -71,7 +71,7 @@ const gradeThreeSchoolRaiyanSarker = async () => {
   const version = Version.ENGLISH;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_AMMAPARA";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const joining_date = `${academic_year_name}-01-01`;
 
@@ -115,10 +115,10 @@ const gradeThreeMadrashaMiftahulJannat = async () => {
   const roll_number = 7;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "HIFZ";
-  const quranic_period_names = ["HIFZ_MORNING", "QURANIC_EVENING", "HIFZ_NIGHT"];
+  const quranic_period_names = ["HIFZ_MORNING", "ASSEMBLY", "QURANIC_EVENING", "HIFZ_NIGHT"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_TWO"];
@@ -167,10 +167,10 @@ const gradeThreeMadrashaMohammadAlifHossain = async () => {
   const roll_number = 4;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "HIFZ";
-  const quranic_period_names = ["HIFZ_MORNING", "QURANIC_EVENING", "HIFZ_NIGHT"];
+  const quranic_period_names = ["HIFZ_MORNING", "ASSEMBLY", "QURANIC_EVENING", "HIFZ_NIGHT"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_TWO"];

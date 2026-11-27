@@ -114,7 +114,7 @@ const nurseryMadrashaRumaisaReza = async () => {
   const roll_number = 1;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_NURSERY";
   const quranic_period_names = ["NURANI_MORNING"];
@@ -161,7 +161,7 @@ const nurseryMadrashaAhnafTahmid = async () => {
   const roll_number = 2;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_NURSERY";
   const quranic_period_names = ["NURANI_MORNING"];

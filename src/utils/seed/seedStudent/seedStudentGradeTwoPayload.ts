@@ -120,10 +120,10 @@ const gradeTwoMadrashaSafwanMabrur = async () => {
   const roll_number = 2;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NAZERA_ADVANCE";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_ONE"];
@@ -157,9 +157,9 @@ const gradeTwoMadrashaSafwanMabrur = async () => {
 };
 
 // ===================================================
-// payload GradeTwoMadrashaHaseenShadeb
+// payload GradeTwoMadrashaHaseenShadab
 // ===================================================
-const gradeTwoMadrashaHaseenShadeb = async () => {
+const gradeTwoMadrashaHaseenShadab = async () => {
   const full_name = "Haseen Shadab";
   const mobile_number = "01716586600";
   const email = "haseen@gmail.com";
@@ -172,10 +172,10 @@ const gradeTwoMadrashaHaseenShadeb = async () => {
   const roll_number = 3;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NAZERA_ADVANCE";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_ONE"];
@@ -213,5 +213,5 @@ export const gradeTwoStudent = {
   gradeTwoSchoolMdAbdullahAlJamil,
   gradeTwoSchoolKaziRokeyaRaisa,
   gradeTwoMadrashaSafwanMabrur,
-  gradeTwoMadrashaHaseenShadeb
+  gradeTwoMadrashaHaseenShadab
 };

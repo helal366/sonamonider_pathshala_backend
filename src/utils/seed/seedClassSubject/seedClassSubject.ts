@@ -231,6 +231,31 @@ const generalPeriods = [
     start_time: "2:20 PM",
     end_time: "2:50 PM",
   },
+  {
+    general_period_name: "PLAY_MORNING_GENERAL",
+    start_time: "8:31 AM",
+    end_time: "10:45 AM",
+  },
+  {
+    general_period_name: "PLAY_DAY_GENERAL",
+    start_time: "10:45 AM",
+    end_time: "12:30 AM",
+  },
+  {
+    general_period_name: "NURSERY_MORNING_GENERAL",
+    start_time: "8:01 AM",
+    end_time: "10:15 AM",
+  },
+  {
+    general_period_name: "NURSERY_DAY_GENERAL_ONE",
+    start_time: "10:46 AM",
+    end_time: "12:00 PM",
+  },
+  {
+    general_period_name: "NURSERY_DAY_GENERAL_TWO",
+    start_time: "12:31 PM",
+    end_time: "1:00 PM",
+  },
 ];
 
 const seedGeneralPeriods = async () => {

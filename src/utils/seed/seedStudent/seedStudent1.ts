@@ -21,6 +21,7 @@ const createPlaygroupSchoolMuhsinaHasanMahima = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -47,6 +48,7 @@ const createPlaygroupSchoolKurratulAyinBarakah = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -73,6 +75,7 @@ const createPlaygroupMadrashaMohammadMostofa = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -100,6 +103,7 @@ const createPlaygroupMadrashaTahmidHossainBayejid = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -126,6 +130,7 @@ const createNurserySchoolMaryamBari = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -152,6 +157,7 @@ const createNurserySchoolAfrahaRahman = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -177,6 +183,7 @@ const createNurseryMadrashaRumaisaReza = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -203,6 +210,7 @@ const createNurseryMadrashaAhnafTahmid = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -229,6 +237,7 @@ const createGradeOneSchoolShefaAkter = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -255,6 +264,7 @@ const createGradeOneSchoolMinhaHasanSafa = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -281,6 +291,7 @@ const createGradeOneMadrashaMdRayhan = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -307,6 +318,7 @@ const createGradeOneMadrashaTasnimIslamPori = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -326,14 +338,17 @@ const createGradeOneMadrashaTasnimIslamPori = async () => {
 // SEED STUDENTS 1
 // ===================================================
 export const runStudent1Seeding = async () => {
+  // Playgroup
   await createPlaygroupSchoolMuhsinaHasanMahima();
   await createPlaygroupSchoolKurratulAyinBarakah();
   await createPlaygroupMadrashaMohammadMostofa();
   await createPlaygroupMadrashaTahmidHossainBayejid();
+  // Nursery
   await createNurserySchoolMaryamBari();
   await createNurserySchoolAfrahaRahman();
   await createNurseryMadrashaRumaisaReza();
   await createNurseryMadrashaAhnafTahmid();
+  // Grade one
   await createGradeOneSchoolShefaAkter();
   await createGradeOneSchoolMinhaHasanSafa();
   await createGradeOneMadrashaMdRayhan();

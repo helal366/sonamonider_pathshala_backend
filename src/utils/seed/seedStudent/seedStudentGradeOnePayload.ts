@@ -63,7 +63,7 @@ const gradeOneSchoolMinhaHasanSafa = async () => {
   const password = "123456";
   const role_name = Role.STUDENT;
   const position_name = "STUDENT";
-  const class_name = "GRADE_ONE ";
+  const class_name = "GRADE_ONE";
   const academic_year_name = "2026";
   const roll_number = 2;
   const shift_name = Shift.DAY;
@@ -115,10 +115,10 @@ const gradeOneMadrashaMdRayhan = async () => {
   const roll_number = 1;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_AMMAPARA";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_ONE"];
@@ -167,10 +167,10 @@ const gradeOneMadrashaTasnimIslamPori = async () => {
   const roll_number = 2;
   const shift_name = Shift.MORNING;
   const section = Section.MADRASHA;
-  const version = Version.ENGLISH;
+  const version = Version.ARABIC;
   const department = Department.GENERAL;
   const quranic_subject_name = "NURANI_AMMAPARA";
-  const quranic_period_names = ["NURANI_MORNING"];
+  const quranic_period_names = ["NURANI_MORNING", "ASSEMBLY"];
   const quranic_period_ids = await findQuranicPeriodIds(quranic_period_names);
   const arabic_subject_names = ["ARABIC"];
   const arabic_period_names = ["ARABIC_ONE"];

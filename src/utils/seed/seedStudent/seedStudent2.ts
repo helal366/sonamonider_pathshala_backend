@@ -3,14 +3,15 @@
 // ===================================================
 
 import { prisma } from "../../../lib/prisma";
+import { gradeFourStudent } from "./seedStudentGradeFourPayload";
 import { gradeThreeStudent } from "./seedStudentGradeThreePayload";
 import { gradeTwoStudent } from "./seedStudentGradeTwoPayload";
 import { createStudent } from "./seedStudentHelperFunction";
 
 // ===================================================
-// create GradeOneSchoolMdAbdullahAlJamil
+// create GradeTwoSchoolMdAbdullahAlJamil
 // ===================================================
-const createGradeOneSchoolMdAbdullahAlJamil = async () => {
+const createGradeTwoSchoolMdAbdullahAlJamil = async () => {
   const payload = await gradeTwoStudent.gradeTwoSchoolMdAbdullahAlJamil();
   const { full_name, mobile_number, section, shift_name } = payload;
   const existing = await prisma.student.findFirst({
@@ -20,6 +21,7 @@ const createGradeOneSchoolMdAbdullahAlJamil = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -46,6 +48,7 @@ const createGradeTwoSchoolKaziRokeyaRaisa = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -72,6 +75,7 @@ const createGradeTwoMadrashaSafwanMabrur = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -86,10 +90,10 @@ const createGradeTwoMadrashaSafwanMabrur = async () => {
 };
 
 // ===================================================
-// create GradeTwoMadrashaHaseenShadeb
+// create GradeTwoMadrashaHaseenShadab
 // ===================================================
-const createGradeTwoMadrashaHaseenShadeb = async () => {
-  const payload = await gradeTwoStudent.gradeTwoMadrashaHaseenShadeb();
+const createGradeTwoMadrashaHaseenShadab = async () => {
+  const payload = await gradeTwoStudent.gradeTwoMadrashaHaseenShadab();
   const { full_name, mobile_number, section, shift_name } = payload;
   const existing = await prisma.student.findFirst({
     where: {
@@ -98,6 +102,7 @@ const createGradeTwoMadrashaHaseenShadeb = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -124,6 +129,7 @@ const createGradeThreeSchoolMaimunaAkterTuba = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -150,6 +156,7 @@ const createGradeThreeSchoolRaiyanSarker = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -176,6 +183,142 @@ const createGradeThreeMadrashaMiftahulJannat = async () => {
         mobile_number,
       },
     },
+    select: { id: true },
+  });
+  if (!existing) {
+    await createStudent(payload);
+    console.log(
+      `Student ${full_name} created with Section: ${section} Shift: ${shift_name}`,
+    );
+  } else if (existing) {
+    console.log(
+      `Student ${full_name} with Section: ${section} Shift: ${shift_name} already exists.`,
+    );
+  }
+};
+
+// ===================================================
+// create GradeThreeMadrashaMohammadAlifHossain
+// ===================================================
+const createGradeThreeMadrashaMohammadAlifHossain = async () => {
+  const payload = await gradeThreeStudent.gradeThreeMadrashaMohammadAlifHossain();
+  const { full_name, mobile_number, section, shift_name } = payload;
+  const existing = await prisma.student.findFirst({
+    where: {
+      user_primary_data: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: { id: true },
+  });
+  if (!existing) {
+    await createStudent(payload);
+    console.log(
+      `Student ${full_name} created with Section: ${section} Shift: ${shift_name}`,
+    );
+  } else if (existing) {
+    console.log(
+      `Student ${full_name} with Section: ${section} Shift: ${shift_name} already exists.`,
+    );
+  }
+};
+
+// ===================================================
+// create GradeFourSchoolAdnanSamiRizwan
+// ===================================================
+const createGradeFourSchoolAdnanSamiRizwan = async () => {
+  const payload = await gradeFourStudent.gradeFourSchoolAdnanSamiRizwan();
+  const { full_name, mobile_number, section, shift_name } = payload;
+  const existing = await prisma.student.findFirst({
+    where: {
+      user_primary_data: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: { id: true },
+  });
+  if (!existing) {
+    await createStudent(payload);
+    console.log(
+      `Student ${full_name} created with Section: ${section} Shift: ${shift_name}`,
+    );
+  } else if (existing) {
+    console.log(
+      `Student ${full_name} with Section: ${section} Shift: ${shift_name} already exists.`,
+    );
+  }
+};
+
+// ===================================================
+// create GradeFourSchoolMufidulIslam
+// ===================================================
+const createGradeFourSchoolMufidulIslam = async () => {
+  const payload = await gradeFourStudent.gradeFourSchoolMufidulIslam();
+  const { full_name, mobile_number, section, shift_name } = payload;
+  const existing = await prisma.student.findFirst({
+    where: {
+      user_primary_data: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: { id: true },
+  });
+  if (!existing) {
+    await createStudent(payload);
+    console.log(
+      `Student ${full_name} created with Section: ${section} Shift: ${shift_name}`,
+    );
+  } else if (existing) {
+    console.log(
+      `Student ${full_name} with Section: ${section} Shift: ${shift_name} already exists.`,
+    );
+  }
+};
+
+// ===================================================
+// create GradeFourSchoolRuheeSiddique
+// ===================================================
+const createGradeFourSchoolRuheeSiddique = async () => {
+  const payload = await gradeFourStudent.gradeFourMadrashaRuheeSiddique();
+  const { full_name, mobile_number, section, shift_name } = payload;
+  const existing = await prisma.student.findFirst({
+    where: {
+      user_primary_data: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: { id: true },
+  });
+  if (!existing) {
+    await createStudent(payload);
+    console.log(
+      `Student ${full_name} created with Section: ${section} Shift: ${shift_name}`,
+    );
+  } else if (existing) {
+    console.log(
+      `Student ${full_name} with Section: ${section} Shift: ${shift_name} already exists.`,
+    );
+  }
+};
+
+// ===================================================
+// create GradeFourMadrashaAtaurRahman
+// ===================================================
+const createGradeFourMadrashaAtaurRahman = async () => {
+  const payload = await gradeFourStudent.gradeFourMadrashaAtaurRahman();
+  const { full_name, mobile_number, section, shift_name } = payload;
+  const existing = await prisma.student.findFirst({
+    where: {
+      user_primary_data: {
+        full_name,
+        mobile_number,
+      },
+    },
+    select: { id: true },
   });
   if (!existing) {
     await createStudent(payload);
@@ -195,11 +338,19 @@ const createGradeThreeMadrashaMiftahulJannat = async () => {
 // SEED STUDENTS 2
 // ===================================================
 export const runStudent2Seeding = async () => {
-  await createGradeOneSchoolMdAbdullahAlJamil();
+  // Grade two
+  await createGradeTwoSchoolMdAbdullahAlJamil();
   await createGradeTwoSchoolKaziRokeyaRaisa();
   await createGradeTwoMadrashaSafwanMabrur();
-  await createGradeTwoMadrashaHaseenShadeb();
+  await createGradeTwoMadrashaHaseenShadab();
+  // Grade three
   await createGradeThreeSchoolMaimunaAkterTuba();
   await createGradeThreeSchoolRaiyanSarker();
   await createGradeThreeMadrashaMiftahulJannat();
+  await createGradeThreeMadrashaMohammadAlifHossain();
+  // Grade Four
+  await createGradeFourSchoolAdnanSamiRizwan();
+  await createGradeFourSchoolMufidulIslam();
+  await createGradeFourSchoolRuheeSiddique();
+  await createGradeFourMadrashaAtaurRahman();
 };
