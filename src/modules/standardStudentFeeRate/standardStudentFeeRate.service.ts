@@ -58,6 +58,160 @@ const auditValue = (
   return value;
 };
 
+type TStandardStudentFeeRateForAssessmentSync =
+  Prisma.StandardStudentFeeRateGetPayload<{
+    include: { assigned_classes: { select: { class_id: true } } };
+  }>;
+
+const syncActiveStudentFeeAssessments = async (
+  tx: Prisma.TransactionClient,
+  rate: TStandardStudentFeeRateForAssessmentSync,
+  changedById: string,
+  previousRate?: TStandardStudentFeeRateForAssessmentSync,
+) => {
+  const activeAcademicYear = new Date().getFullYear().toString();
+  const classIds = rate.assigned_classes.map(({ class_id }) => class_id);
+  const classHistories = await tx.classHistory.findMany({
+    where: {
+      class_id: { in: classIds },
+      section: rate.section,
+      version: rate.version,
+      department: rate.department,
+      academic_year: { academic_year_name: activeAcademicYear },
+    },
+    select: {
+      id: true,
+      student_fee_assessments: {
+        select: {
+          id: true,
+          fee_type: true,
+          billing_frequency: true,
+          amount: true,
+          discount_amount: true,
+          amount_to_pay: true,
+        },
+      },
+    },
+  });
+
+  const auditRecords: Prisma.AuditLogCreateManyInput[] = [];
+  const amount = new Prisma.Decimal(rate.amount);
+
+  for (const classHistory of classHistories) {
+    const targetAssessment = classHistory.student_fee_assessments.find(
+      (assessment) =>
+        assessment.fee_type === rate.fee_type &&
+        assessment.billing_frequency === rate.billing_frequency,
+    );
+    const previousAssessment = previousRate
+      ? classHistory.student_fee_assessments.find(
+          (assessment) =>
+            assessment.fee_type === previousRate.fee_type &&
+            assessment.billing_frequency === previousRate.billing_frequency,
+        )
+      : undefined;
+
+    if (
+      targetAssessment &&
+      previousAssessment &&
+      targetAssessment.id !== previousAssessment.id
+    ) {
+      throw new AppError(
+        "Cannot update the fee type or billing frequency because an assessment with the new fee already exists for an active student.",
+        StatusCodes.CONFLICT,
+      );
+    }
+
+    const existingAssessment = targetAssessment ?? previousAssessment;
+    if (existingAssessment) {
+      if (existingAssessment.discount_amount.greaterThan(amount)) {
+        throw new AppError(
+          "Cannot update the standard fee amount because it is less than an active student's discount.",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+
+      const amountToPay = amount.minus(existingAssessment.discount_amount);
+      const assessmentChanged =
+        existingAssessment.fee_type !== rate.fee_type ||
+        existingAssessment.billing_frequency !== rate.billing_frequency ||
+        !existingAssessment.amount.equals(amount) ||
+        !existingAssessment.amount_to_pay.equals(amountToPay);
+
+      if (!assessmentChanged) {
+        continue;
+      }
+
+      const updatedAssessment = await tx.studentFeeAssessment.update({
+        where: { id: existingAssessment.id },
+        data: {
+          fee_type: rate.fee_type,
+          billing_frequency: rate.billing_frequency,
+          amount,
+          amount_to_pay: amountToPay,
+          updated_by: { connect: { id: changedById } },
+        },
+      });
+
+      auditRecords.push({
+        entity_id: updatedAssessment.id,
+        entity_name: "studentFeeAssessment",
+        action: "UPDATE",
+        changed_by_id: changedById,
+        old_value: {
+          class_history_id: classHistory.id,
+          fee_type: existingAssessment.fee_type,
+          billing_frequency: existingAssessment.billing_frequency,
+          amount: existingAssessment.amount.toString(),
+          discount_amount: existingAssessment.discount_amount.toString(),
+          amount_to_pay: existingAssessment.amount_to_pay.toString(),
+        },
+        new_value: {
+          class_history_id: classHistory.id,
+          fee_type: updatedAssessment.fee_type,
+          billing_frequency: updatedAssessment.billing_frequency,
+          amount: updatedAssessment.amount.toString(),
+          discount_amount: updatedAssessment.discount_amount.toString(),
+          amount_to_pay: updatedAssessment.amount_to_pay.toString(),
+        },
+      });
+      continue;
+    }
+
+    const createdAssessment = await tx.studentFeeAssessment.create({
+      data: {
+        class_history_id: classHistory.id,
+        fee_type: rate.fee_type,
+        billing_frequency: rate.billing_frequency,
+        amount,
+        discount_amount: 0,
+        amount_to_pay: amount,
+        created_by_id: changedById,
+      },
+    });
+
+    auditRecords.push({
+      entity_id: createdAssessment.id,
+      entity_name: "studentFeeAssessment",
+      action: "CREATE",
+      changed_by_id: changedById,
+      old_value: Prisma.JsonNull,
+      new_value: {
+        class_history_id: classHistory.id,
+        fee_type: createdAssessment.fee_type,
+        billing_frequency: createdAssessment.billing_frequency,
+        amount: createdAssessment.amount.toString(),
+        discount_amount: createdAssessment.discount_amount.toString(),
+        amount_to_pay: createdAssessment.amount_to_pay.toString(),
+      },
+    });
+  }
+
+  if (auditRecords.length > 0) {
+    await tx.auditLog.createMany({ data: auditRecords });
+  }
+};
+
 const createStandardStudentFeeRate = async (
   payload: TCreateStandardStudentFeeRateZodSchema,
   loggedInUser: TLoggedInUser,
@@ -80,6 +234,8 @@ const createStandardStudentFeeRate = async (
       },
       include: standardStudentFeeRateInclude,
     });
+
+    await syncActiveStudentFeeAssessments(tx, created, loggedInUser.user_id);
 
     await tx.auditLog.create({
       data: {
@@ -104,6 +260,8 @@ const createStandardStudentFeeRate = async (
     });
 
     return created;
+  }, {
+    timeout: 25000,
   });
 };
 
@@ -178,6 +336,15 @@ const updateStandardStudentFeeRateField = async (
       include: standardStudentFeeRateInclude,
     });
 
+    if (field !== "ic_duration_hrs" && field !== "qc_duration_hrs") {
+      await syncActiveStudentFeeAssessments(
+        tx,
+        updated,
+        loggedInUser.user_id,
+        existing,
+      );
+    }
+
     const oldFieldValue =
       field === "class_ids"
         ? existing.assigned_classes.map(({ class_id }) => class_id)
@@ -194,6 +361,8 @@ const updateStandardStudentFeeRateField = async (
     });
 
     return updated;
+  }, {
+    timeout: 25000,
   });
 };
 
