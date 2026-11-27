@@ -76,7 +76,7 @@
       "value": "00000000-0000-4000-8000-000000000014"
     },
     {
-      "key": "studentFeeRateId",
+      "key": "studentFeeAssessmentId",
       "value": "00000000-0000-4000-8000-000000000015"
     },
     {
@@ -146,6 +146,10 @@
     {
       "key": "governingBodyId",
       "value": "00000000-0000-4000-8000-000000000024"
+    },
+    {
+      "key": "publisher",
+      "value": "Sample Publisher"
     }
   ],
   "item": [
@@ -158,6 +162,42 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Server Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Database Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health/db",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Favicon",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/favicon.ico",
             "auth": {
               "type": "noauth"
             }
@@ -1421,7 +1461,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student/student_readmission",
+            "url": "{{baseUrl}}/api/v1/smps/student/student_readmission/{{studentId}}",
             "auth": {
               "type": "noauth"
             },
@@ -1497,6 +1537,32 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"teacher_full_name\": \"Test Teacher\",\n  \"teacher_mobile_number\": \"01712345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disconnect Responsible Teacher",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/student/disconnect_responsible_teacher",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2556,7 +2622,7 @@
       "name": "Student Fee",
       "item": [
         {
-          "name": "Get All Student Fee Rates",
+          "name": "Get All Student Fee Assessments",
           "request": {
             "method": "GET",
             "header": [],
@@ -2575,11 +2641,11 @@
           "response": []
         },
         {
-          "name": "Get Student Fee Rates By Student Id",
+          "name": "Get Student Fee Assessments By Student Id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/get_student_fee_by_student_id/{{studentId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/get_student_fee_assessments_by_student_id/{{studentId}}?academic_year_name=2026",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -2617,7 +2683,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/get_student_fee_payments_by_student_id/{{studentId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/get_student_fee_payments_by_student_id/{{studentId}}?academic_year_name=2026",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -2632,7 +2698,7 @@
           "response": []
         },
         {
-          "name": "Create Student Fee Rate",
+          "name": "Create Student Fee Assessment",
           "request": {
             "method": "POST",
             "header": [
@@ -2641,13 +2707,20 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_rate",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_assessment",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"amount\": 1000\n}",
+              "raw": "{\n  \"class_history_id\": \"{{classHistoryId}}\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"discount_amount\": 500\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2658,7 +2731,7 @@
           "response": []
         },
         {
-          "name": "Update Student Fee Rate Field/:Id",
+          "name": "Update Student Fee Assessment Field/:Id",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2667,13 +2740,20 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_rate_field/{{studentFeeRateId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_assessment_field/{{studentFeeAssessmentId}}",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1200\n}",
+              "raw": "{\n  \"field\": \"discount_amount\",\n  \"value\": 500\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2684,7 +2764,7 @@
           "response": []
         },
         {
-          "name": "Delete Student Fee Rate/:Id",
+          "name": "Delete Student Fee Assessment/:Id",
           "request": {
             "method": "DELETE",
             "header": [
@@ -2693,9 +2773,16 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_rate/{{studentFeeRateId}}",
+            "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_assessment/{{studentFeeAssessmentId}}",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             }
           },
           "response": []
@@ -2712,11 +2799,18 @@
             ],
             "url": "{{baseUrl}}/api/v1/smps/student_fee/create_student_fee_payment",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"academic_year_id\": \"00000000-0000-4000-8000-000000000003\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount\": 1000\n}",
+              "raw": "{\n  \"student_id\": \"00000000-0000-4000-8000-000000000009\",\n  \"academic_year_id\": \"00000000-0000-4000-8000-000000000003\",\n  \"fee_type\": \"MONTHLY_TUITION_FEE\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-10\",\n  \"amount_paid\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2738,11 +2832,18 @@
             ],
             "url": "{{baseUrl}}/api/v1/smps/student_fee/update_student_fee_payment_field/{{studentFeePaymentId}}",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"field\": \"amount\",\n  \"value\": 1000\n}",
+              "raw": "{\n  \"field\": \"amount_paid\",\n  \"value\": 1000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2764,7 +2865,14 @@
             ],
             "url": "{{baseUrl}}/api/v1/smps/student_fee/delete_student_fee_payment/{{studentFeePaymentId}}",
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             }
           },
           "response": []
@@ -3174,7 +3282,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/v1/smps/book_list/book_list_by_publusher",
+            "url": "{{baseUrl}}/api/v1/smps/book_list/book_list_by_publusher/{{publisher}}",
             "auth": {
               "type": "noauth"
             }
@@ -3709,7 +3817,7 @@
         {
           "name": "Update Record/:moral_manners_evaluation_mark_id",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
@@ -4150,6 +4258,82 @@
             "url": "{{baseUrl}}/api/v1/smps/annual_exam_mark/{{annualExamMarkId}}",
             "auth": {
               "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Exam Result",
+      "item": [
+        {
+          "name": "Create Student Result",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/exam_result/create_student_result",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tuition Fee",
+      "item": [
+        {
+          "name": "Create Tuition Fee Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/smps/tuition_fee/create_tuition_fee_payment",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_name\": \"2026\",\n  \"fee_type\": \"REGULAR\",\n  \"billing_frequency\": \"MONTHLY\",\n  \"billing_period_key\": \"2026-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []

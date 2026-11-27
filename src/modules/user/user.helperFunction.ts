@@ -431,6 +431,7 @@ const checkStudentCreationRequirements = async (
     where: { id: active_class_id },
     select: {
       is_active_class: true,
+      class_name: true,
     },
   });
   if (!classCheck) {
@@ -480,6 +481,25 @@ const checkStudentCreationRequirements = async (
   // CHECK VERSION
   if (!version) {
     throw new AppError("Version is required.", StatusCodes.NOT_FOUND);
+  }
+
+  // CHECK SECTION AND VERSION COMBINATION
+  // FOR PLAYGROUP, NURSERY, GRADE_ONE, GRADE_TWO
+  const className = classCheck.class_name;
+  const allowedClasses = [
+    "PLAYGROUP",
+    "NURSERY",
+    "KINDERGARTEN",
+    "GRADE_ONE",
+    "GRADE_TWO",
+  ];
+  if(allowedClasses.includes(className)){
+    if(section === Section.MADRASHA && version !== Version.ARABIC){
+      throw new AppError(`Madrasha student should have the ARABIC version.`, StatusCodes.CONFLICT)
+    }
+    if(section === Section.SCHOOL && version !== Version.ENGLISH){
+      throw new AppError(`School student should have the ENGLISH version.`, StatusCodes.CONFLICT)
+    }
   }
 
   // CHECK DEPARTMENT

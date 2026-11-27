@@ -6,104 +6,106 @@ import { sendResponse } from "../../utils/sendResponse.js";
 import { studentFeeServices } from "./studentFee.service.js";
 import {
   TCreateStudentFeePaymentZodSchema,
-  TCreateStudentFeeRateZodSchema,
+  TCreateStudentFeeAssessmentZodSchema,
   TAcademicYearQueryZodSchema,
   TStudentFeePaymentIdParamsZodSchema,
-  TStudentFeeRateIdParamsZodSchema,
+  TStudentFeeAssessmentIdParamsZodSchema,
   TStudentIdParamsZodSchema,
   TUpdateStudentFeePaymentFieldZodSchema,
-  TUpdateStudentFeeRateFieldZodSchema,
+  TUpdateStudentFeeAssessmentFieldZodSchema,
 } from "./studentFee.zodValidation.js";
 
 // ======================================================
-// CREATE STUDENT FEE RATE CONTROLLER
+// CREATE STUDENT FEE ASSESSMENT CONTROLLER
 // ======================================================
-const createStudentFeeRate = catchAsync(async (req: Request, res: Response) => {
-  const loggedInUser = helperFunctions.requiredUser(req);
-  const payload = req.body as TCreateStudentFeeRateZodSchema;
-  const result = await studentFeeServices.createStudentFeeRate(
-    payload,
-    loggedInUser,
-  );
-
-  sendResponse(res, {
-    statusCode: StatusCodes.CREATED,
-    success: true,
-    message: "Student fee rate created successfully.",
-    data: result,
-  });
-});
-
-// ======================================================
-// UPDATE A SINGLE STUDENT FEE RATE FIELD CONTROLLER
-// ======================================================
-const updateStudentFeeRateField = catchAsync(
-  async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const payload = req.body as TUpdateStudentFeeRateFieldZodSchema;
-    const { student_fee_rate_id } = req.params;
-    const result = await studentFeeServices.updateStudentFeeRateField(
-      payload,
-      loggedInUser,
-      student_fee_rate_id,
-    );
-
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Student fee rate updated successfully.",
-      data: result,
-    });
-  },
-);
-
-// ======================================================
-// DELETE STUDENT FEE RATE CONTROLLER
-// ======================================================
-const deleteStudentFeeRate = catchAsync(
-  async (req: Request<TStudentFeeRateIdParamsZodSchema>, res: Response) => {
-    const loggedInUser = helperFunctions.requiredUser(req);
-    const { student_fee_rate_id } = req.params;
-    const result = await studentFeeServices.deleteStudentFeeRate(
-      student_fee_rate_id,
-      loggedInUser,
-    );
-
-    sendResponse(res, {
-      statusCode: StatusCodes.OK,
-      success: true,
-      message: "Student fee rate deleted successfully.",
-      data: result,
-    });
-  },
-);
-
-// ======================================================
-// GET ALL STUDENT FEE RATE CONTROLLER
-// ======================================================
-const getAllStudentFeeRates = catchAsync(
+const createStudentFeeAssessment = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
-    const result = await studentFeeServices.getAllStudentFeeRates(loggedInUser);
+    const payload = req.body as TCreateStudentFeeAssessmentZodSchema;
+    const result = await studentFeeServices.createStudentFeeAssessment(
+      payload,
+      loggedInUser,
+    );
+
     sendResponse(res, {
-      statusCode: StatusCodes.OK,
+      statusCode: StatusCodes.CREATED,
       success: true,
-      message: "All student fee rate retrieved successfully.",
+      message: "Student fee assessment created successfully.",
       data: result,
     });
   },
 );
 
 // ======================================================
-// GET STUDENT FEE RATE BY STUDENT ID CONTROLLER
+// UPDATE A SINGLE STUDENT FEE ASSESSMENT FIELD CONTROLLER
 // ======================================================
-const getStudentFeeRateByStudentId = catchAsync(
+const updateStudentFeeAssessmentField = catchAsync(
+  async (req: Request<TStudentFeeAssessmentIdParamsZodSchema>, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const payload = req.body as TUpdateStudentFeeAssessmentFieldZodSchema;
+    const { student_fee_assessment_id } = req.params;
+    const result = await studentFeeServices.updateStudentFeeAssessmentField(
+      payload,
+      loggedInUser,
+      student_fee_assessment_id,
+    );
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Student fee assessment updated successfully.",
+      data: result,
+    });
+  },
+);
+
+// ======================================================
+// DELETE STUDENT FEE ASSESSMENT CONTROLLER
+// ======================================================
+const deleteStudentFeeAssessment = catchAsync(
+  async (req: Request<TStudentFeeAssessmentIdParamsZodSchema>, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const { student_fee_assessment_id } = req.params;
+    const result = await studentFeeServices.deleteStudentFeeAssessment(
+      student_fee_assessment_id,
+      loggedInUser,
+    );
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Student fee assessment deleted successfully.",
+      data: result,
+    });
+  },
+);
+
+// ======================================================
+// GET ALL STUDENT FEE ASSESSMENT CONTROLLER
+// ======================================================
+const getAllStudentFeeAssessments = catchAsync(
+  async (req: Request, res: Response) => {
+    const loggedInUser = helperFunctions.requiredUser(req);
+    const result = await studentFeeServices.getAllStudentFeeAssessments(loggedInUser);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "All student fee assessments retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
+// ======================================================
+// GET STUDENT FEE ASSESSMENT BY STUDENT ID CONTROLLER
+// ======================================================
+const getStudentFeeAssessmentByStudentId = catchAsync(
   async (req: Request, res: Response) => {
     const loggedInUser = helperFunctions.requiredUser(req);
     const { student_id } = req.params as unknown as TStudentIdParamsZodSchema;
     const { academic_year_name } =
       req.query as unknown as TAcademicYearQueryZodSchema;
-    const result = await studentFeeServices.getStudentFeeRateByStudentId(
+    const result = await studentFeeServices.getStudentFeeAssessmentByStudentId(
       loggedInUser,
       student_id,
       academic_year_name,
@@ -111,7 +113,7 @@ const getStudentFeeRateByStudentId = catchAsync(
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
-      message: "Student fee rates retrieved successfully.",
+      message: "Student fee assessments retrieved successfully.",
       data: result,
     });
   },
@@ -223,11 +225,11 @@ const deleteStudentFeePayment = catchAsync(
 );
 
 export const studentFeeController = {
-  createStudentFeeRate,
-  updateStudentFeeRateField,
-  deleteStudentFeeRate,
-  getAllStudentFeeRates,
-  getStudentFeeRateByStudentId,
+  createStudentFeeAssessment,
+  updateStudentFeeAssessmentField,
+  deleteStudentFeeAssessment,
+  getAllStudentFeeAssessments,
+  getStudentFeeAssessmentByStudentId,
   getAllStudentFeePayments,
   getStudentFeePaymentsByStudentId,
   createStudentFeePayment,

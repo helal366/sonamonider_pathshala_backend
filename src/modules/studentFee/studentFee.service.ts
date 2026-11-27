@@ -5,9 +5,9 @@ import { AppError } from "../../helperFunctions/globalError/globalErrorHelperFun
 import { prisma } from "../../lib/prisma.js";
 import {
   TCreateStudentFeePaymentZodSchema,
-  TCreateStudentFeeRateZodSchema,
+  TCreateStudentFeeAssessmentZodSchema,
   TUpdateStudentFeePaymentFieldZodSchema,
-  TUpdateStudentFeeRateFieldZodSchema,
+  TUpdateStudentFeeAssessmentFieldZodSchema,
 } from "./studentFee.zodValidation.js";
 import { toAuditJson } from "../../helperFunctions/helpers/helperFunctions.js";
 
@@ -34,10 +34,10 @@ const toAuditValue = (value: unknown): string | number | boolean | null => {
 };
 
 // ======================================================
-// CREATE STUDENT FEE RATE SERVICE LAYER
+// CREATE STUDENT FEE ASSESSMENT SERVICE LAYER
 // ======================================================
-const createStudentFeeRate = async (
-  payload: TCreateStudentFeeRateZodSchema,
+const createStudentFeeAssessment = async (
+  payload: TCreateStudentFeeAssessmentZodSchema,
   loggedInUser: TLoggedInUser,
 ) => {
   assertManagementAccountant(loggedInUser);
@@ -46,10 +46,6 @@ const createStudentFeeRate = async (
       where: { id: payload.class_history_id },
       select: {
         id: true,
-        academic_year: {
-          select: {academic_year_name: true}
-        },
-        shift: true,
         section: true,
         version: true,
         department: true,
@@ -101,7 +97,7 @@ const createStudentFeeRate = async (
       );
     }
     const amountToPay = standardStudentFeeRate.amount.minus(discountAmount);
-    const created = await transaction.studentFeeRate.create({
+    const created = await transaction.studentFeeAssessment.create({
       data: {
         class_history_id: payload.class_history_id,
         fee_type: payload.fee_type,
@@ -116,7 +112,7 @@ const createStudentFeeRate = async (
     await transaction.auditLog.create({
       data: {
         entity_id: created.id,
-        entity_name: "studentFeeRate",
+        entity_name: "studentFeeAssessment",
         action: "CREATE",
         changed_by_id: loggedInUser.user_id,
         old_value: Prisma.JsonNull,
@@ -129,38 +125,87 @@ const createStudentFeeRate = async (
 };
 
 // ======================================================
-// UPDATE A SINGLE STUDENT FEE RATE FIELD SERVICE LAYER
+// UPDATE A SINGLE STUDENT FEE ASSESSMENT FIELD SERVICE LAYER
 // ======================================================
-const updateStudentFeeRateField = async (
-  payload: TUpdateStudentFeeRateFieldZodSchema,
+const updateStudentFeeAssessmentField = async (
+  payload: TUpdateStudentFeeAssessmentFieldZodSchema,
   loggedInUser: TLoggedInUser,
-  student_fee_rate_id: string,
+  student_fee_assessment_id: string,
 ) => {
   assertManagementAccountant(loggedInUser);
   const { field, value } = payload;
 
   return prisma.$transaction(async (tx) => {
-    const existing = await tx.studentFeeRate.findUnique({ where: { id: student_fee_rate_id } });
+    const existing = await tx.studentFeeAssessment.findUnique({
+      where: { id: student_fee_assessment_id },
+    });
     if (!existing) {
-      throw new AppError("Student fee rate not found.", StatusCodes.NOT_FOUND);
+      throw new AppError(
+        "Student fee assessment not found.",
+        StatusCodes.NOT_FOUND,
+      );
     }
 
-    const updated = await tx.studentFeeRate.update({
-      where: { id: student_fee_rate_id },
-      data: {
-        [field]: value,
-        updated_by_id: loggedInUser.user_id,
-      } as Prisma.StudentFeeRateUpdateInput,
+    const data: Prisma.StudentFeeAssessmentUpdateInput = {
+      updated_by: { connect: { id: loggedInUser.user_id } },
+    };
+    const oldValue: Record<string, string | number> = {
+      [field]: toAuditValue(existing[field]) as string | number,
+    };
+    const newValue: Record<string, string | number> = {
+      [field]: value,
+    };
+
+    switch (field) {
+      case "fee_type":
+        data.fee_type = value;
+        break;
+      case "billing_frequency":
+        data.billing_frequency = value;
+        break;
+      case "amount": {
+        const amount = new Prisma.Decimal(value);
+        if (existing.discount_amount.greaterThan(amount)) {
+          throw new AppError(
+            "Amount cannot be less than the existing discount.",
+            StatusCodes.BAD_REQUEST,
+          );
+        }
+        data.amount = amount;
+        data.amount_to_pay = amount.minus(existing.discount_amount);
+        oldValue.amount_to_pay = existing.amount_to_pay.toString();
+        newValue.amount_to_pay = data.amount_to_pay.toString();
+        break;
+      }
+      case "discount_amount": {
+        const discountAmount = new Prisma.Decimal(value);
+        if (discountAmount.greaterThan(existing.amount)) {
+          throw new AppError(
+            "Discount amount cannot be greater than the fee amount.",
+            StatusCodes.BAD_REQUEST,
+          );
+        }
+        data.discount_amount = discountAmount;
+        data.amount_to_pay = existing.amount.minus(discountAmount);
+        oldValue.amount_to_pay = existing.amount_to_pay.toString();
+        newValue.amount_to_pay = data.amount_to_pay.toString();
+        break;
+      }
+    }
+
+    const updated = await tx.studentFeeAssessment.update({
+      where: { id: student_fee_assessment_id },
+      data,
     });
 
     await tx.auditLog.create({
       data: {
-        entity_id: student_fee_rate_id,
-        entity_name: "studentFeeRate",
+        entity_id: student_fee_assessment_id,
+        entity_name: "studentFeeAssessment",
         action: "UPDATE",
         changed_by_id: loggedInUser.user_id,
-        old_value: { [field]: toAuditValue(existing[field]) },
-        new_value: { [field]: toAuditValue(value) },
+        old_value: oldValue,
+        new_value: newValue,
       },
     });
 
@@ -169,26 +214,33 @@ const updateStudentFeeRateField = async (
 };
 
 // ======================================================
-// DELETE STUDENT FEE RATE SERVICE LAYER
+// DELETE STUDENT FEE ASSESSMENT SERVICE LAYER
 // ======================================================
-const deleteStudentFeeRate = async (
-  student_fee_rate_id: string,  //student_fee_rate_id
+const deleteStudentFeeAssessment = async (
+  student_fee_assessment_id: string,
   loggedInUser: TLoggedInUser,
 ) => {
   assertManagementAccountant(loggedInUser);
 
   return prisma.$transaction(async (tx) => {
-    const existing = await tx.studentFeeRate.findUnique({ where: { id : student_fee_rate_id} });
+    const existing = await tx.studentFeeAssessment.findUnique({
+      where: { id: student_fee_assessment_id },
+    });
     if (!existing) {
-      throw new AppError("Student fee rate not found.", StatusCodes.NOT_FOUND);
+      throw new AppError(
+        "Student fee assessment not found.",
+        StatusCodes.NOT_FOUND,
+      );
     }
 
-    const deleted = await tx.studentFeeRate.delete({ where: { id : student_fee_rate_id} });
+    const deleted = await tx.studentFeeAssessment.delete({
+      where: { id: student_fee_assessment_id },
+    });
 
     await tx.auditLog.create({
       data: {
-        entity_id: student_fee_rate_id,
-        entity_name: "studentFeeRate",
+        entity_id: student_fee_assessment_id,
+        entity_name: "studentFeeAssessment",
         action: "DELETE",
         changed_by_id: loggedInUser.user_id,
         old_value: {
@@ -207,21 +259,21 @@ const deleteStudentFeeRate = async (
 };
 
 // ======================================================
-// GET ALL STUDENT FEE RATE SERVICE LAYER
+// GET ALL STUDENT FEE ASSESSMENT SERVICE LAYER
 // ======================================================
-const getAllStudentFeeRates= async(
+const getAllStudentFeeAssessments= async(
    loggedInUser: TLoggedInUser,
 )=>{
   assertManagementAccountant(loggedInUser);
-  return prisma.studentFeeRate.findMany({
+  return prisma.studentFeeAssessment.findMany({
     orderBy: [{ created_at: "desc" }, { id: "asc" }],
   });
 };
 
 // ======================================================
-// GET STUDENT FEE RATE BY STUDENT ID SERVICE LAYER
+// GET STUDENT FEE ASSESSMENT BY STUDENT ID SERVICE LAYER
 // ======================================================
-const getStudentFeeRateByStudentId = async (
+const getStudentFeeAssessmentByStudentId = async (
   loggedInUser: TLoggedInUser,
   student_id: string,
   academic_year_name: string
@@ -239,7 +291,7 @@ const getStudentFeeRateByStudentId = async (
           },
         },
         include: {
-          student_fee_rates: true
+          student_fee_assessments: true
         }
       },
       
@@ -257,7 +309,7 @@ const getStudentFeeRateByStudentId = async (
   }
 
   return student.class_history.flatMap(
-    (history) => history.student_fee_rates,
+    (history) => history.student_fee_assessments,
   );
 };
 
@@ -436,11 +488,11 @@ const deleteStudentFeePayment = async (
 };
 
 export const studentFeeServices = {
-  createStudentFeeRate,
-  updateStudentFeeRateField,
-  deleteStudentFeeRate,
-  getAllStudentFeeRates,
-  getStudentFeeRateByStudentId,
+  createStudentFeeAssessment,
+  updateStudentFeeAssessmentField,
+  deleteStudentFeeAssessment,
+  getAllStudentFeeAssessments,
+  getStudentFeeAssessmentByStudentId,
   getAllStudentFeePayments,
   getStudentFeePaymentsByStudentId,
   createStudentFeePayment,

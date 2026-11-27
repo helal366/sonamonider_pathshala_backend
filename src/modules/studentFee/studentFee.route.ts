@@ -12,54 +12,54 @@ import { Role } from "#db-client";
 const router = Router();
 
 // ======================================================
-// CREATE STUDENT FEE RATE ROUTE
+// CREATE STUDENT FEE ASSESSMENT ROUTE
 // ======================================================
 router.post(
-  "/create_student_fee_rate",
+  "/create_student_fee_assessment",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  validateZodSchema(studentFeeZodSchema.createStudentFeeRateZodSchema),
-  studentFeeController.createStudentFeeRate,
+  validateZodSchema(studentFeeZodSchema.createStudentFeeAssessmentZodSchema),
+  studentFeeController.createStudentFeeAssessment,
 );
 
 // ======================================================
-// UPDATE A SINGLE STUDENT FEE RATE FIELD ROUTE
+// UPDATE A SINGLE STUDENT FEE ASSESSMENT FIELD ROUTE
 // ======================================================
 router.patch(
-  "/update_student_fee_rate_field/:student_fee_rate_id",
+  "/update_student_fee_assessment_field/:student_fee_assessment_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
-  validateZodSchema(studentFeeZodSchema.updateStudentFeeRateFieldZodSchema),
-  studentFeeController.updateStudentFeeRateField,
+  validateZodParams(studentFeeZodSchema.studentFeeAssessmentIdParamsZodSchema),
+  validateZodSchema(studentFeeZodSchema.updateStudentFeeAssessmentFieldZodSchema),
+  studentFeeController.updateStudentFeeAssessmentField,
 );
 
 // ======================================================
-// DELETE STUDENT FEE RATE ROUTE
+// DELETE STUDENT FEE ASSESSMENT ROUTE
 // ======================================================
 router.delete(
-  "/delete_student_fee_rate/:student_fee_rate_id",
+  "/delete_student_fee_assessment/:student_fee_assessment_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  validateZodParams(studentFeeZodSchema.studentFeeRateIdParamsZodSchema),
-  studentFeeController.deleteStudentFeeRate,
+  validateZodParams(studentFeeZodSchema.studentFeeAssessmentIdParamsZodSchema),
+  studentFeeController.deleteStudentFeeAssessment,
 );
 
 // ======================================================
-// GET ALL STUDENT FEE RATE ROUTE
+// GET ALL STUDENT FEE ASSESSMENT ROUTE
 // ======================================================
 router.get(
   "/",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
-  studentFeeController.getAllStudentFeeRates,
+  studentFeeController.getAllStudentFeeAssessments,
 );
 
 // ======================================================
-// GET STUDENT FEE RATE BY STUDENT ID ROUTE
+// GET STUDENT FEE ASSESSMENTS BY STUDENT ID ROUTE
 // ======================================================
 router.get(
-  "/get_student_fee_by_student_id/:student_id",
+  "/get_student_fee_assessments_by_student_id/:student_id",
   userAuth(Role.SUPER_ADMIN, Role.ADMIN, Role.TEACHER_ADMIN, Role.MANAGEMENT),
   validateZodParams(studentFeeZodSchema.studentIdParamsZodSchema),
-  validateZodSchema(studentFeeZodSchema.updateStudentFeePaymentFieldZodSchema),
-  studentFeeController.getStudentFeeRateByStudentId,
+  validateZodQuery(studentFeeZodSchema.academicYearQueryZodSchema),
+  studentFeeController.getStudentFeeAssessmentByStudentId,
 );
 
 // ======================================================

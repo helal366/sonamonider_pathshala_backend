@@ -148,11 +148,12 @@ export async function createStudent(payload: ICreateSeedStudentPayload) {
                       },
                     }
                   : {}),
-                student_fee_rates: {
+                student_fee_assessments: {
                   create: standardStudentFeeRates.map((standardFeeRate) => ({
                     fee_type: standardFeeRate.fee_type,
                     billing_frequency: standardFeeRate.billing_frequency,
                     amount: standardFeeRate.amount,
+                    discount_amount: 0,
                     amount_to_pay: standardFeeRate.amount,
                   })),
                 },

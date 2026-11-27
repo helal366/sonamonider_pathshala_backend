@@ -1,5 +1,5 @@
-// StudentFeeRate and StudentFeePayment
-model StudentFeeRate {
+// StudentFeeAssessment and StudentFeePayment
+model StudentFeeAssessment {
   id         String  @id @default(uuid())
   
   class_history_id String
@@ -11,10 +11,10 @@ model StudentFeeRate {
   amount_to_pay Decimal          @db.Decimal(10, 2)
 
   created_by_id String?
-  created_by    User?   @relation("student_fee_rate_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by    User?   @relation("student_fee_assessment_created_by", fields: [created_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   updated_by_id String?
-  updated_by    User?   @relation("student_fee_rate_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  updated_by    User?   @relation("student_fee_assessment_updated_by", fields: [updated_by_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -34,7 +34,7 @@ model StudentFeePayment {
   fee_type           StudentFeeType
   billing_frequency  BillingFrequency
   billing_period_key String
-  amount_to_pay             Decimal          @db.Decimal(10, 2)
+  amount_paid        Decimal          @db.Decimal(10, 2)
   paid_at            DateTime         @default(now())
   receipt_number     String?          @unique
   online_payment_gateway    String?

@@ -41,7 +41,7 @@ export const sslCommerzInit = async ({
   const class_name = studentClassHistory?.class.class_name;
   const classHistoryId = studentClassHistory?.id;
 
-  const studentFeeRate = await prisma.studentFeeRate.findFirst({
+  const studentFeeAssessment = await prisma.studentFeeAssessment.findFirst({
     where: {
       class_history_id: classHistoryId,
       fee_type,
@@ -52,8 +52,8 @@ export const sslCommerzInit = async ({
       amount_to_pay: true
     }
   });
-  if(!studentFeeRate){
-    throw new AppError(`Student fee rate not found.`,StatusCodes.NOT_FOUND)
+  if(!studentFeeAssessment){
+    throw new AppError(`Student fee assessment not found.`,StatusCodes.NOT_FOUND)
   }
 
   const currentBackendUrl = BACKEND_URL; //backend rul
@@ -64,7 +64,7 @@ export const sslCommerzInit = async ({
   const initiate = {
     store_id,
     store_passwd,
-    total_amount: studentFeeRate.amount_to_pay.toString(),
+    total_amount: studentFeeAssessment.amount_to_pay.toString(),
     currency: "BDT",
     tran_id: transactionId, // use unique tran_id for each api call
     success_url: `${currentBackendUrl}/api/payments/confirm`, // Added tracking query parameters

@@ -168,6 +168,14 @@ const studentReadmission = async (
       } = await userHelperFunction.checkStudentCreationRequirements(
         studentsRequirementPayload,
       );
+      const standardStudentFeeRates =
+        await userHelperFunction.getStandardStudentFeeRatesForClass({
+          transaction,
+          class_id: activeClassID,
+          section,
+          version,
+          department,
+        });
 
       const updatedStudent = await transaction.student.update({
         where: { id: student_id },
@@ -204,9 +212,38 @@ const studentReadmission = async (
               quranic_period: { connect: { id } },
             })),
           },
+          student_fee_assessments: {
+            create: standardStudentFeeRates.map((standardFeeRate) => ({
+              fee_type: standardFeeRate.fee_type,
+              billing_frequency: standardFeeRate.billing_frequency,
+              amount: standardFeeRate.amount,
+              discount_amount: 0,
+              amount_to_pay: standardFeeRate.amount,
+              created_by_id: loggedInUser.user_id,
+            })),
+          },
           created_by: { connect: { id: loggedInUser.user_id } },
         },
+        include: { student_fee_assessments: true },
       });
+
+      for (const feeAssessment of freshClassHistory.student_fee_assessments) {
+        auditRecords.push({
+          entity_id: feeAssessment.id,
+          entity_name: "studentFeeAssessment",
+          old_value: Prisma.JsonNull,
+          new_value: {
+            class_history_id: freshClassHistory.id,
+            fee_type: feeAssessment.fee_type,
+            billing_frequency: feeAssessment.billing_frequency,
+            amount: feeAssessment.amount.toString(),
+            discount_amount: feeAssessment.discount_amount.toString(),
+            amount_to_pay: feeAssessment.amount_to_pay.toString(),
+          },
+          action: "CREATE",
+          changed_by_id: loggedInUser.user_id,
+        });
+      }
 
       // Construct clean, filtered audit payload using camelCase structure rules
       auditRecords.push({

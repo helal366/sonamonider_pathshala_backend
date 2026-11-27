@@ -2,36 +2,18 @@ import { BillingFrequency, StudentFeeType } from "#db-client";
 import z4 from "zod/v4";
 
 // ======================================================
-// CREATE STUDENT FEE RATE ZOD SCHEMA
+// CREATE STUDENT FEE ASSESSMENT ZOD SCHEMA
 // ======================================================
-const createStudentFeeRateZodSchema = z4
+const createStudentFeeAssessmentZodSchema = z4
   .object({
-    class_history_id: z4.uuid("Invalid class ID."),
+    class_history_id: z4.uuid("Invalid class history ID."),
     fee_type: z4.enum(StudentFeeType, "Invalid student fee type."),
     billing_frequency: z4.enum(BillingFrequency, "Invalid billing frequency."),
-    // amount: z4.number().nonnegative("Amount cannot be negative."),
-    discount_amount: z4.number().nonnegative("Amount cannot be negative."),
-    // amount_to_pay: z4.number().nonnegative("Amount cannot be negative."),
-  })
-  // .superRefine((data, ctx) => {
-  //   if (data.discount_amount > data.amount) {
-  //     ctx.addIssue({
-  //       code: "custom",
-  //       path: ["discount_amount"],
-  //       message: "Discount amount can not be greater than actual amount.",
-  //     });
-  //   }
-  //   if (data.amount_to_pay !== data.amount - data.discount_amount) {
-  //     ctx.addIssue({
-  //       code: "custom",
-  //       path: ["amount_to_pay"],
-  //       message: "Amount to pay must equal amount minus discount amount.",
-  //     });
-  //   }
-  // });
+    discount_amount: z4.number().nonnegative("Discount cannot be negative."),
+  });
 
-export type TCreateStudentFeeRateZodSchema = z4.infer<
-  typeof createStudentFeeRateZodSchema
+export type TCreateStudentFeeAssessmentZodSchema = z4.infer<
+  typeof createStudentFeeAssessmentZodSchema
 >;
 
 // ======================================================
@@ -43,7 +25,7 @@ const createStudentFeePaymentZodSchema = z4.object({
   fee_type: z4.enum(StudentFeeType, "Invalid student fee type."),
   billing_frequency: z4.enum(BillingFrequency, "Invalid billing frequency."),
   billing_period_key: z4.string().trim().min(1, "Billing period is required."),
-  amount_to_pay: z4.number().nonnegative("Amount cannot be negative."),
+  amount_paid: z4.number().nonnegative("Amount cannot be negative."),
   paid_at: z4.coerce.date().optional(),
   receipt_number: z4.string().trim().nullable().optional(),
   online_payment_gateway: z4.string().optional(),
@@ -55,9 +37,9 @@ export type TCreateStudentFeePaymentZodSchema = z4.infer<
 >;
 
 // ======================================================
-// UPDATE A SINGLE STUDENT FEE RATE FIELD ZOD SCHEMA
+// UPDATE A SINGLE STUDENT FEE ASSESSMENT FIELD ZOD SCHEMA
 // ======================================================
-const updateStudentFeeRateFieldZodSchema = z4.discriminatedUnion("field", [
+const updateStudentFeeAssessmentFieldZodSchema = z4.discriminatedUnion("field", [
   z4.object({
     field: z4.literal("fee_type"),
     value: z4.enum(StudentFeeType, "Invalid student fee type."),
@@ -70,10 +52,14 @@ const updateStudentFeeRateFieldZodSchema = z4.discriminatedUnion("field", [
     field: z4.literal("amount"),
     value: z4.number().nonnegative("Amount cannot be negative."),
   }),
+  z4.object({
+    field: z4.literal("discount_amount"),
+    value: z4.number().nonnegative("Discount cannot be negative."),
+  }),
 ]);
 
-export type TUpdateStudentFeeRateFieldZodSchema = z4.infer<
-  typeof updateStudentFeeRateFieldZodSchema
+export type TUpdateStudentFeeAssessmentFieldZodSchema = z4.infer<
+  typeof updateStudentFeeAssessmentFieldZodSchema
 >;
 
 // ======================================================
@@ -93,7 +79,7 @@ const updateStudentFeePaymentFieldZodSchema = z4.discriminatedUnion("field", [
     value: z4.string().trim().min(1, "Billing period is required."),
   }),
   z4.object({
-    field: z4.literal("amount_to_pay"),
+    field: z4.literal("amount_paid"),
     value: z4.number().nonnegative("Amount cannot be negative."),
   }),
   z4.object({
@@ -119,14 +105,14 @@ export type TUpdateStudentFeePaymentFieldZodSchema = z4.infer<
 >;
 
 // ======================================================
-//  STUDENT FEE RATE ZOD SCHEMA
+// STUDENT FEE ASSESSMENT ZOD SCHEMA
 // ======================================================
-const studentFeeRateIdParamsZodSchema = z4.object({
-  student_fee_rate_id: z4.uuid("Invalid student fee rate ID."),
+const studentFeeAssessmentIdParamsZodSchema = z4.object({
+  student_fee_assessment_id: z4.uuid("Invalid student fee assessment ID."),
 });
 
-export type TStudentFeeRateIdParamsZodSchema = z4.infer<
-  typeof studentFeeRateIdParamsZodSchema
+export type TStudentFeeAssessmentIdParamsZodSchema = z4.infer<
+  typeof studentFeeAssessmentIdParamsZodSchema
 >;
 
 // ======================================================
@@ -165,11 +151,11 @@ export type TAcademicYearQueryZodSchema = z4.infer<
   typeof academicYearQueryZodSchema
 >;
 export const studentFeeZodSchema = {
-  createStudentFeeRateZodSchema,
+  createStudentFeeAssessmentZodSchema,
   createStudentFeePaymentZodSchema,
-  updateStudentFeeRateFieldZodSchema,
+  updateStudentFeeAssessmentFieldZodSchema,
   updateStudentFeePaymentFieldZodSchema,
-  studentFeeRateIdParamsZodSchema,
+  studentFeeAssessmentIdParamsZodSchema,
   studentFeePaymentIdParamsZodSchema,
   studentIdParamsZodSchema,
   academicYearQueryZodSchema,
